@@ -29,6 +29,7 @@
     :accessor naf-entity-person-display-name-coref
     :documentation ":ORIGINAL-FIELD \"used_for\"")
 
+   ;; field name is case-sensitive
    (control-id-db-0
     :initarg :control-id-db-0
     :accessor control-id-db-0
@@ -160,6 +161,33 @@
 ;;      parsed-person-record)
 ;;
 ;;; *big-parsed-class-field-slot-accessor-mapping-table*
+;;
+;; (defun set-parsed-person-record-slot-value (field-string field-value object)
+;;   (values
+;;    (string-case:string-case (field-string)
+;;      ("bio" (setf (control-id-doc-num-person object) field-value))
+;;      ("id" (setf (control-id-entity-num-person object) field-value))
+;;      ("display" (setf (control-id-display-person object) field-value))
+;;      ("nationality" (setf (location-nationality object) field-value))
+;;      ("lifespan" (setf (lifespan-date object) field-value))
+;;      ("loc_control" (setf (control-id-db-0 object) field-value))
+;;      ("birth_location" (setf (location-birth object) field-value))
+;;      ("death_location" (setf (location-death object) field-value))
+;;      ("role" (setf (naf-entity-role-appearance-coref object) field-value))
+;;      ("gender" (setf (naf-entity-gender-type object) field-value))
+;;      ("date_edit" (setf (edit-date-origin object) field-value))
+;;      ("notes" (setf (description-person-note-general object) field-value))
+;;      ("used_for"
+;;       (setf (naf-entity-person-display-name-coref object) field-value))
+;;      ("default_pic" (setf (image-default-id object) field-value))
+;;      ("print_default_pic" (setf (image-default-xref object) field-value))
+;;      ("also_artist" (setf (naf-entity-artist-coref object) field-value))
+;;      ("also_author" (setf (naf-entity-author-coref object) field-value))
+;;      ("user_name" (setf (edit-by object) field-value))
+;;      ("naf_creator" (setf (edit-by-creator object) field-value))
+;;      ("online" (setf (record-status-active object) field-value))
+;;      ("date_edt" (setf (edit-date object) field-value)))
+;;    object))
 
 ;;; ==============================
 
