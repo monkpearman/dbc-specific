@@ -1,0 +1,100 @@
+;;; :FILE-CREATED <Timestamp: #{2010-08-25T07:35:25-04:00Z}#{10343} - by MON>
+;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-sql-conversion-notes/sql-tables-notes-2010-08-25
+;;; ==============================
+
+;;; :NOTE  Don't forget about Common-Lisp's `read-delimited' list function
+
+;;; :NOTE Following are the tables contained in:
+;;; :FILE "./splt-aa" relative to path below:
+;;; :DIRECTORY "/home/sp/stan-workspace/mon-samba/from-work/rcvr-dcp-HG/dcp-rcvr-configs/mysql-hotcopy/rcvr-weeklySqlBackups/"
+;;; ==============================
+
+(defalias 'mon-dired-search-marked 'dired-do-search)
+
+
+;;; ==============================
+ ;; repeat count
+;; First give csplit something to split on from emacs:
+(while (search-forward-regexp "^--\012-- Table structure for table `.*`\012--$" nil t)
+       (replace-match (concat "----CSPLIT----\n\n" (match-string-no-properties 0)) t ))
+
+;; then from a shell:
+shell> csplit --prefix=dbc-tbl-ac- --digits=3 ./splt-ac '/^----CSPLIT----$/' '{*}'
+
+;;; ==============================
+;;; :DIRECTORY /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-sql-conversion-notes/Csplt-aa
+;;; :FILE ./splt-aa
+dbc-tbl-aa-000  -> dbc-tbl-aa-dump-header
+dbc-tbl-aa-001  -> dbc-tbl-aa-001-artist_infos
+dbc-tbl-aa-002  -> dbc-tbl-aa-002-artist_list
+dbc-tbl-aa-003  -> dbc-tbl-aa-003-author_infos
+dbc-tbl-aa-004  -> dbc-tbl-aa-004-bios
+dbc-tbl-aa-005  -> dbc-tbl-aa-005-book_infos
+dbc-tbl-aa-006  -> dbc-tbl-aa-006-brand_infos
+dbc-tbl-aa-007  -> dbc-tbl-aa-007-c_1
+dbc-tbl-aa-008  -> dbc-tbl-aa-008-c_2
+dbc-tbl-aa-009  -> dbc-tbl-aa-009-c_3
+dbc-tbl-aa-010  -> dbc-tbl-aa-010-c_4
+dbc-tbl-aa-011  -> dbc-tbl-aa-011-categ
+dbc-tbl-aa-012  -> dbc-tbl-aa-012-categ_short
+dbc-tbl-aa-013  -> dbc-tbl-aa-013-categs_ebay
+dbc-tbl-aa-014  -> dbc-tbl-aa-014-categs_ebay_fr
+dbc-tbl-aa-015  -> dbc-tbl-aa-015-compare_box
+dbc-tbl-aa-016  -> dbc-tbl-aa-016-condition
+dbc-tbl-aa-017  -> dbc-tbl-aa-017-countries
+dbc-tbl-aa-018  -> dbc-tbl-aa-018-customers
+dbc-tbl-aa-019  -> dbc-tbl-aa-019-docs          
+;;  :FILE ./splt-ab
+dbc-tbl-ab-001  -> dbc-tbl-ab-001-docs_index       ;; *  Nothing here
+dbc-tbl-ab-002  -> dbc-tbl-ab-002-ebay_users       ;; ? ebay-api-key
+dbc-tbl-ab-003  -> dbc-tbl-ab-003-french_english   ;; * Nothing here
+dbc-tbl-ab-004  -> dbc-tbl-ab-004-general_infos    ;; * Nothing here
+dbc-tbl-ab-005  -> dbc-tbl-ab-005-history          ;; * Nothing here
+dbc-tbl-ab-006  -> dbc-tbl-ab-006-inquiries          
+dbc-tbl-ab-007  -> dbc-tbl-ab-007-mattes_color     ;; ? Useful idea - Nothing here
+dbc-tbl-ab-008  -> dbc-tbl-ab-008-orders
+dbc-tbl-ab-009  -> dbc-tbl-ab-009-paper_infos
+dbc-tbl-ab-010  -> dbc-tbl-ab-010-people_infos
+dbc-tbl-ab-011  -> dbc-tbl-ab-011-player_infos
+dbc-tbl-ab-012  -> dbc-tbl-ab-012-refs
+;;  :FILE ./splt-ab
+dbc-tbl-ac-001  -> dbc-tbl-ac-001-reserved_items  ;; last timestamp 2006
+dbc-tbl-ac-002  -> dbc-tbl-ac-002-sold_in_store   ;; last timestamp 2006
+dbc-tbl-ac-003  -> dbc-tbl-ac-003-sold_refs       ;; sol refs field is "coded" or "xxx"
+dbc-tbl-ac-004  -> dbc-tbl-ac-004-states          ;; This is ISO type data
+dbc-tbl-ac-005  -> dbc-tbl-ac-005-styles_refs
+dbc-tbl-ac-006  -> dbc-tbl-ac-006-technique_infos
+dbc-tbl-ac-007  -> dbc-tbl-ac-007-themes
+dbc-tbl-ac-008  -> dbc-tbl-ac-008-themesTEST       ;; Probably irrelevant
+dbc-tbl-ac-009  -> dbc-tbl-ac-009-themes_active    ;; appears to be xrefd to the item that activated the theme.
+dbc-tbl-ac-010  -> dbc-tbl-ac-010-themes_fr        ;; Contains diacritc errors and  backslashitis
+dbc-tbl-ac-011  -> dbc-tbl-ac-011-thms_actv        ;; Backup maybe?
+dbc-tbl-ac-012  -> dbc-tbl-ac-012-translations     ;; :NOTE This translations of everything BUT the Gil Blas data is here also
+dbc-tbl-ac-013  -> dbc-tbl-ac-013-users            ;; :NOTE These appear to have been disabled
+dbc-tbl-ac-014  -> dbc-tbl-ac-014-weights          ;; Item weight approximations -empty
+dbc-tbl-ac-015  -> dbc-tbl-ac-015-whislist         ;; I hate this spelling :note the `bourbonchef' user.
+dbc-tbl-ac-016  -> dbc-tbl-ac-016-words            ;; This looks like a table of One word name mapped to NAF names
+dbc-tbl-ac-017  -> dbc-tbl-ac-017-saved_user_searches  ;; Doubtful this ever worked
+
+;;
+dbc-tbl-ad-001-saved_user_searches
+
+
+dbc-tbl-ad-002-searches
+;;; :NOTE this is the table schema for `searches` wich is the 
+;;; remaining 160MB in the sql backup 
+;;; The first timestamp search is on: 2008-11-18 17:18:54
+
+
+
+
+;;; ==============================
+
+
+;;; top of ad 
+
+
+
+
+;;; ==============================
+;;; EOF

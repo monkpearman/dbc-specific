@@ -1,0 +1,156 @@
+tgm-theme-bt
+
+@menu
+* tgm-theme ::
+*  tgm-theme-bt ::
+@end menu
+
+
+@node tgm-theme, tgm-theme-bt,  , Top
+@comment  node-name,  next,  previous,  up
+@subsubsection tgm-theme
+@aaindex tgm-theme
+
+@table @asis
+@item Inheritance Tree:
+@table @code
+@item eieio-persistent
+@table @code
+@item tgm-theme
+@table @asis
+@item Children:
+@w{@xref{tgm-theme-bt}.} 
+@end table
+
+@end table
+
+@end table
+@end table
+
+  Create a new object with name NAME of class type tgm-theme
+
+@table @asis
+@item Slots:
+
+@table @code
+@item :file
+Type: @code{string}
+
+The save file for this persistent object.
+This must be a string, and must be specified when the new object is
+instantiated.
+@refill
+
+@item :theme
+Type: @code{string} @*
+Default Value: @code{""}
+
+This theme
+@refill
+
+@item :bt
+Type: @code{list} @*
+Default Value: @code{(quote nil)}
+
+alist of themes' broader themes.
+@refill
+
+@item :nt
+Type: @code{list} @*
+Default Value: @code{(quote nil)}
+
+alist of themes' narrower-theme.
+@refill
+
+@item :rt
+Type: @code{list} @*
+Default Value: @code{(quote nil)}
+
+alist of themes' related themes.
+@refill
+
+@item :rt-dcp
+Type: @code{list} @*
+Default Value: @code{(quote nil)}
+
+alist of themes' dcp-specific related themes.
+@refill
+
+@item :uf
+Type: @code{list} @*
+Default Value: @code{(quote nil)}
+
+themes this theme is used for.
+@refill
+
+@item :use
+Type: @code{list} @*
+Default Value: @code{(quote nil)}
+
+theme to use instead of this theme.
+@refill
+
+@end table
+
+@end table
+@subsubsection Specialized Methods
+
+@deffn Method UF: :AFTER this 
+Retrieves the slot @code{used-for} from an object of class @code{tgm-theme}
+@end deffn
+
+@deffn Method BT: :AFTER this 
+Retrieves the slot @code{broader-topic} from an object of class @code{tgm-theme}
+@end deffn
+
+@deffn Method USE: :AFTER this 
+Retrieves the slot @code{use} from an object of class @code{tgm-theme}
+@end deffn
+
+@deffn Method NT: :AFTER this 
+Retrieves the slot @code{narrower-topic} from an object of class @code{tgm-theme}
+@end deffn
+
+@deffn Method RT: :AFTER this 
+Retrieves the slot @code{related-topic} from an object of class @code{tgm-theme}
+@end deffn
+
+
+@node tgm-theme-bt,  , tgm-theme, Top
+@comment  node-name,  next,  previous,  up
+@subsubsection tgm-theme-bt
+@aaindex tgm-theme-bt
+
+@table @asis
+@item Inheritance Tree:
+@table @code
+@item eieio-persistent
+@table @code
+@item @w{@xref{tgm-theme}.}
+@table @code
+@item tgm-theme-bt
+No children
+@end table
+
+@end table
+
+@end table
+@end table
+
+  Create a new object with name NAME of class type tgm-theme-bt
+
+@table @asis
+@item Slots:
+
+@table @code
+@item :file
+Type: @code{string}
+
+The save file for this persistent object.
+This must be a string, and must be specified when the new object is
+instantiated.
+@refill
+
+@end table
+
+@end table

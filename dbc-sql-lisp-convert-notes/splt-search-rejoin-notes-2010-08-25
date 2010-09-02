@@ -1,0 +1,43 @@
+r;;; :FILE-CREATED <Timestamp: #{2010-08-25T09:32:14-04:00Z}#{10343} - by MON>
+;;; :FILE /home/sp/stan-workspace/mon-samba/from-work/rcvr-dcp-HG/dcp-rcvr-configs/mysql-hotcopy/rcvr-weeklySqlBackups/splt-search-rejoin-notes-2010-08-25
+;;; ==============================
+
+
+(let ((splt-dir (concat "/home/sp/stan-workspace/mon-samba/from-work/rcvr-dcp-HG/"
+                        "dcp-rcvr-configs/mysql-hotcopy/rcvr-weeklySqlBackups/"))
+      (fls-dir '(
+                 ;; :FILE "./splt-ad-ah-searches"
+                 ;; "splt-ad" "splt-ae"  "splt-af" "splt-ag"  "splt-ah"
+
+                 ;; :FILE "./splt-ai-am-searches"
+                 ;; "splt-ai" "splt-ak"  "splt-aj" "splt-al"  "splt-am"
+
+                 ;; 50mb chunks
+                 ;; :FILE "./splt-an-ar-searches"
+                 ;; "splt-an" "splt-ao"  "splt-ap" "splt-aq"  "splt-ar" "splt-as"
+
+                 ;; :FILE "./splt-at-ax-searches"
+                 ;; "splt-at" "splt-au" "splt-av" "splt-aw" "splt-ax" 
+
+                 ;; :FILE "./splt-ay-bd-searches"
+                 ;; "splt-ay" "splt-az" "splt-ba" "splt-bb" "splt-bc" "splt-bd"
+                 )))
+      (with-current-buffer (current-buffer))
+      (dolist (fd fls-dir)
+        (insert-file-contents (concat splt-dir fd))))
+
+;; split -d --bytes 50M ./splt-ad-am-searches
+
+;;; move w/ `mv' them to :DIR ./recover-split-all-2010-08-25/
+;; mv ./splt-aa ./recover-split-all-2010-08-25/ \
+;; mv ./splt-ab  ./recover-split-all-2010-08-25/ \
+;; mv ./splt-ac   ./recover-split-all-2010-08-25/ \
+;; mv ./splt-ad-ah-searches  ./recover-split-all-2010-08-25/
+;; mv ./splt-ai-am-searches  ./recover-split-all-2010-08-25/ \
+;; mv ./splt-an-as-searches  ./recover-split-all-2010-08-25/ \
+;; mv ./splt-at-ax-searches  ./recover-split-all-2010-08-25/ \
+;; mv ./splt-ay-bd-searches  ./recover-split-all-2010-08-25/
+
+
+;;; ==============================
+;;; EOF

@@ -1,0 +1,212 @@
+;;; FILE-CREATED: <Timestamp: #{2009-11-09T01:37:36-05:00Z}#{09461} - by MON>
+;;; ==============================
+
+Most of the problems have to do with the LOC Marc encodings:
+
+
+(URL `http://lcweb2.loc.gov/diglib/codetables/eacc2uni.txt')
+:SEE :FILE /mnt/ULAN-DRV/ULAN-notes-HG/LOC-conversion-notes/marc-char-mappings/eacc2uni.txt
+(insert-char #xFF09 1)）
+(princ (describe-char #xFF09) (current-buffer))
+
+((Name FULLWIDTH RIGHT PARENTHESIS) (Category Punctuation, Close) (Combining class Pe) (Bidi category Pe) (Decomposition wide)) (Decimal digit value nil) (Digit value nil) (Numeric value nil) (Mirrored yes) (Old name FULLWIDTH CLOSING PARENTHESIS) (ISO 10646 comment nil) (Uppercase nil) (Lowercase nil) (Titlecase nil))
+
+Dēmētrios Emmanouēl Galanēs ;; those aren't `e's
+Galanis, Démétrius Emmanuel ;; those aren't `e's
+
+Dēmētrios Emmanouēl Galanēs
+;; ē -> ē (275, #o423, #x113)
+;; Name: LATIN SMALL LETTER E WITH MACRON
+Galanis, Démétrius Emmanuel
+é => 233 (233, #o351, #xe9)
+é => 101 ;; display: composed to form "é" (see below)
+́ => ;COMBINING ACUTE ACCENT (769, #o1401, #x301) 
+     ; (string-to-char "\301") => 193 (#o301, #xc1) 
+     ; The hex value is getting confused with the octal val.
+     ; (insert (format "%x" 769)) => 301
+
+Galanis, DeÌmeÌtrius Emmanuel
+GalaneÌ„s, DeÌ„meÌ„trios EmmanoueÌ„l
+Galanis, DeÌmeÌtrius Emmanuel
+GalaneÌs, DeÌmeÌtrios EmmanoueÌl\
+
+"Ì" => "é"
+"Ì" => "ē"
+"Ì„"    => "ē"
+
+(while (search-forward-regexp "Galanis, DeÌmeÌtrius Emmanuel" nil t)
+  (replace-match "Galanis, Démétrius Emmanuel"))
+
+(while (search-forward-regexp "GalaneÌ„s, DeÌ„meÌ„trios EmmanoueÌ„l" nil t)
+(dolist (dcr '(("Ì" . "é")
+              ("Ì" . "ē")
+              ("Ì„"    . "ē")))
+  (while (search-forward-regexp (car dcr) nil t)
+            (replace-match (cdr dcr))))
+
+
+,----
+| &amp;#769;
+| &amp;#807;
+| &amp;#776;
+| &amp;#697;
+| 
+| &#769; ;; COMBINING ACUTE ACCENT ́ (769, #o1401, #x301)
+| &#697; ;; MODIFIER LETTER PRIME ʹ (697, #o1271, #x2b9)
+| &#776; ;; COMBINING DIAERESIS ̈ (776, #o1410, #x308)
+| &#807; ;; COMBINING PALATALIZED HOOK BELOW (801, #o1441, #x321)
+| 
+| 
+| (progn (newline)
+|        (insert-char 769 2))
+`----
+
+
+
+â¦
+clientsâ¦
+bicyclesâ¦
+langourusâ¦
+
+The Sapling is Ready for Him 
+The Sun 
+ -> – EN DASH – (8211, #o20023, #x2013) 
+
+Mckenneys => ’ RIGHT SINGLE QUOTATION MARK ’ (8217, #o20031, #x2019) 
+Mckenney’s
+
+MoÌpatsang, KiÌ dÅÌ,
+MopaÌsaÌmÌ£. GaÌya da,
+MoÌpaÌsaÌ, GaÌy-da-,
+Da-MoÌpaÌsaÌ, GaÌy-,
+MoÌppasaÌnÌnÌ, Di. Ge.,
+Mopasan, Giï¸ uï¸¡i de, 
+De Mopasan, Giu, 
+Mopassan, Giï¸ uï¸¡i de, 
+De Mopassan, Giï¸ uï¸¡i, 
+MoÌ„patsang, KiÌ„ dÅ“Ì„, 
+MopaÌ„saÌ„mÌ£. GaÌ„ya da, 
+MoÌ„paÌ„saÌ„, GaÌ„y-da-, 
+Da-MoÌ„paÌ„saÌ„, GaÌ„y-, 
+MoÌ„ppasaÌ„nÌ‡nÌ‡, Di. Ge., 
+Da-Mōpāsā, Gāy-, 1850-1893
+
+"Ì"   =>  COMBINING MACRON ̄ (772, #o1404, #x304) code point: 0x0304
+"Ì"   => COMBINING DOT ABOVE ̇ (775, #o1407, #x307)
+"Å"   => ̅ COMBINING OVERLINE ̅ (773, #o1405, #x305)
+
+Mōppasāṅṅ, Di. Ge., 1850-1893
+
+
+
+
+"Ì"
+Ì =>      204 (#o314, #xcc)
+ =>  132 (#o204, #x84)
+"\xcc" "\x84"
+(insert "\u00cc" "\u0084")Ì
+
+
+Ì
+nâ€œThomas McLean.â€
+
+
+
+
+;;; ==============================
+
+
+("\\(,'.*\\)\\(___\\)\\(.*htm',\\)" ",'.*___.*htm',"  "\\1_\\3") ;or maybe `_and_'
+;; ,'Journals_and_Publications_Robida_Le_Rire___image-2767.htm',
+
+("-\\(January\\|February\\|March\\|April\\|May\\|June\\|July\\|August\\|September\\|October\\|November\\|December\\)\\(, \\([0-9]\\{1,2\\},\\)\\)" "- \\1 \\3")
+;;"  Original Print -December, 19, 1896 "
+
+("'Books and Publications Journals and Publications French Le Rire 1" 
+ "'Books and Publications > Journals and Publications > French > Le Rire - "
+;; 'Books and Publications Journals and Publications French Le Rire 1
+
+("'Books and Publications Journals and Publications French Le Rire Rouge 1   "
+ "'Books and Publications > Journals and Publications > French > Le Rire Rouge - ")
+;; "'Books and Publications Journals and Publications French Le Rire Rouge 1   "
+
+("  FROM LE RIRE" " from LE RIRE")
+;; "  FROM LE RIRE"
+
+("  FROM LE SOURIRE'" " from LE SOURIRE'")
+;; "  FROM LE SOURIRE'"
+
+("  FROM LE RIRE ROUGE" " FROM LE RIRE ROUGE")
+;; "  FROM LE RIRE ROUGE"
+
+(" September , 23 , 1897     Felix Juven'" 
+ " September , 23 , 1897     Felix Juven'")
+;; " September , 23 , 1897     Felix Juven'"
+
+("    Felix Juven" " Felix Juven")
+;; "    Felix Juven"
+
+("   Le Rire  " " - Le Rire - ")
+;; "   Le Rire  "
+
+("<br><br>" "\\r\\n"
+;; "<br><br>"
+;;; ==============================
+
+(concat
+"\\("
+ " \\(January\\|February\\|March\\|April\\|May\\|June\\|July\\|August\\|September\\|October\\|November\\|December\\) "
+ " , "
+ "\\([0-9]\\{1,2\\},\\)\\)" "- \\1 \\3")
+(progn
+  (search-forward-regexp " ")
+  (replace-match " "))
+
+(" September , 23 , 1897     Felix Juven'" 
+ " September , 23 , 1897     Felix Juven'")
+;; " September , 23 , 1897     Felix Juven'"
+
+(progn
+  (search-forward-regexp  "<br><br>" )
+  (replace-match "\\\r\\\n"))
+
+<br><br>
+
+;;; ==============================
+;;; :FILE /mnt/DBC-DRV/dcp-rcvr-configs-HG/mysql-hotcopy/mon-mysql-config-notes/sql-char-conv-regexps.el
+;;; :FILE-CREATED <Timestamp: #{2009-11-13T13:41:25-05:00Z}#{09465} - by MON>
+;;; ==============================
+;;; acute accent 182 (ucs-insert 180) 
+;;; charmap ucs-names
+
+;;; A.7.5 Locale Definition Example
+;;; The following is an example of a locale definition file that could be used as
+;;; input to the localedef utility. It assumes that the utility is executed with the
+;;; -f option, naming a charmap file with (at least) the following content:
+;;; :SOURCE (URL `http://www.opengroup.org/onlinepubs/9699919799/xrat/V4_xbd_chap07.html#tag_21_07')
+<SPACE>      \X20  ;;; (mon-insert-unicode #X20 t)  ;->    (hex)
+<DOLLAR>     \X24  ;;; (mon-insert-unicode #X24 t)  ;-> $  (hex)
+<A>          \101  ;;; (mon-insert-unicode #o101 t) ;-> A  (octal)
+<A>          \141  ;;; (mon-insert-unicode #o141 t) ;-> a  (octal)
+<A-ACUTE>    \225  ;;;  Ã¡ (225, #o341, #xe1) (ucs-insert #xe1) (mon-insert-unicode  #o341 t)(mon-insert-unicode 225 t) 
+<A-ACUTE>    \365  ;;; (ucs-insert '#X365) (mon-insert-unicode 365) (mon-insert-unicode  #x1 t)
+<A-GRAVE>    \224  ;;; (mon-insert-unicode 224 t) (mon-insert-unicode #o340 t) (mon-insert-unicode #xe0 t) 
+<A-GRAVE>    \300  ;;; (mon-insert-unicode #o300 t) (mon-insert-unicode 192 t) (mon-insert-unicode #xc0 t)
+<b>          \142
+<C>          \103
+<c>          \143
+<c-cedilla>  \347  ;;; Ã§ (231, #o347, #xe7)
+<d>          \x64
+<H>          \110
+<h>          \150
+<eszet>      \xb7  ;;; (mon-insert-unicode  t)
+<s>          \x73
+<z>          \x7a  ;;; mon-insert-unicode #x7a t)
+END CHARMAP
+
+;;; ==============================
+;;; Scénariste
+;;; Notice n°
+
+;;; ==============================
+;;; EOF

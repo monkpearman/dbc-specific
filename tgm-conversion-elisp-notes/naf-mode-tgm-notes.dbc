@@ -1,0 +1,414 @@
+;;; ==============================
+;;; Current-tags defined in TGM downloads:
+;;; ==============================
+USE
+Facet
+SN
+UF
+BT
+NT
+RT
+CN
+HN
+FUN*
+TTCForm*
+TTCRef*
+TTCSubd*
+TTCSubj*
+FCNgmgpc*
+FCNlctgm*
+TNR*
+;;; ==============================
+1     ;;; mandatory
+1+    ;;; mandatory, repeatable
+0+    ;;; optional, repeatable
+[0,1] ;;; optional not repeatable
+;;;;
+   |: choice, one or the other, but not both
+   ?: zero or one occurrence (optional)
+   *: zero or more occurrences (optional, repeatable)
+   +: one or more occurrences (required, repeatable)
+;;;equivalences
+1+ => +
+0+ => *
+;;; ==============================
+CONCEPT 1 ;;; mandatory
+TNR 1 ;;; mandatory
+NON-DESCRIPTOR | DESCRIPTOR  ;;; choice, one or the other, but not both
+UF 0+ ;;; optional, repeatable
+BT 0+ ;;; optional, repeatable
+NT 0+ ;;; optional, repeatable
+RT 0+ ;;; optional, repeatable
+USE 0+ ;;; optional not repeatable
+SN [0,1] ;;; optional not repeatable
+Facet [0,1] ;;; optional not repeatable
+CN [0,1] ;;; optional not repeatable
+HN [0,1] ;;; optional not repeatable
+FUN [0,1] ;;; optional not repeatable
+TTCForm [0,1] ;;; optional not repeatable
+TTCRef [0,1] ;;; optional not repeatable
+TTCSubd [0,1] ;;; optional not repeatable
+TTCSubj [0,1] ;;; optional not repeatable
+FCNgmgpc [0,1] ;;; optional not repeatable
+FCNlctgm [0,1] ;;; optional not repeatable
+;;; ==============================
+;;; attempt at building a custom DBC-TGM DTD
+
+<!-- DBCTGM DTD
+     Based Zthes Z39.50 Profile for Thesaurus Navigation, version 0.1
+     (20 Feb 1999)
+     Version of DBCTGM DTD: Friday January 23, 2009 -->
+
+<!-- #PCDATA: parseable character data = text
+     occurence indicators (default: required, not repeatable):
+     ?: zero or one occurrence (optional)
+     *: zero or more occurrences (optional, repeatable)
+     +: one or more occurrences (required, repeatable)
+     |: choice, one or the other, but not both
+ -->
+
+<!ENTITY % term            "termId, termName, termQualifier?,
+                            termType?, termLanguage?">
+
+<!ENTITY % admin           "termCreatedDate?, termCreatedBy?,
+                            termModifiedDate?, termModifiedBy?">
+
+<!ELEMENT DBCTGM            (%term;, termNote?,
+                            %admin;,
+                            relation*)>
+
+<!ELEMENT relation         (relationType, sourceDb?, %term;)>
+
+<!ELEMENT termId           (#PCDATA)>
+<!ELEMENT termName         (#PCDATA)>
+<!ELEMENT termQualifier    (#PCDATA)>
+<!ELEMENT termType         (#PCDATA)>
+<!ELEMENT termLanguage     (#PCDATA)>
+<!ELEMENT termNote         (#PCDATA)>
+<!ELEMENT termCreatedDate  (#PCDATA)>
+<!ELEMENT termCreatedBy    (#PCDATA)>
+<!ELEMENT termModifiedDate (#PCDATA)>
+<!ELEMENT termModifiedBy   (#PCDATA)>
+<!ELEMENT relationType     (#PCDATA)>
+<!ELEMENT sourceDb         (#PCDATA)>
+
+;;; ==============================
+;;; ==============================
+;;; Table field
+;;; PPOC-disp: Label in PPOC Display
+;;; Current-tag: Tag in Current Downloadable TGM File (from Multites software)
+;;; Former-tag: Tag in former TGM I and II Files (from Lexico sofwware)     
+;;; Notes: notes
+;;; ==============================
+Current-tag: (No tag: 1st line in each term record)     
+Former-tag: MT
+PPOC-disp: TERM
+Notes: postable or nonpostable         
+;;; ==============================
+Current-tag: USE
+Former-tag: USE
+PPOC-disp: USE
+Notes: nonpostable (Main Term) to postable (USE)         
+;;; ==============================
+Current-tag: Facet
+Former-tag: Facet
+PPOC-disp: FACET NOTE
+Notes: geographical note         
+;;; ==============================
+Current-tag: SN
+Former-tag: PN
+PPOC-disp: SCOPE NOTE
+Notes: Formerly Public Note         
+;;; ==============================
+Current-tag: UF
+Former-tag: UF
+PPOC-disp: USED FOR
+Notes: postable (Main Term) to nonpostable (UF)
+;;; ==============================
+Current-tag: BT
+Former-tag: BT             
+PPOC-disp: BROADER TERM(S)
+;;; ==============================
+Current-tag: NT
+Former-tag: NT             
+PPOC-disp: NARROWER TERM(S)
+;;; ==============================
+Current-tag: RT
+Former-tag: RT             
+PPOC-disp: RELATED TERM(S)
+;;; ==============================
+Current-tag: CN
+Former-tag: CN             
+PPOC-disp: NOTES: Catalogers Note
+;;; ==============================
+Current-tag: HN
+Former-tag: HN             
+PPOC-disp: NOTES: History Note
+;;; ==============================
+Current-tag: FUN*
+PPOC-disp: NOTES: Former Usage Note
+Notes: clarifies TGM I TGM II past history.      
+Field added to TGM data in 2007.         
+;;; ==============================
+Current-tag: TTCForm*
+PPOC-disp: NOTES: Term Type Category
+Notes: Genre/format (MARC 155/655). Field added to TGM data in 2007. 	          
+;;; ==============================
+Current-tag: TTCRef*
+PPOC-disp: NOTES: Term Type Category
+Notes: Reference (MARC 150). Field added to TGM data in 2007.        
+;;; ==============================
+Current-tag: TTCSubd*
+PPOC-disp: NOTES: Term Type Category
+Notes: Subdivision (MARC 180+x/650+x). Field added to TGM data in 2007.        
+;;; ==============================
+Current-tag: TTCSubj*
+PPOC-disp: NOTES: Term Type Category
+Notes: Subject (MARC 150/650). Field added to TGM data in 2007.         
+;;; ==============================
+Current-tag: FCNgmgpc*
+Former-tag: Control No.	
+PPOC-disp: NOTES: Former Control Number
+Notes: Former control number from TGM II in format gmgpc000001. Applies only to terms established prior to 2007. Field added to TGM data in 2007.       
+;;; ==============================
+Current-tag: FCNlctgm*
+Former-tag: Control No.    
+PPOC-disp: NOTES: Former Control Number
+Notes: Former control number from TGM I in format: lctgm000001. Applies only to terms established prior to 2007. Field added to TGM data in 2007.       
+;;; ==============================
+Current-tag: TNR*
+PPOC-disp: CONTROL #
+Notes: Control number for merged TGM (new numbers assigned in 2007 in format tgm000001). Field added to TGM data in 2007.
+;;; ==============================
+;;; \@urlhttp://lcweb2.loc.gov/pp/tgmhtml/tgmdata.html
+The table below lists labels used in term records in the Prints & Photographs Online Catalog and in the underlying data available in the downloadable TGM file, with a comparison to features of the downloadable file formerly available. "Postable" terms are terms that can be used in indexing; "nonpostable" terms are terms that are not used for indexing. An asterisk indicates that the field was added as of October 2007.
+;;; ==============================
+;;; ==============================
+
+
+;;; ==============================
+;;; FULL Zthes DTD version 1.0
+;;;; http://zthes.z3950.org/schema/zthes-1.0.dtd
+;;; ==============================
+<?xml encoding="UTF-8"?>
+
+<!-- $Id: zthes-1.0.rnc,v 1.3 2006/05/01 16:09:08 mike Exp $ -->
+
+<!ELEMENT Zthes (thes?,term+)>
+
+<!ELEMENT thes (title*,creator*,subject*,description*,publisher*,
+                contributor*,date*,type*,format*,identifier*,source*,
+                language*,relation*,coverage*,rights*,thesNote*)>
+
+<!ELEMENT dc:title (#PCDATA)>
+<!ATTLIST dc:title
+  xmlns:dc CDATA #FIXED 'http://purl.org/dc/elements/1.1/'>
+
+<!ELEMENT dc:creator (#PCDATA)>
+<!ATTLIST dc:creator
+  xmlns:dc CDATA #FIXED 'http://purl.org/dc/elements/1.1/'>
+
+<!ELEMENT dc:subject (#PCDATA)>
+<!ATTLIST dc:subject
+  xmlns:dc CDATA #FIXED 'http://purl.org/dc/elements/1.1/'>
+
+<!ELEMENT dc:description (#PCDATA)>
+<!ATTLIST dc:description
+  xmlns:dc CDATA #FIXED 'http://purl.org/dc/elements/1.1/'>
+
+<!ELEMENT dc:publisher (#PCDATA)>
+<!ATTLIST dc:publisher
+  xmlns:dc CDATA #FIXED 'http://purl.org/dc/elements/1.1/'>
+
+<!ELEMENT dc:contributor (#PCDATA)>
+<!ATTLIST dc:contributor
+  xmlns:dc CDATA #FIXED 'http://purl.org/dc/elements/1.1/'>
+
+<!ELEMENT dc:date (#PCDATA)>
+<!ATTLIST dc:date
+  xmlns:dc CDATA #FIXED 'http://purl.org/dc/elements/1.1/'>
+
+<!ELEMENT dc:type (#PCDATA)>
+<!ATTLIST dc:type
+  xmlns:dc CDATA #FIXED 'http://purl.org/dc/elements/1.1/'>
+
+<!ELEMENT dc:format (#PCDATA)>
+<!ATTLIST dc:format
+  xmlns:dc CDATA #FIXED 'http://purl.org/dc/elements/1.1/'>
+
+<!ELEMENT dc:identifier (#PCDATA)>
+<!ATTLIST dc:identifier
+  xmlns:dc CDATA #FIXED 'http://purl.org/dc/elements/1.1/'>
+
+<!ELEMENT dc:source (#PCDATA)>
+<!ATTLIST dc:source
+  xmlns:dc CDATA #FIXED 'http://purl.org/dc/elements/1.1/'>
+
+<!ELEMENT dc:language (#PCDATA)>
+<!ATTLIST dc:language
+  xmlns:dc CDATA #FIXED 'http://purl.org/dc/elements/1.1/'>
+
+<!ELEMENT dc:relation (#PCDATA)>
+<!ATTLIST dc:relation
+  xmlns:dc CDATA #FIXED 'http://purl.org/dc/elements/1.1/'>
+
+<!ELEMENT dc:coverage (#PCDATA)>
+<!ATTLIST dc:coverage
+  xmlns:dc CDATA #FIXED 'http://purl.org/dc/elements/1.1/'>
+
+<!ELEMENT dc:rights (#PCDATA)>
+<!ATTLIST dc:rights
+  xmlns:dc CDATA #FIXED 'http://purl.org/dc/elements/1.1/'>
+
+<!ELEMENT thesNote (#PCDATA)>
+<!ATTLIST thesNote
+  label CDATA #IMPLIED
+  vocab CDATA #IMPLIED>
+
+<!ELEMENT term (termId,termUpdate?,termName,termQualifier?,termType?,
+                termLanguage?,termVocabulary?,termCategory*,termStatus?,
+                termApproval?,termSortkey?,termNote*,termCreatedDate?,
+                termCreatedBy?,termModifiedDate?,termModifiedBy?,
+                postings*,relation*)>
+
+<!ELEMENT termUpdate (#PCDATA)>
+
+<!ELEMENT termVocabulary (#PCDATA)>
+
+<!ELEMENT termCategory (#PCDATA)>
+
+<!ELEMENT termStatus (#PCDATA)>
+
+<!ELEMENT termApproval (#PCDATA)>
+
+<!ELEMENT termSortkey (#PCDATA)>
+
+<!ELEMENT termCreatedDate (#PCDATA)>
+
+<!ELEMENT termCreatedBy (#PCDATA)>
+
+<!ELEMENT termModifiedDate (#PCDATA)>
+
+<!ELEMENT termModifiedBy (#PCDATA)>
+
+<!ELEMENT termNote (#PCDATA)>
+<!ATTLIST termNote
+  label CDATA #IMPLIED
+  vocab CDATA #IMPLIED>
+
+<!ELEMENT postings (sourceDb,fieldName?,hitCount)>
+
+<!ELEMENT fieldName (#PCDATA)>
+
+<!ELEMENT hitCount (#PCDATA)>
+
+<!ELEMENT relation (relationType,sourceDb?,termId,termName,
+                    termQualifier?,termType?,termLanguage?)>
+<!ATTLIST relation
+  weight CDATA #IMPLIED>
+
+<!ELEMENT relationType (#PCDATA)>
+
+<!-- Elements used in multiple contexts -->
+
+<!ELEMENT termId (#PCDATA)>
+
+<!ELEMENT termName (#PCDATA)>
+
+<!ELEMENT termQualifier (#PCDATA)>
+
+<!ELEMENT termType (#PCDATA)>
+
+<!ELEMENT termLanguage (#PCDATA)>
+
+<!ELEMENT sourceDb (#PCDATA)>
+
+;;; ==============================
+;;; ==============================
+;;; ==============================
+;;; \@url http://www.lcweb.loc.gov/z3950/agency/profiles/zthes-04.html#3
+;;; example DTD from Zthes
+;;; ==============================
+<!-- Zthes DTD
+     Based on Z39.50 Profile for Thesaurus Navigation, version 0.1
+     (20 Feb 1999)
+     Version of DTD: 25 Feb 1999 -->
+
+<!-- #PCDATA: parseable character data = text
+
+     occurence indicators (default: required, not repeatable):
+     ?: zero or one occurrence (optional)
+     *: zero or more occurrences (optional, repeatable)
+     +: one or more occurrences (required, repeatable)
+     |: choice, one or the other, but not both
+ -->
+
+<!ENTITY % term            "termId, termName, termQualifier?,
+                            termType?, termLanguage?">
+
+<!ENTITY % admin           "termCreatedDate?, termCreatedBy?,
+                            termModifiedDate?, termModifiedBy?">
+
+<!ELEMENT Zthes            (%term;, termNote?,
+                            %admin;,
+                            relation*)>
+
+<!ELEMENT relation         (relationType, sourceDb?, %term;)>
+
+<!ELEMENT termId           (#PCDATA)>
+<!ELEMENT termName         (#PCDATA)>
+<!ELEMENT termQualifier    (#PCDATA)>
+<!ELEMENT termType         (#PCDATA)>
+<!ELEMENT termLanguage     (#PCDATA)>
+<!ELEMENT termNote         (#PCDATA)>
+<!ELEMENT termCreatedDate  (#PCDATA)>
+<!ELEMENT termCreatedBy    (#PCDATA)>
+<!ELEMENT termModifiedDate (#PCDATA)>
+<!ELEMENT termModifiedBy   (#PCDATA)>
+<!ELEMENT relationType     (#PCDATA)>
+<!ELEMENT sourceDb         (#PCDATA)>
+
+;;; ==============================
+(This appendix should include a crosswalk with any pre-existing thesaurus DTDs if appropriate.)
+Appendix B.2. Sample Zthes-in-XML Document
+This document was supplied by Thomas Place.
+;;; ==============================
+
+<?XML version="1.0" ?>
+<!DOCTYPE Zthes SYSTEM "zthes.dtd">
+<Zthes>
+  <termId>102067</termId>
+  <termName>video art</termName>
+  <termType>PT</termType>
+  <termNote>
+    Use for works of art that employ video technology, especially 
+videotapes. For the study and practice of the art of producing such 
+works, use "video."
+  </termNote>
+  <relation>
+    <relationType>UF</relationType>
+    <termId>102067/001</termId>
+    <termName>art, video</termName>
+    <termType>ND</termType>
+  </relation>
+  <relation>
+    <relationType>BT</relationType>
+    <termId>185191</termId>
+    <termName>[time-based works]</termName>
+    <termType>NL</termType>
+  </relation>
+  <relation>
+    <relationType>RT</relationType>
+    <termId>54153</termId>
+    <termName>video</termName>
+    <termType>PT</termType>
+  </relation>
+  <relation>
+    <relationType>RT</relationType>
+    <termId>253827</termId>
+    <termName>video artists</termName>
+    <termType>PT</termType>
+  </relation>
+</Zthes>
+
+;;; ==============================
