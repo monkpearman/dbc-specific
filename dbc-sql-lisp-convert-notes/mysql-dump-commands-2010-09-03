@@ -1,0 +1,169 @@
+;;; :FILE-CREATED <Timestamp: #{2010-09-03T11:21:19-04:00Z}#{10355} - by MON>
+;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-sql-lisp-convert-notes/mysql-dump-commands-2010-09-03
+;;; ==============================
+
+;;; Notes regarding dumping mysql tables for reading back into a lisp
+;;; image. Thus far dumping to xml seems to work better esp. w/re unicode
+;;; issues...
+
+;;; For additional mysql usage commands
+;;; :SEE :FILE /mnt/DBC-DRV/dcp-rcvr-configs-HG/mysql-hotcopy/MySQL-config-shell-commands-2009-12-09
+
+;;; ==============================
+:SEE (URL `http://dev.mysql.com/doc/refman/5.1/en/select.html')
+
+SELECT a,b,a+b INTO OUTFILE '/tmp/result.txt'
+  FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
+  LINES TERMINATED BY '\n'
+  FROM test_table;
+
+
+SELECT * INTO OUTFILE '/tmp/result.txt'
+  FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
+  LINES TERMINATED BY '\n'
+  FROM test_table;
+
+
+FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
+
+SELECT * INTO OUTFILE '/tmp/dbc-dump-arist-infos'
+ FIELDS TERMINATED BY '⇢\t' ENCLOSED BY '‒' ESCAPED BY '⇛' 
+ LINES TERMINATED BY '\n↓\n'
+ FROM derbycityprints.artist_infos;
+
+
+ 
+
+/tmp/dbc-refs-dump
+
+
+;;; ==============================
+mysqldump
+--result-file=
+--tab=path
+--xml
+
+--fields-terminated-by=
+--fields-enclosed-by=
+--fields-optionally-enclosed-by=
+--fields-escaped-by=
+
+--fields-terminated-by=name 
+  Fields in the textfile are terminated by ...
+
+--fields-enclosed-by=name 
+  Fields in the importfile are enclosed by ...
+
+--fields-optionally-enclosed-by=name 
+  Fields in the i.file are opt. enclosed by ...
+
+--fields-escaped-by=
+  Fields in the i.file are escaped by ...
+
+--lines-terminated-by="\n\n"
+
+--default-character-set=name
+
+--default-character-set=latin1
+
+-- mysqldump uses utf8, and earlier versions use latin1.
+
+--result-file=file_name,
+
+mysqldump --xml -u root derbycityprints refs > /tmp/dump-refs-xml
+
+mysqldump -u root -p  derbycityprints artist_infos > /tmp/artist_infos
+
+;;; :TEMPLATE mysqldump --xml -u root -p  derbycityprints  > /tmp/dump- -xml
+mysqldump --xml -u root -p  derbycityprints artist_infos     > /tmp/artist_infos
+mysqldump --xml -u root -p  derbycityprints author_infos     > /tmp/dump-author_infos-xml
+mysqldump --xml -u root -p  derbycityprints book_infos       > /tmp/dump-book_infos-xml
+mysqldump --xml -u root -p  derbycityprints brand_infos      > /tmp/dump-brand_infos-xml
+mysqldump --xml -u root -p  derbycityprints people_infos     > /tmp/dump-people_infos-xml
+mysqldump --xml -u root -p  derbycityprints player_infos     > /tmp/dump-player_infos-xml
+mysqldump --xml -u root -p  derbycityprints technique_infos  > /tmp/dump-technique_infos-xml
+
+* mysqldump --skip-lock-tables --xml -u root -p  derbycityprints paper_infos     > /tmp/dump-paper_infos-xml ;; NON-EXISTENT
+
+mysqldump --xml -u root -p  derbycityprints docs              > /tmp/dump-docs-xml
+mysqldump --xml -u root -p  derbycityprints styles_refs       > /tmp/dump-styles_refs-xml
+
+mysqldump --xml -u root -p  derbycityprints  themes           > /tmp/dump-themes-xml
+mysqldump --xml -u root -p  derbycityprints  themes_active    > /tmp/dump-themes_active-xml
+mysqldump --xml -u root -p  derbycityprints  themes_fr        > /tmp/dump-themes_fr-xml
+mysqldump --xml -u root -p  derbycityprints  words            > /tmp/dump-word-xml
+mysqldump --xml -u root -p  derbycityprints  translations     > /tmp/dump-translations-xml
+
+
+
+;; :NOTE the `-p' flag will initiate a prompt for the mysql-root-user's password
+;;   not `root's password.
+
+;;; ==============================
+:SEE (URL `http://dev.mysql.com/doc/refman/5.1/en/select.html')
+
+SELECT a,b,a+b INTO OUTFILE '/tmp/result.txt'
+  FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
+  LINES TERMINATED BY '\n'
+  FROM test_table;
+
+
+SELECT * INTO OUTFILE '/tmp/result.txt'
+  FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
+  LINES TERMINATED BY '\n'
+  FROM test_table;
+
+
+FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
+
+SELECT * INTO OUTFILE '/tmp/dbc-dump-arist-infos'
+ FIELDS TERMINATED BY '⇢\t' ENCLOSED BY '‒' ESCAPED BY '⇛' 
+ LINES TERMINATED BY '\n↓\n'
+ FROM derbycityprints.artist_infos;
+
+
+ 
+
+/tmp/dbc-refs-dump
+
+
+;;; ==============================
+mysqldump
+--result-file=
+--tab=path
+--xml
+
+--fields-terminated-by=
+--fields-enclosed-by=
+--fields-optionally-enclosed-by=
+--fields-escaped-by=
+
+--fields-terminated-by=name 
+  Fields in the textfile are terminated by ...
+
+--fields-enclosed-by=name 
+  Fields in the importfile are enclosed by ...
+
+--fields-optionally-enclosed-by=name 
+  Fields in the i.file are opt. enclosed by ...
+
+--fields-escaped-by=
+  Fields in the i.file are escaped by ...
+
+--lines-terminated-by="\n\n"
+
+--default-character-set=name
+
+--default-character-set=latin1
+
+-- mysqldump uses utf8, and earlier versions use latin1.
+
+--result-file=file_name,
+
+mysqldump --xml -u root derbycityprints refs > /tmp/dump-refs-xml
+
+mysqldump -u root -p  derbycityprints artist_infos > /tmp/artist_infos
+
+
+;;; ==============================
+;;; EOF
