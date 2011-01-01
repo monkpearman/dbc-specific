@@ -345,5 +345,112 @@ dbc-img-put-metadata ;; exif metadata setter
 ;;; CSV-DATA
 ;; 2986,"","L'inconsciente esthere","",10,"","","[4+] moderate age staining.","",0,"Books and Publications","Journals and Publications","French","Le Rire","1","Pregnant women","Books and Publications Journals and Publications French Le Rire 1   L'inconsciente esthere Fabiano (Fabien)   Le Rire  Pregnant women Couples Passageways October, 29, 1910 pseudonyme de Coup de Fréjac Jules    Felix Juven","404","October, 29, 1910","Fabiano (Fabien)","","Le Rire","Felix Juven","Paris",9,12,"Chromotypograph","Machine Age - Wood Pulp",1,0,0,"",0,3,"","",0,"",0,"20040812135634","constance",1,"laura_lerire",0,"","0","Passageways","Couples","",1,"","","Journals_and_Publications_Fabiano_Le_Rire_Pregnant_women_Passageways_image-2986.htm",1910,"","","","","",0,0,0,0,0,0,"","0","  -  Fabiano (Fabien), Original Print -October, 29, 1910 - FABIANO  FROM LE RIRE","","","2004-08-12 13:56:34",""
 
+
+;;; ==============================
+;; CLOCC-cllib/card.lisp
+
+(defcustom *name-apellations* 
+  list
+  '("Mr." "Mrs." "Ms." "Miss" "Dr" "Dr." "Prof.")
+  "The list of recognizable apellations.")
+
+(defclass name ()
+  ((first :type simple-string 
+	  :initarg first 
+	  :accessor name-first
+          :documentation "the first name")
+   (ini :type simple-string 
+	:initarg ini 
+	:accessor name-ini
+        :documentation "the middle initial name")
+   (last :type simple-string 
+	 :initarg last 
+	 :accessor name-last
+         :documentation "the last name")
+   (prefix :type simple-string 
+	   :initarg prefix 
+	   :accessor name-prefix
+           :documentation "the prefix (like `PhD')")
+   (suffix :type simple-string 
+	   :initarg suffix 
+	   :accessor name-suffix
+	   :documentation "the suffix (like `VII')")
+   (aka :type cons 
+	:initarg aka 
+	:accessor name-aka
+        :documentation "the list of aliases"))
+  (:documentation "The name - with bells and whistles."))
+
+;;; ==============================
+;;; Would be nice to also use thes slots:
+
+;; (created :type     (integer 0) 
+;; 	 :initarg  created 
+;; 	 :accessor name-created
+;; 	 :documentation "The creation time, in seconds since the epoch.")
+
+;; (timestamp :type     (integer 0) 
+;; 	   :initarg  timestamp 
+;; 	   :accessor name-timestamp
+;; 	   :documentation "The last modification time.")
+
+
+
+(defun dttm->string (dttm &key (format :long) (tz 0) (dst nil dst-p))
+  "Print the date/time as returned by `encode-universal-time'.
+DTTM is the universal time (GMT).
+FORMAT is passed to DATE-FORMATTER.
+TZ is the time zone in which the time is printed, NIL means local.
+DST is Daylight Saving Time indicator."
+  (declare (type (integer 0) dttm))
+  (multiple-value-bind (se mi ho da mo ye dd dst1 tz1)
+      (decode-universal-time dttm tz)
+    (date-formatter format se mi ho da mo ye dd (if dst-p dst dst1) tz1)))
+
+;; `time-zone-to-string', `+week-days+' <- chronos.lisp
+;; date-formatter :LONG -> 
+ (format nil "~a ~a ~a ~a" 
+	 (format nil "~d-~2,'0d-~2,'0d" ye mo da) ;; (date2string ye mo da) 
+	 (aref +week-days+ dd)
+	 ;; (time2string ho mi se)
+	 (if (integerp se)
+	     (format nil "~2,'0d:~2,'0d:~2,'0d" ho mi se)
+	     (multiple-value-bind (s u) (floor se) ; assume se>0
+	       (format nil "~2,'0d:~2,'0d:~2,'0d~4f" ho mi s u)))
+	 (time-zone-to-string tz dst))
+
+;; (defun date2string (ye mo da) 
+;;   (format nil "~d-~2,'0d-~2,'0d" ye mo da))
+;;
+;; (defun time2string (ho mi se)
+;;   (if (integerp se)
+;;       (format nil "~2,'0d:~2,'0d:~2,'0d" ho mi se)
+;;       (multiple-value-bind (s u) (floor se) ; assume se>0
+;;         (format nil "~2,'0d:~2,'0d:~2,'0d~4f" ho mi s u))))
+
+  
+
+;;; ==============================
+
+(defun slot-val (obj slot &optional default)
+  (or (when (slot-boundp obj slot)
+	(slot-value obj slot))
+      default))
+
+(defun name-print-as-pretty (nm out)
+  (declare (type name nm) (stream out))
+  (format out "~@[~a ~]~@[~a ~]~@[~a ~]~@[~a~]~@[, ~a~]"
+          (slot-val nm 'prefix) 
+	  (slot-val nm 'first) 
+	  (slot-val nm 'ini)
+          (slot-val nm 'last)
+	  (slot-val nm 'suffix)
+	  ;; (slot-val nm 'aka)
+	  ;; (slot-val nm 'created)
+	  ;; (slot-val nm 'timestamp)
+	  ))
+
+
+
 ;;; ==============================
 ;;; EOF

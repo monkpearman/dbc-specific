@@ -1,6 +1,15 @@
 ;;; FILE-CREATED: <Timestamp: #{2009-11-09T01:37:36-05:00Z}#{09461} - by MON>
 ;;; ==============================
 
+;;; ==============================
+:NOTE Timestamp fields that are empty have the format:
+"0000-00-00 00:00:00"
+
+these appear in tables:
+translations.date
+
+
+;;; ==============================
 Most of the problems have to do with the LOC Marc encodings:
 
 
@@ -207,6 +216,24 @@ END CHARMAP
 ;;; ==============================
 ;;; Scénariste
 ;;; Notice n°
+
+;;; ==============================
+B?zit
+Be&amp;#769;ne&amp;#769;zit
+
+K?ler-Lexikon
+Allgemeines K?lerlexikon
+Ren?
+
+HÃƒÂƒÃ‚ÂƒÃƒÂ‚Ã‚Â©mard
+Mus?
+Soci? des
+au march?
+
+Léonnec
+Int?ssante
+Cr?ion -> Creation
+Mise ?our
 
 ;;; ==============================
 ;;; EOF

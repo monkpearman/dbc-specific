@@ -28,7 +28,7 @@ dbc-tbl-aa-000  -> dbc-tbl-aa-dump-header
 dbc-tbl-aa-001  -> dbc-tbl-aa-001-artist_infos
 dbc-tbl-aa-002  -> dbc-tbl-aa-002-artist_list
 dbc-tbl-aa-003  -> dbc-tbl-aa-003-author_infos
-dbc-tbl-aa-004  -> dbc-tbl-aa-004-bios
+dbc-tbl-aa-004  -> dbc-tbl-aa-004-bios           ;; EMPTY
 dbc-tbl-aa-005  -> dbc-tbl-aa-005-book_infos
 dbc-tbl-aa-006  -> dbc-tbl-aa-006-brand_infos
 dbc-tbl-aa-007  -> dbc-tbl-aa-007-c_1
@@ -43,7 +43,7 @@ dbc-tbl-aa-015  -> dbc-tbl-aa-015-compare_box
 dbc-tbl-aa-016  -> dbc-tbl-aa-016-condition
 dbc-tbl-aa-017  -> dbc-tbl-aa-017-countries
 dbc-tbl-aa-018  -> dbc-tbl-aa-018-customers
-dbc-tbl-aa-019  -> dbc-tbl-aa-019-docs          
+dbc-tbl-aa-019  -> dbc-tbl-aa-019-docs     
 ;;  :FILE ./splt-ab
 dbc-tbl-ab-001  -> dbc-tbl-ab-001-docs_index       ;; *  Nothing here
 dbc-tbl-ab-002  -> dbc-tbl-ab-002-ebay_users       ;; ? ebay-api-key
