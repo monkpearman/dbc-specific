@@ -1,11 +1,9 @@
-;;-*- Mode: LISP; Syntax: COMMON-LISP; Encoding: utf-8; Base: 10 -*-
-;;; :FILE-CREATED <Timestamp: #{2011-01-01T14:10:05-05:00Z}#{11526} - by MON>
-;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-class.lisp
+;;; :FILE-CREATED <Timestamp: #{2011-01-04T16:36:51-05:00Z}#{11012} - by MON>
+;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-classes/dbc-class-artist.lisp
 ;;; ==============================
 
 
 (in-package #:dbc)
-
 
 ;;; ==============================
 ;; :ARTIST-INFOS
@@ -39,7 +37,5 @@
 ;; <field Field="naf_creator" Type="varchar(32)" Null="YES" Key="" Extra="" />
 ;; <field Field="online" Type="tinyint(3) unsigned" Null="NO" Key="" Default="0" Extra="" />
 ;; <field Field="date_edt" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" Extra="on update CURRENT_TIMESTAMP" />
-
-
 ;;; ==============================
 ;;; EOF
