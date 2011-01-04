@@ -1,0 +1,115 @@
+;;; :FILE-CREATED <Timestamp: #{2010-10-02T17:56:33-04:00Z}#{10396} - by MON>
+;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/mon-systems/notes/xml-pjb-notes-2010-10-02
+;;; ==============================
+
+,----
+| Pascal J. Bourguignon   	
+| Newsgroups: comp.lang.lisp
+| From: p...@informatimago.com (Pascal J. Bourguignon)
+| Date: Thu, 30 Sep 2010 23:16:34 +0200
+| Local: Thurs, Sep 30 2010 5:16 pm
+| Subject: Re: XML parser as reader macro?
+| (URL `http://groups.google.com/group/comp.lang.lisp/browse_frm/thread/e9f2dd4f0a17810e#')
+`----
+
+;; Josef Wolf <j...@raven.inka.de>  writes:
+;; > Hello,
+
+;; > I am currently reading the book "Let over Lambda" by Doug Hoyte. In this
+;; > book, the author mentions an XML parser implemented as reader macros.
+;; > Out of curiosity, I'd like to take a look at this parser.
+
+;; > Unfortunately, the "References" section is somewhat strange, and I am
+;; > having troubles to find the parser. Google wasn't helpful, to.
+
+;; > Does anybody have a pointer to this parser?
+
+;; I don't but here is a quick and dirty proof-of-concept.  A lot more of
+;; work is needed to process the exact XML syntax from the lisp reader (eg.
+;; you'll probably want to read the text elements as strings).  Here I
+;; demonstrate how you can just read lisp structures with a different
+;; syntax:
+
+(defstruct close-tag
+  tag)
+
+(defstruct xml-node
+  tag attributes elements)
+
+(defun eat-spaces (stream)
+  (peek-char t stream nil nil t))
+
+(defun read-attributes (stream)
+  (eat-spaces stream)
+  (loop
+     :until (char= #\>  (peek-char t stream  t nil t))
+     :collect (let ((name (read stream  t nil t))
+                    (equal (read stream  t nil t))
+                    (value (read stream  t nil t)))
+                (assert (eql '= equal))
+                (list name value))))
+
+(defun lt-reader-macro (stream ch)
+  (if (char= #\/ (peek-char t stream t nil t))
+      (progn
+        (read-char stream  t nil t)
+        (let ((tag  (read stream  t nil t)))
+          (assert (char= #\> (eat-spaces stream)))
+          (read-char stream  t nil t)
+          (make-close-tag :tag tag)))
+      (let ((tag   (read stream  t nil t))
+            (attr  (read-attributes stream)))
+        (assert (char= #\> (read-char stream  t nil t)))
+        (make-xml-node :tag tag
+                       :attributes attr
+                       :elements (loop
+				    :for item :|=| (read stream t nil t)
+				    :until (and (close-tag-p item) (eql tag (close-tag-tag item)))
+				    :when  (close-tag-p item) 
+				    :do    (error "stray close tag </~A> in <~A>." (close-tag-tag item) tag)
+				    :collect item)))))
+
+(defun gt-reader-macro (stream ch) 
+  (declare (ignore stream ch))
+'>)
+
+(set-macro-character #\< (lambda (stream ch) (lt-reader-macro stream ch)) nil)
+(set-macro-character #\> (lambda (stream ch) (gt-reader-macro stream ch)) nil)
+
+;; C/USER[106]> (read-from-string "<book title = \"Structure and Interpretation of Computer Programs\" code = \"SICP\">Is a good book</book>")
+;; --> #S(XML-NODE
+;;        :TAG BOOK
+;;        :ATTRIBUTES ((TITLE "Structure and Interpretation of Computer Programs") (CODE "SICP"))
+;;        :ELEMENTS (IS A GOOD BOOK))
+
+;; C/USER[107]> <book title = "Structure and Interpretation of Computer Programs" code = "SICP">Is a good book</book>
+;; --> #S(XML-NODE
+;;        :TAG BOOK
+;;        :ATTRIBUTES ((TITLE "Structure and Interpretation of Computer Programs") (CODE "SICP"))
+;;        :ELEMENTS (IS A GOOD BOOK))
+
+;; C/USER[108]> <book title = "Structure and Interpretation of Computer Programs" code = "SICP">
+;; <chapter number = "1">Building Abstractions with Procedures</chapter>
+;; <chapter number = "2">Building Abstractions with Data</chapter>
+;; <chapter number = "3">Modularity Objects and State</chapter>
+;; <chapter number = "4">Metalinguistic Abstraction</chapter>
+;; <chapter number = "5">Computing with Register Machines</chapter>
+;; </book>
+;; #S(XML-NODE :TAG BOOK
+;;    :ATTRIBUTES
+;;    ((TITLE "Structure and Interpretation of Computer Programs") (CODE "SICP"))
+;;    :ELEMENTS
+;;    (#S(XML-NODE :TAG CHAPTER :ATTRIBUTES ((NUMBER "1"))
+;;        :ELEMENTS (BUILDING ABSTRACTIONS WITH PROCEDURES))
+;;     #S(XML-NODE :TAG CHAPTER :ATTRIBUTES ((NUMBER "2"))
+;;        :ELEMENTS (BUILDING ABSTRACTIONS WITH DATA))
+;;     #S(XML-NODE :TAG CHAPTER :ATTRIBUTES ((NUMBER "3"))
+;;        :ELEMENTS (MODULARITY OBJECTS AND STATE))
+;;     #S(XML-NODE :TAG CHAPTER :ATTRIBUTES ((NUMBER "4"))
+;;        :ELEMENTS (METALINGUISTIC ABSTRACTION))
+;;     #S(XML-NODE :TAG CHAPTER :ATTRIBUTES ((NUMBER "5"))
+;;        :ELEMENTS (COMPUTING WITH REGISTER MACHINES))))
+;; C/USER[109]> 
+
+;;; ==============================
+;;; EOF

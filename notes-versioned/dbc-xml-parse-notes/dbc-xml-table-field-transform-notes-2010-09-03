@@ -1,0 +1,320 @@
+;;; :FILE-CREATED <Timestamp: #{2010-09-03T13:26:20-04:00Z}#{10355} - by MON>
+;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/mon-systems/notes/dbc-xml-table-field-transform-notes-2010-09-03
+;;; ==============================
+
+:DIRECTRORY /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-sql-lisp-convert-notes/sql-file-per-table-2010-08-25/from-DBC-ARCH-2010-09-01
+
+artist_infos
+artist-infos-parse
+artist-infos-parse~
+dbc-dump-refs
+dbc-dump-refs~
+;;; 
+
+dump-author_infos-xml
+dump-book_infos-xml
+dump-brand_infos-xml
+dump-docs-xml
+dump-paper_infos-xml
+dump-people_infos-xml
+dump-player_infos-xml
+dump-refs-xml
+dump-styles_refs-xml
+dump-technique_infos-xml
+dump-themes_active-xml
+dump-themes_fr-xml
+dump-themes-xml
+
+dump-word-xml
+
+;;; ==============================
+:NOTE fields that have empty timestamps need transformation. These have the format:
+"0000-00-00 00:00:00"  eg. <field name="<SOME-NAME>">0000-00-00 00:00:00</field>
+
+translations.date 
+artist_infos.date_edt   ;; :NOTE Field is distinct from "artist_infos.date_edit" which is the "older" of the two.
+docs.date_edt           ;; docs.date_edt distinc from docs.date_edit
+refs.date_edit          ;; refs.date has th format: "20040811115025" 
+			;; :NOTE also the field refs.edit_history
+
+
+;;; ==============================
+:FILE dump-translations-xml
+
+<row>
+		<field name="ref">1200</field>
+		<field name="fr">Les fous</field>
+		<field name="year">1895</field>
+		<field name="artist">Steinlen</field>
+		<field name="en">The crazy people</field>
+		<field name="issue">50</field>
+		<field name="writer">Goudeau (Emile)</field>
+		<field name="composer"></field>
+		<field name="extra">1</field>
+		<field name="date">2004-07-13 13:12:02</field>
+	</row>
+
+;;; ==============================
+:FILE dump-artist-infos-xml
+	<row>
+		<field name="bio">0</field>
+		<field name="id">1</field>
+		<field name="display">Banks (Joseph)</field>
+		<field name="nationality">British</field>
+		<field name="role">Artist, Author.</field>
+		<field name="lifespan">1743-1820</field>
+		<field name="date_born"></field>
+		<field name="date_died"></field>
+		<field name="birth_location"></field>
+		<field name="death_location">0</field>
+		<field name="LOC_control">50036748</field>
+		<field name="used_for">Banks, Joseph Sir, bart.</field>
+		<field name="found_in"></field>
+		<field name="appeared_in"></field>
+		<field name="ads_for"></field>
+		<field name="auction_records"></field>
+		<field name="cancel_num">0</field>
+		<field name="special_note"></field>
+		<field name="gender">Male</field>
+		<field name="date_edit">2006-03-8</field>
+		<field name="ULAN_control">0</field>
+		<field name="default_pic">2.jpg</field>
+		<field name="print_default_pic"></field>
+		<field name="also_author">0</field>
+		<field name="also_people">0</field>
+		<field name="user_name" xsi:nil="true" />
+		<field name="naf_creator" xsi:nil="true" />
+		<field name="online">1</field>
+		<field name="date_edt">2006-03-08 05:00:00</field>
+	</row>
+
+;;; ==============================
+;; :FIELDS-TO-TRANSLATE
+
+:USE Emacs lisp `mon-cln-xml-escapes'
+
+;; HTML combining diacritic entities:
+;; :SEE (URL `http://www.w3.org/TR/xml-entity-names/')
+;; :SEE (URL `http://tlt.its.psu.edu/suggestions/international/bylanguage/ipavowels.html')
+;; :NOTE Whats hapenning here is the HTML char ref uses "&#<NUM>" but XML has to
+;;       convert the "&" (char 38) to "&amp" and it isn't getting interpolated back
+;;       because xml has different encoding rules.
+;; IOW, although the XML standard supports Unicode, it does not support numeric entity
+;; codes like &#x03C1; for Greek ρ or HTML entity codes like &eacute; for accented é
+
+&amp;#769   -> ́ ;; &Vacute;               ;; COMBINING ACUTE ACCENT ́ (769, #o1401, #x301)
+e&amp;#769; -> é ;; &aacute; é   ;; e&#769;
+a&amp;#769; -> á ;; &#x0301; á	 ;; a&#769;
+i&amp;#769; -> í ;; &eacute; í	 ;; i&#769;
+o&amp;#769; -> ó ;; &iacute; ó	 ;; o&#769;
+u&amp;#769; -> ú ;; &oacute; ú	 ;; u&#769;
+y&amp;#769; -> ý ;; &uacute; ý	 ;; y&#769;
+w&amp;#769; -> ẃ ;; &yacute; ẃ	 ;; w&#769;
+E&amp;#769; -> É
+A&amp;#769; -> Á
+I&amp;#769; -> Í
+O&amp;#769; -> Ó
+U&amp;#769; -> Ú
+Y&amp;#769; -> Ý
+W&amp;#769; -> Ẃ
+
+
+
+&amp;#803
+Bud&amp;#283;
+&amp;#328;
+"Ã©" -> "é"
+
+
+;; refs.uri 
+"__Beer_Parties-print-12242.htm"
+
+refs.keywords
+"??? ?????????? ?????"
+
+
+:NOTE Vanilla " &amp; " e.g. any field containing theme references is correctly
+tranlslated to " & "
+
+;; refs.desc_en 
+"&lt;br&gt;&lt;br&gt;" ;; These get converted to: "<br><br>"
+
+refs.issue "9999"
+
+
+;; :FIELDS-TO-SPLIT-ON
+
+;; refs.keywords  
+"x," 
+" x "
+"   x x"
+"0," 
+", 0, "
+"0, 0, 0, "
+
+" | " " |, "  ", , , " ", , " 
+", , , , " "\(, \)+"
+" 1  x "
+" 	" ;; :NOTE (insert "\x20\x9") 
+""      ;; :NOTE (insert "\xd") :Note these get cleaned/convert by the parser
+	     to newlines, but in most cases the need to be removed. e.g. refs.keywords
+
+;; refs.edit_history
+"|"
+
+;; refs.keywords_seo
+",$" ;; e.g. the trailing comma
+
+;; 
+
+
+:FIELDS-WHICH-_MAY_USE-"x"-FOR-NULL-VALUE
+(defun dbc-field-cln-x  (field-str-cons)
+"Return non-nil if car of field-str-cons is 1 and cdr is an #\x".
+These were used to designate a null value."
+(and (eq (car field-str-cons) 1)
+         (equal (cdr field-str-cons) #\x)))
+      
+
+refs.people
+refs.desc_en
+refs.desc_fr
+refs.histo_fr
+refs.desc_en
+refs.bar_code
+refs.brand
+refs.publisher
+
+
+
+;; :FIELDS-WHICH-MAY-CONTAIN-1/0-AS-BOOLEAN
+;; :FOLLOWING These use 1/0 explicitly as booleans
+refs.onlinen
+refs.color
+refs.locked
+refs.translation
+refs.done
+
+;; :FIELDS-WHICH-_MAY_-CONTAIN-"0"-FOR-NULL-VALUE
+
+
+refs.categ_doc
+refs.c1_doc
+refs.c2_doc
+refs.c3_doc
+
+
+
+refs.related_doc
+refs.histo_en
+
+refs.date
+refs.theme     ;; Shouldn't be allow to continue!  e.g. see theme3, theme2, composer, etc. with xsi:nil="true" 
+refs.issue     ;; Shouldn't be allow to continue!
+refs.price     ;; Shouldn't be allow to continue!
+refs.year_year ;;
+refs.w
+refs.h
+refs.translation
+
+
+rers.online ;; Item 9140 has a value of "3" presumably this indicates its status as sold.
+uri
+
+refs.ebay_final
+refs.epay_price
+refs.ebay_title
+refs.ebay_id
+refs.weight
+refs.av_repro
+
+
+refs.job_name
+refs.nbre
+
+refs.
+refs.
+refs.
+refs.
+
+
+
+
+
+
+<row>
+		<field name="ref">2766</field>
+		<field name="bar_code"></field>
+		<field name="title">Au Restaurant</field>
+		<field name="Plate_number"></field>
+		<field name="price">125</field>
+		<field name="desc_fr"></field>
+		<field name="desc_en">x</field>
+		<field name="condition">[9]</field>
+		<field name="histo_fr"></field>
+		<field name="histo_en">0</field>
+		<field name="categ">Books and Publications</field>
+		<field name="c1">Journals and Publications</field>
+		<field name="c2">French</field>
+		<field name="c3">Le Rire Rouge</field>
+		<field name="c4">1</field>
+		<field name="theme">Eating &amp; drinking</field>
+		<field name="keywords">Books and Publications Journals and Publications French Le Rire Rouge 1   Au Restaurant Fabiano (Fabien)   Le Rire Rouge  Eating &amp; drinking Waiters Eavesdropping March , 17 , 1917 pseudonym of Jules Coup de Fréjac | Fréjac, Jules Coup de    Felix Juven</field>
+		<field name="issue">122</field>
+		<field name="year">March , 17 , 1917</field>
+		<field name="artist">Fabiano (Fabien)</field>
+		<field name="author"></field>
+		<field name="book">Le Rire Rouge</field>
+		<field name="publisher">Felix Juven</field>
+		<field name="publish_location">Paris</field>
+		<field name="w">9</field>
+		<field name="h">12</field>
+		<field name="technique">Chromotypograph</field>
+		<field name="paper">Machine Age - Wood Pulp</field>
+		<field name="color">1</field>
+		<field name="onlinen">1</field>
+		<field name="av_repro">0</field>
+		<field name="latin_name"></field>
+		<field name="nbre">0</field>
+		<field name="online">1</field>
+		<field name="seller">lapp</field>
+		<field name="people"></field>
+		<field name="related_doc">0</field>
+		<field name="brand"></field>
+		<field name="translation">0</field>
+		<field name="date">20040811115025</field>
+		<field name="user_name">constance</field>
+		<field name="done">1</field>
+		<field name="job_name">laura_lerire</field>
+		<field name="locked">0</field>
+		<field name="keywords_type"></field>
+		<field name="text_quote">0</field>
+		<field name="theme3">Eavesdropping</field>
+		<field name="theme2">Waiters</field>
+		<field name="c6"></field>
+		<field name="weight">1</field>
+		<field name="c5"></field>
+		<field name="composer"></field>
+		<field name="uri">Journals_and_Publications_Fabiano_Le_Rire_Rouge_Eating___drinking_Eavesdropping_image-2766.htm</field>
+		<field name="year_year">1917</field>
+		<field name="notes"></field>
+		<field name="volume"></field>
+		<field name="edition"></field>
+		<field name="page"></field>
+		<field name="bct"></field>
+		<field name="categ_doc">0</field>
+		<field name="c1_doc">0</field>
+		<field name="c2_doc">0</field>
+		<field name="c3_doc">0</field>
+		<field name="ebay_final">0</field>
+		<field name="ebay_price">0</field>
+		<field name="ebay_title"></field>
+		<field name="ebay_id">0</field>
+		<field name="seo_title">  -  Fabiano (Fabien), Original Print -March, 17, 1917 - FABIANO  FROM LE RIRE ROUGE</field>
+		<field name="description_seo"></field>
+		<field name="keywords_seo"></field>
+		<field name="date_edit">2004-08-11 15:50:25</field>
+		<field name="edit_history"></field>
+
+;;; ==============================
+;;; EOF

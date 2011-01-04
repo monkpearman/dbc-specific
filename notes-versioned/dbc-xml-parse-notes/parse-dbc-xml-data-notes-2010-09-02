@@ -1,0 +1,372 @@
+;; (remove-overlays (region-beginning) (region-end) 'face  'slime-highlight-edits-face)
+;; slime-highlight-edits-mode
+
+
+;;; ==============================
+CXML:ATTRIBUTE-NAMESPACE-URI SAX:ATTRIBUTE-NAMESPACE-URI
+CXML:ATTRIBUTE-NAMESPACE-URI, SAX:ATTRIBUTE-NAMESPACE-URI
+CXML:ATTRIBUTE-LOCAL-NAME, SAX:ATTRIBUTE-LOCAL-NAME
+CXML:COMMENT, SAX:COMMENT
+CXML:ATTRIBUTE-QNAME, SAX:ATTRIBUTE-QNAME
+CXML:PROCESSING-INSTRUCTION, SAX:PROCESSING-INSTRUCTION
+CXML:ATTRIBUTE-VALUE, SAX:ATTRIBUTE-VALUE
+
+test commit
+
+(in-package :cl-user)
+
+
+(asdf:oos 'asdf:load-op :cxml)
+
+(defpackage #:mon-parse-dbc
+  (:use #:common-lisp 
+	#:cxml))
+        ;#:sax))
+	;; #:xuriella
+	;; #:closure-html
+	;; #:drakma
+
+
+(in-package #:mon-parse-dbc)
+
+(defparameter *eg-fl*
+  #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-sql-lisp-convert-notes/sql-file-per-table-2010-08-25/from-DBC-ARCH-2010-09-01/artist-infos-parse")
+
+;;; :NOTE BIG file
+"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-sql-lisp-convert-notes/sql-file-per-table-2010-08-25/from-DBC-ARCH-2010-09-01/dump-artist-infos-xml"
+
+;;; ==============================
+(defpackage #:mon-stp-dbc
+  (:use #:common-lisp 
+	#:cxml-stp))
+
+(in-package #:mon-stp-dbc)
+
+(defparameter *eg-fl*
+  #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-sql-lisp-convert-notes/sql-file-per-table-2010-08-25/from-DBC-ARCH-2010-09-01/artist-infos-parse")
+
+;; testing refs table
+(setf *eg-fl*
+      #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-sql-lisp-convert-notes/sql-file-per-table-2010-08-25/from-DBC-ARCH-2010-09-01/refs-parse-test")
+
+(stp:serialize 
+ (cxml:parse *eg-fl* (stp:make-builder)) 
+ (cxml:make-character-stream-sink *standard-output*))
+
+;; (cxml:parse *eg-fl* (cxml:make-string-sink))
+;; parse from a file -> a string
+
+;;; ==============================
+(defparameter *example* (cxml:make-source *eg-fl*))
+
+;; an event is a thing that opens/closes or changes parserer state, e.g.: 
+;; <field   ;; opens field  :START-ELEMENT
+;; </field> ;; closes field :END-ELEMENT
+;; other events include:
+;; :start-document :end-document
+;; :characters 
+;; :comment
+;; :dtd
+;; :processing-instruction ???
+
+(klacks:peek *example*)         ;; Return thing and value - returns `values'
+(klacks:peek-value *example*)   ;; Reutrn value of thing
+(klacks:peek-next *example*)    ;; Advances point
+
+(klacks:current-uri *example*)
+(klacks:current-xml-base *example*) ;; Returns path to file or source 
+
+(klacks:current-lname *example*)
+(klacks:current-qname *example*)
+
+(klacks:list-attributes *example*)      ;; when looking at a thing with attributes return them (a struct)
+(klacks:get-attribute *example* "name") ;; accessor for the lname/quname
+
+(klacks:current-characters *example*)
+
+
+(klacks:find-element *example* "field")
+
+(klacks:expect *example* :characters)
+
+;; get char-data
+(multiple-value-bind (chr-p str) (klacks:peek *example*) (list chr-p str))
+
+;; ist it start-element
+(eq (klacks:peek *example*) :start-element)
+
+(klacks:consume-characters *example*)
+
+
+;; cxml-20100901-git/klacks/klacks.lisp
+;; (defun klacks:consume-characters (source)
+;;   (with-output-to-string (s)
+;;     (while (eq (klacks:peek source) :characters)
+;;       (write-string (klacks:current-characters source) s)
+;;       (klacks:consume source))))
+
+
+klacks:skip
+
+klacks:serialize-source
+ --> klacks:serialize-event
+
+SAX:START-ELEMENT is a generic so specialize on it:
+
+(klacks:serialize-element *example* (cxml-xmls:make-xmls-builder))
+
+
+;;(cxml:parse-file *eg-fl* (cxml-dom:make-dom-builder)))
+;; (cxml:parse *eg-fl* (cxml:make-source-xmls :make-xmls-builder :include-namespace-uri nil)))
+;; <field name="display">Chalon (Louis)</field>
+
+
+
+(dom:document-element *example*)
+;=> #<RUNE-DOM::ELEMENT mysqldump {C210059}>
+
+(dom:tag-name (dom:document-element *example*))
+;=> "mysqldump"
+
+
+(dom:child-nodes (dom:document-element *example*))
+;=> #(#<RUNE-DOM::TEXT {C210341}> #<RUNE-DOM::ELEMENT row {C2103D9}> #<RUNE-DOM::TEXT {C2D2991}>)
+
+;; cxml:parse-file (INPUT HANDLER &REST ARGS &KEY VALIDATE DTD ROOT
+;;                  ENTITY-RESOLVER DISALLOW-INTERNAL-SUBSET RECODE
+;;                  PATHNAME)
+
+(defclass artist-info-handler (sax:default-handler)
+  ((artist-field :accessor artist-field
+                 :initform nil)))
+
+(defmethod sax:end-document ((handler artist-info-handler))
+           (artist-field handler))
+
+ 
+(defmethod sax:start-element ((handler artist-info-handler)
+                                uri local-name qname attributes)
+  (flet ((collect (element attribute)
+           (when (string-equal element local-name)
+             (let ((attribute
+                    (find attribute attributes
+                          ;;:key #'cxml:attribute-local-name
+                          :key #'sax:attribute-local-name  
+                          ;; :key #'attribute-local-name
+                          :test #'string-equal)))
+               (when attribute
+                 (push 
+                  (sax:attribute-value attribute)
+                  ;;(cxml:attribute-value attribute)
+                  (artist-field handler)))))))
+    (collect "field" "name")))
+    ;(collect "img" "src")))
+
+
+;;; (cxml:attribute  qname value
+;;; (cxml:make-string-sink  args)
+;; (cxml:make-character-stream-sink  
+;; (sax:start-document  handler
+;; (sax:start-element 
+(let ((sink (cxml:make-string-sink)))
+
+
+;;; ==============================
+
+(defclass artist-info-handler (sax:default-handler)
+  ((artist-field :accessor artist-field
+                 :initform nil)))
+
+
+(defun sax-artist-info (url)
+  ;;(chtml:parse *eg-fl* ;(drakma:http-request url :want-stream t) ;; <- INPUT
+  (cxml:parse url ;; *eg-fl* ;; url                              ;; <- INPUT
+              (make-instance 'artist-info-handler) ;; <- HANDLER
+              ))
+
+;;; ==============================
+(defun artist-show-bio (file field-val-list)
+  (let ((document (cxml:parse file (cxml-stp:make-builder))))
+    (stp:do-recursively (a document)
+                        (dolist (sai field-val-list)
+                          (when (and (typep a 'stp:element)
+                                     (equal (stp:local-name a) "field")
+                                     (equal (stp:attribute-value a "name") sai))
+                          (format t "~%~A: ~A" 
+                                  sai
+                                  (stp:attribute-value a "name")))))))
+stp:value 
+(artist-show-bio *eg-fl* (sax-artist-info *eg-fl*))
+
+(dolist (sai (sax-artist-info *eg-fl*))
+
+  stp:element
+
+sax:SAX-PARSER
+
+Bénarès
+;;; ==============================
+
+;; (and (equal (klacks:current-lname *example*) "field")
+;; (member nm
+;;         '("date_edt""online" "naf_creator" "user_name" "also_people"
+;;           "also_author" "print_default_pic" "default_pic" "ULAN_control"
+;;           "date_edit" "gender" "special_note" "cancel_num"
+;;           "auction_records" "ads_for" "appeared_in" "found_in" "used_for"
+;;           "LOC_control" "death_location" "birth_location" "date_died"
+;;           "date_born" "lifespan" "role" "nationality" "display" "id"
+;;           "bio") :test #'equal)
+;;)
+
+;; *eg-fl*
+(setf *example* (cxml:make-source *eg-fl*))
+(setf *example* *eg-fl* )
+
+;;; ==============================
+
+define types
+)))
+
+date   <- refs.year
+        refs.year_year should be converted to a cons (Y1 . Y2)
+bool   <- refs.color, refs.onlinen, refs.av_repro, refs.done
+
+string <- 
+
+integer <- refs.
+
+float  <- refs.width 
+          refs.height 
+          refs.price
+
+
+;; ;;; ==============================
+;; ;;; :CHANGESET 1
+;; ;;; :CREATED <Timestamp: #{2010-09-03T19:53:24-04:00Z}#{10355} - by MON>
+;; (defun dbc-field-str-cons (field-str)
+;;   "Return a three element list according to the `type-of' FIELD-STR.
+;; List has the form:
+;; \(<SEQ-LENGTH> \(<TYPE-SPEC>\) FIELD-STR\)"
+;;   (typecase field-str  
+;;     ((or string array)
+;;      (list (length field-str) (type-of field-str) field-str)) 
+;;     ((and number (not float) (not ratio))
+;;      (list 0 (type-of field-str) field-str))
+;;     (cons
+;;      (list (length field-str) (list (type-of field-str)) field-str))
+;;     (t             (list 0 (list (type-of field-str)) field-str))))
+    
+;; (format t "(= (car field-str-cons) 1) =>~A" 
+;;         (= (car field-str-cons) 1))
+;; (format t "(aref (third field-str-cons) 0) =>~A" 
+;;             (eq (aref (third field-str-cons) 0) #\x))
+;; (eq (caadr field-str-cons) 'simple-array)
+
+
+;; ;;; ==============================
+;; ;;; :CHANGESET 1
+;; ;;; :CREATED <Timestamp: #{2010-09-03T18:28:58-04:00Z}#{10355} - by MON>
+;; (defun dbc-field-cln-x  (field-str-cons)
+;;   "Return nil when FIELD-STR-CONS is a string of length 1 with char value #\\x.
+;; Else return value of FIELD-STR-CONS. 
+;; This is a short-circuiting procedure, e.g. it does nothing on success.
+;; :NOTE the \"x\" was used ind dbc sql fields to designate a null value.
+;; :EXAMPLE
+;; \(dbc-field-cln-x \"x\"\)
+;; \(dbc-field-cln-x 'sym\)
+;; \(dbc-field-cln-x #\(x y z\)\)
+;; \(dbc-field-cln-x '\(x y z\)\)"
+;;   (let ((chk (dbc-field-str-cons field-str-cons)))
+;;     (unless (and (= (car chk) 1)
+;;                  (eq (caadr chk) 'simple-array)
+;;                  (eq (aref (caddr chk) 0) #\x))
+;;       field-str-cons)))
+
+
+;;; ==============================
+;;; :CHANGESET 1
+;;; :CREATED <Timestamp: #{2010-09-02T20:38:51-04:00Z}#{10354} - by MON>
+;;; :WORKING
+;; (defun dbc-table-field-parse (sql-xml-dmp)
+;;   "SQL-XML-DMP is a pathname or variable suiable for use with 
+;; `cxml:make-source' e.g. #p\"<PATHNAME>\" "
+;;   (klacks:with-open-source
+;;    (s (cxml:make-source sql-xml-dmp)) ;;sql-xml-dmp)) ;;*eg-fl*
+;;    (let ((ous (make-string-output-stream))
+;;          ous-out)
+;;      (loop
+;;       for key = (klacks:peek s)
+;;       while key
+;;       do
+;;       (case key
+;;         (:start-element
+;;          (let ((nm (klacks:get-attribute s "name")))
+;;            (cond ((equal (klacks:current-lname s) "row")
+;;                   (format ous "~%~A" 
+;;                           (make-string 68 :initial-element #\;)))
+;;                  ((equal (klacks:current-lname s) "field")
+;;                   ;; convert "ugly_sym" -> ":UGLY-SYM"
+;;                   (format ous "~%:~A " (string-upcase (substitute  #\- #\_  nm))))
+;;                  (t nil))))
+;;         (:end-element
+;;          (when (equal (klacks:current-lname s) "field")
+;;            (format ous "~%")))
+;;         (:characters 
+;;          (let ((kcc (klacks:current-characters s)))
+;;            (cond ((eq (length (string-trim '(#\Page #\Space #\Tab #\Newline #\Return) kcc)) 0)
+;;                   (format ous " "))
+;;                  (t (format ous "~A" kcc)))))
+;;         (:end-document
+;;          (format ous "~%~A~%;;; EOF" 
+;;                  (make-string 68 :initial-element #\;))))
+;;         (klacks:consume s))
+;;      (unwind-protect
+;;          (setf ous-out (get-output-stream-string ous))
+;;        (close ous))
+;;      ous-out)))
+
+
+;;; ==============================
+)))
+
+;; (dbc-table-field-parse *eg-fl*)
+
+(klacks:with-open-source
+ (s (cxml:make-source *eg-fl*)) ;; #p"example.xml"))
+ (loop
+  for key = (klacks:peek s)
+  while key
+  do
+  (case key
+    (:start-element
+     (format t "~A {" (klacks:current-qname s)))
+    (:end-element
+     (format t "}")))
+  (klacks:consume s)))
+
+
+
+
+(every #'(lambda (c) 
+           
+(string-trim '(#\Page #\Space #\Tab #\Newline #\Return)
+"
+	     ")
+
+(klacks:find-event *example* :start-element)
+
+(let ((source *example*)
+      (key :end-element))
+      (multiple-value-bind (this a b c)
+      (klacks:peek source)
+    (cond
+     ((null this)
+      (return nil))
+     ((eq this key)
+      (return (values this a b c))))
+      (klacks:consume source)))
+
+(klacks:map-attributes #'identity *example*)
+
+;;; ==============================
+;;; EOF

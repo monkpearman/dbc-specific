@@ -10,12 +10,37 @@
 	    ;; Import relevant stuff from :mon
 	    ;; (:import-from #:mon {...} )
 	    (:export
-	     ;; {... <symbols-to-export> ...}
 	     ;;
-	     ;; dbc-class.lisp
-	     
+           ;; dbc-xml-sql-parse.lisp
 	     ;;
+	     #:dbc-field-str-cons
+	     #:dbc-field-cln-x
+	     #:dbc-table-field-parse ;; klacks:peek klacks:with-open-source
 	     
+	     #:split-naf-used-fors
+	     ;;
+	     ;;
+	     ;; klacks:get-attribute klacks:current-lname
+	     ;; klacks:current-characters klacks:consume
+	     ;; cxml:make-source
+	     ;;
+	     ;; psa-parse-table.lisp
+	     ;;
+	     ;; #:*psa-fl*
+	     ;; #:*tr-gthr*
+	     ;; #:*curr-src*
+	     ;; #:html2xhtml
+	     ;; #:psa-handler
+	     ;; #:filter-tr
+	     ;; #:p/totals-strip-commas
+	     ;; ;;#:p/totals-strip-whitespace
+	     ;; #:p/sax-integer-string       ;; `string-to-number'
+	     ;; #:p/sax-float-string   ;; `string-to-number'
+	     ;; #:p/sax-extract-tr
+	     ;;
+	     ;;
+	     ;; dbc-class.lisp
+	     ;;
 	     ;; 
 	    )
 

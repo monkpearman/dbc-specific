@@ -37,17 +37,24 @@
 	       ;; :alexandria
 	       ;; :cl-ppcre
 	       ;; :local-time
-	       ;; :local-time
 	       ;; :cl-fad
 	       ;; :drakma
+	       :mon
 	       )
+
   ;; :perform (load-op :after (op mon) (pushnew :mon *features*))
   :serial t    
   :components 
   ((:file "packages")
-   ;; (:file "dbc-macs")
-   ;; (:file "dbc-class")
-   ;; 
+   (:module "dbc-parse"
+	    :components
+	    (:file "dbc-xml-sql-parse")
+	    (:file "psa-parse-table.lisp")
+	    )
+   ;; (:module "dbc-classes"
+   ;; 	    :components ((:file "dbc-classes")
+   ;; 			 (:file "dbc-class-artist-convert.lisp")
+   ;; 			 (:file "dbc-tgm.lisp")))
    ))
 
 ;; (defmethod asdf:perform :after
