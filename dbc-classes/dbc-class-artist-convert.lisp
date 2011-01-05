@@ -40,6 +40,14 @@
 
 (in-package #:dbc)
 
+;; (defclass parse-artist-info ()
+;;   ())
+
+
+
+;;; ==============================
+;;; :TODO methods  
+
 ;;; ==============================
 ;; + name="online"
 ;;;  Type="tinyint(3) unsigned"
@@ -49,7 +57,9 @@
 ;; + name="bio"
 ;;   Type="int(10) unsigned"
 ;;         213
+;;   - may appear as `0' 
 ;;   - xrefs to documentation
+;;   - ignore `0' values
 
 ;;; ==============================
 ;; + name="id"
@@ -80,11 +90,8 @@
 ;; 
 ;;  (mapcar #'(lambda (x) (string-trim " " x)) (split-string-on-chars "Poinçon de la Blanchardière, Pierre | " "|"))
 ;;  
-;; use naf-split-used-fors
+;; use `dbc:dbc-split-used-fors'
 ;;    (mapcar #'(lambda (x) (string-trim " " x)) (split-string-on-chars "Poinçon de la Blanchardière, Pierre | " "|"))
-
-
-  
 
 ;;; ==============================
 ;; + name="gender"
@@ -114,6 +121,9 @@
 ;;   -- NNNN-?
 ;;   -- ?-NNNN
 ;;   -- 1889-[?]
+;;   -- 1864-[19??]
+;;   -- 1848-1934
+
 
 ;;; ==============================
 ;; + name="date_born"
@@ -129,13 +139,14 @@
 ;;; ==============================
 ;; + name="birth_location"
 ;;   Type="varchar(255)"
+;;        Prestinone, Val Vigezz - Italy
 ;;   - May be empty
 
 ;;; ==============================
 ;; + name="death_location"
 ;;   Type="varchar(255)"
 ;;         0
-
+;;   - when this is `0' ignore it
 
 ;;; ==============================
 ;; + name="role"
@@ -152,12 +163,16 @@
 ;; + name="LOC_control"
 ;;   Type="varchar(15)"
 ;;         83227261
+;;         2001022515
+;;   - May appear as `n 83043434`, `nb2007017414`
+;; :USE `dbc:dbc-split-loc-pre'
+;; 
 
 ;;; ==============================
 ;; + name="ULAN_control"
 ;;   Type="varchar(15)"
 ;;         500007646
-;;   - May appear as `0'
+;;   - May appear as `0' in which case ignore
 
 
 ;;; ==============================
@@ -172,6 +187,12 @@
 ;; + name="found_in"
 ;;   Type="text"
 ;;         Boccaccio, G. The Decameron of Giovanni Boccaccio, 1923?
+;;   - Split into separate records on "\n---\n" "\n----\n"
+;;   -- URLS splitter: (URL `<....>')
+;;                      @http://catalogue.bnf.fr/ark:/12148/cb12201408w/PUBLIC
+;;
+;;   -- Timestamp splitter:  #{2009-09-17T11:52:42-04:00Z}#{09384}
+;;
 
 ;;; ==============================
 ;; + name="auction_records"
@@ -181,7 +202,8 @@
 ;;   Type="tinyint(3) unsigned"
 ;;         0
 ;; This is currently either 1/0 these should be converted to t/nil
-;;
+;; "also_author">1
+
 
 ;;; ==============================
 ;; + name="also_people"
@@ -208,8 +230,9 @@
 ;; + name="date_edt"
 ;;   Type="timestamp"
 ;;         2008-08-03 04:00:00
-;;
-;;   should be normalized where name=date_edt is the canonical form.
+
+;;   - replace these "0000-00-00 00:00:00"
+;;   - should be normalized where name=date_edt is the canonical form.
 ;;   - this should be frobbed for further parsing with features of `local-time'
 
 ;;; ==============================
@@ -219,6 +242,8 @@
 ;;; ==============================
 ;; + name="naf_creator" xsi:nil="true"
 ;;   Type="varchar(32)"
+;;   constance | stan
+
 
 ;;; ==============================
 ;; + name="cancel_num"

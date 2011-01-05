@@ -5,7 +5,7 @@
 (setf *default-pathname-defaults* #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/mon-systems/")
 
 
-(defpackage #:scratch (:use :cl :mon))
+(defpackage #:scratch (:use :cl :mon :dbc))
 
 (in-package :scratch)
 
@@ -26,32 +26,50 @@
 
 ;; (fad:file-exists-p 
 ;;  #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/notes-versioned/scratch-xml-for-parse/example-artist-table.out")
-(defparameter *sql-art-tbl* (make-pathname :directory '(:absolute
-							"home" 
-							"sp" 
-							"HG-Repos"
-							"CL-repo-HG" 
-							"CL-MON-CODE"
-							"dbc-specific"
-							"notes-versioned"
-							"scratch-xml-for-parse")
-					   :name "example-artist-table"
-					   :type "out"))
+(defparameter *sql-art-tbl-file* 
+  (merge-pathnames  
+   (make-pathname :name "example-artist-table" :type "out")
+   #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/notes-versioned/scratch-xml-for-parse/"))
 
-(dbc-table-field-parse (make-pathname :directory '(:relative "notes")
-				      :name "example"
-				      :type "out"))
+(defparameter *sql-art-tbl*  (and (fad:file-exists-p *sql-art-tbl-file*)
+				  (cxml:make-source *sql-art-tbl-file*))
 
 
-(defparameter *sql-dump* (cxml:make-source (make-pathname :directory '(:relative "notes")
-				      :name "example"
-				      :type "out")))
+(defparameter *sql-dump-file*
+  (fad:file-exists-p
+    (merge-pathnames 
+     (make-pathname :name "example" :type "out")
+     #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/notes-versioned/scratch-xml-for-parse/")))
 
+(defparameter *sql-dump*
+  (and *sql-dump-file* (cxml:make-source *sql-dump-file*)))
+
+
+(cxml:parse-file *sql-dump-file* (cxml-xmls:make-xmls-builder))
+
+(defparameter *sql-simp* 
+  (cxml:make-source "<field name=\"name 1\" name2=\"name 2\">10</field>"))
+
+;; fields that need 0/1 to be converted to t/nil
+
+"online"
+"also_author"
+"also_people"
+
+
+;; fields which need 0 ignored
+;; "ULAN_control"
+;; "death_location"
+;; "bio"
+;; "cancel_num"
+
+;;; ============================== 
 ;; :KEYS
 :start-element
 :end-element
 :characters
 :end-document
+:comment
 
 <row>
 
@@ -80,8 +98,22 @@ klacks:source
 (klacks:list-attributes *sql-dump*)
 (car (klacks:list-attributes *sql-dump*))
 
+(klacks:serialize-source *sql-simp* (cxml-xmls:make-xmls-builder))
+(klacks:serialize-source *sql-dump* (cxml-xmls:make-xmls-builder))
 
+(loop :while (klacks:consume *tt-xsi*) :finall (klacks:close-source *tt-xsi*))
 
+(multiple-value-list (klacks:peek *sql-dump*))
+
+(multiple-value-bind (chk-ky) 
+    (klacks:peek *sql-dump*)
+  (eql chk-ky :characters))
+
+(multiple-value-list  (klacks:peek *sql-dump*))
+
+(slot-value *sql-dump* 'klacks:current-attributes)
+
+(klacks:current-qname)
 (let ((source *sql-dump*)
       )
   (dolist (a (slot-value source 'current-attributes))
@@ -105,49 +137,53 @@ cxml:MAKE-STRING-SINK
 (loop :while (and (klacks:peek *sql-dump*)
 		  (klacks:consume  *sql-dump*)))
 
-;; this form will map over the attributes of the current :START-EVENT
-(defun 
-(let ((gthr '()))
-  (klacks:map-attributes #'(lambda (&rest x)
-			     (push x gthr)) *sql-dump*)
-  (loop 
-     :for x in gthr
-     :for v =  '(:namespace :lname :qname :attribute :att-local-p)
-     :collecting (nreverse (pairlis v x))))
-  
-cxml:make-source
-
-
-
-(loop 
-   :for x in '((NIL "name" "name" "name1" T) (NIL "name2" "name2" "name2" T))
-   :for v =  '(:namespace :lname :qname :attribute :att-local-p)
-   :collecting (pairlis v x))
-(map (((NIL "name" "name" "name1" T) (NIL "name2" "name2" "name2" T))
-
-
-
-(pairlis '(:namespace :lname :qname :attribute :att-local-p)
-         '(NIL "name" "name" "id" T))
-
-
-(nreverse (pairlis 
-           '(:namespace :lname :qname :attribute :att-local-p)
-           '(NIL "name" "name" "id" T)))
-
-(defclass parse-artist-info ()
-  ())
-
 (make-instance field-attributes)
+
 
 ;; SB-PCL::ARGS = ((NIL "name" "name" "id" T))
 
 
+Painter, Illustrator.
+
+(dbc-split-roles "Artist, Illustrator, Painter, Designer, Fashion Illustrator, Fashion Designer.")
+
 ;;; ==============================
-;;; :TODO methods
 
 
+;;; ==============================
 
+(defun dbc-table-field-parse (sql-xml-dmp)
+  (declare (pathname  sql-xml-dmp))
+  (let ((ous (make-string-output-stream))
+	(ous-out '()))
+     (unwind-protect
+	  (klacks:with-open-source (s (cxml:make-source sql-xml-dmp))
+	    (loop
+	       :for key = (klacks:peek s)
+	       :while key
+	       :do (case key
+		     (:start-element
+		      (let ((nm (klacks:get-attribute s "name")))
+			(cond ((equal (klacks:current-lname s) "row")
+			       (format ous "~%~A" 
+				       (make-string 68 :initial-element #\;)))
+			      ((equal (klacks:current-lname s) "field")
+			       ;; convert "ugly_sym" -> ":UGLY-SYM"
+			       (format ous "~%:~A " (string-upcase (substitute  #\- #\_  nm))))
+			      (t nil))))
+		     (:end-element
+		      (when (equal (klacks:current-lname s) "field")
+			(format ous "~%")))
+		     (:characters 
+		      (let ((kcc (klacks:current-characters s)))
+			(or (and (eql (mon::string-trim-whitespace kcc) 0)
+				 (format ous " "))
+			    (format ous "~A" kcc))))
+		     (:end-document
+		      (format ous "~%~A~%;;; EOF"  (make-string 68 :initial-element #\;))))
+	       (klacks:consume s))
+	    (prog1 (setf ous-out (get-output-stream-string ous))
+		(close ous))))))
 
 ;;; ==============================
 ;;; EOF

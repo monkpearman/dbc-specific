@@ -4,11 +4,12 @@
 
 
 (defpackage #:dbc (:use #:common-lisp )
-	    
+	    ;;
 	    ;; (:nicknames #:dbc-sys)
-
+	    ;;
 	    ;; Import relevant stuff from :mon
 	    ;; (:import-from #:mon {...} )
+	    ;; 
 	    (:export
 	     ;;
            ;; dbc-xml-sql-parse.lisp
@@ -16,8 +17,11 @@
 	     #:dbc-field-str-cons
 	     #:dbc-field-cln-x
 	     #:dbc-table-field-parse ;; klacks:peek klacks:with-open-source
-	     
-	     #:split-naf-used-fors
+	     #:dbc-field-attribs-parse	     
+	     #:dbc-split-used-fors
+	     #:dbc-split-roles
+	     #:dbc-split-loc-pre
+	     #:dbc-split-lifespan
 	     ;;
 	     ;;
 	     ;; klacks:get-attribute klacks:current-lname

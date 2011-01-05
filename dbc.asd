@@ -6,7 +6,6 @@
 
 ;; (push #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/" asdf:*central-registry*)
 
-
 ;; :NOTE While debugging per file:
 ;; (declaim (optimize (debug 3)))
 ;; Or, (sb-ext:restrict-compiler-policy 'debug 3)
@@ -30,27 +29,27 @@
   ;; :license 
   :description "DBC agglomerated."
   :version "1.0.0"
-  :depends-on (;; :cxml
-	       ;; :closure-html
-	       ;; :split-sequence
+  :depends-on (:cxml
+	       :closure-html
+	       :split-sequence
+	       :mon
 	       ;; :arnesi ;; arnesi:parse-float
 	       ;; :alexandria
 	       ;; :cl-ppcre
 	       ;; :local-time
 	       ;; :cl-fad
 	       ;; :drakma
-	       :mon
 	       )
 
   ;; :perform (load-op :after (op mon) (pushnew :mon *features*))
   :serial t    
   :components 
-  ((:file "packages")
+  ((:file "packageg")
    (:module "dbc-parse"
 	    :components
-	    (:file "dbc-xml-sql-parse")
-	    (:file "psa-parse-table.lisp")
-	    )
+	    ((:file "dbc-xml-sql-parse")
+	    ;; (:file "psa-parse-table.lisp")
+	    ))
    ;; (:module "dbc-classes"
    ;; 	    :components ((:file "dbc-classes")
    ;; 			 (:file "dbc-class-artist-convert.lisp")
