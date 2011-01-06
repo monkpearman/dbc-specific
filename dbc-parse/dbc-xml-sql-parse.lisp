@@ -73,24 +73,40 @@
   (declare (pathname  sql-xml-dmp))
   (let ((ous (make-string-output-stream))
 	(ous-out '()))
+    ;; :TODO In the first case where `key` is :START-ELEMENT we should check
+    ;; whether a set of desired attributes are present in the
+    ;; `klacks:current-lname's and if so (and if we _know_ the next event is a
+    ;; :CHARACTERS event then we can go ahead an read it too.  This will allow
+    ;; the fall through check for :CHARACTERS events outside of the relevant
+    ;; :START-ELEMENT events. If we do this, then we should maybe use one of the
+    ;; `klacks:expect-*' routines to signal a recoverable error.  But, we will
+    ;; still need to keep the existing behaviour around the :CHARACTERS case
+    ;; below b/c we can't be _sure_ that some :CHARACTERS event won't happen.
      (unwind-protect
 	  (klacks:with-open-source (s (cxml:make-source sql-xml-dmp))
 	    (loop
 	       :for key = (klacks:peek s)
 	       :while key
+	       
 	       :do (case key
 		     (:start-element
 		      (let ((nm (klacks:get-attribute s "name")))
 			(cond ((equal (klacks:current-lname s) "row")
 			       (format ous "~%~A" 
 				       (make-string 68 :initial-element #\;)))
+			      ;; :NOTE What about when there are multiple attributes?
+			      ;; This doesn't happen in the current case but it
+			      ;; will if we ever try to generalize around this function.
 			      ((equal (klacks:current-lname s) "field")
-			       ;; convert "ugly_sym" -> ":UGLY-SYM"
+			       ;; Convert "ugly_sym" -> ":UGLY-SYM"
 			       (format ous "~%:~A " (string-upcase (substitute  #\- #\_  nm))))
 			      (t nil))))
 		     (:end-element
 		      (when (equal (klacks:current-lname s) "field")
 			(format ous "~%")))
+		     ;; Ideally these are only :CHARACTERS events related to
+		     ;; formatting of the XML docs body, e.g. events occuring
+		     ;; outside of any :START-ELEMENT/:END-ELEMENT event blocks.
 		     (:characters 
 		      (let ((kcc (klacks:current-characters s)))
 			(or (and (eql (mon::string-trim-whitespace kcc) 0)
@@ -122,16 +138,33 @@
 	      ))
 	 gthr)))
 
-;; :NOTE Should work for Appeared-in as well.
 (defun dbc-split-used-fors (used-for-string)
-  ;; (declare (type (or null simple-string) used-for-string))
+  ;; Is there a reason why we shouldn't be using this instead:
+  ;; (declare (type (or null simple-string) used-for-string)) 
   (declare (type simple-string used-for-string))
   (loop 
      :with split = (mon:split-string-on-chars used-for-string "|")
      :for x in split 
      :for y = (string-trim " " x)
      :unless (eql (length y) 0) 
-     :collect y))
+     :collect y     
+     ;; Do we need to check for #\Newline #\Return? 
+     ;; If so maybe use `mon:string-trim-whitespace' here as well.
+     ;; :collect (mon:string-trim-whitespace y)
+     ;;
+     ))
+
+;; :NOTE This can be adapted if/when we ever split the found_in field to work on
+;; the for "^Appeared-in:" fields there as well.
+(defun dbc-split-appeared-in (appeared-in-string)
+  (declare (type (or null simple-string) appeared-in-string))
+  (unless (null appeared-in-string)
+    (loop 
+       :with split = (mon:split-string-on-chars appeared-in-string "|")
+       :for x in split 
+       :for y = (string-trim " " x)
+       :unless (or (null y) (eql (length y) 0)) 
+       :collect (mon:string-trim-whitespace y))))
 
 (defun dbc-split-roles (role-string)
   (declare (type (or null simple-string) role-string))
@@ -147,7 +180,6 @@
 (defun dbc-split-loc-pre (loc-string)
   (declare (type (or null simple-string) loc-string))
   (string-left-trim "n " (string-right-trim  " " loc-string)))
-
 
 (defun dbc-split-lifespan (lifespan-str)
   (declare (type (or null simple-string) lifespan-str))
@@ -177,6 +209,116 @@
 		     (setf frob (cons (car frob)
 				      (apply #'concatenate 'string (cdr frob)))))
 		frob)))))
+
+(defun dbc-split-lifespan-string-int-pairs (lifespan-str-pair)
+  (declare (type (cons (or null simple-string)
+		       (or null simple-string))
+		 lifespan-str-pair))
+  (let ((cons-str lifespan-str-pair)
+	(chk-digit (cons nil nil)))
+    (and (stringp (car cons-str))
+	 (stringp (cdr cons-str))
+	 (setf chk-digit
+	       (list (or (and 
+			  (loop for chars across (car cons-str) always (digit-char-p chars))
+			  (not (and (loop for chars across (car cons-str) always (char= #\0 chars))
+				    (setf (car chk-digit) #\?))))
+			 (car chk-digit)
+			 (and (loop for chars across (car cons-str) thereis (char= #\? chars))
+			      #\?)
+			 (car chk-digit))
+		     (or (and (loop for chars across (cdr cons-str) always (digit-char-p chars))
+			      (not (and (loop for chars across (cdr cons-str) always (char= #\0 chars))
+					(setf (cdr chk-digit) #\?))))
+			 (cdr chk-digit)
+			 (and (loop for chars across (cdr cons-str) thereis (char= #\? chars))
+			      #\?)
+			 (cdr chk-digit)))))
+    (and (car chk-digit)
+	 (not (characterp (car chk-digit)))
+	 ;; By now there shouldn't be any way we are parsing a negative string, e.g. "-1843"
+	 (setf (car chk-digit) (multiple-value-list (parse-integer (car cons-str))))
+	 ;; And, we're only looking for entities in existing beyond the Middle Ages :)
+	 (eql (cadar chk-digit) 4)
+	 (setf (car chk-digit) (caar chk-digit)))
+    (and (cadr chk-digit)
+	 (not (characterp (cadr chk-digit)))
+	 (setf (cadr chk-digit) (multiple-value-list (parse-integer (cdr cons-str))))
+	 (eql (cadadr chk-digit) 4)
+	 (setf (cadr chk-digit) (caadr chk-digit)))
+    (setf chk-digit (cons (car chk-digit) (cadr chk-digit)))
+    (or (and (integerp (car chk-digit)) (integerp (cdr chk-digit)))
+	;; `chk-digit` is a cons of the form: (#\? . #\?)
+	(and (characterp (car chk-digit)) (characterp (cdr chk-digit))
+	     (setf chk-digit (cons nil nil)))
+	;; ==============================
+	;;
+	;; This would imply a cons of the form (0 . 0) 
+	;; Currently this can't actually happen because we're checking
+	;; above that the length of `parse-integer' is 4 and didn't parse "0*"
+	;; Is it possible that this could change?
+	;;
+	;; (not (and (zerop (car chk-digit)) (zerop (cdr chk-digit))))
+	;;
+	;; ==============================
+	;;
+	;; This would imply a cons of the form: (1843 . 1843) 
+	;; The question is should/can it ever happen? 
+	;; It certainly can if we extend should ever extend this
+	;; function to other entity types which can terminate in the
+	;; same year as its creation. 
+	;; In which case, how to reason around which the birth date
+	;; which is the death date?
+	;; One option is to let it pass and allow reporting the
+	;; lifespan as 0, e.g. with (- 1843 1843).
+	;; Likewise, we could prevent erroneous inferences by
+	;; returning (0 . 0) instead of (YYYY . YYYY)
+	;;
+	;; (not (= (car chk-digit) (cdr chk-digit)))
+	;;
+	;; ==============================
+	;;
+	;; This would imply a cons of the form: (1900 . 1843)
+	;; IOW, the birthdate is after the deathdate.
+	;; What to do? error?
+	;;
+	;; (not (>= (cdr chk-digit) (car chk-digit))))
+	;;
+	;; ============================== 
+	;;
+	;; When this branch is true we have a cons of the form: (1843 . #\?)
+	;; We know that the string passed from `dbc-split-lifespan' was "1843-?"
+	;; or equivalent and that birth date is known So, we return the deathdate
+	;; as -1843 e.g. the lifespan will appear as: (1843 . -1844)
+	;; This means inferences about an entities lifespan will always return an
+	;; integer less than -1 e.g.  (- -1844 1843) => -3687 
+	;; whereas (- 1900 1843) => 57 which is a valid lifespan.
+	(and  (integerp (car chk-digit))
+	      ;; Don't bother checking if its #\? 
+	      ;; (and (characterp (cdr chk-digit)) (char= #\? (cdr chk-digit))
+	      (characterp (cdr chk-digit))
+	      (setf (cdr chk-digit) (lognot (car chk-digit))))
+	;;
+	;; When this branch is true we have a cons of the form: (#\? . 1900)
+	;; We make it a cons of the form: (-1 . 1900)
+	;; 
+	;;  This allows a few nice to checks later on:
+	;; (and (integerp (car '(-1 . 1900)))
+	;; 	    (eql (signum (car '(-1 . 1900))) (car '(-1 . 1900)))
+	;; 	    (not (< (- (cdr '(-1 . 1900)) (car '(-1 . 1900)))
+	;; 		    (cdr '(-1 . 1900)))))
+	;; IOW:
+	;;
+	;; (and (integerp -1)
+	;; 	    (eql (signum -1) -1) 
+	;; 	    (not (< (- 1900 -1) 1900)))
+	;;
+	(and (integerp (cdr chk-digit)) (characterp (car chk-digit))
+	     (setf (car chk-digit) -1))
+	;; Whatever is left... should be: (nil)
+	)
+    (setf cons-str (list cons-str chk-digit))
+  ))
 
 
 
@@ -243,21 +385,40 @@ If so retrun value is a list of elements each the form:~%
 Return value is a list of strings.~%~@
 :EXAMPLE~%~@
  \(dbc-split-used-fors \"Poinçon de la Blanchardière, Pierre | La Blanchardiere, Pierre Poin çon de | \"\)~%~@
-:SEE-ALSO `mon:split-string-on-chars'.~%►►►"))
+:SEE-ALSO `mon:split-string-on-chars', `dbc-split-roles',
+`dbc-split-appeared-in', `dbc-split-loc-pre', `dbc-split-lifespan'.~%►►►"))
+
+(setf (documentation 'dbc-split-appeared-in 'function)
+      #.(format nil
+"Split APPEARED-IN-STRING on \"|\" barriers.~%~@
+Return value is a list of strings.~%~@
+Like `dbc-split-used-fors', but strip leading and trailing occurences of
+`mon:*whitespace-chars*', e.g. #\\Newline #\\Return et al.~%~@
+Signal an error if APPEARED-IN-STRING is neither `null' nor `simple-string-p'.~%~@
+:EXAMPLE~%~@
+ \(dbc-split-appeared-in \"Le Rire | Le Sourire | Femina | Printed Salesmanship |\"\)~%~@
+ \(dbc-split-appeared-in \"    Le Rire | Le Sourire |~% Femina | La Rampe \"\)~%~@
+ \(dbc-split-appeared-in \"\"\)~%~@
+ \(dbc-split-appeared-in nil\)~%~@
+:SEE-ALSO `dbc-split-roles', `dbc-split-used-fors', `dbc-split-loc-pre',
+`dbc-split-lifespan'`mon:split-string-on-chars', `mon:string-trim-whitespace',
+`mon:*whitespace-chars*'.~%►►►"))
 
 (setf (documentation 'dbc-split-roles 'function)
       #.(format nil
-"Split ROLE-STRING on \",\" barriers. Stripp leading/trailing whitespace and \".\"~%~@
+"Split ROLE-STRING on \",\" barriers.~%~@
+Strip leading/trailing whitespace and \".\". Capitalize all roles.~%~@
 Return value is a list of strings.~%~@
 Signal an error if ROLE-STRING is neither `null' nor `simple-string-p'.~%~@
 :EXAMPLE~%~@
  \(dbc-split-roles
   \"Artist, Illustrator,  Designer, Fashion Illustrator, Fashion Designer.\"\)~%~@
  \(dbc-split-roles
-  \"Artist, Illustrator,  Designer, Fashion Illustrator, Fashion Designer .\"\)~%~@
+  \"Artist, Illustrator,  designer, Fashion illustrator, Fashion Designer .\"\)~%~@
  \(dbc-split-roles \"Artist, \"\)~%~@
  \(dbc-split-roles nil\)~%~@
-:SEE-ALSO `dbc-split-used-fors'.~%►►►"))
+:SEE-ALSO `dbc-split-used-fors', `dbc-split-appeared-in', `dbc-split-loc-pre',
+`dbc-split-lifespan'.~%►►►"))
 
 (setf (documentation 'dbc-split-loc-pre 'function)
       #.(format nil
@@ -266,7 +427,8 @@ Signal an error if ROLE-STRING is neither `null' nor `simple-string-p'.~%~@
  \(dbc-split-loc-pre \"n 83043434\"\)~%~@
  \(dbc-split-loc-pre \"83043434\"\)~%~@
 :NOTE This is actually a bad idea as the \"n 95121069\" is canonical...~%~@
-:SEE-ALSO `<XREF>'.~%►►►"))
+:SEE-ALSO `dbc-split-roles', `dbc-split-used-fors', `dbc-split-appeared-in',
+`dbc-split-lifespan'.~%►►►"))
 
 (setf (documentation 'dbc-split-lifespan 'function)
       #.(format nil
@@ -290,6 +452,70 @@ Return value has the form:~%
  \(dbc-split-lifespan \"1848 -- ??\"\)~%~@
  \(dbc-split-lifespan \" 1848-?? \"\)~%~@
 :NOTE Doesn't catch the #\\[ #\\] chars in \"[?]-1900\" or \"1900-[?]\".~%~@
+:SEE-ALSO `dbc-split-roles', `dbc-split-used-fors', `dbc-split-appeared-in',
+`dbc-split-loc-pre'.~%►►►"))
+
+(setf (documentation 'dbc-split-lifespan-string-int-pairs 'function)
+      #.(format nil
+"Attempt integer extraction from cons strings returned by `dbc-split-lifespan'.~%~@
+LIFESPAN-STR-PAIR is a consed pair with the value of each conscell satisfying
+either null or `simple-stringp', signal an error if not.~%~@
+First cons pair of return value is LIFESPAN-STR-PAIR second cons pair is its
+interpolated parsed value.  Return value is a list of conses with the form:~% 
+ \(<LIFESPAN-STR-PAIR>    <PARSED-VALUE>\)~% 
+And should match one of the following patterns:~%
+ \(\(\"<YYYY>\" . \"<YYYY>\"\)  \(YYYY   . YYYY\)\)~%
+ \(\(\"<YYYY>\" . \"?\"\)       \(YYYY-1 . \(lognot YYYY-1\)\)\)~%
+ \(\(\"<?+>\"   . \"<YYYY>\"\)  \(-1     . YYYY\)\)~%
+ \(\(nil\)                  \(nil\)\)~%
+ \(\(\"<YYYY>\"\)             \(nil\)\)~%
+ \(\(\"<?+>\"   . \"<?+>\"\)    \(nil)\)~%
+ \(\(\"<0+>\"   . \"<?+>\"\)    \(nil\)\)~%
+ \(\(\"<?+>\"   . \"<0+>\"\)    \(nil\)\)~%
+ \(\(\"<0+>\"   . \"<YYYY>\"\)  \(-1      . YYYY\)\)~%
+ \(\(\"<YYYY>\" . \"<0+>\"\)    \(YYYY-1  . \(lognot YYYY-1\)\)~%
+:EXAMPLE~%~@
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"\"\)\)~%~@
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"1843-1943\"\)\)~%~@
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"1843-\"\)\)~%~@
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"-1843\"\)\)~%~@
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"1843-??\"\)\)~%~@
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"??-1843\"\)\)~%~@
+;; Following cases are pathological and reasonably acounted for:~% 
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"??-??\"\)\)~%~@
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"00-??\"\)\)~%~@
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"00-00\"\)\)~%~@
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"00-1843\"\)\)~%~@
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"1843-00\"\)\)~%~@
+ ;; Following case is pathological and without a clear solution:~%
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"1843\"\)\)~%~@
+When the car of LIFESPAN-STR-PAIR is a string indicating the beginning of
+lifespan is an \"unknown\", the car of the second cons of return value is -1.
+The intent in using a negative is to allow later callers the oppurtunity to
+optimize their checks. For example:~%
+ \(let* \(\(both-lifespan \(dbc-split-lifespan-string-int-pairs
+			\(dbc-split-lifespan \"??-1843\"\)\)\)
+	\(hd-ls \(caadr both-lifespan\)\)
+	\(tl-ls \(cdadr both-lifespan\)\)\)
+   \(and \(integerp hd-ls\)
+	\(eql \(signum hd-ls\) hd-ls\)
+	\(not \(< \(- tl-ls hd-ls\) tl-ls\)\)\)\)~%~@
+Likewise, when the cdr of LIFESPAN-STR-PAIR is a string indicating the end of
+lifespan is \"unknown\" the cdr of the second cons of return value is `lognot'
+the integer value in the car cell. IOW, if there is a known beginning of
+lifespan i.e. the string passed from `dbc-split-lifespan' was \"1843-?\", we
+don't want inferences about an entities lifespan to return misleadingly. To
+guard against that by making it difficult for forms such as:~% 
+ \(- <END-LIFESPAN> <BEG-LIFESPAN>\)~%~@
+to return a value that is `plusp'. For example:~% 
+ \(let* \(\(both-lifespan \(dbc-split-lifespan-string-int-pairs
+		       \(dbc-split-lifespan \"1843-??\"\)\)\)
+       \(hd-ls \(caadr both-lifespan\)\)
+       \(tl-ls \(cdadr both-lifespan\)\)\)
+  \(and \(integerp tl-ls\)
+       \(eql \(signum \(- tl-ls hd-ls\)\) -1\)\)\)~%~@
+When coupled with the string values in the cons at the first elt in return value
+we can be reasonably sure that are integer parses are correct.~%~@
 :SEE-ALSO `<XREF>'.~%►►►"))
 
 ;;; ==============================

@@ -18,10 +18,11 @@
 	     #:dbc-field-cln-x
 	     #:dbc-table-field-parse ;; klacks:peek klacks:with-open-source
 	     #:dbc-field-attribs-parse	     
+	     #:dbc-split-lifespan
 	     #:dbc-split-used-fors
 	     #:dbc-split-roles
+	     #:dbc-split-appeared-in
 	     #:dbc-split-loc-pre
-	     #:dbc-split-lifespan
 	     ;;
 	     ;;
 	     ;; klacks:get-attribute klacks:current-lname
