@@ -2,8 +2,14 @@
 ;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-sql-lisp-convert-notes/dbc-klacks-parse-to-class-notes-2011-01-03.lisp
 ;;; ==============================
 
-(setf *default-pathname-defaults* #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/mon-systems/")
+;;; ==============================
+;; "/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/"
+;; notes-versioned/dbc-xml-parse-notes/dbc-klacks-parse-to-class-notes-2011-01-03.lisp
+;;
+;; (setf *default-pathname-defaults* #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/mon-systems/")
+;;; ==============================
 
+;; (in-package :dbc)
 
 (defpackage #:scratch (:use :cl :mon :dbc))
 
@@ -184,164 +190,48 @@ Painter, Illustrator.
 	    (prog1 (setf ous-out (get-output-stream-string ous))
 		(close ous))))))
 
-(every #'ascii-char-p "1843")
-
-"1843"
-#\0 #\1 #\2 #\3
-
-(string-to-number "1843")
-
-
-
-(dbc-split-lifespan "1843-1943")
-=> ("1843" . "1943")
-
-
-
-
-(defun tt-dbc-split-lifespan-string-int-pairs (lifespan-str-pair)
-  (declare (type (cons (or null simple-string)
-		     (or null simple-string))
-	       lifespan-str-pair))
-  (let ((cons-str lifespan-str-pair) ;; (dbc-split-lifespan lifespan-str-pair)) 
-	(chk-digit (cons nil nil)))
-    (and (stringp (car cons-str))
-	 (stringp (cdr cons-str))
-	 (setf chk-digit
-	       (list (or (and (loop for chars across (car cons-str) always (digit-char-p chars))
-			      (not (loop for chars across (car cons-str) always (char= #\0 chars))))
-			 (and (loop for chars across (car cons-str) thereis (char= #\? chars))
-			      #\?))
-		     (or (and (loop for chars across (cdr cons-str) always (digit-char-p chars))
-			      (not (loop for chars across (cdr cons-str) always (char= #\0 chars))))
-			 (and (loop for chars across (cdr cons-str) thereis (char= #\? chars))
-			      #\?)))))
-    (and (car chk-digit)
-	 (not (characterp (car chk-digit)))
-	 ;; There shouldn't be anyway we are parsing a negative string, e.g. "-1843"
-	 (setf (car chk-digit) (multiple-value-list (parse-integer (car cons-str))))
-	 ;; And, we're only looking for entities in existing beyond the Middle Ages :)
-	 (eql (cadar chk-digit) 4)
-	 (setf (car chk-digit) (caar chk-digit)))
-    (and (cadr chk-digit)
-	 (not (characterp (cadr chk-digit)))
-	 (setf (cadr chk-digit) (multiple-value-list (parse-integer (cdr cons-str))))
-	 (eql (cadadr chk-digit) 4)
-	 (setf (cadr chk-digit) (caadr chk-digit)))
-    (setf chk-digit (cons (car chk-digit) (cadr chk-digit)))
-    (setf chk-digit
-	  (or (and (integerp (car chk-digit))
-		   (integerp (cdr chk-digit))
-		   chk-digit)
-              ;; ==============================
-              ;; (not (and (zerop (car chk-digit)) (zerop (cdr chk-digit))))               
-              ;;
-              ;; This would imply a cons of the form (0 . 0) 
-              ;; Currently this prob. can't actually happen because we're checking
-              ;; above that the length of parse-integer is 4 and didn't parse "0*"
-              ;; Is it possible that this could change?
-              ;;
-              ;; ==============================
-              ;; 
-              ;; (not (= (car chk-digit) (cdr chk-digit)))
-              ;;
-              ;; This would imply a cons of the form: (1843 . 1843) 
-              ;; The question is should/can it ever happen? 
-              ;; It certainly can if we extend should ever extend this
-              ;; function to other entity types which can terminate in the
-              ;; same year as its creation. 
-              ;; In which case, how to reason around which the birth date
-              ;; which is the death date?
-              ;; One option is to let it pass and allow reporting the
-              ;; lifespan as 0, e.g. with (- 1843 1843).
-              ;; Likewise, we could prevent erroneous inferences by
-              ;; returning (0 . 0) instead of (YYYY . YYYY)
-              ;;
-              ;; ==============================
-              ;;
-              ;; (and (not (minusp (cdr chk-digit))) 
-              ;;      (not (minusp (car chk-digit)))
-              ;;    (not (>= (cdr chk-digit) (car chk-digit))))
-              ;;
-              ;; This would imply a cons of the form: (1900 . 1843)
-              ;; IOW, the birthdate is after the deathdate.
-              ;; What to do? error?
-              ;; ============================== 
-	      ;;
-	      (and 
-	       ;; When this branch is true we have a cons of the form: (1843 . #\?)
-	       ;; We know that the string passed from `dbc-split-lifespan' was "1843-?"
-	       ;; or equivalent and that birth date is known So, we return the deathdate
-	       ;; as -1843 e.g. the lifespan will appear as: (1843 . -1844)
-	       ;; This means inferences about an entities lifespan will always return an
-	       ;; integer less than -1 e.g.  (- -1844 1843) => -3687 
-	       ;; whereas (- 1900 1843) => 57 which is a valid lifespan.
-	       (integerp (car chk-digit))
-	       ;; Don't bother checking if its #\?
-	       ;; (and (characterp (cdr chk-digit)) (char= #\? (cdr chk-digit))
-	       (characterp (cdr chk-digit))
-	       (setf (cdr chk-digit) (lognot (car chk-digit)))
-	       chk-digit)
-	      
-	      (and 
-	       ;; When this branch is true we have a cons of the form: (#\? . 1900)
-	       ;; We make it a cons of the form: (-1 . 1900)
-	       ;; 
-	       ;;  This allows a few nice to checks later on:
-	       ;; (and (integerp (car '(-1 . 1900)))
-	       ;; 	    (eql (signum (car '(-1 . 1900))) (car '(-1 . 1900)))
-	       ;; 	    (not (< (- (cdr '(-1 . 1900)) (car '(-1 . 1900)))
-	       ;; 		    (cdr '(-1 . 1900)))))
-	       ;; IOW:
-	       ;;
-	       ;; (and (integerp -1)
-	       ;; 	    (eql (signum -1) -1) 
-	       ;; 	    (not (< (- 1900 -1) 1900)))
-	       ;;
-	       (integerp (cdr chk-digit))
-	       (characterp (car chk-digit))
-	       (progn (setf (car chk-digit) -1)
-		      chk-digit))
-	      chk-digit))
-    (setf cons-str (list cons-str chk-digit))))
-
-
-
-
 
 
 ;;; ==============================
-(dbc-split-lifespan-string-int-pairs (dbc-split-lifespan ""))
-((NIL) (NIL))
-
-(dbc-split-lifespan-string-int-pairs (dbc-split-lifespan "1843-1943"))
-(("1843" . "1943") (1843 . 1943))
-
-(dbc-split-lifespan-string-int-pairs (dbc-split-lifespan "1843-"))
-(("1843" . "?") (1843 . -1844))
-
-(dbc-split-lifespan-string-int-pairs (dbc-split-lifespan "-1843"))
-(("?" . "1843") (-1 . 1843))
+renamed in mon
 
 
+"Unknown", "No Signature" "Anonymous"
+*package*
+string-upcase
 
-       (setf (car chk-digit) (caar chk-digit))
-(typep  1843 (integer 1844))
-(assert 1843  (integer 1844))
-)
-  chk-digit)
+year_year
+(search-forward-regexp "\"year_year\">[0-9]\{4}" nil t)
 
-(caadr '(1843 (1943 4)))
-
-
-(caar '((1843 4) T))
-
-(caar '((1843 4) T))
-     
+;;; ==============================
 
 
+	      ;; (:bit-13 :byte 2 :2^ 12 :bit-weight 4096 :bit-oct #o10000 :bit-hex #x1000 :max-int 8191 :max-uint (-4096 . 4095))
+; in: DEFUN DBC-SPLIT-LIFESPAN-STRING-INT-PAIRS
+;     (LOGNOT (CAR DBC::CHK-DIGIT))
+; 
+; note: forced to do full call
+;       unable to do inline fixnum arithmetic (cost 1) because:
+;       The first argument is a INTEGER, not a FIXNUM.
+;       The result is a (VALUES INTEGER &OPTIONAL), not a (VALUES FIXNUM &REST T).
+;       unable to do inline (signed-byte 32) arithmetic (cost 2) because:
+;       The first argument is a INTEGER, not a (SIGNED-BYTE 32).
+;       The result is a (VALUES INTEGER &OPTIONAL), not a (VALUES
+;                                                          (SIGNED-BYTE 32) &REST
+;                                                          T).
+	      ;; (locally  
 
-  (
+(let ((bubba 2999))
+  (declare (type (integer 1000 3000) bubba))
+  bubba)
+
+(let ((bubba 2999))
+  (declare ((mod 12) bubba))
+  bubba)
+
+
+
+
 
 ;;; ==============================
 ;;; EOF

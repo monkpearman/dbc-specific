@@ -44,7 +44,7 @@
 ;;; :CHANGESET 1
 ;;; :CREATED <Timestamp: #{2010-09-02T20:38:51-04:00Z}#{10354} - by MON>
 ;;; 
-;; (mon::dbc-table-field-parse 
+;; (dbc-table-field-parse 
 ;;  (make-pathname :directory '(:absolute 
 ;; 			     "home" 
 ;; 			     "sp" 
@@ -63,7 +63,7 @@
 ;;
 ;; (with-temp-file (s (make-pathname :directory '(:relative "notes")
 ;; 				  :name "example-dump"))
-;;   (princ (mon::dbc-table-field-parse (make-pathname :directory '(:relative "notes")
+;;   (princ (dbc-table-field-parse (make-pathname :directory '(:relative "notes")
 ;; 						    :name "example"
 ;; 						    :type "out"))
 ;;    s))
@@ -143,7 +143,7 @@
   ;; (declare (type (or null simple-string) used-for-string)) 
   (declare (type simple-string used-for-string))
   (loop 
-     :with split = (mon:split-string-on-chars used-for-string "|")
+     :with split = (mon:string-split-on-chars used-for-string "|")
      :for x in split 
      :for y = (string-trim " " x)
      :unless (eql (length y) 0) 
@@ -160,7 +160,7 @@
   (declare (type (or null simple-string) appeared-in-string))
   (unless (null appeared-in-string)
     (loop 
-       :with split = (mon:split-string-on-chars appeared-in-string "|")
+       :with split = (mon:string-split-on-chars appeared-in-string "|")
        :for x in split 
        :for y = (string-trim " " x)
        :unless (or (null y) (eql (length y) 0)) 
@@ -170,7 +170,7 @@
   (declare (type (or null simple-string) role-string))
   (unless (null role-string)
     (loop 
-       :with split = (mon:split-string-on-chars role-string ",")
+       :with split = (mon:string-split-on-chars role-string ",")
        :for x in split 
        :for y = (string-left-trim " " (string-right-trim  " ." x))
        :unless (eql (length y) 0)
@@ -194,7 +194,7 @@
 	  (setf frob (mon:concat frob "?")))
 	(or (and (> (length frob) 0)
 		 (setf frob (mapcar #'mon:string-trim-whitespace 
-				    (mon:split-string-on-chars frob "-"))))	    
+				    (mon:string-split-on-chars frob "-"))))	    
 	    (setf frob (cons nil nil)))
 	(if (and (null (car frob))
 		 (null (cdr frob)))
@@ -213,113 +213,95 @@
 (defun dbc-split-lifespan-string-int-pairs (lifespan-str-pair)
   (declare (type (cons (or null simple-string)
 		       (or null simple-string))
-		 lifespan-str-pair))
+		 lifespan-str-pair)
+	   ;; (optimize (speed 3) (safety 1) (space 0) (compilation-speed 0))
+	   )
   (let ((cons-str lifespan-str-pair)
 	(chk-digit (cons nil nil)))
     (and (stringp (car cons-str))
 	 (stringp (cdr cons-str))
 	 (setf chk-digit
-	       (list (or (and 
-			  (loop for chars across (car cons-str) always (digit-char-p chars))
-			  (not (and (loop for chars across (car cons-str) always (char= #\0 chars))
-				    (setf (car chk-digit) #\?))))
+	       (list (or 
+                      (and (loop for chars across (the simple-string (car cons-str)) always (digit-char-p chars))
+                           (not (or (and (loop for chars across (the simple-string (car cons-str)) always (char= #\0 chars))
+                                         (setf (car chk-digit) #\?))
+                                    (and (not (eql (length (car cons-str)) 4))
+                                         (setf (car chk-digit) #\?)))))
 			 (car chk-digit)
-			 (and (loop for chars across (car cons-str) thereis (char= #\? chars))
+			 (and (loop for chars across (the simple-string (car cons-str)) thereis (char= #\? chars))
 			      #\?)
 			 (car chk-digit))
-		     (or (and (loop for chars across (cdr cons-str) always (digit-char-p chars))
-			      (not (and (loop for chars across (cdr cons-str) always (char= #\0 chars))
-					(setf (cdr chk-digit) #\?))))
-			 (cdr chk-digit)
-			 (and (loop for chars across (cdr cons-str) thereis (char= #\? chars))
-			      #\?)
-			 (cdr chk-digit)))))
+		     (or 
+                      (and (loop for chars across (the simple-string (cdr cons-str)) always (digit-char-p chars))
+                           (not (or (and (loop for chars across (the simple-string (cdr cons-str)) always (char= #\0 chars))
+                                         (setf (cdr chk-digit) #\?))
+                                    (and (not (eql (length (cdr cons-str)) 4))
+                                         (setf (cdr chk-digit) #\?)))))
+                      (cdr chk-digit)
+                      (and (loop for chars across (the simple-string (cdr cons-str)) thereis (char= #\? chars))
+                           #\?)
+                      (cdr chk-digit)))))
+
     (and (car chk-digit)
-	 (not (characterp (car chk-digit)))
+         (not (characterp (car chk-digit)))
 	 ;; By now there shouldn't be any way we are parsing a negative string, e.g. "-1843"
 	 (setf (car chk-digit) (multiple-value-list (parse-integer (car cons-str))))
 	 ;; And, we're only looking for entities in existing beyond the Middle Ages :)
-	 (eql (cadar chk-digit) 4)
+	 ;; This check prob. isn't required any longer now that we are looking for only strings of length 4
+         (eql (cadar chk-digit) 4)             
 	 (setf (car chk-digit) (caar chk-digit)))
+
     (and (cadr chk-digit)
 	 (not (characterp (cadr chk-digit)))
 	 (setf (cadr chk-digit) (multiple-value-list (parse-integer (cdr cons-str))))
 	 (eql (cadadr chk-digit) 4)
 	 (setf (cadr chk-digit) (caadr chk-digit)))
+    
     (setf chk-digit (cons (car chk-digit) (cadr chk-digit)))
-    (or (and (integerp (car chk-digit)) (integerp (cdr chk-digit)))
+    
+    (or (and (integerp (car chk-digit)) 
+	     (integerp (cdr chk-digit)))
 	;; `chk-digit` is a cons of the form: (#\? . #\?)
-	(and (characterp (car chk-digit)) (characterp (cdr chk-digit))
+	(and (characterp (car chk-digit)) 
+	     (characterp (cdr chk-digit))
 	     (setf chk-digit (cons nil nil)))
-	;; ==============================
-	;;
-	;; This would imply a cons of the form (0 . 0) 
-	;; Currently this can't actually happen because we're checking
-	;; above that the length of `parse-integer' is 4 and didn't parse "0*"
-	;; Is it possible that this could change?
-	;;
-	;; (not (and (zerop (car chk-digit)) (zerop (cdr chk-digit))))
-	;;
-	;; ==============================
-	;;
-	;; This would imply a cons of the form: (1843 . 1843) 
-	;; The question is should/can it ever happen? 
-	;; It certainly can if we extend should ever extend this
-	;; function to other entity types which can terminate in the
-	;; same year as its creation. 
-	;; In which case, how to reason around which the birth date
-	;; which is the death date?
-	;; One option is to let it pass and allow reporting the
-	;; lifespan as 0, e.g. with (- 1843 1843).
-	;; Likewise, we could prevent erroneous inferences by
-	;; returning (0 . 0) instead of (YYYY . YYYY)
-	;;
-	;; (not (= (car chk-digit) (cdr chk-digit)))
-	;;
-	;; ==============================
-	;;
-	;; This would imply a cons of the form: (1900 . 1843)
-	;; IOW, the birthdate is after the deathdate.
-	;; What to do? error?
-	;;
-	;; (not (>= (cdr chk-digit) (car chk-digit))))
-	;;
-	;; ============================== 
-	;;
-	;; When this branch is true we have a cons of the form: (1843 . #\?)
-	;; We know that the string passed from `dbc-split-lifespan' was "1843-?"
-	;; or equivalent and that birth date is known So, we return the deathdate
-	;; as -1843 e.g. the lifespan will appear as: (1843 . -1844)
-	;; This means inferences about an entities lifespan will always return an
-	;; integer less than -1 e.g.  (- -1844 1843) => -3687 
-	;; whereas (- 1900 1843) => 57 which is a valid lifespan.
 	(and  (integerp (car chk-digit))
 	      ;; Don't bother checking if its #\? 
 	      ;; (and (characterp (cdr chk-digit)) (char= #\? (cdr chk-digit))
 	      (characterp (cdr chk-digit))
 	      (setf (cdr chk-digit) (lognot (car chk-digit))))
-	;;
-	;; When this branch is true we have a cons of the form: (#\? . 1900)
-	;; We make it a cons of the form: (-1 . 1900)
-	;; 
-	;;  This allows a few nice to checks later on:
-	;; (and (integerp (car '(-1 . 1900)))
-	;; 	    (eql (signum (car '(-1 . 1900))) (car '(-1 . 1900)))
-	;; 	    (not (< (- (cdr '(-1 . 1900)) (car '(-1 . 1900)))
-	;; 		    (cdr '(-1 . 1900)))))
-	;; IOW:
-	;;
-	;; (and (integerp -1)
-	;; 	    (eql (signum -1) -1) 
-	;; 	    (not (< (- 1900 -1) 1900)))
-	;;
 	(and (integerp (cdr chk-digit)) (characterp (car chk-digit))
 	     (setf (car chk-digit) -1))
-	;; Whatever is left... should be: (nil)
+	;; Whatever is left... should be: (nil)-ish :)
 	)
-    (setf cons-str (list cons-str chk-digit))
-  ))
+    (setf cons-str (list cons-str chk-digit))))
 
+
+;;; ==============================
+(defun dbc-split-comma-field (seo-desc-str)
+  (unless (mon:string-null-or-empty-p seo-desc-str)
+    (loop 
+       :with split-comma = (mon:string-split-on-chars (the simple-string seo-desc-str) ",")
+       :for x in split-comma
+       :for y = (mon:string-trim-whitespace (the simple-string x))
+       :unless (or (eql (length y) 0) (notany #'alpha-char-p y))
+       :collect y)))
+
+(defun dbc-convert-1-0-x-field (convert-field)
+  (or 
+   (and (mon:string-null-or-empty-p convert-field)
+	(let (rtn)
+	  (declare (type simple-string convert-field))
+	  (setf rtn
+		(and (eql (length convert-field) 1)
+		     (case (char convert-field 0)
+		       ((#\0 #\x) nil)
+		       (#\1 t)
+		       (t convert-field))))))
+   convert-field))
+
+
+;; (defun dbc-split-ref-multi-naf (naf-multi-ref)
 
 
 ;;; ==============================
@@ -385,7 +367,7 @@ If so retrun value is a list of elements each the form:~%
 Return value is a list of strings.~%~@
 :EXAMPLE~%~@
  \(dbc-split-used-fors \"Poinçon de la Blanchardière, Pierre | La Blanchardiere, Pierre Poin çon de | \"\)~%~@
-:SEE-ALSO `mon:split-string-on-chars', `dbc-split-roles',
+:SEE-ALSO `mon:string-split-on-chars', `dbc-split-roles',
 `dbc-split-appeared-in', `dbc-split-loc-pre', `dbc-split-lifespan'.~%►►►"))
 
 (setf (documentation 'dbc-split-appeared-in 'function)
@@ -401,7 +383,7 @@ Signal an error if APPEARED-IN-STRING is neither `null' nor `simple-string-p'.~%
  \(dbc-split-appeared-in \"\"\)~%~@
  \(dbc-split-appeared-in nil\)~%~@
 :SEE-ALSO `dbc-split-roles', `dbc-split-used-fors', `dbc-split-loc-pre',
-`dbc-split-lifespan'`mon:split-string-on-chars', `mon:string-trim-whitespace',
+`dbc-split-lifespan'`mon:string-split-on-chars', `mon:string-trim-whitespace',
 `mon:*whitespace-chars*'.~%►►►"))
 
 (setf (documentation 'dbc-split-roles 'function)
@@ -455,6 +437,7 @@ Return value has the form:~%
 :SEE-ALSO `dbc-split-roles', `dbc-split-used-fors', `dbc-split-appeared-in',
 `dbc-split-loc-pre'.~%►►►"))
 
+
 (setf (documentation 'dbc-split-lifespan-string-int-pairs 'function)
       #.(format nil
 "Attempt integer extraction from cons strings returned by `dbc-split-lifespan'.~%~@
@@ -472,8 +455,8 @@ And should match one of the following patterns:~%
  \(\(\"<?+>\"   . \"<?+>\"\)    \(nil)\)~%
  \(\(\"<0+>\"   . \"<?+>\"\)    \(nil\)\)~%
  \(\(\"<?+>\"   . \"<0+>\"\)    \(nil\)\)~%
- \(\(\"<0+>\"   . \"<YYYY>\"\)  \(-1      . YYYY\)\)~%
- \(\(\"<YYYY>\" . \"<0+>\"\)    \(YYYY-1  . \(lognot YYYY-1\)\)~%
+ \(\(\"<0+>\"   . \"<YYYY>\"\)  \(-1     . YYYY\)\)~%
+ \(\(\"<YYYY>\" . \"<0+>\"\)    \(YYYY-1 . \(lognot YYYY-1\)\)~%
 :EXAMPLE~%~@
  \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"\"\)\)~%~@
  \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"1843-1943\"\)\)~%~@
@@ -481,43 +464,79 @@ And should match one of the following patterns:~%
  \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"-1843\"\)\)~%~@
  \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"1843-??\"\)\)~%~@
  \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"??-1843\"\)\)~%~@
-;; Following cases are pathological and reasonably acounted for:~% 
+;; Following cases are pathological and reasonably acounted for:~%~@
  \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"??-??\"\)\)~%~@
  \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"00-??\"\)\)~%~@
  \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"00-00\"\)\)~%~@
  \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"00-1843\"\)\)~%~@
  \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"1843-00\"\)\)~%~@
- ;; Following case is pathological and without a clear solution:~%
+;; Following case is pathological and without a clear solution:~%~@
  \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"1843\"\)\)~%~@
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"3001-88\"\)\)~%~@
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"88-3001\"\)\)~%~@
 When the car of LIFESPAN-STR-PAIR is a string indicating the beginning of
 lifespan is an \"unknown\", the car of the second cons of return value is -1.
 The intent in using a negative is to allow later callers the oppurtunity to
 optimize their checks. For example:~%
- \(let* \(\(both-lifespan \(dbc-split-lifespan-string-int-pairs
-			\(dbc-split-lifespan \"??-1843\"\)\)\)
-	\(hd-ls \(caadr both-lifespan\)\)
-	\(tl-ls \(cdadr both-lifespan\)\)\)
-   \(and \(integerp hd-ls\)
-	\(eql \(signum hd-ls\) hd-ls\)
-	\(not \(< \(- tl-ls hd-ls\) tl-ls\)\)\)\)~%~@
-Likewise, when the cdr of LIFESPAN-STR-PAIR is a string indicating the end of
-lifespan is \"unknown\" the cdr of the second cons of return value is `lognot'
-the integer value in the car cell. IOW, if there is a known beginning of
-lifespan i.e. the string passed from `dbc-split-lifespan' was \"1843-?\", we
-don't want inferences about an entities lifespan to return misleadingly. To
-guard against that by making it difficult for forms such as:~% 
- \(- <END-LIFESPAN> <BEG-LIFESPAN>\)~%~@
-to return a value that is `plusp'. For example:~% 
- \(let* \(\(both-lifespan \(dbc-split-lifespan-string-int-pairs
-		       \(dbc-split-lifespan \"1843-??\"\)\)\)
+\(let* \(\(w-str \"1843-??\"\)
+       \(both-lifespan \(dbc-split-lifespan-string-int-pairs
+		       \(dbc-split-lifespan w-str\)\)\)
        \(hd-ls \(caadr both-lifespan\)\)
        \(tl-ls \(cdadr both-lifespan\)\)\)
   \(and \(integerp tl-ls\)
-       \(eql \(signum \(- tl-ls hd-ls\)\) -1\)\)\)~%~@
+       \(eql \(signum \(- tl-ls hd-ls\)\) -1\)\)
+  \(format nil \(mon:concat
+	       \"~~2%With string: ~~20T~~S~~%Split to: ~~20T~~S~~%Beg-of-Life: \"
+	       \"~~20T~~S~~%End-of-Life: ~~20T~~S~~%Calcuation: ~~20t~~S ;=> ~~S~~%\")
+    	  w-str both-lifespan hd-ls tl-ls
+    	  \(list '- tl-ls hd-ls\) \(- tl-ls hd-ls\)\)\)~%~@
+Likewise, when the cdr of LIFESPAN-STR-PAIR is a string indicating the end of
+lifespan is \"unknown\", the cdr of the second cons of return value is `lognot'
+the integer value in the car cell. IOW, if there is a known beginning of
+lifespan i.e. the string passed from `dbc-split-lifespan' was \"1843-?\", we
+don't want inferences about an entities lifespan to return misleadingly and
+guard against that by making it difficult for forms such as:~% 
+ \(- <END-LIFESPAN> <BEG-LIFESPAN>\)~%~@
+to return a value that is `plusp'. For example:~% 
+\(let* \(\(both-lifespan \(dbc-split-lifespan-string-int-pairs
+		       \(dbc-split-lifespan \"1843-??\"\)\)\)
+      \(hd-ls \(caadr both-lifespan\)\)
+      \(tl-ls \(cdadr both-lifespan\)\)\)
+ \(and \(integerp tl-ls\)
+      \(eql \(signum \(- tl-ls hd-ls\)\) -1\)\)\)~%~@
 When coupled with the string values in the cons at the first elt in return value
-we can be reasonably sure that are integer parses are correct.~%~@
+we can be reasonably sure that the integer parse is correct.~%~@
 :SEE-ALSO `<XREF>'.~%►►►"))
 
+(setf (documentation 'dbc-split-comma-field 'function)
+      #.(format nil
+"Split a comma delitied dbc field.~%~@
+Intended for use with SEO and \"keyword\" like fields in the `refs` table.~%~@
+:EXAMPLE~%~@
+ \(dbc-split-comma-field  \"air, plane, airplane, Biplane,, aircraft, expo, , dirigible,\"\)~%~@
+:NOTE Do not call unless reasonably sure sure that there are never free commas
+used in a non-delimiting position, e.g. the following string will not parse correctly:~% 
+ \"Havell (Robert, Jr.), Havell (Robert, Sr.), Havell Lithograph, \"~%~@
+:SEE-ALSO `<XREF>'.~%►►►"))
+
+(setf (documentation 'dbc-convert-1-0-x-field 'function)
+      #.(format nil
+"Attept to CONVERT-FIELD to a boolean.~%~@
+CONVERT-FIELD is a dbc field string value of length one satisfying 
+`mon:simple-string-or-null'.~%~@
+When CONVERT-FIELD is \"1\" return t.
+When CONVERT-FIELD is \"x\" or \"0\" return nil.
+When CONVERT-FIELD is some other character or \(> \(length CONVERT-FIELD\) 1\)
+return CONVERT-FIELD.~%~@
+:EXAMPLE~%~@
+ \(dbc-convert-1-0-x-field \"0\"\)~%~@
+ \(dbc-convert-1-0-x-field \"x\"\)~%~@
+ \(dbc-convert-1-0-x-field \"1\"\)~%~@
+ \(dbc-convert-1-0-x-field \"8\"\)~%~@
+ \(dbc-convert-1-0-x-field \"Return Me\"\)~%~@
+:SEE-ALSO `<XREF>'.~%►►►"))
+
+
 ;;; ==============================
 ;;; EOF
 

@@ -23,6 +23,9 @@
 	     #:dbc-split-roles
 	     #:dbc-split-appeared-in
 	     #:dbc-split-loc-pre
+	     #:dbc-split-lifespan-string-int-pairs
+	     #:dbc-split-comma-field
+	     #:dbc-convert-1-0-x-field
 	     ;;
 	     ;;
 	     ;; klacks:get-attribute klacks:current-lname

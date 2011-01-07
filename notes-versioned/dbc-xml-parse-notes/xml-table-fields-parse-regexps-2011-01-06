@@ -1,0 +1,25 @@
+;;; :FILE-CREATED <Timestamp: #{2011-01-06T13:43:51-05:00Z}#{11014} - by MON>
+;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/notes-versioned/dbc-xml-parse-notes/xml-table-fields-parse-regexps-2011-01-06
+;;; ==============================
+
+(defun mon-dbc-xml-parse-clean-fields (start end)
+  (interactive "r")
+  (unwind-protect
+      (progn 
+        (narrow-to-region start end)
+        (dolist (r `(("^\\([[:blank:]]+\\)?<field Field=" . ,(concat "\n" (mon-comment-divider t) "\n;; :FIELD "))
+                     ;; (make-string (+ (length ":FIELD ") 2) 32) =>  "         "
+                     (" Type="    . "\n;;\n;;         :TYPE ")
+                     (" Null="    . "\n;;         :NULL-P ")
+                     (" Key="     . "\n;;         :KEY ")
+                     (" Default=" . "\n;;         :DEFAULT ")
+                     (" Extra="   . "\n;;         :EXTRA ")
+                     (" />$"      . "\n;;\n;; :EXAMPLE-VALUES \n;;\n;;\n;; -\n;;")))
+          (mon-g2be -1)
+          (while (search-forward-regexp (car r) nil t)
+            (replace-match (cdr r)))))
+    (widen)))
+
+
+;;; ==============================
+;;; EOF

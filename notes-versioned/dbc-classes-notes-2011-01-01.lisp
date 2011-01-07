@@ -98,6 +98,9 @@
 
 ;; :DBC-NAF-SUBCLASSES
 ;;
+;; :NOTE Some of these should have a :directory slot b/c we can be reasonably
+;;       certain that they have .naf files
+;;
 ;;    naf-entity ;; :NOTE, conceptually all of these are type-of entity.
 ;;    naf-person (dbc-naf)
 ;;    naf-artist (dbc-naf) ;; Or, is this a subtype-of naf-person?

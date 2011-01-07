@@ -44,7 +44,7 @@
   ;; :perform (load-op :after (op mon) (pushnew :mon *features*))
   :serial t    
   :components 
-  ((:file "packageg")
+  ((:file "package")
    (:module "dbc-parse"
 	    :components
 	    ((:file "dbc-xml-sql-parse")

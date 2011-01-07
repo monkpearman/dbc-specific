@@ -278,7 +278,21 @@ u&amp;#776
 
 <field name="used_for">Hiroshige I | Utagawa, Hiroshige | Ichiryu&amp;#772;sai Hiroshige | Ryu&amp;#772;sai | Ichiyu&amp;#772;sai Hiroshige | Ichiyo Hiroshige | Khirosige&amp;#775; | Ando&amp;#772;, Tokitaro&amp;#772; | Ando&amp;#772;, Tokutaro&amp;#772; | Ando&amp;#772;, Ju&amp;#772;emon | Yu&amp;#772;sai | Ando&amp;#772;, | Tokubei | Utakawa, Hiroshig | Utagawa, Hiroshige | And&amp;#333; Hiroshige | And&amp;#333;, Hiroshige | Hiroshige, And&amp;#333; | Utugawa Hiroshige | Ando | Hiroshige | Ichiy&amp;#363;sai | Ichiry&amp;#363;sai | Tokutar&amp;#333; | Tokubei</field>
 
+;; ;;; ==============================
+;; If we should ever use the SQL csv dumps what to do about \r\n? e.g.
+;;  "\r\n"
+;; and:
+;; "
+;; "
+
+;; - convert to #\Newline#\Return ?
+;; - convert to "~%"?
+;; (code-char 13) => #\Return
+;; (code-char 10) => #\Newline
+
 ;;; ==============================
+;; dump-refs-xml has the field year_year
+;; (search-forward-regexp "\"year_year\">\[0-9]\\{4,4\\}" nil t)
 
 ;;; ==============================
 ;;; EOF

@@ -3,6 +3,12 @@
 ;;; ==============================
 
 
+(in-package #:dbc)
+
+;; (defclass artist-parse ()
+;;   ())
+
+
 ;;; ==============================
 ;; :ARTIST-INFOS
 ;; <table_structure name="artist_infos">
@@ -38,13 +44,6 @@
 ;;; ==============================
 
 
-(in-package #:dbc)
-
-;; (defclass parse-artist-info ()
-;;   ())
-
-
-
 ;;; ==============================
 ;;; :TODO methods  
 
@@ -146,16 +145,14 @@
 ;;      -NNNN
 ;;      NNNN-
 ;; 
-;;     Use `dbc-split-lifespan' function is written. 
-;;     :Note does not check for or frob strings of type "[.*+]".
-;; 
-;;     - Should call a follow up function when both car/cdr of
+;;     -  Call a follow up function when both car/cdr of
 ;;       `dbc-split-lifespan' are each "NNNN" and normalize these to integer
 ;;       values. This will allow numeric lifespan range functions, e.g. 
 ;;        (- <DEATH> <BIRTH>) 
 ;;       Or, queries of type: "Find all artists born between 1850 and 1900"
 ;;       The latter is important for any indexing scheme using btrees (i.e. Rucksack)
-
+;;     - Use `dbc-split-lifespan'/`dbc-split-lifespan-string-int-pairs' functions are written. 
+;;       :Note does not check replace for `#\[' `#\]' for frob strings of type "[?+]".
 
 ;;; ==============================
 ;; + name="date_born"
