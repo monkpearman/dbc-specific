@@ -300,9 +300,30 @@
 		       (t convert-field))))))
    convert-field))
 
-
+;;; ==============================
+;; :TODO
 ;; (defun dbc-split-ref-multi-naf (naf-multi-ref)
+;; Split the simple-string NAF-MULTI-REF on #\& and elide surrounding whitespace for each element.
+;; 
 
+;;; ==============================
+;; :TODO
+;; (defun dbc-convert-field-to-keyword (field-keyword-pairs &optional key-prefix)
+;; FIELD-KEYWORD-PAIRS a list conses each car is a dbc field name cdr is the
+;; keyword to translate to as if by `assoc'
+;; When KEY-PREFIX is non-nil it is a simple-string to prefix to each generated keyword.
+;;
+;; ("title" .   "item-title") => :item-title
+;; ("ref"   .   "item-ref")   => :item-ref
+;; With KEY-PREFIX "item"
+;;
+;; ("title" .   "title") => :item-title
+;; ("ref"   .   "ref")   => :item-title
+;;
+;; (assoc "title" '(("title" . "item-title")) :test #'string=) ;; Use `string=' for case sensitivity.
+
+;; alexandria:
+alexandria:make-keyword
 
 ;;; ==============================
 ;;; :DBC-XML-SQL-PARSE-DOCUMENTATION

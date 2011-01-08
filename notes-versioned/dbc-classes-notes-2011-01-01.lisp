@@ -2,6 +2,7 @@
 ;;; :FILE /home/sp/stan-workspace/HG-Repos/mon-notes-HG/CL-repo-HG/CL-MON-CODE/dbc-specific/cl-dbc-classes-2010-03-18.lisp
 ;;; ==============================
 
+
 ;; (remove-overlays (region-beginning) (region-end) 'face  'slime-highlight-edits-face)
 ;; slime-highlight-edits-mode
 
@@ -29,6 +30,12 @@
 ;;;  *package*
 
 
+
+;;; ==============================
+;;; :DBC-CLASS-SERIALIZATION
+;;; `export-rucksack', `import-rucksack'
+
+
 ;;; ==============================
 ;;; :LIST-OF-META-CLASSES-TO-INHERIT-FROM
 
@@ -49,6 +56,7 @@
 ;; dbc-standard-class (dbc-persistent-class)
 ;; () )
 
+
 ;;; ==============================
 ;; :SKETCH-LIST-OF-CLASSES-TO-CREATE
 
@@ -70,6 +78,7 @@
 
 ;;     item-ebay
 
+
 ;;; ==============================
 ;; doc-dbc (dbc-standard-class)
 
@@ -86,6 +95,7 @@
 ;;        doc-naf   (dbc-doc)
 ;;               doc-term     (doc-naf)
 ;;               doc-category (doc-naf)
+
 
 ;;; ==============================
 ;; dbc-naf (dbc-standard-class)
@@ -126,12 +136,12 @@
 ;;               doc-category (doc-naf)
 ;; naf-taxonomy  (dbc-naf) ;; :NOTE e.g. Linean Name
 
-
+
 ;;; ==============================
 ;; dbc-theme (dbc-standard-class)
 
-;;  :SEE :FILE 
-;;  #p "/home/sp/stan-workspace/HG-Repos/mon-notes-HG/CL-repo-HG/CL-MON-CODE/dbc-specific/mon-tgm.lisp"
+;;  :SEE :FILE dbc-specific/dbc-classes/mon-tgm.lisp
+;;  
 
 ;;        img-theme
 ;;                 thb-theme (img-thb)
@@ -147,10 +157,24 @@
 ;;                     thb-category  (img-thb)
 ;;                     hdr-category  (img-hdr)
 ;;                     flsh-categoyr (img-flsh)
+;;         
 ;;
 ;; :NOTE Decide on img-magick from Franz or Edi's cl-gd. 
 ;;       Also, remember Zach's VECTO and and SKIPPY, etc.
 ;;
+;;; item-category 
+;; Should contain a list of xrefs for all items that claim to
+;; be of a category. But, how to propogate through the inheritance??
+;;
+;; IOW, if the depth-most category is:
+;;
+;;  categ "Advertising and Graphics"
+;;   - c1 "Posters"
+;;   -- c2 "Travel and Destination"
+;;   --- c3 "Rail Posters"
+;;   ---- c4 "London Underground"
+;;
+;; Thats alot of instances. I guess the answer is a rucksack index.
 
 ;;; ==============================
 ;; dbc-img (dbc-standard-class)

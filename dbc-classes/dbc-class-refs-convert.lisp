@@ -6,7 +6,7 @@
 
 (in-package #:dbc)
 
-;; (defclass refs-parse ()
+;; (defclass refs-parse (dbc-parsed-class)
 ;;   ())
 
 
@@ -23,11 +23,14 @@
 ;; 
 ;; desc_en, desc_fr, histo_en, histo_en,
 ;; related_doc, 
+;; categ, c1, c2, c3, c4, c5, c6      ;; These may contain "1" to indicate depth. 
 ;; categ_doc, c1_doc, c2_doc, c3_doc 
 ;; ebay_id, ebay_price, ebay_final, ;; (maybe the latter are floats)
 ;; 
 ;; done, color, job_name
 ;; 
+;; :ARTIST-NAF-FIELDS
+;; also_people, also_author 
 
 ;;; ==============================
 ;; 
@@ -105,7 +108,9 @@
 ;;  "x"
 ;;
 ;; - Strip "x"
-;;
+;
+;; - Replace the 0 default with T/NIL
+;;   Use `dbc-convert-1-0-x-field'
 
 ;;; ==============================
 ;; :FIELD "desc_en"
@@ -141,6 +146,7 @@
 ;;
 ;; - Replace the 0 default with T/NIL
 ;;   Use `dbc-convert-1-0-x-field'
+;;
 ;; - Looks like this might be a boolean 
 
 ;;; ==============================
@@ -153,7 +159,7 @@
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
-;;  0
+;;  "0"
 ;;
 ;; - Replace the 0 default with T/NIL
 ;;   Use `dbc-convert-1-0-x-field'
@@ -184,6 +190,7 @@
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
+;;  "0"
 ;;
 ;; - Replace the 0 default with T/NIL
 ;;   Use `dbc-convert-1-0-x-field'
@@ -234,7 +241,8 @@
 ;;  "x"
 ;;
 ;; - Strip "x"
-
+;; - Replace the 0 default with T/NIL
+;;   Use `dbc-convert-1-0-x-field'
 
 ;;; ==============================
 ;; :FIELD "volume"
@@ -616,6 +624,7 @@
 ;;  "(8.5) Light age toning, stronger at edges. Light crease damage. Please see Zoom In for details."
 ;;  "[8+] One small fox mark shown in image. Strong print marks and beaitiful handcoloring."
 ;;  "[8+] Professional archival conservation. Very light offsetting. [Typical]."
+;;  "[8+]  Very light offsetting."
 ;;
 ;; - Separate out the `[<N>]` values when present.
 ;; - Convert "[<N>+]" to "N.5"
@@ -1027,6 +1036,8 @@
 ;;
 ;; - Maybe can split on years "<YYYY>"
 ;;
+;; - Replace occurencs of: " - Pseudonym" -> " (pseudonym)" 
+;;   Or, maybe try to catch all of them:  "Pseudonym" -> "(pseudonym)"
 ;;
 ;; - But, we shoud/could also use " x " as a delimiter b/c  it must be.
 ;;
@@ -1035,7 +1046,14 @@
 ;;
 ;; - Remove dups should catch all but the last:  " x "
 ;;
-;; - Remove occurences of "x" "1" "0" "..." "---"
+;; - Remove occurences of "x" "1" "0" "..." "---" 
+;;   Note, we can't always safely remove "1" (and possibly also "0") where the
+;;   string contains "free" date strings formatted as: "December, 1, 1894"
+;;   b/c, where this was previously split on commas we might potentially have subseqs of
+;;   a list which contains: (... "December" "1" "1894" ...) and the "1" in this position is 
+;;   contextually relevant information which should not be elided. 
+;;   Possible solutions, query the existing 
+;;   
 ;;
 ;;   (defun dbc-remove-unwanted-strings (string-bag seq)
 ;;    delete-if #'(lambda (x)
