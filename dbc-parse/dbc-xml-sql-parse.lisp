@@ -288,17 +288,21 @@
        :collect y)))
 
 (defun dbc-convert-1-0-x-field (convert-field)
-  (or 
-   (and (mon:string-null-or-empty-p convert-field)
-	(let (rtn)
-	  (declare (type simple-string convert-field))
-	  (setf rtn
-		(and (eql (length convert-field) 1)
-		     (case (char convert-field 0)
-		       ((#\0 #\x) nil)
-		       (#\1 t)
-		       (t convert-field))))))
-   convert-field))
+  ;; (declare (optimize (speed 3) (space 0) (safety 0)))
+  (setf convert-field
+        (if (and (simple-string-p convert-field)
+                 (eql (length convert-field) 1))
+            (char convert-field 0)
+            convert-field))
+  (typecase  convert-field
+    (standard-char (case convert-field
+                     (#\1 t)
+                     ((#\0  #\x #\X) nil)
+                     (t convert-field)))
+    (bit (and (eql convert-field 1)))
+    (symbol  (if (eql convert-field 'x) nil convert-field))
+    (t convert-field)))
+
 
 ;;; ==============================
 ;; :TODO
@@ -549,11 +553,18 @@ When CONVERT-FIELD is \"1\" return t.
 When CONVERT-FIELD is \"x\" or \"0\" return nil.
 When CONVERT-FIELD is some other character or \(> \(length CONVERT-FIELD\) 1\)
 return CONVERT-FIELD.~%~@
-:EXAMPLE~%~@
- \(dbc-convert-1-0-x-field \"0\"\)~%~@
- \(dbc-convert-1-0-x-field \"x\"\)~%~@
- \(dbc-convert-1-0-x-field \"1\"\)~%~@
- \(dbc-convert-1-0-x-field \"8\"\)~%~@
+:EXAMPLE~%
+ \(dbc-convert-1-0-x-field  \"1\"\)~%
+ \(dbc-convert-1-0-x-field  \"0\"\)~%
+ \(dbc-convert-1-0-x-field  \"x\"\)~%
+ \(dbc-convert-1-0-x-field  \"X\"\)~%
+ \(dbc-convert-1-0-x-field #\\1\)~%
+ \(dbc-convert-1-0-x-field #\\0\)~%
+ \(dbc-convert-1-0-x-field #\\x\)~% 
+ \(dbc-convert-1-0-x-field #\\X\)~%
+ \(dbc-convert-1-0-x-field   1\)~%
+ \(dbc-convert-1-0-x-field   0\)~%
+ \(dbc-convert-1-0-x-field  #\\*\)
  \(dbc-convert-1-0-x-field \"Return Me\"\)~%~@
 :SEE-ALSO `<XREF>'.~%►►►"))
 
