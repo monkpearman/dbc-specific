@@ -144,6 +144,8 @@ Painter, Illustrator.
 
 ;;; ==============================
 
+*package*
+(subseq 
 
 ;;; ==============================
 ;; :Note this is here to make adjustments using the `dbc-split-*' funs

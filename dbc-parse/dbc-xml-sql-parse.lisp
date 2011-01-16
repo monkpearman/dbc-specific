@@ -327,7 +327,8 @@
 ;; (assoc "title" '(("title" . "item-title")) :test #'string=) ;; Use `string=' for case sensitivity.
 
 ;; alexandria:
-alexandria:make-keyword
+;; alexandria:make-keyword
+
 
 ;;; ==============================
 ;;; :DBC-XML-SQL-PARSE-DOCUMENTATION
@@ -515,7 +516,7 @@ optimize their checks. For example:~%
 	       \"~~20T~~S~~%End-of-Life: ~~20T~~S~~%Calcuation: ~~20t~~S ;=> ~~S~~%\")
     	  w-str both-lifespan hd-ls tl-ls
     	  \(list '- tl-ls hd-ls\) \(- tl-ls hd-ls\)\)\)~%~@
-Likewise, when the cdr of LIFESPAN-STR-PAIR is a string indicating the end of
+Likewise, when the cdr of LIFESPAN-STR-PAIR is a string indicating the end of 
 lifespan is \"unknown\", the cdr of the second cons of return value is `lognot'
 the integer value in the car cell. IOW, if there is a known beginning of
 lifespan i.e. the string passed from `dbc-split-lifespan' was \"1843-?\", we
