@@ -2,6 +2,21 @@
 ;;; :FILE /home/sp/stan-workspace/HG-Repos/mon-notes-HG/CL-repo-HG/CL-MON-CODE/dbc-specific/cl-dbc-classes-2010-03-18.lisp
 ;;; ==============================
 
+;;; ==============================
+;; :NOTE Stas Boukarev's `tracking` and `storage` projects.
+;;
+;; Storage provides a persistent backend with some SBCL specific enhancements
+;; for fast read/write.
+;;
+;; Tracking provides a number of class definitions for commonly tracked objects:
+;; people, books, movies, music, etc.
+;;
+;; :SEE (URL `https://github.com/stassats/tracking'), (URL `https://github.com/stassats/tracking.git')
+;; :SEE (URL `https://github.com/stassats/storage'), (URL `git://github.com/stassats/storage.git')
+;;
+;; :NOTE Epigraph provides a convenient grapher with a simplier API than Gary King's cl-graph
+;;
+;; :NOTE 
 
 ;; (remove-overlays (region-beginning) (region-end) 'face  'slime-highlight-edits-face)
 ;; slime-highlight-edits-mode

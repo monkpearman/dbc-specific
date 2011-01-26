@@ -12,6 +12,11 @@
 	    ;; 
 	    (:export
 	     ;;
+	     ;; specials.lisp
+	     #:*dbc-xml-dump-dir-name*
+	     #:*dbc-xml-dump-dir*
+	     #:ensure-dbc-xml-dump-dir-exists
+	     ;;
            ;; dbc-xml-sql-parse.lisp
 	     ;;
 	     #:dbc-field-str-cons
@@ -50,9 +55,7 @@
 	     ;; dbc-class.lisp
 	     ;;
 	     ;; 
-	    )
-
-	    )
+	    ))
 
 
 ;;; ==============================

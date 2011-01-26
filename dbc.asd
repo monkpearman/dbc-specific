@@ -33,7 +33,6 @@
 	       :closure-html
 	       :split-sequence
 	       :mon
-	       ;; :arnesi ;; arnesi:parse-float
 	       ;; :alexandria
 	       ;; :cl-ppcre
 	       ;; :local-time
@@ -45,6 +44,7 @@
   :serial t    
   :components 
   ((:file "package")
+   (:file "specials")
    (:module "dbc-parse"
 	    :components
 	    ((:file "dbc-xml-sql-parse")
@@ -56,9 +56,11 @@
    ;; 			 (:file "dbc-tgm.lisp")))
    ))
 
-;; (defmethod asdf:perform :after
-;;     ((op asdf:load-op) (system (eql (asdf:find-system :dbc))))
-;;   (pushnew :dbc cl:*features*))
+(defmethod asdf:perform :after ((op asdf:load-op) (system (eql (asdf:find-system :dbc))))
+  (pushnew :dbc cl:*features*))
+
+
+;;  
 
 
 ;;; ==============================
