@@ -68,7 +68,7 @@
 ;; () )
 
 ;;; mixin-inheritor
-;; dbc-standard-class (dbc-persistent-class)
+;; dbc-class (dbc-persistent-class)
 ;; () )
 
 
@@ -79,7 +79,7 @@
 ;;; the appropriate granularity. :SEE `internal-time-units-per-second'
 
 ;;; ==============================
-;; dbc-item (dbc-standard-class)
+;; dbc-item (dbc-class)
 
 ;; :DBC-ITEM-INHERITORS
 ;;      doc-item  (dbc-doc)
@@ -95,7 +95,7 @@
 
 
 ;;; ==============================
-;; doc-dbc (dbc-standard-class)
+;; doc-dbc (dbc-class)
 
 ;; :DOC-DBC-SLOTS
 ;; doc-title 
@@ -113,7 +113,7 @@
 
 
 ;;; ==============================
-;; dbc-naf (dbc-standard-class)
+;; dbc-naf (dbc-class)
 ;;        img-naf (dbc-img)
 ;;               thb-naf    (img-thb)
 ;;               big-naf    (img-big)
@@ -153,7 +153,7 @@
 
 
 ;;; ==============================
-;; dbc-theme (dbc-standard-class)
+;; dbc-theme (dbc-class)
 
 ;;  :SEE :FILE dbc-specific/dbc-classes/mon-tgm.lisp
 ;;  
@@ -165,7 +165,7 @@
 ;;        doc-theme (dbc-doc)
 
 ;;; ==============================
-;; dbc-category (dbc-standard-class)
+;; dbc-category (dbc-class)
 ;;         doc-category
 ;;         naf-category
 ;;         img-category
@@ -192,7 +192,7 @@
 ;; Thats alot of instances. I guess the answer is a rucksack index.
 
 ;;; ==============================
-;; dbc-img (dbc-standard-class)
+;; dbc-img (dbc-class)
 ;;
 ;; :DBC-IMG-SLOTS
 ;; img-type-path ;; i.e. naf images go to /some/path/naf/<some-naf-instance>/some.jpg

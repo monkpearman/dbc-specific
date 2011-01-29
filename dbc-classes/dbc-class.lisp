@@ -8,12 +8,57 @@
 ;; *package*
 
 (defclass dbc-xml->clos-dump ()
-  (())
+  ((base-dir :initarg :base-dir 
+	     ))
   (:documentation "Base class for DBC to XML dump files directories.
 Subclasses inherit their base pathname from this guy.
 :SEE-ALSO `dbc:*dbc-xml-dump-dir*', `*dbc-xml-dump-dir-name*'
 `dbc:ensure-dbc-xml-dump-dir-exists'.►►►"))
 
+
+;; ensure-dbc-xml-dump-dir-exists
+
+(defclass base-dbc () ;; persistent, rucsack, component, etc.
+  (())
+  :documentation "base dbc class")
+
+(defclass uuid-dbc (base-dbc)
+  ((uuid-type)
+   ;; :initform :initarg :accessor
+   (read-only :initform nil :initarg :read-only) ;;:reader)
+  :documentation "a base uuid class")
+
+(defclass doc-dbc (base-dbc)
+  (doc-uuid 
+   :initform (generate-dbc-uuid) 
+   :accessor doc-uuid)
+  (doc-title
+   :initform nil
+   :initarg :doc-title
+   :accessor doc-title)
+  (doc-subtitle
+   :initform nil
+   :initarg :doc-title
+   :accessor doc-title)
+  (doc-xrefs 
+   :initform nil
+   :initarg :doc-xrefs
+   :accessor doc-xrefs))
+
+;; (defclass entity (object)
+;;   ((id :initarg :imdb-id
+;;             :accessor imdb-id
+;;             :initform nil
+;;             :db-type :integer)
+;;    (born :initarg :born
+;;          :accessor born
+;;          :initform nil
+;;          :db-type :date)
+;;    (died :initarg :died
+;;          :initform nil
+;;          :accessor died
+;;          :db-type :date))
+;;   (:metaclass tracking))
 
 ;;; ==============================
 ;;; EOF

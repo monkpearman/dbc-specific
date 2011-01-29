@@ -71,7 +71,7 @@
 ;;; :WORKS
 (defun dbc-table-field-parse (sql-xml-dmp)
   (declare (pathname  sql-xml-dmp))
-  (let ((ous (make-string-output-stream))
+  (let ((ous (make-string-output-stream))  ;; use flexi?
 	(ous-out '()))
     ;; :TODO In the first case where `key` is :START-ELEMENT we should check
     ;; whether a set of desired attributes are present in the
@@ -276,7 +276,7 @@
 	)
     (setf cons-str (list cons-str chk-digit))))
 
-
+;; :NOTE Don't for get to use `cl:search', `cl:find', etc.!
 ;;; ==============================
 (defun dbc-split-comma-field (seo-desc-str)
   (unless (mon:string-null-or-empty-p seo-desc-str)
