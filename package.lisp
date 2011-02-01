@@ -13,24 +13,63 @@
 	    (:export
 	     ;;
 	     ;; specials.lisp
-	     #:*dbc-xml-dump-dir-name*
+	     ;; :VARIABLES
+             #:*dbc-system-path*	     
+             #:*dbc-xml-dump-dir-name*
 	     #:*dbc-xml-dump-dir*
+	     ;; :GENERIC-FUNCTIONS
+	     #:dbc-base-path
+	     #:dbc-var-binding
+	     #:dbc-system-described
+	     ;; :CLASSES
+	     #:dbc-system-class
+	     #:dbc-system-path
+	     #:dbc-system-subdir
+	     ;; :FUNCTIONS
 	     #:ensure-dbc-xml-dump-dir-exists
+	     #:find-dbc-system-path	     
 	     ;;
            ;; dbc-xml-sql-parse.lisp
 	     ;;
+	     ;;
+	     ;; cxml:make-source klacks:with-open-source 
+	     ;; klacks:map-attributes klacks:get-attribute
+	     ;; klacks:current-lname klacks:current-characters
+	     ;; klacks:consume klacks:peek
+	     ;; mon:string-trim-whitespace
+	     #:dbc-table-field-parse 
+	     ;;
+	     ;; cxml::cxml-source klacks:peek klacks:map-attributes
+	     #:dbc-field-attribs-parse	     
+	     ;;
 	     #:dbc-field-str-cons
 	     #:dbc-field-cln-x
-	     #:dbc-table-field-parse ;; klacks:peek klacks:with-open-source
-	     #:dbc-field-attribs-parse	     
-	     #:dbc-split-lifespan
-	     #:dbc-split-used-fors
+	     ;;
+	     ;; mon:string-split-on-chars
+	     #:dbc-split-used-fors   
+	     ;;
+	     ;; mon:string-split-on-chars, mon:string-trim-whitespace
+	     #:dbc-split-appeared-in 
+	     ;;
+	     ;; mon:string-split-on-chars
 	     #:dbc-split-roles
-	     #:dbc-split-appeared-in
-	     #:dbc-split-loc-pre
+	     ;;
+	     ;; mon:make-string*
+	     #:dbc-format-entity-role
+	     ;;
+	     ;; mon:string-trim-whitespace mon:concat mon:string-split-on-chars
+	     #:dbc-split-lifespan
+	     ;;
 	     #:dbc-split-lifespan-string-int-pairs
+	     ;;
+	     ;; mon:string-null-or-empty-p mon:string-split-on-chars mon:string-trim-whitespace
 	     #:dbc-split-comma-field
 	     #:dbc-convert-1-0-x-field
+	     #:dbc-split-loc-pre
+	     ;;
+
+	     
+	     ;;
 	     ;;
 	     ;;
 	     ;; klacks:get-attribute klacks:current-lname

@@ -16,7 +16,7 @@ Subclasses inherit their base pathname from this guy.
 `dbc:ensure-dbc-xml-dump-dir-exists'.►►►"))
 
 
-;; ensure-dbc-xml-dump-dir-exists
+;;; ==============================
 
 (defclass base-dbc () ;; persistent, rucsack, component, etc.
   (())

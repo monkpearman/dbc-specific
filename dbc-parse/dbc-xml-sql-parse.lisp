@@ -13,30 +13,6 @@
 (in-package #:dbc)
 
 ;;; ==============================
-;;; :CHANGESET 1
-;;; :CREATED <Timestamp: #{2010-09-03T19:53:24-04:00Z}#{10355} - by MON>
-(defun dbc-field-str-cons (field-str)
-  (typecase field-str  
-    ((or string array)
-     (list (length field-str) (type-of field-str) field-str)) 
-    ((and number (not float) (not ratio))
-     (list 0 (type-of field-str) field-str))
-    (cons
-     (list (length field-str) (list (type-of field-str)) field-str))
-    (t             (list 0 (list (type-of field-str)) field-str))))
-
-
-;;; ==============================
-;;; :CHANGESET 1
-;;; :CREATED <Timestamp: #{2010-09-03T18:28:58-04:00Z}#{10355} - by MON>
-(defun dbc-field-cln-x  (field-str-cons)
-  (let ((chk (dbc-field-str-cons field-str-cons)))
-    (unless (and (= (car chk) 1)
-                 (eq (caadr chk) 'simple-array)
-                 (eq (aref (caddr chk) 0) #\x))
-      field-str-cons)))
-
-;;; ==============================
 ;;; :REQUIRES klacks:peek klacks:with-open-source
 ;;;           klacks:get-attribute klacks:current-lname
 ;;;           klacks:current-characters klacks:consume
@@ -109,7 +85,7 @@
 		     ;; outside of any :START-ELEMENT/:END-ELEMENT event blocks.
 		     (:characters 
 		      (let ((kcc (klacks:current-characters s)))
-			(or (and (eql (mon::string-trim-whitespace kcc) 0)
+			(or (and (eql (mon:string-trim-whitespace kcc) 0)
 				 (format ous " "))
 			    (format ous "~A" kcc))))
 		     ;; (:comment <DO-SOMETHING-HERE???>) 
@@ -118,7 +94,6 @@
 	       (klacks:consume s))
 	    (prog1 (setf ous-out (get-output-stream-string ous))
 		(close ous))))))
-
 
 (defun dbc-field-attribs-parse (curr-src)
   (declare (type cxml::cxml-source curr-src))
@@ -137,6 +112,23 @@
 	      :finally  (setf gthr z)
 	      ))
 	 gthr)))
+
+(defun dbc-field-str-cons (field-str)
+  (typecase field-str  
+    ((or string array)
+     (list (length field-str) (type-of field-str) field-str)) 
+    ((and number (not float) (not ratio))
+     (list 0 (type-of field-str) field-str))
+    (cons
+     (list (length field-str) (list (type-of field-str)) field-str))
+    (t             (list 0 (list (type-of field-str)) field-str))))
+
+(defun dbc-field-cln-x  (field-str-cons)
+  (let ((chk (dbc-field-str-cons field-str-cons)))
+    (unless (and (= (car chk) 1)
+                 (eq (caadr chk) 'simple-array)
+                 (eq (aref (caddr chk) 0) #\x))
+      field-str-cons)))
 
 (defun dbc-split-used-fors (used-for-string)
   ;; Is there a reason why we shouldn't be using this instead:
@@ -176,6 +168,18 @@
        :unless (eql (length y) 0)
        :collect (string-capitalize y))))
 
+(defun dbc-format-entity-role (entity-roles
+			      &key 
+			      (stream nil)
+			      (entity-role-prefix ":ROLE")
+			      (prefix-min-pad 14))
+  (format stream (mon:make-string* nil "~{~" prefix-min-pad "A~A~^~%~}")
+	  (loop
+	     for roles in entity-roles
+	     for role = entity-role-prefix
+	     appending (list role roles) into results
+	     finally (return results))))
+
 ;; :NOTE This is actually a bad idea as the "n 95121069" is canonical...
 (defun dbc-split-loc-pre (loc-string)
   (declare (type (or null simple-string) loc-string))
@@ -193,7 +197,7 @@
 	(when (char= #\- (char frob (1- (length frob))))
 	  (setf frob (mon:concat frob "?")))
 	(or (and (> (length frob) 0)
-		 (setf frob (mapcar #'mon:string-trim-whitespace 
+		 (setf frob (mapcar #'mon:string-trim-whitespace
 				    (mon:string-split-on-chars frob "-"))))	    
 	    (setf frob (cons nil nil)))
 	(if (and (null (car frob))
@@ -279,7 +283,8 @@
 ;; :NOTE Don't for get to use `cl:search', `cl:find', etc.!
 ;;; ==============================
 (defun dbc-split-comma-field (seo-desc-str)
-  (unless (mon:string-null-or-empty-p seo-desc-str)
+  (unless ;; (mon:simple-string-null-or-empty-p seo-desc-str)
+      (mon:string-null-or-empty-p seo-desc-str)
     (loop 
        :with split-comma = (mon:string-split-on-chars (the simple-string seo-desc-str) ",")
        :for x in split-comma
@@ -302,6 +307,7 @@
     (bit (and (eql convert-field 1)))
     (symbol  (if (eql convert-field 'x) nil convert-field))
     (t convert-field)))
+
 
 
 ;;; ==============================
@@ -336,10 +342,11 @@
 
 (setf (documentation 'dbc-field-str-cons 'function)
       #.(format nil
-  "Return a three element list according to the `type-of' FIELD-STR.
+  "Return a three element list according to the `type-of' FIELD-STR.~%~@
 List has the form:~%
-\(<SEQ-LENGTH> \(<TYPE-SPEC>\) FIELD-STR\)~%
-:EXAMPLE~%~% { ... <EXAMPLE> ... } ~%
+ \(<SEQ-LENGTH> \(<TYPE-SPEC>\) FIELD-STR\)~%
+:EXAMPLE~%~@
+ { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `dbc-table-field-parse', `dbc-field-str-cons', `dbc-field-cln-x'.~%►►►"))
 
 (setf (documentation 'dbc-field-cln-x 'function)
@@ -367,8 +374,7 @@ return:~%
  :FIELD-NAME field-value~%
 :SEE-ALSO `dbc-table-field-parse', `dbc-field-str-cons', `dbc-field-cln-x'.~%►►►"))
 
-(setf (documentation 'dbc-field-attribs-parse 'function)
-      #.(format nil
+(mon:fundoc 'dbc-field-attribs-parse
 "Map the attributes of the current klacks event.
 CURR-SRC is a klacks-source as per return value of `cxml:make-source'
 The current klacks event should be `:START-EVENT`, e.g. 
@@ -380,66 +386,61 @@ If so retrun value is a list of elements each the form:~%
   \(:QNAME         . \"QNAME\"\)
   \(:VALUE         . \"<VALUE>\"\)
   \(:SPECIFIED-P   . <BOOLEAN>\)\)~%~@
-:EXAMPLE~%~@
+:EXAMPLE~%
  \(let \(\(src \(cxml:make-source \"<field name=\\\"name 1\\\" name2=\\\"name 2\\\">10</field>\"\)\)\)
    \(klacks:consume src\)
    \(dbc-field-attribs-parse src\)\)~%~@
 :NOTE Like `klacks:list-attributes' but does not return a structure object.~%~@
-:SEE-ALSO `klacks:map-attributes'.~%►►►"))
+:SEE-ALSO `klacks:map-attributes'.~%►►►")
 
-(setf (documentation 'dbc-split-used-fors 'function)
-      #.(format nil
+(mon:fundoc 'dbc-split-used-fors
 "Split USED-FOR-STRING on \"|\" barriers stripping leading and trailing whitespace~%~@
 Return value is a list of strings.~%~@
-:EXAMPLE~%~@
+:EXAMPLE~%
  \(dbc-split-used-fors \"Poinçon de la Blanchardière, Pierre | La Blanchardiere, Pierre Poin çon de | \"\)~%~@
 :SEE-ALSO `mon:string-split-on-chars', `dbc-split-roles',
-`dbc-split-appeared-in', `dbc-split-loc-pre', `dbc-split-lifespan'.~%►►►"))
+`dbc-split-appeared-in', `dbc-split-loc-pre', `dbc-split-lifespan'.~%►►►")
 
-(setf (documentation 'dbc-split-appeared-in 'function)
-      #.(format nil
+(mon:fundoc 'dbc-split-appeared-in
 "Split APPEARED-IN-STRING on \"|\" barriers.~%~@
 Return value is a list of strings.~%~@
 Like `dbc-split-used-fors', but strip leading and trailing occurences of
 `mon:*whitespace-chars*', e.g. #\\Newline #\\Return et al.~%~@
 Signal an error if APPEARED-IN-STRING is neither `null' nor `simple-string-p'.~%~@
-:EXAMPLE~%~@
- \(dbc-split-appeared-in \"Le Rire | Le Sourire | Femina | Printed Salesmanship |\"\)~%~@
- \(dbc-split-appeared-in \"    Le Rire | Le Sourire |~% Femina | La Rampe \"\)~%~@
- \(dbc-split-appeared-in \"\"\)~%~@
+:EXAMPLE~%
+ \(dbc-split-appeared-in \"Le Rire | Le Sourire | Femina | Printed Salesmanship |\"\)~%
+ \(dbc-split-appeared-in \"    Le Rire | Le Sourire |~% Femina | La Rampe \"\)~%
+ \(dbc-split-appeared-in \"\"\)~%
  \(dbc-split-appeared-in nil\)~%~@
 :SEE-ALSO `dbc-split-roles', `dbc-split-used-fors', `dbc-split-loc-pre',
 `dbc-split-lifespan'`mon:string-split-on-chars', `mon:string-trim-whitespace',
-`mon:*whitespace-chars*'.~%►►►"))
-
-(setf (documentation 'dbc-split-roles 'function)
-      #.(format nil
+`mon:*whitespace-chars*'.~%►►►")
+ 
+(mon:fundoc 'dbc-split-roles
 "Split ROLE-STRING on \",\" barriers.~%~@
 Strip leading/trailing whitespace and \".\". Capitalize all roles.~%~@
 Return value is a list of strings.~%~@
 Signal an error if ROLE-STRING is neither `null' nor `simple-string-p'.~%~@
-:EXAMPLE~%~@
+:EXAMPLE~%
  \(dbc-split-roles
-  \"Artist, Illustrator,  Designer, Fashion Illustrator, Fashion Designer.\"\)~%~@
+  \"Artist, Illustrator,  Designer, Fashion Illustrator, Fashion Designer.\"\)~%
  \(dbc-split-roles
-  \"Artist, Illustrator,  designer, Fashion illustrator, Fashion Designer .\"\)~%~@
+  \"Artist, Illustrator,  designer, Fashion illustrator, Fashion Designer .\"\)~%
  \(dbc-split-roles \"Artist, \"\)~%~@
  \(dbc-split-roles nil\)~%~@
 :SEE-ALSO `dbc-split-used-fors', `dbc-split-appeared-in', `dbc-split-loc-pre',
-`dbc-split-lifespan'.~%►►►"))
+`dbc-split-lifespan'.~%►►►")
 
-(setf (documentation 'dbc-split-loc-pre 'function)
-      #.(format nil
+(mon:fundoc 'dbc-split-loc-pre
 "Trim leading \"n \" prefix from loc-control fields.~%~@
-:EXAMPLE~%~@
- \(dbc-split-loc-pre \"n 83043434\"\)~%~@
+:EXAMPLE~%
+ \(dbc-split-loc-pre \"n 83043434\"\)~%
  \(dbc-split-loc-pre \"83043434\"\)~%~@
 :NOTE This is actually a bad idea as the \"n 95121069\" is canonical...~%~@
 :SEE-ALSO `dbc-split-roles', `dbc-split-used-fors', `dbc-split-appeared-in',
-`dbc-split-lifespan'.~%►►►"))
+`dbc-split-lifespan'.~%►►►")
 
-(setf (documentation 'dbc-split-lifespan 'function)
-      #.(format nil
+(mon:fundoc 'dbc-split-lifespan
 "Split LIFESPAN-STR into a consed pair.~%~@
 LIFESPAN-STR should have one of the formats:~% 
  <YYYY>-<YYYY>~% -<YYYY>~% <YYYY>-~% <YYYY>-?~% ?-<YYYY>~%~@
@@ -449,23 +450,21 @@ Return value has the form:~%
  \(\"<YYYY>\" . \"?\"\)~% 
  \(\"?\" . \"<YYYY>\"\)~% 
  \(NIL\)~%
-:EXAMPLE~%~@
- \(dbc-split-lifespan \"1843-1908\"\)~%~@
- \(dbc-split-lifespan \"1848-\"\)~%~@
- \(dbc-split-lifespan \"-1848\"\)~%~@
- \(dbc-split-lifespan \"?-1848\"\)~%~@
- \(dbc-split-lifespan \"-1848-?\"\)~%~@
- \(dbc-split-lifespan \"-1848?\"\)~%~@
- \(dbc-split-lifespan \"-1848?\"\)~%~@
- \(dbc-split-lifespan \"1848 -- ??\"\)~%~@
+:EXAMPLE~%
+ \(dbc-split-lifespan \"1843-1908\"\)~%
+ \(dbc-split-lifespan \"1848-\"\)~%
+ \(dbc-split-lifespan \"-1848\"\)~%
+ \(dbc-split-lifespan \"?-1848\"\)~%
+ \(dbc-split-lifespan \"-1848-?\"\)~%
+ \(dbc-split-lifespan \"-1848?\"\)~%
+ \(dbc-split-lifespan \"-1848?\"\)~%
+ \(dbc-split-lifespan \"1848 -- ??\"\)~%
  \(dbc-split-lifespan \" 1848-?? \"\)~%~@
 :NOTE Doesn't catch the #\\[ #\\] chars in \"[?]-1900\" or \"1900-[?]\".~%~@
 :SEE-ALSO `dbc-split-roles', `dbc-split-used-fors', `dbc-split-appeared-in',
-`dbc-split-loc-pre'.~%►►►"))
+`dbc-split-loc-pre'.~%►►►")
 
-
-(setf (documentation 'dbc-split-lifespan-string-int-pairs 'function)
-      #.(format nil
+(mon:fundoc 'dbc-split-lifespan-string-int-pairs
 "Attempt integer extraction from cons strings returned by `dbc-split-lifespan'.~%~@
 LIFESPAN-STR-PAIR is a consed pair with the value of each conscell satisfying
 either null or `simple-stringp', signal an error if not.~%~@
@@ -483,39 +482,39 @@ And should match one of the following patterns:~%
  \(\(\"<?+>\"   . \"<0+>\"\)    \(nil\)\)~%
  \(\(\"<0+>\"   . \"<YYYY>\"\)  \(-1     . YYYY\)\)~%
  \(\(\"<YYYY>\" . \"<0+>\"\)    \(YYYY-1 . \(lognot YYYY-1\)\)~%
-:EXAMPLE~%~@
- \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"\"\)\)~%~@
- \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"1843-1943\"\)\)~%~@
- \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"1843-\"\)\)~%~@
- \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"-1843\"\)\)~%~@
- \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"1843-??\"\)\)~%~@
- \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"??-1843\"\)\)~%~@
-;; Following cases are pathological and reasonably acounted for:~%~@
- \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"??-??\"\)\)~%~@
- \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"00-??\"\)\)~%~@
- \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"00-00\"\)\)~%~@
- \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"00-1843\"\)\)~%~@
- \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"1843-00\"\)\)~%~@
-;; Following case is pathological and without a clear solution:~%~@
- \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"1843\"\)\)~%~@
- \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"3001-88\"\)\)~%~@
+:EXAMPLE~%
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"\"\)\)~%
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"1843-1943\"\)\)~%
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"1843-\"\)\)~%
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"-1843\"\)\)~%
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"1843-??\"\)\)~%
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"??-1843\"\)\)~%
+;; Following cases are pathological and reasonably acounted for:~%
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"??-??\"\)\)~%
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"00-??\"\)\)~%
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"00-00\"\)\)~%
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"00-1843\"\)\)~%
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"1843-00\"\)\)~%
+;; Following case is pathological and without a clear solution:~%
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"1843\"\)\)~%
+ \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"3001-88\"\)\)~%
  \(dbc-split-lifespan-string-int-pairs \(dbc-split-lifespan \"88-3001\"\)\)~%~@
 When the car of LIFESPAN-STR-PAIR is a string indicating the beginning of
 lifespan is an \"unknown\", the car of the second cons of return value is -1.
 The intent in using a negative is to allow later callers the oppurtunity to
 optimize their checks. For example:~%
-\(let* \(\(w-str \"1843-??\"\)
-       \(both-lifespan \(dbc-split-lifespan-string-int-pairs
-		       \(dbc-split-lifespan w-str\)\)\)
-       \(hd-ls \(caadr both-lifespan\)\)
-       \(tl-ls \(cdadr both-lifespan\)\)\)
-  \(and \(integerp tl-ls\)
-       \(eql \(signum \(- tl-ls hd-ls\)\) -1\)\)
-  \(format nil \(mon:concat
-	       \"~~2%With string: ~~20T~~S~~%Split to: ~~20T~~S~~%Beg-of-Life: \"
-	       \"~~20T~~S~~%End-of-Life: ~~20T~~S~~%Calcuation: ~~20t~~S ;=> ~~S~~%\")
-    	  w-str both-lifespan hd-ls tl-ls
-    	  \(list '- tl-ls hd-ls\) \(- tl-ls hd-ls\)\)\)~%~@
+ \(let* \(\(w-str \"1843-??\"\)
+        \(both-lifespan \(dbc-split-lifespan-string-int-pairs
+ 		       \(dbc-split-lifespan w-str\)\)\)
+        \(hd-ls \(caadr both-lifespan\)\)
+        \(tl-ls \(cdadr both-lifespan\)\)\)
+   \(and \(integerp tl-ls\)
+        \(eql \(signum \(- tl-ls hd-ls\)\) -1\)\)
+   \(format nil \(mon:concat
+ 	       \"~~2%With string: ~~20T~~S~~%Split to: ~~20T~~S~~%Beg-of-Life: \"
+ 	       \"~~20T~~S~~%End-of-Life: ~~20T~~S~~%Calcuation: ~~20t~~S ;=> ~~S~~%\")
+     	  w-str both-lifespan hd-ls tl-ls
+     	  \(list '- tl-ls hd-ls\) \(- tl-ls hd-ls\)\)\)~%~@
 Likewise, when the cdr of LIFESPAN-STR-PAIR is a string indicating the end of 
 lifespan is \"unknown\", the cdr of the second cons of return value is `lognot'
 the integer value in the car cell. IOW, if there is a known beginning of
@@ -524,18 +523,17 @@ don't want inferences about an entities lifespan to return misleadingly and
 guard against that by making it difficult for forms such as:~% 
  \(- <END-LIFESPAN> <BEG-LIFESPAN>\)~%~@
 to return a value that is `plusp'. For example:~% 
-\(let* \(\(both-lifespan \(dbc-split-lifespan-string-int-pairs
-		       \(dbc-split-lifespan \"1843-??\"\)\)\)
-      \(hd-ls \(caadr both-lifespan\)\)
-      \(tl-ls \(cdadr both-lifespan\)\)\)
- \(and \(integerp tl-ls\)
-      \(eql \(signum \(- tl-ls hd-ls\)\) -1\)\)\)~%~@
+ \(let* \(\(both-lifespan \(dbc-split-lifespan-string-int-pairs
+			\(dbc-split-lifespan \"1843-??\"\)\)\)
+	\(hd-ls \(caadr both-lifespan\)\)
+	\(tl-ls \(cdadr both-lifespan\)\)\)
+   \(and \(integerp tl-ls\)
+	\(eql \(signum \(- tl-ls hd-ls\)\) -1\)\)\)~%~@
 When coupled with the string values in the cons at the first elt in return value
 we can be reasonably sure that the integer parse is correct.~%~@
-:SEE-ALSO `<XREF>'.~%►►►"))
+:SEE-ALSO `<XREF>'.~%►►►")
 
-(setf (documentation 'dbc-split-comma-field 'function)
-      #.(format nil
+(mon:fundoc'dbc-split-comma-field
 "Split a comma delitied dbc field.~%~@
 Intended for use with SEO and \"keyword\" like fields in the `refs` table.~%~@
 :EXAMPLE~%~@
@@ -543,10 +541,9 @@ Intended for use with SEO and \"keyword\" like fields in the `refs` table.~%~@
 :NOTE Do not call unless reasonably sure sure that there are never free commas
 used in a non-delimiting position, e.g. the following string will not parse correctly:~% 
  \"Havell (Robert, Jr.), Havell (Robert, Sr.), Havell Lithograph, \"~%~@
-:SEE-ALSO `<XREF>'.~%►►►"))
+:SEE-ALSO `<XREF>'.~%►►►")
 
-(setf (documentation 'dbc-convert-1-0-x-field 'function)
-      #.(format nil
+(mon:fundoc 'dbc-convert-1-0-x-field
 "Attept to CONVERT-FIELD to a boolean.~%~@
 CONVERT-FIELD is a dbc field string value of length one satisfying 
 `mon:simple-string-or-null'.~%~@
@@ -567,7 +564,34 @@ return CONVERT-FIELD.~%~@
  \(dbc-convert-1-0-x-field   0\)~%
  \(dbc-convert-1-0-x-field  #\\*\)
  \(dbc-convert-1-0-x-field \"Return Me\"\)~%~@
-:SEE-ALSO `<XREF>'.~%►►►"))
+:SEE-ALSO `<XREF>'.~%►►►")
+
+(mon:fundoc 'dbc-format-entity-role 
+"Format dbc entity-roles list for presentation.~%~@
+Arg ENTITY-ROLES is a list of strings with each string designating a role played
+by a dbc entity, e.g. Artist, Author, Publisher, etc.~%~@
+Keyword STREAM is destination stream for `cl:format'. Default is nil.~%~@
+Keyword ENTITY-ROLE-PREFIX is a qualifier describing the type of entity role.
+Default is \":ROLE\".
+Keyword PREFIX-MIN-PAD is an integer designating the amount of padding which
+should suffix ENTITY-ROLE-PREFIX.  Default is 14.~%~@
+:EXAMPLE~%
+ \(with-open-stream \(s \(make-string-output-stream\)\)
+   \(format s \"Artist Name: Bubba \(Big\)~~%\"\)
+   \(dbc-format-entity-rol
+    \(dbc:dbc-split-roles
+     \"Artist, Illustrator,  designer, Fashion illustrator, Fashion Designer .\"\)
+    :entity-role-prefix \":ARTIST-ROLE\"
+    :prefix-min-pad 15
+    :stream s\)
+   \(get-output-stream-string s\)\)
+ ; => \"Artist Name: Bubba (Big)
+ ;     :ARTIST-ROLE   Artist
+ ;     :ARTIST-ROLE   Illustrator
+ ;     :ARTIST-ROLE   Designer
+ ;     :ARTIST-ROLE   Fashion Illustrator
+ ;     :ARTIST-ROLE   Fashion Designer\"~%~@
+:SEE-ALSO `<XREF>'.~%►►►")
 
 
 ;;; ==============================
