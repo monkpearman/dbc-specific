@@ -67,9 +67,10 @@
 	     #:dbc-convert-1-0-x-field
 	     #:dbc-split-loc-pre
 	     ;;
-
-	     
 	     ;;
+           ;; conditions.lisp
+	     #:dbc-error
+	     #:system-path-error
 	     ;;
 	     ;;
 	     ;; klacks:get-attribute klacks:current-lname

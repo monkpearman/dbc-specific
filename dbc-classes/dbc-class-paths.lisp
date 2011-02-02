@@ -36,13 +36,11 @@
 
            (or (and do-sub (setf sub-name do-sub))
                (dbc-system-described object nil)
+               ;; finish me :SEE ./conditions.lisp system-path-error
                (mon:simple-error-mon :w-sym 'ensure-system-parent-path
                                      :
                                      )
            ))))
-           
-                     
-  
 
 (defun ensure-dbc-parent-path-exists ()
   (unless (not (null *dbc-xml-dump-dir*)) 

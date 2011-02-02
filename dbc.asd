@@ -45,6 +45,7 @@
   :components 
   ((:file "package")
    (:file "specials")
+   (:file "conditions")
    (:module "dbc-parse"
 	    :components
 	    ((:file "dbc-xml-sql-parse")
@@ -52,6 +53,7 @@
 	    ))
    ;; (:module "dbc-classes"
    ;; 	    :components ((:file "dbc-classes")
+   ;;                    (:file "dbc-class-path")
    ;; 			 (:file "dbc-class-artist-convert.lisp")
    ;; 			 (:file "dbc-tgm.lisp")))
    ))
