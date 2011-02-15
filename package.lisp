@@ -15,19 +15,9 @@
 	     ;; specials.lisp
 	     ;; :VARIABLES
              #:*dbc-system-path*	     
-             #:*dbc-xml-dump-dir-name*
 	     #:*dbc-xml-dump-dir*
-	     ;; :GENERIC-FUNCTIONS
-	     #:dbc-base-path
-	     #:dbc-var-binding
-	     #:dbc-system-described
-	     ;; :CLASSES
-	     #:dbc-system-class
-	     #:dbc-system-path
-	     #:dbc-system-subdir
-	     ;; :FUNCTIONS
-	     #:ensure-dbc-xml-dump-dir-exists
-	     #:find-dbc-system-path	     
+             #:*dbc-xml-source-dir*
+             #:*dbc-notes-dir*
 	     ;;
            ;; dbc-xml-sql-parse.lisp
 	     ;;
@@ -71,6 +61,10 @@
            ;; conditions.lisp
 	     #:dbc-error
 	     #:system-path-error
+             ;; reader system-path-error
+             #:w-system-path-locus      ;; reader system-path-error
+             #:w-system-object-locus    ;; reader system-path-error
+             #:w-system-slot-locus      ;; reader system-path-error
 	     ;;
 	     ;;
 	     ;; klacks:get-attribute klacks:current-lname
@@ -88,13 +82,30 @@
 	     ;; #:p/totals-strip-commas
 	     ;; ;;#:p/totals-strip-whitespace
 	     ;; #:p/sax-integer-string       ;; `string-to-number'
-	     ;; #:p/sax-float-string   ;; `string-to-number'
+	     ;; #:p/sax-float-string         ;; `string-to-number'
 	     ;; #:p/sax-extract-tr
-	     ;;
 	     ;;
 	     ;; dbc-class.lisp
 	     ;;
 	     ;; 
+             ;; dbc-classes/dbc-class-paths.lisp
+             ;; 
+             ;; :GENERIC-FUNCTIONS
+	     #:dbc-base-path
+	     #:dbc-var-binding
+	     #:dbc-system-described
+             #:dbc-system-path-if
+             #:ensure-system-parent-path
+	     ;; :CLASSES
+	     #:dbc-system-class
+	     #:dbc-system-path
+	     #:dbc-system-subdir
+	     ;; :FUNCTIONS
+	     #:find-dbc-system-path
+	     #:ensure-dbc-xml-dump-dir-exists
+           ;; loadtime-bind.lisp
+             ;;
+             
 	    ))
 
 

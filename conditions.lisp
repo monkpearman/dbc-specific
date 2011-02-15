@@ -5,103 +5,86 @@
 (in-package #:dbc)
 ;; *package*
 
-(define-condition dbc-error (error)
-  (())
-  (:documentation "Base error for dbc-errors"))
+(define-condition dbc-error (mon:mon-error)
+  ()
+  (:documentation "Base condition for dbc-errors."))
 
 (define-condition system-path-error (dbc-error)
-  ((w-path
-    :initarg :w-path 
+  ((w-system-path
+    :initarg :w-system-path 
     :initform nil 
-    :reader w-path-locus)
-   (w-obj    
+    :reader w-system-path-locus)
+   (w-system-obj    
     :initarg :w-system-obj
     :initform nil
-    :reader w-object-locus)
-   (w-slot
-    :initarg :w-slot
+    :reader w-system-object-locus)
+   (w-system-slot
+    :initarg :w-system-slot
     :initform nil
-    :reader w-slot-locus))
+    :reader w-system-slot-locus))
   (:report (lambda (condition stream)
-             (let* ((obj   (w-object-locus condition))
-                    (class (and obj ;;(class-name (class-of obj)) ))
-                                (mon::class-name-of obj) ))
-                    (slot  (and obj (w-slot-locus condition)))
-                    (slot  (and slot (or (and (slot-exists-p obj slot) slot)
-                                         ;; :NOTE this doesn't work. Why?
-                                         (error 'slot-non-existent-error 
-                                                :name slot     ;; (w-slot-locus condition)
-                                                :w-obj obj)))) ;;(w-object-locus condition)))))
-                    (path  (w-path-locus condition))
-                    (fmt   `(,(and  obj (cons ":OBJECT~12T~S" obj))
-                              ,(and obj class (cons ":CLASS~12T~S" class))
-                              ,(and obj slot (cons ":SLOT~12T~S" slot))
-                              ,(and path (cons ":PATH~12T~A" path)))))
-               (apply #'format stream
-                      (mon:mapconcat #'car fmt "~%")
-                      (mapcar #'cdr fmt)))))
+             (handler-case 
+                 (let* ((obj   (w-system-object-locus condition))
+                        (class (and obj ;;(class-name (class-of obj)) ))
+                                    (mon:class-name-of obj) ))
+                        (slot   (and obj (w-system-slot-locus condition)))
+                        (slotb  (and slot 
+                                     (or 
+                                      (and (slot-exists-p obj slot) slot)
+                                      ;; :NOTE The mon:slot-non-existent-error can not ":report", why?
+                                      ;;(error 'mon:slot-non-existent-error
+                                      (signal 
+                                       (make-condition 'mon:slot-non-existent-error
+                                                       :w-sym 'system-path-error
+                                                       :w-type 'condition
+                                                       :name slot ;;(w-system-slot-locus condition) ;; slot
+                                                       :w-obj obj ;; (w-system-object-locus condition) ;; obj
+                                                       :w-not-slot-value slot ;;(w-system-path-locus condition)))
+                                                       )))))
+                        (typ   (error-sym-type condition))
+                        ;;(typ   (and (error-sym-type condition) (error-sym-type condition)))
+                        (path  (w-system-path-locus condition))
+                        (fmt   `(;;,(and (ref-bind if-type (and typ) (cons type 
+                                 ,(and  obj (cons ":OBJECT~12T~S" obj))
+                                 ,(and obj class (cons ":CLASS~12T~S" class))
+                                 ,(and obj slotb (cons ":SLOT~12T~S" slotb))
+                                 ,(and path (cons ":PATH~12T~A" path)))))
+                   (apply #'format stream
+                          (mon:mapconcat #'car fmt "~%")
+                          (mapcar #'cdr fmt)))
+               (mon:proper-list-error (cnd) (error cnd)))))
+
   (:documentation 
    #.(format nil
    "~%~
-   :EXAMPLE~%~
-    (let ((object *dbc-xml-dump-dir*))
-      (error 'system-path-error
-             :w-obj object
-             :w-path (parent-path object)))~%~
+    Initarg :W-SYSTEM-PATH is the non-existent path value originating the error.~%~%~
+    Initarg :W-SYSTEM-OBJ is the object originating the path error.~%~%~
+    Initarg :W-SYSTEM-SLOT is the slot originating the path error.~%~%~
+   :EXAMPLE~%~%~
+    \(let \(\(object *dbc-xml-dump-dir*\)\)
+      \(error 'system-path-error
+             :w-system-obj object
+             :w-system-slot 'sub-path
+             :w-system-path \(parent-path object\)\)\)~%~%~
    :SEE-ALSO `<XREF>'.~%►►►")))
+;;
+;; :NOTE 'mon:slot-non-existent-error doesn't report when :w-system-slot is non-existent.
+;; (let ((object *dbc-xml-dump-dir*))
+;;    (error 'system-path-error
+;;         :w-system-obj  object
+;;         :w-system-slot 'sub-pathm ;; <- here
+;;         :w-system-path (parent-path object)))
+
+;; (let* ((object *dbc-xml-dump-dir*)
+;;        (cnd (make-condition 'system-path-error
+;;                             :w-sym 'bubba
+;;                             :w-type 'condition
+;;                             :w-system-obj  object
+;;                             :w-system-slot 'sub-pathm ;; <- here
+;;                             :w-system-path (parent-path object))))
+;;   (mon::ref-bind rb (mon::error-sym cnd) rb))
 
 ;;; ==============================
-;;; :WORKS
-;;; (let ((object *dbc-xml-dump-dir*))
-;;;   (error 'system-path-error
-;;;          :w-system-obj  object
-;;;          :w-slot 'SUB-PATH
-;;;          :w-path (parent-path object)))
-;;;
-;;;
-;;; :OUGHTA-BUT-DONT
-;;; (let ((object *dbc-xml-dump-dir*))
-;;;   (error 'system-path-error
-;;;          :w-system-obj  object
-;;;          :w-slot 'SUB-PATH
-;;;          :w-path (parent-path object)))
-;;; ==============================
-
-(define-condition slot-non-existent-error (cell-error)
-  ((w-obj    
-    :initarg :w-obj
-    :reader w-object-locus)
-   (w-not-slot-value
-    :initarg :w-not-slot-value
-    :reader value-for-not-slot))
-  (:report (lambda (condition stream)
-             (let* ((c-e-n (cell-error-name condition))
-                    (w-o-l (w-object-locus condition))
-                    (w-o-c (and w-o-l (mon::class-name-of w-o-l)))
-                    (w-not (value-for-not-slot condition))
-                    (fmt  `(,(and w-o-c (cons ":SLOT-NOT-OF-CLASS~24T~S" w-o-c))
-                             ,(and w-o-l (cons ":SLOT-NOT-OF-OBJECT~24T~S" w-o-l))
-                             ,(and c-e-n (cons ":SLOT-THATS-NOT~24T~S" c-e-n))
-                             ,(and w-not (cons ":SLOT-DONT-GOT~24T~S" w-not)))))
-               (apply #'format stream
-                      (mon:mapconcat #'car fmt "~%")
-                      (mapcar #'cdr fmt)))))
-  (:documentation 
-   #.(format nil
-             "Condition for slots not satisfying `slot-exists-p'.~%
- :NAME names the offending non-existent slot.~%
- Its reader is `cl:cell-error-name'.~%
- :W-OBJ is the object that doesn't contain slot.
- Its reader is w-object-locus.~%
- :W-NOT-SLOT-VALUE is the value that slot would get if existent.~%
- Its reader is value-for-not-slot.~%
- :EXAMPLE~%
- \(let \(\(object *dbc-xml-dump-dir*\)\)
-   \(error \(make-condition 'slot-non-existent-error
-                          :name 'non-existent-slot
-                          :w-obj object
-                          :w-not-slot-value 42\)\)\)~%
-:SEE-ALSO `<XREF>'.~%►►►")))
 
 
 ;;; ==============================

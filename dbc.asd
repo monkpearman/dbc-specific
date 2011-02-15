@@ -46,22 +46,25 @@
   ((:file "package")
    (:file "specials")
    (:file "conditions")
+   (:module "dbc-classes"
+            ;; :components ((:file "dbc-classes")
+            (:file "dbc-class-paths"))
+   ;; 			 (:file "dbc-class-artist-convert.lisp")
+   ;; 			 (:file "dbc-tgm.lisp")))
    (:module "dbc-parse"
 	    :components
 	    ((:file "dbc-xml-sql-parse")
 	    ;; (:file "psa-parse-table.lisp")
 	    ))
-   ;; (:module "dbc-classes"
-   ;; 	    :components ((:file "dbc-classes")
-   ;;                    (:file "dbc-class-path")
-   ;; 			 (:file "dbc-class-artist-convert.lisp")
-   ;; 			 (:file "dbc-tgm.lisp")))
+   (:file "loadtime-bind")
+   
    ))
 
 (defmethod asdf:perform :after ((op asdf:load-op) (system (eql (asdf:find-system :dbc))))
   (pushnew :dbc cl:*features*))
 
 
+;; (member :DBC cl:*features*)
 ;;  
 
 
