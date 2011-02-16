@@ -29,8 +29,8 @@
 (defgeneric dbc-system-path-if (object)
   (:documentation "Set the path for OBJECT if other slots are available and directory exists."))
 
-(defgeneric (setf dbc-system-path-if) (object)
-  (:documentation "Set the path for OBJECT if other slots are available and directory exists."))
+;; (defgeneric (setf dbc-system-path-if) (object)
+;;   (:documentation "Set the path for OBJECT if other slots are available and directory exists."))
 
 (defgeneric ensure-system-parent-path (object &key)
   (:documentation "Ensure the specified parent path for object exists."))
@@ -114,53 +114,66 @@
 				   (slot-value obj x))))
 		  (sort (mon:class-slot-list 'dbc-system-subdir) #'string-lessp))))
 
-
-
-;; UNFINISHED
-(defmethod ensure-system-parent-path ((object dbc-system-subdir) &key stream)
-  (with-accessors ((sub-name sub-name)
-                   (parent-path parent-path))
+(defmethod ensure-system-parent-path ((object dbc-system-subdir) &key)
+  (with-accessors ((parent-path parent-path))
       object
-    (if (null sub-name)
-        (let ((object *dbc-xml-dump-dir*))
-          (error 'simple-error 
-                 :format-control "With class: DBC-SYSTEM-SUBDIR ~%~
-                                  object: ~S has null slot SUB-NAME ~%~
-                                  declining verification of fad:directory-exists-p ~%~
-                                  with PARENT-PATH value: ~A" 
-                 :format-arguments  (list object (parent-path object))))
-        (let ((parent (and parent-path (fad:directory-exists-p parent-path))))
-          (and parent 
-               (setf parent
-                     (merge-pathnames 
-                            (make-pathname :directory `(:relative ,sub-name))
-                            parent-path))
-                     (setf do-sub (fad:directory-exists-p do-sub))))
+    (when (null parent-path)
+      (error 'system-path-error
+             :w-sym 'ensure-system-parent-path
+             :w-type 'method
+             :w-system-slot 'parent-path
+             :w-system-obj object
+             :w-system-path parent-path
+             :w-system-aux-msg "slot PARENT-PATH is null"))
+    (let ((parent (fad:directory-exists-p parent-path)))
+      (if (null parent)
+          (error 'system-path-error
+                 :w-sym 'ensure-system-parent-path
+                 :w-type 'method
+                 :w-system-slot 'parent-path
+                 :w-system-obj object
+                 :w-system-path parent-path
+                 :w-system-aux-msg "slot PARENT-PATH names non-existent directory")
+          parent))))
 
-           (or (and do-sub (setf sub-name do-sub))
-               (dbc-system-described object nil)
-               ;; finish me :SEE ./conditions.lisp system-path-error system-path-error
-               ;; (mon:simple-error-mon :w-sym 'ensure-system-parent-path
-               ;;                       :w-type 'function
-               ;;                       :w-spec
-               ;;                       :w-args
-               ;;                       )
-           ))))
-
-
-(let ((object *dbc-xml-dump-dir*))
-  (with-accessors ((sub-name sub-name)
-                   (sub-path sub-path)
-                   (parent-path parent-path))
+(defmethod dbc-system-path-if ((object dbc-system-subdir))
+  (with-accessors ((parent-path parent-path)
+                   (sub-name sub-name)
+                   (sub-path sub-path))
       object
-    (if (null sub-name)
-        (error 'simple-error 
-                 :format-control "With class: DBC-SYSTEM-SUBDIR ~%~
-                                  object: ~S has null slot SUB-NAME ~%~
-                                  declining verification of fad:directory-exists-p ~%~
-                                  with PARENT-PATH value: ~A" 
-                 :format-arguments  (list object (parent-path object)))
-        (list parent-path sub-path sub-name))))
+    (when (null sub-name)
+      (error 'system-path-error
+             :w-sym 'ensure-system-parent-path
+             :w-type 'method
+             :w-system-slot 'sub-name
+             :w-system-obj object
+             :w-system-path parent-path
+             :w-system-aux-msg
+             "slot SUB-NAME is null, not checking PARENT-PATH with fad:directory-exists-p"))
+    (let ((chk-parent (ensure-system-parent-path object)))
+      (setf chk-parent
+            (merge-pathnames 
+             (etypecase sub-name
+                ;;(list (make-pathname :directory   `(:relative ,@sub-name)))
+               (mon:each-a-string (make-pathname :directory   `(:relative ,@sub-name)))
+               (string (make-pathname :directory `(:relative ,sub-name))))
+             chk-parent))
+      (mon::ref-bind chk-sub (fad:directory-exists-p chk-parent)
+        (setf sub-path chk-sub)
+        (error 'system-path-error
+               :w-sym 'ensure-system-parent-path
+               :w-type 'method
+               :w-system-slot 'sub-path
+               :w-system-obj object
+               :w-system-path chk-parent
+               :w-system-aux-msg (format nil "will not assign slot SUB-PATH to non-existent directory ~S" chk-parent)))
+      sub-path)))
+
+
+;; *dbc-xml-dump-dir*
+;; *package*
+
+
 
 
 ;;; ==============================
@@ -195,12 +208,33 @@
 	       (setf *dbc-xml-dump-dir* dbc-dump))
 	  (warn ":FUNCTION `ensure-dbc-xml-dump-dir-exists' failed to initialize")))))
 
-;;; ==============================
-;;; 
-
-
-;;; ==============================
-
+(defun make-system-subdir (w-var &key sub-name parent-path)  
+  (and (or (and (not (symbolp w-var))
+                (eql (class-of w-var)
+                     (find-class 'dbc-system-subdir)))
+           (and (symbolp w-var)
+                (eql (class-of (symbol-value w-var))
+                     (find-class 'dbc-system-subdir))))
+       (mon:simple-error-mon :w-sym 'make-system-subdir
+                             :w-type 'function
+                             :w-spec '("W-VAR already instance of class DBC-SYSTEM-SUBDIR~%"
+                                       "got-object: ~S~%object-specs:~%~A")
+                             :w-args (let ((w-var-frobd (or (and (symbolp w-var)
+                                                                 (symbol-value w-var))
+                                                            w-var)))
+                                       (list w-var-frobd
+                                             (with-output-to-string (s)
+                                               (dbc-system-described w-var-frobd s))))))
+  (let ((tmp-ob (make-instance 'dbc-system-subdir
+                               :sub-name (or sub-name (symbol-value w-var))
+                               :parent-path parent-path
+                               :var-name (cons (symbol-name (identity w-var))
+                                               (identity w-var)))))    
+    (and 
+     (dbc-system-path-if tmp-ob)
+     (setf (symbol-value w-var) tmp-ob)
+     (prog1 (symbol-value w-var)
+       (dbc-system-described (symbol-value w-var) t)))))
 
 
 ;;; ==============================
@@ -230,6 +264,17 @@ Return non-nil on success.~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
+
+(fundoc 'make-system-subdir
+ "Make W-VAR an instance of class DBC-SYSTEM-SUBDIR.~%~@
+Return value is as per `dbc-system-described'.~%~@
+Keywords :SUB-NAME and :PARENT-PATH are as per DBC-SYSTEM-SUBDIR accessors.~%~@
+When SUB-NAME is ommitted default to value of symbol W-VAR.~%~@
+When W-VAR is already an instance of class DBC-SYSTEM-SUBDIR signal an error.~%~@
+:EXAMPLE~%
+ \(make-system-subdir '*dbc-notes-dir*
+                     :parent-path \(dbc-base-path *dbc-system-path*\)\)~%~@
+:SEE-ALSO `dbc-system-path-if'.~%►►►")
 
 
 ;;; ==============================

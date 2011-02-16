@@ -20,11 +20,7 @@
 
 (defparameter *dbc-notes-dir*    "notes-versioned")
 
-(defparameter *dbc-xml-source-dir* nil)
-
-;; (setf *dbc-notes-dir* "notes-versioned")
-;; (setf *dbc-xml-source-dir* "sql-file-per-table-2010-08-25")
-
+(defparameter *dbc-xml-source-dir* (list "sql-file-per-table-2010-08-25" "from-DBC-ARCH-2010-09-01"))
 
 
 ;;; ==============================

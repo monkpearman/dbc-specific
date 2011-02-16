@@ -13,68 +13,88 @@
   ((w-system-path
     :initarg :w-system-path 
     :initform nil 
-    :reader w-system-path-locus)
+    :reader system-path-locus)
    (w-system-obj    
     :initarg :w-system-obj
     :initform nil
-    :reader w-system-object-locus)
+    :reader system-object-locus)
    (w-system-slot
     :initarg :w-system-slot
     :initform nil
-    :reader w-system-slot-locus))
+    :reader system-slot-locus)
+   (w-system-aux-msg
+    :initarg :w-system-aux-msg 
+    :initform nil
+    :reader system-aux-msg))
   (:report (lambda (condition stream)
              (handler-case 
-                 (let* ((obj   (w-system-object-locus condition))
-                        (class (and obj ;;(class-name (class-of obj)) ))
-                                    (mon:class-name-of obj) ))
-                        (slot   (and obj (w-system-slot-locus condition)))
+                 (let* ((obj   (system-object-locus condition))
+                        (class (and obj (mon:class-name-of obj) )) ;;(class-name (class-of obj)) ))
+                        (slot   (and obj (system-slot-locus condition)))
                         (slotb  (and slot 
                                      (or 
                                       (and (slot-exists-p obj slot) slot)
                                       ;; :NOTE The mon:slot-non-existent-error can not ":report", why?
-                                      ;;(error 'mon:slot-non-existent-error
-                                      (signal 
-                                       (make-condition 'mon:slot-non-existent-error
-                                                       :w-sym 'system-path-error
-                                                       :w-type 'condition
-                                                       :name slot ;;(w-system-slot-locus condition) ;; slot
-                                                       :w-obj obj ;; (w-system-object-locus condition) ;; obj
-                                                       :w-not-slot-value slot ;;(w-system-path-locus condition)))
-                                                       )))))
-                        (typ   (error-sym-type condition))
-                        ;;(typ   (and (error-sym-type condition) (error-sym-type condition)))
-                        (path  (w-system-path-locus condition))
-                        (fmt   `(;;,(and (ref-bind if-type (and typ) (cons type 
-                                 ,(and  obj (cons ":OBJECT~12T~S" obj))
+                                      (signal (make-condition 'mon:slot-non-existent-error
+                                                              :w-sym 'system-path-error
+                                                              :w-type 'condition
+                                                              :name slot
+                                                              :w-obj obj
+                                                              :w-not-slot-value slot)))))
+                        (sym   (mon::error-sym condition))
+                        (typ   (mon::ref-bind est (mon::error-sym-type condition)
+                                 (mon::format-error-symbol-type (or (and sym sym) 'system-path-error) est)
+                                 (mon::format-error-symbol-type (or (and sym sym) 'system-path-error) 'condition)))
+                        (path  (system-path-locus condition))
+                        (aux   (system-aux-msg condition))
+                        (fmt   `(,(and typ (cons "~A" typ))
+                                 ,(and obj (cons ":OBJECT~12T~S" obj))
                                  ,(and obj class (cons ":CLASS~12T~S" class))
                                  ,(and obj slotb (cons ":SLOT~12T~S" slotb))
-                                 ,(and path (cons ":PATH~12T~A" path)))))
+                                 ,(and path (cons ":PATH~12T~A" path))
+                                 ,(and aux (cons "~12T~A" aux)))))
                    (apply #'format stream
                           (mon:mapconcat #'car fmt "~%")
                           (mapcar #'cdr fmt)))
                (mon:proper-list-error (cnd) (error cnd)))))
-
   (:documentation 
    #.(format nil
    "~%~
     Initarg :W-SYSTEM-PATH is the non-existent path value originating the error.~%~%~
     Initarg :W-SYSTEM-OBJ is the object originating the path error.~%~%~
     Initarg :W-SYSTEM-SLOT is the slot originating the path error.~%~%~
+    Initarg :W-SYSTEM-AUX-MSG is an auxiliarry string to augment condition's :report.~@
+    If provided it appears as the last line in report.~%~%~
+    When :W-SYM and/or :W-TYPE are provided they are as per `mon:mon-error'.~@
+    If ommitted they are defaulted.~@
+   :W-SYM defaults to system-path-error, :W-TYPE defaults to 'condition.~%~%~
+
    :EXAMPLE~%~%~
     \(let \(\(object *dbc-xml-dump-dir*\)\)
       \(error 'system-path-error
              :w-system-obj object
              :w-system-slot 'sub-path
              :w-system-path \(parent-path object\)\)\)~%~%~
-   :SEE-ALSO `<XREF>'.~%►►►")))
+    \(let \(\(object *dbc-xml-dump-dir*\)\)
+      \(error 'system-path-error
+             :w-sym 'bubba
+             :w-type 'condition
+             :w-system-obj  object
+             :w-system-slot 'sub-path
+             :w-system-path \(parent-path object\)\)\)~%~%~
+    \(let* \(\(object *dbc-xml-dump-dir*\)
+       \(cnd \(make-condition 'system-path-error
+                            :w-sym 'bubba
+                            :w-type 'function
+                            :w-system-obj  object
+                            :w-system-slot 'sub-path
+                            :w-system-path \(parent-path object\)
+                            :w-system-aux-msg \"Danger, Will Robinson\"\)\)\)
+       \(error cnd\)\)~%~%~
+   :SEE-ALSO `dbc:dbc-error', `mon:format-error-symbol-type'.~%►►►")))
+
 ;;
 ;; :NOTE 'mon:slot-non-existent-error doesn't report when :w-system-slot is non-existent.
-;; (let ((object *dbc-xml-dump-dir*))
-;;    (error 'system-path-error
-;;         :w-system-obj  object
-;;         :w-system-slot 'sub-pathm ;; <- here
-;;         :w-system-path (parent-path object)))
-
 ;; (let* ((object *dbc-xml-dump-dir*)
 ;;        (cnd (make-condition 'system-path-error
 ;;                             :w-sym 'bubba

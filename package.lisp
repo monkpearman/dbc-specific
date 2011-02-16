@@ -96,16 +96,19 @@
 	     #:dbc-system-described
              #:dbc-system-path-if
              #:ensure-system-parent-path
+             ;; 
 	     ;; :CLASSES
 	     #:dbc-system-class
 	     #:dbc-system-path
 	     #:dbc-system-subdir
+             ;;
 	     ;; :FUNCTIONS
 	     #:find-dbc-system-path
 	     #:ensure-dbc-xml-dump-dir-exists
+             #:make-system-subdir
+             ;;
            ;; loadtime-bind.lisp
              ;;
-             
 	    ))
 
 
