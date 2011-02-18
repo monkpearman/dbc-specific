@@ -100,7 +100,7 @@
      (setf (slot-value obj 'var-name)  
 	   (cons (string var) var)))))
 
-(defmethod dbc-system-described ((obj (eql *dbc-system-path*)) stream)
+(defmethod dbc-system-described ((obj dbc-system-path) stream)
   (format stream "~{:~14A~@S~^~%~}"
 	  (mapcan #'(lambda (x) 
 		      (list x (and (slot-boundp  obj x)
@@ -185,20 +185,22 @@
 		       (mon:pathname-directory-system :dbc)
 		       (mon:simple-error-mon  :w-sym  'find-dbc-system-path
 					      :w-type 'function
-					      :w-spec "mon:pathname-directory-system can not find system :DBC"))) 
+					      :w-spec "mon:pathname-directory-system can not find system :DBC"
+                                              :signal-or-only nil))) 
 	 (dbc-if (or
 		  (fad:directory-exists-p (make-pathname :directory dbc-sys-chk))
 		  (mon:simple-error-mon  :w-sym  'find-dbc-system-path
 					 :w-type 'function
 					 :w-spec "calling `fad:directory-exists-p' but did not find pathname:~%~S"
-					 :w-args `(,(make-pathname :directory dbc-sys-chk))))))
+					 :w-args `(,(make-pathname :directory dbc-sys-chk))
+                                         :signal-or-only nil))))
     dbc-if))
 
 (defun ensure-dbc-xml-dump-dir-exists ()
-  (declare (special *dbc-system-path* *dbc-xml-dump-dir-name* *dbc-xml-dump-dir*))
+  (declare (special *dbc-system-path* *dbc-xml-dump-dir*))
   (unless (eql (class-of *dbc-xml-dump-dir*) (find-class 'dbc-system-subdir))
     (let ((pth-chk  (dbc-base-path *dbc-system-path*))
-	  (dbc-dump (make-instance 'dbc-system-subdir :sub-name *dbc-xml-dump-dir-name*)))
+	  (dbc-dump (make-instance 'dbc-system-subdir :sub-name *dbc-xml-dump-dir*)))
       (or (and pth-chk
 	       (setf (parent-path dbc-dump) pth-chk)
 	       (setf (sub-path dbc-dump) 
@@ -224,12 +226,13 @@
                                                             w-var)))
                                        (list w-var-frobd
                                              (with-output-to-string (s)
-                                               (dbc-system-described w-var-frobd s))))))
+                                               (dbc-system-described w-var-frobd s))))
+                             :signal-or-only nil))
   (let ((tmp-ob (make-instance 'dbc-system-subdir
                                :sub-name (or sub-name (symbol-value w-var))
                                :parent-path parent-path
                                :var-name (cons (symbol-name (identity w-var))
-                                               (identity w-var)))))    
+                                               (identity w-var))))) 
     (and 
      (dbc-system-path-if tmp-ob)
      (setf (symbol-value w-var) tmp-ob)
@@ -265,7 +268,7 @@ Return non-nil on success.~%~@
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
 
-(fundoc 'make-system-subdir
+(mon:fundoc 'make-system-subdir
  "Make W-VAR an instance of class DBC-SYSTEM-SUBDIR.~%~@
 Return value is as per `dbc-system-described'.~%~@
 Keywords :SUB-NAME and :PARENT-PATH are as per DBC-SYSTEM-SUBDIR accessors.~%~@

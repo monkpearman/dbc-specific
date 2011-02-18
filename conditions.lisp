@@ -48,15 +48,16 @@
                         (path  (system-path-locus condition))
                         (aux   (system-aux-msg condition))
                         (fmt   `(,(and typ (cons "~A" typ))
-                                 ,(and obj (cons ":OBJECT~12T~S" obj))
-                                 ,(and obj class (cons ":CLASS~12T~S" class))
-                                 ,(and obj slotb (cons ":SLOT~12T~S" slotb))
-                                 ,(and path (cons ":PATH~12T~A" path))
-                                 ,(and aux (cons "~12T~A" aux)))))
+                                  ,(and obj (cons ":OBJECT~12T~S" obj))
+                                  ,(and obj class (cons ":CLASS~12T~S" class))
+                                  ,(and obj slotb (cons ":SLOT~12T~S" slotb))
+                                  ,(and path (cons ":PATH~12T~A" path))
+                                  ,(and aux (cons "~12T~A" aux)))))
                    (apply #'format stream
                           (mon:mapconcat #'car fmt "~%")
                           (mapcar #'cdr fmt)))
-               (mon:proper-list-error (cnd) (error cnd)))))
+               ;; (mon:proper-list-error (cnd) (error cnd))
+               (mon:slot-non-existent-error (cnd) (error cnd)))))
   (:documentation 
    #.(format nil
    "~%~

@@ -53,68 +53,42 @@
     ref-hash))
 
 ;;; ==============================
-(defparameter *dbc-xml-dump-file-refs-name*
-  (merge-pathnames
-   ;; use this when parsing
-   ;; (make-pathname :name "parsed-refs-xml")
-   ;; use this when testing
-   (make-pathname :name "parsed-refs-xml-SCRATCH")
-   (dbc::sub-path *dbc-xml-dump-dir*)))
-;; *DBC-XML-DUMP-FILE-REFS-NAME*
-;; #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/xml-class-dump-dir/parsed-refs-xml"
-
-(defparameter *dbc-xml-dump-file-refs-temp-name*
-  (truename
-   (merge-pathnames
-    (make-pathname :directory '(:relative "notes-versioned" "scratch-xml-for-parse")
-                   ;; :name "example-refs"
-                   :name "example-refs-in-short"
-                   :type "in")
-    (dbc-base-path *dbc-system-path*)))
-  "Temporary file for parsing xml refs before handling the whole shebang.~
-   Use *dbc-xml-dump-file-refs-name* when ready.")
-;; *DBC-XML-DUMP-FILE-REFS-TEMP-NAME*
-;; #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/notes-versioned/scratch-xml-for-parse/example-refs.in"
-
-(defparameter *dbc-xml-dump-file-refs-out*
-  (merge-pathnames 
-   (make-pathname :type "out")
-   *dbc-xml-dump-file-refs-name*)
-  "filename for dumping parsed xml refs file.")
-
-(defparameter *dbc-xml-source-file-refs*
-  (fad:file-exists-p
-   (merge-pathnames
-    (make-pathname :name "dump-refs-DUMPING")
-    *dbc-xml-source-dir*)))
-;; *DBC-XML-SOURCE-FILE-REFS*
-;;; #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/notes-versioned/sql-file-per-table-2010-08-25/from-DBC-ARCH-2010-09-01/dump-refs-xml"
-
+;; `*dbc-notes-dir*'
+;; `*dbc-xml-dump-dir*'                   ---> OUTPUT
+;; `*dbc-xml-dump-file-refs-name*'        ---> OUTPUT
+;; `*dbc-xml-dump-file-refs-out*'         ---> OUTPUT
+;; `*dbc-xml-source-dir*'                 <--- INPUT
+;; `*dbc-xml-source-file-refs*'           <--- INPUT
+;; `*dbc-xml-source-file-refs-temp-name*' <--- INPUT
+;; 
+;; ---> OUTPUT
+;; *dbc-xml-dump-file-refs-name*
+;; "../dbc-specific/xml-class-dump-dir/parsed-refs-xml"
+;;
 ;; *dbc-xml-dump-file-refs-out*
+;; (fad:file-exists-p *dbc-xml-dump-file-refs-out*)
 
-;; *dbc-xml-dump-file-refs-temp-name*
-;; #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/notes-versioned/scratch-xml-for-parse/example-refs-in-short.in"
+;;; ==============================
+;; <--- INPUT
+;; *dbc-xml-source-file-refs*
+;; "../dbc-specific/notes-versioned/sql-file-per-table-2010-08-25/from-DBC-ARCH-2010-09-01/dump-refs-xml"
+;;
+;; *dbc-xml-source-file-refs-temp-name*
+;; "../dbc-specific/notes-versioned/scratch-xml-for-parse/"
+;; "../notes-versioned/scratch-xml-for-parse/example-refs.in"
+;; "../dbc-specific/notes-versioned/scratch-xml-for-parse/example-refs-in-short.in"
 
 ;; (dbc-field-attribs-parse *dbc-xml-dump-file-refs-temp-name*)
 
+;;; ==============================
 
-(defparameter *dbc-xml-refs-match* 
-  (list "ref" "price" "year" ;; "year_year"
-        "artist" "condition")
-  "Fields needed  when parsing dbc-xml-refs for new york.")
-
-(defparameter *dbc-xml-refs-match-table* 
-  (make-ref-lookup-table *dbc-xml-refs-match*)
-  "A hash-table mapping field name to parsing-function for use when parsing dbc-xml-refs.
-:EXAMPLE
-\(gethash \"ref\" *dbc-xml-refs-match-table*\)")
-
-
+;; dbc-parse/dbc-xml-refs-parse.lisp
 ;;; ==============================
 
 (defun dbc-field-attribs-find (src)
   ;; Return => ":YEAR"
   ;; *tt--xml-dmp*
+  (declare (special *dbc-xml-refs-match*))
   (let* ;; (klacks:list-attributes  *tt--xml-dmp*)
       ;; (klacks:get-attribute  *tt--xml-dmp* "name")
       ((attribs     (dbc-field-attribs-parse src))

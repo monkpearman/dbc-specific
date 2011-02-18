@@ -15,8 +15,8 @@
 
 ;;; ==============================
 (defclass dbc-parsed-class ()
-  (())
-
+  ()
+  )
 
 
 ;; Which slots accessors and generics should this class establish?

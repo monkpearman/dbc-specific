@@ -15,10 +15,17 @@
 	     ;; specials.lisp
 	     ;; :VARIABLES
              #:*dbc-system-path*	     
-	     #:*dbc-xml-dump-dir*
-             #:*dbc-xml-source-dir*
+	     #:*dbc-xml-dump-dir* 
+             #:*dbc-xml-dump-file-refs-name*        ;; ---> OUTPUT
+             #:*dbc-xml-dump-file-refs-out*         ;; ---> OUTPUT
+             #:*dbc-xml-source-dir*                 ;;   <--- INPUT
+             #:*dbc-xml-source-file-refs*           ;; <--- INPUT
+             #:*dbc-xml-source-file-refs-temp-name* ;; <--- INPUT
              #:*dbc-notes-dir*
+             #:*dbc-xml-refs-match*
+             #:*dbc-xml-refs-match-table*
 	     ;;
+
            ;; dbc-xml-sql-parse.lisp
 	     ;;
 	     ;;
@@ -106,6 +113,15 @@
 	     #:find-dbc-system-path
 	     #:ensure-dbc-xml-dump-dir-exists
              #:make-system-subdir
+             ;;
+             ;;
+           ;; dbc-parse/dbc-xml-refs-parse.lisp
+             #:make-ref-maker-sym-name
+             #:make-ref-maker-symbol
+             #:make-ref-lookup-table
+             #:dbc-field-attribs-find
+             #:dbc-field-attribs-consume-if
+             #:dbc-xml-refs-field-parse
              ;;
            ;; loadtime-bind.lisp
              ;;

@@ -47,22 +47,27 @@
    (:file "specials")
    (:file "conditions")
    (:module "dbc-classes"
-            ;; :components ((:file "dbc-classes")
-            (:file "dbc-class-paths"))
+            :components                 
+            (
+             ;;(:file "dbc-classes")
+             (:file "dbc-class-paths")))
    ;; 			 (:file "dbc-class-artist-convert.lisp")
    ;; 			 (:file "dbc-tgm.lisp")))
    (:module "dbc-parse"
 	    :components
 	    ((:file "dbc-xml-sql-parse")
+            ((:file "dbc-xml-refs-parse"))
 	    ;; (:file "psa-parse-table.lisp")
 	    ))
-   (:file "loadtime-bind")
-   
+   ;; (:file "loadtime-bind") ;; :SEE asdf:perform below
    ))
 
 (defmethod asdf:perform :after ((op asdf:load-op) (system (eql (asdf:find-system :dbc))))
-  (pushnew :dbc cl:*features*))
-
+  (pushnew :dbc cl:*features*)
+  (let ((chk-if (fad:file-exists-p 
+                 (make-pathname :directory `(,@(mon:pathname-directory-system :dbc))
+                                :name "loadtime-bind" :type "lisp"))))
+    (and chk-if (load  chk-if))))
 
 ;; (member :DBC cl:*features*)
 ;;  
