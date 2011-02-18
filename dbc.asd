@@ -56,7 +56,7 @@
    (:module "dbc-parse"
 	    :components
 	    ((:file "dbc-xml-sql-parse")
-            ((:file "dbc-xml-refs-parse"))
+             (:file "dbc-xml-refs-parse")
 	    ;; (:file "psa-parse-table.lisp")
 	    ))
    ;; (:file "loadtime-bind") ;; :SEE asdf:perform below
