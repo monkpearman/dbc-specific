@@ -111,7 +111,7 @@
 ;;               doc-term     (doc-naf)
 ;;               doc-category (doc-naf)
 
-
+
 ;;; ==============================
 ;; dbc-naf (dbc-class)
 ;;        img-naf (dbc-img)
@@ -164,6 +164,7 @@
 ;;
 ;;        doc-theme (dbc-doc)
 
+
 ;;; ==============================
 ;; dbc-category (dbc-class)
 ;;         doc-category
@@ -191,6 +192,7 @@
 ;;
 ;; Thats alot of instances. I guess the answer is a rucksack index.
 
+
 ;;; ==============================
 ;; dbc-img (dbc-class)
 ;;
@@ -391,37 +393,98 @@ dbc-img-put-metadata ;; exif metadata setter
 ;;; ==============================
 ;; CLOCC-cllib/card.lisp
 
-(defcustom *name-apellations* 
-  list
-  '("Mr." "Mrs." "Ms." "Miss" "Dr" "Dr." "Prof.")
-  "The list of recognizable apellations.")
+;; :ECCLESIASTICAL-TITLES
+;; Abbess Abbot Ablak Anax Archbishop Archdeacon Ayatollah Blessed Bishop
+;; Bodhisattva Brother Buddha Cantor Cardinal Catholicos Chaplain Deacon Dean
+;; Demiurge Elder Father Friar Imam Mahdi Messiah Minister Monsignor Mother
+;; Superior Mullah Nath Pastor Patriarch Pope Primate Prophet Rabbi Rebbe Reverend
+;; Rosh HaYeshiva Saint Saoshyant Sister Ter[disambiguation needed] Tirthankar
+;; Vardapet Venerable
+
+;; :HEREDITARTY-TITLES 
+;; "Duke" "Duchess" "Archduke" "Archduchess" "Grand Duke" "Grand Duchess" "Earl"
+;; "Count" "Countess"
+;; "Emperor" "Empress" "King Queen" "Prince" "Princess" "Tsar" "Tzar"
+;;  "Baron" "Baroness"
+
+;; :HONORARY-TITLE
+;; "Marquis" "Marquess" "Marquise" "Marchioness"
+
+
+;; PREFIX
+(defcustom *name-apellations* list 
+  ;; "Madam" "Lady" "Dame" 
+  ;; "Mstr." "Mister"
+  '("Mr."
+    "Mrs." "Mrs" ;; Mrs <- UK
+    "Ms." "Miss" 
+    "Dr" "Dr." 
+    "Professor" "Prof.")
+  "The list of recognizable apellations.
+e.g. titles prefexing a name")
+
+;; SUFFIX
+
+(defcustom *name-apellations-suffix* list
+  '("Jr." "Junior" 
+    "Sr." "Senior"
+    "Ph.D."
+    "M.D."
+    "Esq.") ;; "Esquire" )
+  "The list of recognizable apellations.
+e.g. titles suffixing a name form.")
 
 (defclass name ()
-  ((first :type simple-string 
-	  :initarg first 
-	  :accessor name-first
-          :documentation "the first name")
-   (ini :type simple-string 
-	:initarg ini 
-	:accessor name-ini
-        :documentation "the middle initial name")
-   (last :type simple-string 
-	 :initarg last 
-	 :accessor name-last
-         :documentation "the last name")
-   (prefix :type simple-string 
-	   :initarg prefix 
-	   :accessor name-prefix
-           :documentation "the prefix (like `PhD')")
-   (suffix :type simple-string 
-	   :initarg suffix 
-	   :accessor name-suffix
-	   :documentation "the suffix (like `VII')")
-   (aka :type cons 
-	:initarg aka 
-	:accessor name-aka
-        :documentation "the list of aliases"))
+  ((first
+    :type simple-string 
+    :initarg :first
+    :accessor name-first
+    :documentation "The first name")
+   (middle
+    :type simple-string 
+    :initarg :middle
+    :accessor name-middle
+    :documentation "The middle initial or middle-name")
+   (last
+    :type simple-string 
+    :initarg :last 
+    :accessor name-last
+    :documentation "The last name")
+   (prefix
+    :type simple-string 
+    :initarg :prefix 
+    :accessor name-prefix
+    :documentation "the prefix (like `PhD')")
+   (suffix 
+    :type simple-string 
+    :initarg :suffix 
+    :accessor name-suffix
+    :documentation "the suffix (like `VII')")
+   (pseudo 
+    :type cons 
+    :initarg :pseudo
+    :accessor name-pseudo
+    :documentation "A list of psuedoymns, aliases, akas etc."))
   (:documentation "The name - with bells and whistles."))
+
+;; :INSTALLED TO mon-system/class-utils.lisp :WAS `slot-val'
+;; (defun slot-value-or (obj slot &optional default)
+;;   (or (when (slot-boundp obj slot)
+;; 	(slot-value obj slot))
+;;       default))
+
+(defun name-print-as-pretty (nm out)
+  (declare (type name nm) (stream out))
+  (format out "~@[~a ~]~@[~a ~]~@[~a ~]~@[~a~]~@[, ~a~]"
+          (slot-value-or nm 'prefix) 
+	  (slot-value-or nm 'first) 
+	  (slot-value-or nm 'middle)
+          (slot-value-or nm 'last)
+	  (slot-value-or nm 'suffix)
+	  ;; (slot-value-or nm 'pseudo)
+	  ;; (slot-value-or nm 'created)
+	  ;; (slot-value-or nm 'timestamp)
+	  ))
 
 ;;; ==============================
 ;;; Would be nice to also use thes slots:
@@ -474,23 +537,7 @@ DST is Daylight Saving Time indicator."
 
 ;;; ==============================
 
-(defun slot-val (obj slot &optional default)
-  (or (when (slot-boundp obj slot)
-	(slot-value obj slot))
-      default))
 
-(defun name-print-as-pretty (nm out)
-  (declare (type name nm) (stream out))
-  (format out "~@[~a ~]~@[~a ~]~@[~a ~]~@[~a~]~@[, ~a~]"
-          (slot-val nm 'prefix) 
-	  (slot-val nm 'first) 
-	  (slot-val nm 'ini)
-          (slot-val nm 'last)
-	  (slot-val nm 'suffix)
-	  ;; (slot-val nm 'aka)
-	  ;; (slot-val nm 'created)
-	  ;; (slot-val nm 'timestamp)
-	  ))
 
 
 

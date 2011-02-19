@@ -14,18 +14,17 @@
 	     ;;
 	     ;; specials.lisp
 	     ;; :VARIABLES
-             #:*dbc-system-path*	     
-	     #:*dbc-xml-dump-dir* 
-             #:*dbc-xml-dump-file-refs-name*        ;; ---> OUTPUT
-             #:*dbc-xml-dump-file-refs-out*         ;; ---> OUTPUT
-             #:*dbc-xml-source-dir*                 ;;   <--- INPUT
-             #:*dbc-xml-source-file-refs*           ;; <--- INPUT
-             #:*dbc-xml-source-file-refs-temp-name* ;; <--- INPUT
-             #:*dbc-notes-dir*
-             #:*dbc-xml-refs-match*
-             #:*dbc-xml-refs-match-table*
+             #:*system-path*	     
+             #:*system-notes-dir*
+	     #:*xml-output-dir* 
+             #:*xml-output-refs-name*        ;; ---> OUTPUT
+             #:*xml-output-refs-ext*         ;; ---> OUTPUT
+             #:*xml-input-dir*                 ;; <--- INPUT
+             #:*xml-input-refs-name*           ;; <--- INPUT
+             #:*xml-input-refs-name-temp* ;; <--- INPUT
+             #:*xml-refs-match-list*
+             #:*xml-refs-match-table*
 	     ;;
-
            ;; dbc-xml-sql-parse.lisp
 	     ;;
 	     ;;
@@ -34,35 +33,35 @@
 	     ;; klacks:current-lname klacks:current-characters
 	     ;; klacks:consume klacks:peek
 	     ;; mon:string-trim-whitespace
-	     #:dbc-table-field-parse 
+	     #:field-table-parse-out 
 	     ;;
 	     ;; cxml::cxml-source klacks:peek klacks:map-attributes
-	     #:dbc-field-attribs-parse	     
+	     #:field-parse-attribs	     
 	     ;;
-	     #:dbc-field-str-cons
-	     #:dbc-field-cln-x
+	     #:field-str-cons
+	     #:field-cln-x
 	     ;;
 	     ;; mon:string-split-on-chars
-	     #:dbc-split-used-fors   
+	     #:split-used-fors   
 	     ;;
 	     ;; mon:string-split-on-chars, mon:string-trim-whitespace
-	     #:dbc-split-appeared-in 
+	     #:split-appeared-in 
 	     ;;
 	     ;; mon:string-split-on-chars
-	     #:dbc-split-roles
+	     #:split-roles
 	     ;;
 	     ;; mon:make-string*
-	     #:dbc-format-entity-role
+	     #:format-entity-role
 	     ;;
 	     ;; mon:string-trim-whitespace mon:concat mon:string-split-on-chars
-	     #:dbc-split-lifespan
+	     #:split-lifespan
 	     ;;
-	     #:dbc-split-lifespan-string-int-pairs
+	     #:split-lifespan-string-int-pairs
 	     ;;
 	     ;; mon:string-null-or-empty-p mon:string-split-on-chars mon:string-trim-whitespace
-	     #:dbc-split-comma-field
-	     #:dbc-convert-1-0-x-field
-	     #:dbc-split-loc-pre
+	     #:split-comma-field
+	     #:field-convert-1-0-x
+	     #:split-loc-pre
 	     ;;
 	     ;;
            ;; conditions.lisp
@@ -98,20 +97,25 @@
              ;; dbc-classes/dbc-class-paths.lisp
              ;; 
              ;; :GENERIC-FUNCTIONS
-	     #:dbc-base-path
-	     #:dbc-var-binding
-	     #:dbc-system-described
-             #:dbc-system-path-if
-             #:ensure-system-parent-path
+	     #:system-base-path              ;; system-base-path
+	     #:system-path-var-binding
+	     #:system-described
+             #:system-path-if
+             #:system-parent-path-ensure
              ;; 
 	     ;; :CLASSES
-	     #:dbc-system-class
-	     #:dbc-system-path
-	     #:dbc-system-subdir
+	     #:system-base
+	     #:system-path
+	     #:system-subdir
+             ;; :ACCESSORS
+             #:sub-name     ;; system-subdir
+             #:sub-path     ;; system-subdir
+             #:parent-path  ;; system-subdir
              ;;
 	     ;; :FUNCTIONS
-	     #:find-dbc-system-path
-	     #:ensure-dbc-xml-dump-dir-exists
+	     #:find-system-path
+	     #:system-path-xml-dump-dir-ensure
+             #:system-subdir-init-w-var :renamed :from `make-system-subdir'
              #:make-system-subdir
              ;;
              ;;
@@ -119,9 +123,9 @@
              #:make-ref-maker-sym-name
              #:make-ref-maker-symbol
              #:make-ref-lookup-table
-             #:dbc-field-attribs-find
-             #:dbc-field-attribs-consume-if
-             #:dbc-xml-refs-field-parse
+             #:field-attribs-find
+             #:field-attribs-consume-if
+             #:field-parse-refs
              ;;
            ;; loadtime-bind.lisp
              ;;

@@ -5,66 +5,66 @@
 
 (format nil "~%~%load-time-value pathname: ~S~%~%" (load-time-value *default-pathname-defaults*))
 
-(setf *dbc-xml-refs-match-table* (make-ref-lookup-table *dbc-xml-refs-match*))
+(setf *xml-refs-match-table* (make-ref-lookup-table *xml-refs-match-list*))
 
-;; `*dbc-system-path*'
-(unless (not (null *dbc-system-path*))
-  (setf *dbc-system-path* (make-instance 'dbc-system-path))
-  (setf (dbc-base-path *dbc-system-path*) (find-dbc-system-path))
+;; `*system-path*'
+(unless (not (null *system-path*))
+  (setf *system-path* (make-instance 'system-path))
+  (setf (system-base-path *system-path*) (find-system-path))
   (prog1 t (terpri))
-  (dbc-system-described *dbc-system-path* t))
+  (system-described *system-path* t))
 
-;; `*dbc-xml-dump-dir*'
-(and (not (null *dbc-system-path*))
-     (ensure-dbc-xml-dump-dir-exists)
-     (setf (dbc-var-binding *dbc-xml-dump-dir*) '*dbc-xml-dump-dir*)
+;; `*xml-output-dir*'
+(and (not (null *system-path*))
+     (system-path-xml-dump-dir-ensure)
+     (setf (system-path-var-binding *xml-output-dir*) '*xml-output-dir*)
      (prog1 t (terpri))
-     (dbc-system-described *dbc-xml-dump-dir* t))
+     (system-described *xml-output-dir* t))
 
 (progn
-  ;; `*dbc-notes-dir*'
-  (make-system-subdir '*dbc-notes-dir* 
-                      :parent-path (dbc-base-path *dbc-system-path*))
-  (when (sub-path *dbc-notes-dir*)
-    ;; :NOTE `make-system-subdir' should take care of describing to *standard-output*
-    ;; (dbc-system-described *dbc-notes-dir* nil)
+  ;; `*system-notes-dir*'
+  (system-subdir-init-w-var '*system-notes-dir* 
+                      :parent-path (system-base-path *system-path*))
+  (when (sub-path *system-notes-dir*)
+    ;; :NOTE `system-subdir-init-w-var' should take care of describing to *standard-output*
+    ;; (system-described *system-notes-dir* nil)
     ;; We terpri so as to delimit the descriptions.
     (dotimes (i 3) (terpri))
-    ;; `*dbc-xml-source-dir*'
-    (make-system-subdir '*dbc-xml-source-dir*
-                        :parent-path (sub-path *dbc-notes-dir*))
-    ;; :NOTE `make-system-subdir' should take care of describing to *standard-output*
-    ;; (when (sub-path *dbc-xml-source-dir*)
-    ;;   (dbc-system-described *dbc-xml-source-dir* nil))
+    ;; `*xml-input-dir*'
+    (system-subdir-init-w-var '*xml-input-dir*
+                        :parent-path (sub-path *system-notes-dir*))
+    ;; :NOTE `system-subdir-init-w-var' should take care of describing to *standard-output*
+    ;; (when (sub-path *xml-input-dir*)
+    ;;   (system-described *xml-input-dir* nil))
     ))
 
-(and (sub-path *dbc-xml-source-dir*)
-     (let (;; *dbc-xml-source-file-refs*
+(and (sub-path *xml-input-dir*)
+     (let (;; *xml-input-refs-name*
            (chk-sfr-if (fad:file-exists-p
-                        (make-pathname :directory (pathname-directory (sub-path *dbc-xml-source-dir*))
+                        (make-pathname :directory (pathname-directory (sub-path *xml-input-dir*))
                                        :name "dump-refs-DUMPING")))
-           ;; *dbc-xml-source-file-refs-temp-name*
+           ;; *xml-input-refs-name-temp*
            (chk-nts-if
             (and 
-             (sub-path *dbc-notes-dir*)
+             (sub-path *system-notes-dir*)
              (merge-pathnames (make-pathname :directory '(:relative "scratch-xml-for-parse")
-                                             ;; :NOTE When really parsing use *dbc-xml-source-file-refs*
+                                             ;; :NOTE When really parsing use *xml-input-refs-name*
                                              ;;       when testing use "example-refs-in-short" and/or "example-refs"
                                              :name "example-refs-in-short"
                                              :type "in")
-                              (sub-path *dbc-notes-dir*)))))
+                              (sub-path *system-notes-dir*)))))
        ;; ---> OUTPUT
-       (setf *dbc-xml-dump-file-refs-name*
-             (make-pathname :directory (pathname-directory (sub-path *dbc-xml-dump-dir*))
+       (setf *xml-output-refs-name*
+             (make-pathname :directory (pathname-directory (sub-path *xml-output-dir*))
                             ;; :NOTE When really parsing use "parsed-refs-xml" 
                             ;;       when testing use "parsed-refs-xml-SCRATCH"
                             :name "parsed-refs-xml-SCRATCH"))
-       (and *dbc-xml-dump-file-refs-name*
-            (setf *dbc-xml-dump-file-refs-out*
-                  (merge-pathnames  (make-pathname :type "out") *dbc-xml-dump-file-refs-name*)))
+       (and *xml-output-refs-name*
+            (setf *xml-output-refs-ext*
+                  (merge-pathnames  (make-pathname :type "out") *xml-output-refs-name*)))
        ;; <--- INPUT
-       (and chk-sfr-if (setf *dbc-xml-source-file-refs* chk-sfr-if))
-       (and chk-nts-if (setf *dbc-xml-source-file-refs-temp-name* chk-nts-if))))
+       (and chk-sfr-if (setf *xml-input-refs-name* chk-sfr-if))
+       (and chk-nts-if (setf *xml-input-refs-name-temp* chk-nts-if))))
 
 ;;; ==============================
 ;;; :LOADTIME-BIND-DOCUMENTATION

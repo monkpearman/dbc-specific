@@ -4,7 +4,7 @@
 
 ;; :NOTE This is the base class from wich other converted dbc-classes inherit.
 ;;      The intent is that this class should allow auxillary :before :after :around
-;;      methods to act on the primary-methods of `dbc-parsed-class' inheritors.
+;;      methods to act on the primary-methods of `parsed-class' inheritors.
 ;;      IOW, this your basic mixin base class :)
 
 
@@ -14,7 +14,7 @@
 
 
 ;;; ==============================
-(defclass dbc-parsed-class ()
+(defclass parsed-class ()
   ()
   )
 

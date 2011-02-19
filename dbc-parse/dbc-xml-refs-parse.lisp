@@ -54,67 +54,67 @@
 
 ;;; ==============================
 ;; `*dbc-notes-dir*'
-;; `*dbc-xml-dump-dir*'                   ---> OUTPUT
-;; `*dbc-xml-dump-file-refs-name*'        ---> OUTPUT
-;; `*dbc-xml-dump-file-refs-out*'         ---> OUTPUT
-;; `*dbc-xml-source-dir*'                 <--- INPUT
-;; `*dbc-xml-source-file-refs*'           <--- INPUT
-;; `*dbc-xml-source-file-refs-temp-name*' <--- INPUT
+;; `*xml-output-dir*'           ---> OUTPUT
+;; `*xml-output-refs-name*'     ---> OUTPUT
+;; `*xml-output-refs-ext*'      ---> OUTPUT
+;; `*xml-input-dir*'            <--- INPUT
+;; `*xml-input-refs-name*'      <--- INPUT
+;; `*xml-input-refs-name-temp*' <--- INPUT
 ;; 
 ;; ---> OUTPUT
-;; *dbc-xml-dump-file-refs-name*
+;; *xml-output-refs-name*
 ;; "../dbc-specific/xml-class-dump-dir/parsed-refs-xml"
 ;;
-;; *dbc-xml-dump-file-refs-out*
-;; (fad:file-exists-p *dbc-xml-dump-file-refs-out*)
+;; *xml-output-refs-ext*
+;; (fad:file-exists-p *xml-output-refs-ext*)
 
 ;;; ==============================
 ;; <--- INPUT
-;; *dbc-xml-source-file-refs*
+;; *xml-input-refs-name*
 ;; "../dbc-specific/notes-versioned/sql-file-per-table-2010-08-25/from-DBC-ARCH-2010-09-01/dump-refs-xml"
 ;;
-;; *dbc-xml-source-file-refs-temp-name*
+;; *xml-input-refs-name-temp*
 ;; "../dbc-specific/notes-versioned/scratch-xml-for-parse/"
 ;; "../notes-versioned/scratch-xml-for-parse/example-refs.in"
 ;; "../dbc-specific/notes-versioned/scratch-xml-for-parse/example-refs-in-short.in"
 
-;; (dbc-field-attribs-parse *dbc-xml-dump-file-refs-temp-name*)
+;; (field-parse-attribs *dbc-xml-dump-file-refs-temp-name*)
 
 ;;; ==============================
 
 ;; dbc-parse/dbc-xml-refs-parse.lisp
 ;;; ==============================
 
-(defun dbc-field-attribs-find (src)
+(defun field-attribs-find (src)
   ;; Return => ":YEAR"
   ;; *tt--xml-dmp*
-  (declare (special *dbc-xml-refs-match*))
+  (declare (special *xml-refs-match-list*))
   (let* ;; (klacks:list-attributes  *tt--xml-dmp*)
       ;; (klacks:get-attribute  *tt--xml-dmp* "name")
-      ((attribs     (dbc-field-attribs-parse src))
+      ((attribs     (field-parse-attribs src))
        (attribs-hd  (and attribs (car attribs)))
        (head-lname  (and attribs-hd (assoc :LOCAL-NAME attribs-hd)))
        (is-name     (and head-lname (string-equal (cdr head-lname) "name")))
        (attrib-valp (and attribs-hd (assoc :VALUE attribs-hd)))
        (attrib-mem  (and attrib-valp 
-                         (member (cdr attrib-valp) *dbc-xml-refs-match* :test #'string-equal)))
+                         (member (cdr attrib-valp) *xml-refs-match-list* :test #'string-equal)))
        (attrib-val  (and attrib-mem (car attrib-mem))))
     (declare (ignore is-name))
     (and attrib-val 
          (setf attrib-val (substitute #\- #\_ (format nil ":~:@(~A~)" attrib-val)))
 	 )))
 
-;; (dbc-field-attribs-find *tt--xml-dmp*)
+;; (field-attribs-find *tt--xml-dmp*)
 
-(defun dbc-field-attribs-consume-if (src)
+(defun field-attribs-consume-if (src)
   ;; Return => (":YEAR" . "August, 10, 1895") 
-  (let* ((get-if (dbc-field-attribs-find  src))
+  (let* ((get-if (field-attribs-find  src))
          (consume-it (and get-if (klacks:consume src)))
          (chars-if (and (eql consume-it :start-element)
                         (eql (klacks:peek src) :characters)
                         (cadr (multiple-value-bind (chrs elt) (klacks:consume src)
                                 (list chrs elt)))))
-	 ;; (cln-if (gethash get-if *dbc-xml-refs-match-table*))
+	 ;; (cln-if (gethash get-if *xml-refs-match-table*))
 	 ;; (cln-with (or 
 	 ;;             (and cln-if 
 	 ;;               (... dispatch to cleaning function 
@@ -124,7 +124,7 @@
     (and chars-if (setf chars-if (cons get-if chars-if)))))
 
 
-(defun dbc-xml-refs-field-parse (sql-xml-dmp)
+(defun field-parse-refs (sql-xml-dmp)
   (declare (pathname  sql-xml-dmp))
   (let ((ous (make-string-output-stream))  ;; use flexi?
 	(ous-out '()))
@@ -151,8 +151,8 @@
 			      ;; This doesn't happen in the current case but it
 			      ;; will if we ever try to generalize around this function.
 			      ((equal (klacks:current-lname s) "field")
-			       ;; :NOTE Parsing happens here with `dbc-field-attribs-consume-if'
-			       (let ((conspair (dbc-field-attribs-consume-if s)))
+			       ;; :NOTE Parsing happens here with `field-attribs-consume-if'
+			       (let ((conspair (field-attribs-consume-if s)))
                                  (and conspair
                                       (format ous "~A~14T~A~% " (car conspair) (cdr conspair)))))
 			      (t nil)))
@@ -177,7 +177,7 @@
 	    (prog1 (setf ous-out (get-output-stream-string ous))
               (close ous))))))
 
-;; (dbc-xml-refs-field-parse *dbc-xml-dump-file-refs-temp-name*)
+;; (field-parse-refs *dbc-xml-dump-file-refs-temp-name*)
 
 ;;; ==============================
 ;;; EOF

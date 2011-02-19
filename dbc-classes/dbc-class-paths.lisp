@@ -11,28 +11,31 @@
 ;;; :GENERIC-FUNCTIONS
 ;;; ==============================
 
-(defgeneric dbc-base-path (dbc-system))
+(defgeneric system-base-path (dbc-system))
 
-(defgeneric (setf dbc-base-path) (path dbc-system)
+(defgeneric (setf system-base-path) (path dbc-system)
   (:documentation 
-   "Set PATH for SYSTEM. Binds the class allocated slot system path for dbc-system-paths class."))
+   #.(format nil
+             "Set PATH for DBC-SYSTEM.~%~@
+              Bind the class allocated slot system-path for instances of `system-path' and~@
+             subclasses.")))
 
-(defgeneric dbc-system-described  (obj stream)
-  (:documentation "Describer for dbc-systems objects." ))
+(defgeneric system-described  (obj stream)
+  (:documentation "Describer for instances of subclasses of `system-base'." ))
 
-(defgeneric dbc-var-binding (obj)
+(defgeneric system-path-var-binding (obj)
   (:documentation "Names a variable bound to an object instance."))
 
-(defgeneric (setf dbc-var-binding) (var obj)
+(defgeneric (setf system-path-var-binding) (var obj)
   (:documentation "Set the name of  a variable bound to an object instance."))
 
-(defgeneric dbc-system-path-if (object)
+(defgeneric system-path-if (object)
   (:documentation "Set the path for OBJECT if other slots are available and directory exists."))
 
-;; (defgeneric (setf dbc-system-path-if) (object)
+;; (defgeneric (setf system-path-if) (object)
 ;;   (:documentation "Set the path for OBJECT if other slots are available and directory exists."))
 
-(defgeneric ensure-system-parent-path (object &key)
+(defgeneric system-parent-path-ensure (object &key)
   (:documentation "Ensure the specified parent path for object exists."))
 
 
@@ -40,17 +43,18 @@
 ;;; :CLASSES
 ;;; ==============================
 
-(defclass dbc-system-class ()
-   ())
+(defclass system-base ()
+  ()
+  (:documentation "Toplevel class for dbc system and system path related objects"))
 
-(defclass dbc-system-path (dbc-system-class)
+(defclass system-path (system-base)
   ((system-path 
     :initform nil
-    :accessor dbc-base-path
+    :accessor system-base-path
     :allocation :class))
   (:documentation "Base class for storing dbc system paths."))
 
-(defclass dbc-system-subdir (dbc-system-path)
+(defclass system-subdir (system-path)
   ((sub-path 
     :initarg :sub-path
     :initform nil
@@ -69,57 +73,57 @@
    (var-name
     :initarg :var-name
     :initform nil
-    ;; :accessor ;var-name dbc-var-binding)
+    ;; :accessor ;var-name system-path-var-binding)
     ))
-  (:documentation "Subdir in the dbc-system-path."))
+  (:documentation "Subdir in the system-path."))
 
-;; (find-method #'var-name nil '(dbc-system-subdir))
-;=> #<SB-MOP:STANDARD-READER-METHOD VAR-NAME, slot:VAR-NAME, (DBC-SYSTEM-SUBDIR) {D0ED001}>
+;; (find-method #'var-name nil '(system-subdir))
+;=> #<SB-MOP:STANDARD-READER-METHOD VAR-NAME, slot:VAR-NAME, (SYSTEM-SUBDIR) {D0ED001}>
 
-;; (and (mon:instancep *dbc-xml-dump-dir*)
-;;       (class-of *dbc-xml-dump-dir*)
+;; (and (mon:instancep *xml-output-dir*)
+;;       (class-of *xml-output-dir*)
 
 
 ;;; ==============================
 ;;; :METHODS
 ;;; ==============================
 
-(defmethod dbc-base-path ((system dbc-system-path))
+(defmethod system-base-path ((system system-path))
   (slot-value system 'system-path))
 
-(defmethod (setf dbc-base-path) (path (system dbc-system-path))
+(defmethod (setf system-base-path) (path (system system-path))
   (setf (slot-value system 'system-path) path))
 
-(defmethod dbc-var-binding ((obj dbc-system-subdir))
+(defmethod system-path-var-binding ((obj system-subdir))
   (slot-value obj 'var-name))
 
-(defmethod (setf dbc-var-binding) (var (obj dbc-system-subdir))
+(defmethod (setf system-path-var-binding) (var (obj system-subdir))
   (etypecase var
     (null (setf (slot-value obj 'var-name) nil))
     (symbol 
      (setf (slot-value obj 'var-name)  
 	   (cons (string var) var)))))
 
-(defmethod dbc-system-described ((obj dbc-system-path) stream)
+(defmethod system-described ((obj system-path) stream)
   (format stream "~{:~14A~@S~^~%~}"
 	  (mapcan #'(lambda (x) 
 		      (list x (and (slot-boundp  obj x)
 				   (slot-value obj x))))
 		  (sort (mon:class-slot-list (class-of obj)) #'string-lessp))))
 
-(defmethod dbc-system-described ((obj dbc-system-subdir) stream)
+(defmethod system-described ((obj system-subdir) stream)
   (format stream "~{:~14A~@S~^~%~}"
 	  (mapcan #'(lambda (x) 
 		      (list x (and (slot-boundp  obj x)
 				   (slot-value obj x))))
-		  (sort (mon:class-slot-list 'dbc-system-subdir) #'string-lessp))))
+		  (sort (mon:class-slot-list 'system-subdir) #'string-lessp))))
 
-(defmethod ensure-system-parent-path ((object dbc-system-subdir) &key)
+(defmethod system-parent-path-ensure ((object system-subdir) &key)
   (with-accessors ((parent-path parent-path))
       object
     (when (null parent-path)
       (error 'system-path-error
-             :w-sym 'ensure-system-parent-path
+             :w-sym 'system-parent-path-ensure
              :w-type 'method
              :w-system-slot 'parent-path
              :w-system-obj object
@@ -128,7 +132,7 @@
     (let ((parent (fad:directory-exists-p parent-path)))
       (if (null parent)
           (error 'system-path-error
-                 :w-sym 'ensure-system-parent-path
+                 :w-sym 'system-parent-path-ensure
                  :w-type 'method
                  :w-system-slot 'parent-path
                  :w-system-obj object
@@ -136,21 +140,21 @@
                  :w-system-aux-msg "slot PARENT-PATH names non-existent directory")
           parent))))
 
-(defmethod dbc-system-path-if ((object dbc-system-subdir))
+(defmethod system-path-if ((object system-subdir))
   (with-accessors ((parent-path parent-path)
                    (sub-name sub-name)
                    (sub-path sub-path))
       object
     (when (null sub-name)
       (error 'system-path-error
-             :w-sym 'ensure-system-parent-path
+             :w-sym 'system-parent-path-ensure
              :w-type 'method
              :w-system-slot 'sub-name
              :w-system-obj object
              :w-system-path parent-path
              :w-system-aux-msg
              "slot SUB-NAME is null, not checking PARENT-PATH with fad:directory-exists-p"))
-    (let ((chk-parent (ensure-system-parent-path object)))
+    (let ((chk-parent (system-parent-path-ensure object)))
       (setf chk-parent
             (merge-pathnames 
              (etypecase sub-name
@@ -161,7 +165,7 @@
       (mon::ref-bind chk-sub (fad:directory-exists-p chk-parent)
         (setf sub-path chk-sub)
         (error 'system-path-error
-               :w-sym 'ensure-system-parent-path
+               :w-sym 'system-parent-path-ensure
                :w-type 'method
                :w-system-slot 'sub-path
                :w-system-obj object
@@ -169,75 +173,70 @@
                :w-system-aux-msg (format nil "will not assign slot SUB-PATH to non-existent directory ~S" chk-parent)))
       sub-path)))
 
-
-;; *dbc-xml-dump-dir*
-;; *package*
-
-
-
 
 ;;; ==============================
 ;;; :FUNCTIONS
 ;;; ==============================
 
-(defun find-dbc-system-path ()
+(defun find-system-path ()
   (let* ((dbc-sys-chk (or ;; :NOTE what about `cl:*load-pathname*'?
 		       (mon:pathname-directory-system :dbc)
-		       (mon:simple-error-mon  :w-sym  'find-dbc-system-path
+		       (mon:simple-error-mon  :w-sym  'find-system-path
 					      :w-type 'function
 					      :w-spec "mon:pathname-directory-system can not find system :DBC"
                                               :signal-or-only nil))) 
 	 (dbc-if (or
-		  (fad:directory-exists-p (make-pathname :directory dbc-sys-chk))
-		  (mon:simple-error-mon  :w-sym  'find-dbc-system-path
+		  (fad:directory-exists-p (make-pathname :directory dbc-sys-chk)) ;; Paranoia
+		  (mon:simple-error-mon  :w-sym  'find-system-path
 					 :w-type 'function
 					 :w-spec "calling `fad:directory-exists-p' but did not find pathname:~%~S"
 					 :w-args `(,(make-pathname :directory dbc-sys-chk))
                                          :signal-or-only nil))))
     dbc-if))
 
-(defun ensure-dbc-xml-dump-dir-exists ()
-  (declare (special *dbc-system-path* *dbc-xml-dump-dir*))
-  (unless (eql (class-of *dbc-xml-dump-dir*) (find-class 'dbc-system-subdir))
-    (let ((pth-chk  (dbc-base-path *dbc-system-path*))
-	  (dbc-dump (make-instance 'dbc-system-subdir :sub-name *dbc-xml-dump-dir*)))
+(defun system-path-xml-dump-dir-ensure ()
+  (declare (special *system-path* *xml-output-dir*))
+  (unless (eql (class-of *xml-output-dir*) (find-class 'system-subdir))
+    (let ((pth-chk  (system-base-path *system-path*))
+	  (dbc-dump (make-instance 'system-subdir :sub-name *xml-output-dir*)))
       (or (and pth-chk
 	       (setf (parent-path dbc-dump) pth-chk)
 	       (setf (sub-path dbc-dump) 
 		     (merge-pathnames (make-pathname :directory `(:relative ,(sub-name dbc-dump))) 
 				      (parent-path dbc-dump)))
 	       (ensure-directories-exist (sub-path dbc-dump) :verbose t)
-	       (setf *dbc-xml-dump-dir* dbc-dump))
-	  (warn ":FUNCTION `ensure-dbc-xml-dump-dir-exists' failed to initialize")))))
+	       (setf *xml-output-dir* dbc-dump))
+	  (warn ":FUNCTION `system-path-xml-dump-dir-ensure' failed to initialize")))))
 
-(defun make-system-subdir (w-var &key sub-name parent-path)  
+;; :TODO Needs to be renamed system-subdir-init-w-var -> 
+(defun system-subdir-init-w-var (w-var &key sub-name parent-path)  
   (and (or (and (not (symbolp w-var))
                 (eql (class-of w-var)
-                     (find-class 'dbc-system-subdir)))
+                     (find-class 'system-subdir)))
            (and (symbolp w-var)
                 (eql (class-of (symbol-value w-var))
-                     (find-class 'dbc-system-subdir))))
-       (mon:simple-error-mon :w-sym 'make-system-subdir
+                     (find-class 'system-subdir))))
+       (mon:simple-error-mon :w-sym 'system-subdir-init-w-var
                              :w-type 'function
-                             :w-spec '("W-VAR already instance of class DBC-SYSTEM-SUBDIR~%"
+                             :w-spec '("W-VAR already instance of class SYSTEM-SUBDIR~%"
                                        "got-object: ~S~%object-specs:~%~A")
                              :w-args (let ((w-var-frobd (or (and (symbolp w-var)
                                                                  (symbol-value w-var))
                                                             w-var)))
                                        (list w-var-frobd
                                              (with-output-to-string (s)
-                                               (dbc-system-described w-var-frobd s))))
+                                               (system-described w-var-frobd s))))
                              :signal-or-only nil))
-  (let ((tmp-ob (make-instance 'dbc-system-subdir
+  (let ((tmp-ob (make-instance 'system-subdir
                                :sub-name (or sub-name (symbol-value w-var))
                                :parent-path parent-path
                                :var-name (cons (symbol-name (identity w-var))
                                                (identity w-var))))) 
     (and 
-     (dbc-system-path-if tmp-ob)
+     (system-path-if tmp-ob)
      (setf (symbol-value w-var) tmp-ob)
      (prog1 (symbol-value w-var)
-       (dbc-system-described (symbol-value w-var) t)))))
+       (system-described (symbol-value w-var) t)))))
 
 
 ;;; ==============================
@@ -249,35 +248,40 @@
 ;;                                         "www/")
 ;;                                     (asdf:system-source-directory (asdf:find-system :hunchentoot))))))
 
+
 ;;; ==============================
 ;;; :DBC-CLASS-PATHS-DOCUMENTATION
 ;;; ==============================
+;; `dbc:system-path-xml-dump-dir-ensure'
+;; `dbc:find-system-path'
+;; `dbc:system-subdir-init-w-var'
 
-(mon:fundoc 'ensure-dbc-xml-dump-dir-exists
+(mon:fundoc 'system-path-xml-dump-dir-ensure
 "Verify, bind, create a base system relative directory for dbc xml->CLOS.~%~@
-Evaluated after the dbc system is loaded. 
-Binds value of `*dbc-xml-dump-dir*' according to `*dbc-xml-dump-dir-name*'.
+Evaluated after the dbc system is loaded.~%~@
+Binds value of `dbc:*xml-output-dir*' according to `dbc:*dbc-xml-dump-dir-name*'.
 Return non-nil on success.~%~@
 :EXAMPLE~%
  \(ensure-dbc-xml-dump-dir\)~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
 
-(mon:fundoc 'find-dbc-system-path
-" <DOCSTR> ~%~@
-:EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
-
-(mon:fundoc 'make-system-subdir
- "Make W-VAR an instance of class DBC-SYSTEM-SUBDIR.~%~@
-Return value is as per `dbc-system-described'.~%~@
-Keywords :SUB-NAME and :PARENT-PATH are as per DBC-SYSTEM-SUBDIR accessors.~%~@
-When SUB-NAME is ommitted default to value of symbol W-VAR.~%~@
-When W-VAR is already an instance of class DBC-SYSTEM-SUBDIR signal an error.~%~@
+(mon:fundoc 'find-system-path
+"Return the pathname-directory of the system.~%~@
+Signal an error if system can not be found or its directory does not exist.~%~@
 :EXAMPLE~%
- \(make-system-subdir '*dbc-notes-dir*
-                     :parent-path \(dbc-base-path *dbc-system-path*\)\)~%~@
-:SEE-ALSO `dbc-system-path-if'.~%►►►")
+ \(find-system-path\)~%~@
+:SEE-ALSO `dbc:system-path-if'.~%►►►")
+
+(mon:fundoc 'system-subdir-init-w-var
+ "Make W-VAR an instance of class SYSTEM-SUBDIR.~%~@
+Return value is as per `system-described'.~%~@
+Keywords :SUB-NAME and :PARENT-PATH are as per SYSTEM-SUBDIR accessors.~%~@
+When SUB-NAME is ommitted default to value of symbol W-VAR.~%~@
+When W-VAR is already an instance of class SYSTEM-SUBDIR signal an error.~%~@
+:EXAMPLE~%
+ \(system-subdir-init-w-var '*dbc-notes-dir*
+                     :parent-path \(system-base-path *system-path*\)\)~%~@
+:SEE-ALSO `system-path-if'.~%►►►")
 
 
 ;;; ==============================

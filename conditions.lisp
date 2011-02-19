@@ -1,11 +1,16 @@
-
 ;;; :FILE-CREATED <Timestamp: #{2011-01-31T23:22:52-05:00Z}#{11051} - by MON>
 ;;; ==============================
 
+;;; ==============================
+;;
+;; cxml:xml-parse-error
+;;; ==============================
+
+
 (in-package #:dbc)
 ;; *package*
 
-(define-condition dbc-error (mon:mon-error)
+(define-condition dbc-error (mon:error-mon)
   ()
   (:documentation "Base condition for dbc-errors."))
 
@@ -66,24 +71,24 @@
     Initarg :W-SYSTEM-SLOT is the slot originating the path error.~%~%~
     Initarg :W-SYSTEM-AUX-MSG is an auxiliarry string to augment condition's :report.~@
     If provided it appears as the last line in report.~%~%~
-    When :W-SYM and/or :W-TYPE are provided they are as per `mon:mon-error'.~@
+    When :W-SYM and/or :W-TYPE are provided they are as per `mon:error-mon'.~@
     If ommitted they are defaulted.~@
    :W-SYM defaults to system-path-error, :W-TYPE defaults to 'condition.~%~%~
 
    :EXAMPLE~%~%~
-    \(let \(\(object *dbc-xml-dump-dir*\)\)
+    \(let \(\(object *xml-output-dir*\)\)
       \(error 'system-path-error
              :w-system-obj object
              :w-system-slot 'sub-path
              :w-system-path \(parent-path object\)\)\)~%~%~
-    \(let \(\(object *dbc-xml-dump-dir*\)\)
+    \(let \(\(object *xml-output-dir*\)\)
       \(error 'system-path-error
              :w-sym 'bubba
              :w-type 'condition
              :w-system-obj  object
              :w-system-slot 'sub-path
              :w-system-path \(parent-path object\)\)\)~%~%~
-    \(let* \(\(object *dbc-xml-dump-dir*\)
+    \(let* \(\(object *xml-output-dir*\)
        \(cnd \(make-condition 'system-path-error
                             :w-sym 'bubba
                             :w-type 'function
@@ -96,7 +101,7 @@
 
 ;;
 ;; :NOTE 'mon:slot-non-existent-error doesn't report when :w-system-slot is non-existent.
-;; (let* ((object *dbc-xml-dump-dir*)
+;; (let* ((object *xml-output-dir*)
 ;;        (cnd (make-condition 'system-path-error
 ;;                             :w-sym 'bubba
 ;;                             :w-type 'condition

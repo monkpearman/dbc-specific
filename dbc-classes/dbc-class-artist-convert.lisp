@@ -5,7 +5,7 @@
 
 (in-package #:dbc)
 
-;; (defclass artist-parse (dbc-parsed-class)
+;; (defclass artist-parse (parsed-class)
 ;;   ())
 
 
