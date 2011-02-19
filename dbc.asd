@@ -55,7 +55,8 @@
    ;; 			 (:file "dbc-tgm.lisp")))
    (:module "dbc-parse"
 	    :components
-	    ((:file "dbc-xml-sql-parse")
+	    ((:file "dbc-cln-parse.lisp")
+             (:file "dbc-xml-sql-parse")
              (:file "dbc-xml-refs-parse")
 	    ;; (:file "psa-parse-table.lisp")
 	    ))

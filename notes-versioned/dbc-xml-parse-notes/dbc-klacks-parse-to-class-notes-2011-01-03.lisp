@@ -11,9 +11,9 @@
 
 ;; (in-package :dbc)
 
-(defpackage #:scratch (:use :cl :mon :dbc))
+;; (defpackage #:scratch (:use :cl :mon :dbc))
 
-(in-package :scratch)
+;;(in-package :scratch)
 
 *package*
 
@@ -140,7 +140,7 @@ cxml:MAKE-STRING-SINK
 
 Painter, Illustrator.
 
-(dbc-split-roles "Artist, Illustrator, Painter, Designer, Fashion Illustrator, Fashion Designer.")
+(split-roles "Artist, Illustrator, Painter, Designer, Fashion Illustrator, Fashion Designer.")
 
 ;;; ==============================
 

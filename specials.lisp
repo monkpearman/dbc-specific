@@ -50,8 +50,18 @@
   ;; before adding the hashtable pre NEW YORK.
   (list "ref" "price" "year" ;; "year_year"
         "artist" "condition"))
+;; ("ref" "bar_code" "title" "Plate_number" "price" "desc_fr" "desc_en" "condition"
+;;  "histo_fr" "histo_en" "categ" "c1" "c2" "c3" "c4" "theme" "keywords" "issue"
+;;  "year" "artist" "author" "book" "publisher" "publish_location" "w" "h"
+;;  "technique" "paper" "color" "onlinen" "av_repro" "latin_name" "nbre" "online"
+;;  "seller" "people" "related_doc" "brand" "translation" "date" "user_name" "done"
+;;  "job_name" "locked" "keywords_type" "text_quote" "theme3" "theme2" "c6" "weight"
+;;  "c5" "composer" "uri" "year_year" "notes" "volume" "edition" "page" "bct"
+;;  "categ_doc" "c1_doc" "c2_doc" "c3_doc" "ebay_final" "ebay_price" "ebay_title"
+;;  "ebay_id" "seo_title" "description_seo" "keywords_seo" "date_edit"
+;;  "edit_history")
 
-
+;; (substitute #\- #\_ (format nil "~:@(~A~)" "keywords_seo"))
 
 
 ;;; ==============================

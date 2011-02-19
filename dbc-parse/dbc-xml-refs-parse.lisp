@@ -31,10 +31,11 @@
 (in-package #:dbc)
 ; *package*
 
+
 (defun make-ref-maker-sym-name (ref-parse-field)
-  ;; (make-ref-maker-sym "ref")
+  ;; (make-ref-maker-sym-name "ref") => "REF-PARSED-REF"
   (and (mon:string-not-null-or-empty-p ref-parse-field)
-       (format nil "ref-~A-maker" ref-parse-field)))
+       (nth 0 (make-parsed-class-slot-accessor-name ref-parse-field "parsed-ref"))))
 
 (defun make-ref-maker-symbol (sym-name)
   ;; (make-ref-maker-symbol "ref")
@@ -46,10 +47,11 @@
   ;; (make-ref-lookup-table (list "ref" "price" "year" "artist" "condition"))
   (let ((ref-hash (make-hash-table :test 'equal)))
     (loop
-       for ref in ref-list
-       collecting (cons ref (make-ref-maker-symbol ref)) into tbl
-       finally (loop for (key . val) in tbl
-		  do (setf (gethash key ref-hash) val)))
+       :for ref :in ref-list
+       :collecting (cons ref (make-ref-maker-symbol ref)) into tbl
+       :finally (loop
+                   :for (key . val) :in tbl
+                   :do (setf (gethash key ref-hash) val)))
     ref-hash))
 
 ;;; ==============================
@@ -78,16 +80,13 @@
 ;; "../notes-versioned/scratch-xml-for-parse/example-refs.in"
 ;; "../dbc-specific/notes-versioned/scratch-xml-for-parse/example-refs-in-short.in"
 
-;; (field-parse-attribs *dbc-xml-dump-file-refs-temp-name*)
+;; (field-parse-attribs *xml-input-refs-name-temp*)
 
 ;;; ==============================
-
-;; dbc-parse/dbc-xml-refs-parse.lisp
 ;;; ==============================
 
 (defun field-attribs-find (src)
   ;; Return => ":YEAR"
-  ;; *tt--xml-dmp*
   (declare (special *xml-refs-match-list*))
   (let* ;; (klacks:list-attributes  *tt--xml-dmp*)
       ;; (klacks:get-attribute  *tt--xml-dmp* "name")
@@ -101,10 +100,9 @@
        (attrib-val  (and attrib-mem (car attrib-mem))))
     (declare (ignore is-name))
     (and attrib-val 
-         (setf attrib-val (substitute #\- #\_ (format nil ":~:@(~A~)" attrib-val)))
-	 )))
+         ;; :WAS (setf attrib-val (substitute #\- #\_ (format nil ":~:@(~A~)" attrib-val))) ))) 
+         (setf attrib-val (field-name-underscore-to-dash attrib-val t)) )))
 
-;; (field-attribs-find *tt--xml-dmp*)
 
 (defun field-attribs-consume-if (src)
   ;; Return => (":YEAR" . "August, 10, 1895") 

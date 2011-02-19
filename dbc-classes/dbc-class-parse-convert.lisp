@@ -1,5 +1,5 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-01-07T13:22:46-05:00Z}#{11015} - by MON>
-;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-classes/dbc-class-parse-convert.lisp
+;;; :FILE ../dbc-classes/dbc-class-parse-convert.lisp
 ;;; ==============================
 
 ;; :NOTE This is the base class from wich other converted dbc-classes inherit.
@@ -16,7 +16,7 @@
 ;;; ==============================
 (defclass parsed-class ()
   ()
-  )
+  (:documentation "base dbc parsed class."))
 
 
 ;; Which slots accessors and generics should this class establish?

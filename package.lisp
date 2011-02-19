@@ -25,44 +25,6 @@
              #:*xml-refs-match-list*
              #:*xml-refs-match-table*
 	     ;;
-           ;; dbc-xml-sql-parse.lisp
-	     ;;
-	     ;;
-	     ;; cxml:make-source klacks:with-open-source 
-	     ;; klacks:map-attributes klacks:get-attribute
-	     ;; klacks:current-lname klacks:current-characters
-	     ;; klacks:consume klacks:peek
-	     ;; mon:string-trim-whitespace
-	     #:field-table-parse-out 
-	     ;;
-	     ;; cxml::cxml-source klacks:peek klacks:map-attributes
-	     #:field-parse-attribs	     
-	     ;;
-	     #:field-str-cons
-	     #:field-cln-x
-	     ;;
-	     ;; mon:string-split-on-chars
-	     #:split-used-fors   
-	     ;;
-	     ;; mon:string-split-on-chars, mon:string-trim-whitespace
-	     #:split-appeared-in 
-	     ;;
-	     ;; mon:string-split-on-chars
-	     #:split-roles
-	     ;;
-	     ;; mon:make-string*
-	     #:format-entity-role
-	     ;;
-	     ;; mon:string-trim-whitespace mon:concat mon:string-split-on-chars
-	     #:split-lifespan
-	     ;;
-	     #:split-lifespan-string-int-pairs
-	     ;;
-	     ;; mon:string-null-or-empty-p mon:string-split-on-chars mon:string-trim-whitespace
-	     #:split-comma-field
-	     #:field-convert-1-0-x
-	     #:split-loc-pre
-	     ;;
 	     ;;
            ;; conditions.lisp
 	     #:dbc-error
@@ -73,28 +35,10 @@
              #:w-system-slot-locus      ;; reader system-path-error
 	     ;;
 	     ;;
-	     ;; klacks:get-attribute klacks:current-lname
-	     ;; klacks:current-characters klacks:consume
-	     ;; cxml:make-source
+	     ;; dbc-classes/dbc-class.lisp
 	     ;;
-	     ;; psa-parse-table.lisp
-	     ;;
-	     ;; #:*psa-fl*
-	     ;; #:*tr-gthr*
-	     ;; #:*curr-src*
-	     ;; #:html2xhtml
-	     ;; #:psa-handler
-	     ;; #:filter-tr
-	     ;; #:p/totals-strip-commas
-	     ;; ;;#:p/totals-strip-whitespace
-	     ;; #:p/sax-integer-string       ;; `string-to-number'
-	     ;; #:p/sax-float-string         ;; `string-to-number'
-	     ;; #:p/sax-extract-tr
-	     ;;
-	     ;; dbc-class.lisp
-	     ;;
-	     ;; 
-             ;; dbc-classes/dbc-class-paths.lisp
+
+           ;; dbc-classes/dbc-class-paths.lisp
              ;; 
              ;; :GENERIC-FUNCTIONS
 	     #:system-base-path              ;; system-base-path
@@ -115,11 +59,67 @@
 	     ;; :FUNCTIONS
 	     #:find-system-path
 	     #:system-path-xml-dump-dir-ensure
-             #:system-subdir-init-w-var :renamed :from `make-system-subdir'
-             #:make-system-subdir
+             #:system-subdir-init-w-var  ;; :renamed :from `make-system-subdir'
              ;;
+           ;;
+             ;; /dbc-classes/dbc-class-parse-convert.lisp
+             #:parsed-class
+             ;;
+           ;; /dbc-classes/dbc-class-refs-convert.lisp
+             ;;
+             #:parsed-ref
+             ;;
+             ;;
+           ;; :MODULE dbc-parse
+             ;;
+             ;;
+           ;; dbc-parse/dbc-cln-parse.lisp
+             ;;
+             ;;
+             #:make-parsed-class-slot-accessor-name
+             #:field-name-underscore-to-dash
+	     #:field-str-cons
+	     #:field-cln-x
+	     ;;
+	     ;; mon:string-split-on-chars
+	     #:split-used-fors   
+	     ;;
+	     ;; mon:string-split-on-chars, mon:string-trim-whitespace
+	     #:split-appeared-in 
+	     ;;
+	     ;; mon:string-split-on-chars
+	     #:split-roles
+	     ;;
+	     ;; mon:make-string*
+	     #:format-entity-role
+	     ;;
+	     ;; mon:string-trim-whitespace, mon:concat, mon:string-split-on-chars
+	     #:split-lifespan
+	     ;;
+	     #:split-lifespan-string-int-pairs
+	     ;;
+	     ;; mon:string-null-or-empty-p, mon:string-split-on-chars, mon:string-trim-whitespace
+	     #:split-comma-field
+	     #:field-convert-1-0-x
+	     #:split-loc-pre
+	     ;;
+             ;;
+           ;; dbc-parse/dbc-xml-sql-parse.lisp
+	     ;;
+	     ;; klacks:get-attribute klacks:current-lname
+	     ;; klacks:current-characters klacks:consume
+	     ;; cxml:make-source klacks:with-open-source 
+	     ;; klacks:map-attributes klacks:get-attribute
+	     ;; klacks:current-lname klacks:current-characters
+	     ;; klacks:consume klacks:peek
+	     ;; mon:string-trim-whitespace
+	     #:field-table-parse-out 
+	     ;;
+	     ;; cxml::cxml-source klacks:peek klacks:map-attributes
+	     #:field-parse-attribs	     
              ;;
            ;; dbc-parse/dbc-xml-refs-parse.lisp
+             ;;
              #:make-ref-maker-sym-name
              #:make-ref-maker-symbol
              #:make-ref-lookup-table
@@ -127,9 +127,24 @@
              #:field-attribs-consume-if
              #:field-parse-refs
              ;;
+	     ;; dbc-parse/psa-parse-table.lisp
+	     ;;
+	     ;; #:*psa-fl*
+	     ;; #:*tr-gthr*
+	     ;; #:*curr-src*
+	     ;; #:html2xhtml
+	     ;; #:psa-handler
+	     ;; #:filter-tr
+	     ;; #:p/totals-strip-commas
+	     ;; ;;#:p/totals-strip-whitespace
+	     ;; #:p/sax-integer-string       ;; `string-to-number'
+	     ;; #:p/sax-float-string         ;; `string-to-number'
+	     ;; #:p/sax-extract-tr
+             ;;
            ;; loadtime-bind.lisp
              ;;
 	    ))
+
 
 
 ;;; ==============================
