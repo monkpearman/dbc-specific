@@ -31,29 +31,6 @@
 (in-package #:dbc)
 ; *package*
 
-
-(defun make-ref-maker-sym-name (ref-parse-field)
-  ;; (make-ref-maker-sym-name "ref") => "REF-PARSED-REF"
-  (and (mon:string-not-null-or-empty-p ref-parse-field)
-       (nth 0 (make-parsed-class-slot-accessor-name ref-parse-field "parsed-ref"))))
-
-(defun make-ref-maker-symbol (sym-name)
-  ;; (make-ref-maker-symbol "ref")
-  ;; (symbolp (make-ref-maker-symbol "ref"))
-  (let ((mk-sym (make-ref-maker-sym-name sym-name)))
-    (and mk-sym (read-from-string (make-ref-maker-sym-name sym-name)))))
-
-(defun make-ref-lookup-table (ref-list)
-  ;; (make-ref-lookup-table (list "ref" "price" "year" "artist" "condition"))
-  (let ((ref-hash (make-hash-table :test 'equal)))
-    (loop
-       :for ref :in ref-list
-       :collecting (cons ref (make-ref-maker-symbol ref)) into tbl
-       :finally (loop
-                   :for (key . val) :in tbl
-                   :do (setf (gethash key ref-hash) val)))
-    ref-hash))
-
 ;;; ==============================
 ;; `*dbc-notes-dir*'
 ;; `*xml-output-dir*'           ---> OUTPUT

@@ -24,6 +24,8 @@
              #:*xml-input-refs-name-temp* ;; <--- INPUT
              #:*xml-refs-match-list*
              #:*xml-refs-match-table*
+             ;;
+             #:*parsed-ref-class-name*
 	     ;;
 	     ;;
            ;; conditions.lisp
@@ -37,7 +39,8 @@
 	     ;;
 	     ;; dbc-classes/dbc-class.lisp
 	     ;;
-
+             #:base-dbc                     ;; <CLASS>
+             ;; 
            ;; dbc-classes/dbc-class-paths.lisp
              ;; 
              ;; :GENERIC-FUNCTIONS
@@ -61,14 +64,19 @@
 	     #:system-path-xml-dump-dir-ensure
              #:system-subdir-init-w-var  ;; :renamed :from `make-system-subdir'
              ;;
-           ;;
-             ;; /dbc-classes/dbc-class-parse-convert.lisp
-             #:parsed-class
+           ;; /dbc-classes/dbc-class-parse-convert.lisp
+             ;;
+             #:parsed-class   ;; <CLASS>
+             ;;
+             #:make-parsed-class-slot-init-accessor-name
              ;;
            ;; /dbc-classes/dbc-class-refs-convert.lisp
              ;;
-             #:parsed-ref
+             #:parsed-ref     ;; <CLASS>
              ;;
+             #:make-ref-maker-sym-name 
+             #:make-ref-maker-symbol
+             #:make-ref-lookup-table
              ;;
            ;; :MODULE dbc-parse
              ;;
@@ -76,7 +84,6 @@
            ;; dbc-parse/dbc-cln-parse.lisp
              ;;
              ;;
-             #:make-parsed-class-slot-accessor-name
              #:field-name-underscore-to-dash
 	     #:field-str-cons
 	     #:field-cln-x
@@ -102,7 +109,6 @@
 	     #:split-comma-field
 	     #:field-convert-1-0-x
 	     #:split-loc-pre
-	     ;;
              ;;
            ;; dbc-parse/dbc-xml-sql-parse.lisp
 	     ;;
@@ -120,9 +126,6 @@
              ;;
            ;; dbc-parse/dbc-xml-refs-parse.lisp
              ;;
-             #:make-ref-maker-sym-name
-             #:make-ref-maker-symbol
-             #:make-ref-lookup-table
              #:field-attribs-find
              #:field-attribs-consume-if
              #:field-parse-refs

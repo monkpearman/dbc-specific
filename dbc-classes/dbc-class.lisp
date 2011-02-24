@@ -7,29 +7,30 @@
 (in-package #:dbc)
 ;; *package*
 
-(defclass dbc-xml->clos-dump ()
-  ((base-dir :initarg :base-dir ))
-  (:documentation "Base class for DBC to XML dump files directories.
-Subclasses inherit their base pathname from this guy.
-:SEE-ALSO `dbc:*dbc-xml-dump-dir*', `*dbc-xml-dump-dir-name*'
-`dbc:ensure-dbc-xml-dump-dir-exists'.►►►"))
-
+;; (defclass dbc-xml->clos-dump ()
+;;   ((base-dir :initarg :base-dir ))
+;;   (:documentation "Base class for DBC to XML dump files directories.
+;; Subclasses inherit their base pathname from this guy.
+;; :SEE-ALSO `dbc:*dbc-xml-dump-dir*', `*dbc-xml-dump-dir-name*'
+;; `dbc:ensure-dbc-xml-dump-dir-exists'.►►►"))
 
 ;;; ==============================
 
 (defclass base-dbc () ;; persistent, rucsack, component, etc.
-  (())
-  :documentation "base dbc class")
+  ()
+  (:documentation "Base class for dbc objects."))
 
+#|
 (defclass uuid-dbc (base-dbc)
   ((uuid-type)
    ;; :initform :initarg :accessor
-   (read-only :initform nil :initarg :read-only) ;;:reader)
-  :documentation "a base uuid class")
+   (read-only :initform nil :initarg :read-only)) ;;:reader)
+  ;; :documentation "a base uuid class")
+  :documentation "UUID fo subclasses of class base-dbc")
 
 (defclass doc-dbc (base-dbc)
   (doc-uuid 
-   :initform (generate-dbc-uuid) 
+   ;; :initform (generate-dbc-uuid) 
    :accessor doc-uuid)
   (doc-title
    :initform nil
@@ -43,6 +44,7 @@ Subclasses inherit their base pathname from this guy.
    :initform nil
    :initarg :doc-xrefs
    :accessor doc-xrefs))
+|#
 
 ;; (defclass entity (object)
 ;;   ((id :initarg :imdb-id

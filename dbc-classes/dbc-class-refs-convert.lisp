@@ -5,16 +5,61 @@
 
 
 (in-package #:dbc)
+;; *package*
 
-(defclass parsed-ref (parsed-class)   
+;;; ==============================
+(defun make-ref-maker-sym-name (ref-parse-field)
+  ;; (make-ref-maker-sym-name "ref") => "REF-PARSED-REF"
+  (and (mon:string-not-null-or-empty-p ref-parse-field)
+       (make-parsed-class-slot-init-accessor-name "parsed-ref" ref-parse-field)))
+
+;; (caddr (make-ref-maker-sym-name "artist"))
+;; (make-parsed-class-slot-init-accessor-name  "parsed-ref" "ref")
+;; (nth 0 (make-parsed-class-slot-init-accessor-name "dbc-ref" "keywords_type") "PFX"))
+;; (nth 2 (make-parsed-class-slot-init-accessor-name "parsed-ref" "keywords_type"))
+
+(defun make-ref-maker-symbol (sym-name)
+  ;; (make-ref-maker-symbol "ref")
+  ;; (symbolp (make-ref-maker-symbol "ref"))
+  (let ((mk-sym (make-ref-maker-sym-name sym-name)))
+    (and mk-sym (read-from-string (nth 2 (make-ref-maker-sym-name sym-name))))))
+
+(defun make-ref-lookup-table (ref-list)
+  ;; (make-ref-lookup-table (list "ref" "price" "year" "artist" "condition"))
+  (let ((ref-hash (make-hash-table :test 'equal)))
+    (loop
+       :for ref :in ref-list
+       :collecting (cons ref (make-ref-maker-symbol ref)) :into tbl
+       :finally (loop
+                   :for (key . val) :in tbl
+                   :do (setf (gethash key ref-hash) val)))
+    ref-hash))
+
+;; (find-class 'parsed-ref)
+;; (make-parsed-class-slot-init-accessor-name "parsed-ref" "keywords_type")
+;; 
+;; "artist"    = PARSED-REF
+;; "condition" = PARSED-REF
+;; "price"     = PARSED-REF
+;; "ref"       = PARSED-REF
+;; "year"      = PARSED-REF
+
+;;; ==============================
+(defclass parsed-ref (parsed-class)
   ()
-  (:documentation "class for parsed dbc xml refs."))
+  (:documentation "Class for parsed dbc xml refs."))
+
+;; :initform *parsed-ref-class-name* :allocation 
 
 
+;;; ==============================
 ;; :NOTE Accessor functions should match the REF-<SLOT>-MAKER names of
 ;; `*xml-refs-match-table*' as generated with `dbc:make-ref-lookup-table'.
 ;;
-;; THIS IS THE LIST OF SLOTS for `*xml-refs-match-list*'
+;; THIS IS THE LIST OF SLOTS for `*xml-refs-match-list*':
+;;
+;; (eql (length *xml-refs-match-list*) 72) => t
+;;
 ;; ("ref" "bar_code" "title" "Plate_number" "price" "desc_fr" "desc_en" "condition"
 ;;  "histo_fr" "histo_en" "categ" "c1" "c2" "c3" "c4" "theme" "keywords" "issue"
 ;;  "year" "artist" "author" "book" "publisher" "publish_location" "w" "h"
@@ -25,6 +70,86 @@
 ;;  "categ_doc" "c1_doc" "c2_doc" "c3_doc" "ebay_final" "ebay_price" "ebay_title"
 ;;  "ebay_id" "seo_title" "description_seo" "keywords_seo" "date_edit"
 ;;  "edit_history")
+
+
+;;  
+;; ( <FIELD-NAME>  <RENAME-TO>  (<INITP> <INIT-PFX>) )
+;; :SEE make-parsed-class-slot-accessor-name etc.
+
+;;
+;; '("ref"       
+;;  "bar_code" 
+;;  "title" 
+;;  "Plate_number"
+;;  "price"
+;;  "desc_fr"
+;;  "desc_en"
+;;  "condition"
+;;  "histo_fr"
+;;  "histo_en"
+;;  "categ"
+;;  "c1"
+;;  "c2"
+;;  "c3"
+;;  "c4"
+;;  "theme"
+;;  "keywords"
+;;  "issue"
+;;  "year"
+;;  "artist"
+;;  "author"
+;;  "book"
+;;  "publisher"
+;;  "publish_location"
+;;  "w"
+;;  "h"
+;;  "technique"
+;;  "paper"
+;;  "color"
+;;  "onlinen"
+;;  "av_repro"
+;;  "latin_name"
+;;  "nbre"
+;;  "online"
+;;  "seller"
+;;  "people"
+;;  "related_doc"
+;;  "brand"
+;;  "translation"
+;;  "date"
+;;  "user_name"
+;;  "done"
+;;  "job_name"
+;;  "locked"
+;;  "keywords_type"
+;;  "text_quote"
+;;  "theme3"
+;;  "theme2"
+;;  "c6"
+;;  "weight"
+;;  "c5"
+;;  "composer"
+;;  "uri"
+;;  "year_year"
+;;  "notes"
+;;  "volume"
+;;  "edition"
+;;  "page"
+;;  "bct"
+;;  "categ_doc"
+;;  "c1_doc"
+;;  "c2_doc"
+;;  "c3_doc"
+;;  "ebay_final"
+;;  "ebay_price"
+;;  "ebay_title"
+;;  "ebay_id"
+;;  "seo_title"
+;;  "description_seo"
+;;  "keywords_seo"
+;;  "date_edit"
+;;  "edit_history")
+
 
 ;; 
 

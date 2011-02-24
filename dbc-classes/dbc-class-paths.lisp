@@ -43,9 +43,9 @@
 ;;; :CLASSES
 ;;; ==============================
 
-(defclass system-base ()
+(defclass system-base (base-dbc)
   ()
-  (:documentation "Toplevel class for dbc system and system path related objects"))
+  (:documentation "Toplevel class for dbc system and system path related objects."))
 
 (defclass system-path (system-base)
   ((system-path 

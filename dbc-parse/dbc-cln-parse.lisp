@@ -224,24 +224,6 @@
     (or (and w-colon (concatenate 'string ":" no-under))
         no-under)))
 
-;; alexandria:symbolicate alexandria:format-symbol alexandria:make-keyword
-(defun make-parsed-class-slot-accessor-name (named-class parsed-field &optional prefix-initarg-w)
-  (declare (string named-class parsed-field))
-  (let* ((slot     (field-name-underscore-to-dash parsed-field))
-         (init
-          (or (and (stringp prefix-initarg-w)
-                   (concatenate 'string (string-upcase prefix-initarg-w) "-" slot))
-              slot))
-         (access   (format nil "~A-~A" (string-upcase named-class) slot)))
-    (list slot init access)))
-
-;; :TODO Use alexandria:symbolicate alexandria:format-symbol alexandria:make-keyword alexandria:symbolicate
-;;  to process return value of make-parsed-class-slot-accessor-name at loadtime to generate 
-;;  <slot> :initarg <ACCESSOR> 
-;; symbols for <CLASS> in <PACKAGE> 
-;; Define classe _AFTER_ pushing the return  values onto a hashtable.
-
-
 ;;; ==============================
 ;; :TODO
 ;; (defun dbc-split-ref-multi-naf (naf-multi-ref)
@@ -277,23 +259,6 @@ When optional arg W-COLON is non-nil return prefixed with a colon.
 :EXAMPLE~%
  \(field-name-underscore-to-dash \"keyword_seo\"\)~%
  \(field-name-underscore-to-dash \"keyword_seo\" t\)~%
-:SEE-ALSO `<XREF>'.~%►►►")
-
-(mon:fundoc 'make-parsed-class-slot-accessor-name
- "Return 3 elt list strings suitable for interning as slot initarg and accessor. 
-NAMED-CLASS is a string naming a class which will subclass `dbc:parsed-class'.
-PARSED-FIELD is a string field name in an xml table.~%~@
-It is transformed with `dbc:field-name-underscore-to-dash'.~%~@
-PREFIX-INITARG-W is a string to prefix a slot initarg name with. When ommited
-defaults to processed value of PARSED-FIELD.
-Return value has the form:~%
-  \( \"<PARSED-FIELD>\" 
-     \"<PREFIX-INITARG-W>-<PARSED-FIELD>\"
-     \"<PARSED-FIELD>-<NAMED-CLASS>\" \)~%~@
-:EXAMPLE~%
- \(make-parsed-class-slot-accessor-name \"parsed-ref\" \"ref\"\)~%
- \(make-parsed-class-slot-accessor-name \"parsed-ref\" \"year_year\"\)~%
- \(make-parsed-class-slot-accessor-name \"parsed-ref\" \"ref\" \"init\"\)~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
 
 (mon:fundoc 'field-str-cons

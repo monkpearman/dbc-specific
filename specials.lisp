@@ -44,7 +44,28 @@
 (defparameter *xml-input-refs-name-temp*  nil )
 
 ;;; ==============================
+(defvar *parsed-ref-class-name* "PARSED-REF")
+
+;; (find-symbol "PARSED-REF")
+;; (find-symbol "PARSED-REF")
+
+;; (class-name (find-class 'parsed-ref)
+;; (mon:class-instance-p 'parsed-ref)
+;; (
+;; (find-class-name 
+;; (mon:class-name-of (format nil "~S" (class-name (find-class 'parsed-ref)))
+;; "parsed-ref"
+;; (class
+(setf (documentation '*parsed-ref-class-name* 'variable)
+      #.(format nil
+"String naming the class \"PARSED-REF\"
+:EXAMPLE~%~@
+ { ... <EXAMPLE> ... } ~%~@
+:SEE-ALSO `<XREF>'.~%►►►"))
+
 (defparameter *xml-refs-match-table* nil)
+
+;; (defparameter *tt--rmt* (make-ref-lookup-table *xml-refs-match-list*))
 
 (defparameter *xml-refs-match-list* 
   ;; before adding the hashtable pre NEW YORK.

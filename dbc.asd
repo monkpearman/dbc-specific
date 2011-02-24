@@ -49,13 +49,16 @@
    (:module "dbc-classes"
             :components                 
             (
-             ;;(:file "dbc-classes")
-             (:file "dbc-class-paths")))
-   ;; 			 (:file "dbc-class-artist-convert.lisp")
-   ;; 			 (:file "dbc-tgm.lisp")))
+             (:file "dbc-class")
+             (:file "dbc-class-paths")
+             (:file "dbc-class-parse-convert")
+             (:file "dbc-class-refs-convert")             
+             ;; (:file "dbc-class-artist-convert.lisp")
+             ;;(:file "dbc-tgm.lisp")))
+             ))
    (:module "dbc-parse"
 	    :components
-	    ((:file "dbc-cln-parse.lisp")
+	    ((:file "dbc-cln-parse")
              (:file "dbc-xml-sql-parse")
              (:file "dbc-xml-refs-parse")
 	    ;; (:file "psa-parse-table.lisp")
