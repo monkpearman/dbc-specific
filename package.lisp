@@ -107,6 +107,7 @@
 	     ;;
 	     ;; mon:string-null-or-empty-p, mon:string-split-on-chars, mon:string-trim-whitespace
 	     #:split-comma-field
+             #:field-convert-empty-string-nil
 	     #:field-convert-1-0-x
 	     #:split-loc-pre
              ;;

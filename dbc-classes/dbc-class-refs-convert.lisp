@@ -2,6 +2,24 @@
 ;;; :FILE ../dbc-classes/dbc-class-refs-convert.lisp
 ;;; ==============================
 
+;; /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-classes/dbc-class-refs-convert.lisp
+
+;;; ==============================
+;; functions written for cleaning
+;; field-name-underscore-to-dash
+;; field-str-cons
+;; field-cln-x
+;; split-used-fors
+;; split-appeared-in
+;; split-roles
+;; split-loc-pre
+;; split-lifespan
+;; split-lifespan-string-int-pairs
+;; split-comma-field
+;; field-convert-1-0-x
+;; format-entity-role
+;; field-convert-empty-string-nil
+;;; ==============================
 
 
 (in-package #:dbc)
@@ -76,88 +94,107 @@
 ;; ( <FIELD-NAME>  <RENAME-TO>  (<INITP> <INIT-PFX>) )
 ;; :SEE make-parsed-class-slot-accessor-name etc.
 
+;;; ==============================
+;; Linnaean
 ;;
-;; '("ref"       
-;;  "bar_code" 
-;;  "title" 
-;;  "Plate_number"
-;;  "price"
-;;  "desc_fr"
-;;  "desc_en"
-;;  "condition"
-;;  "histo_fr"
-;;  "histo_en"
-;;  "categ"
-;;  "c1"
-;;  "c2"
-;;  "c3"
-;;  "c4"
-;;  "theme"
-;;  "keywords"
-;;  "issue"
-;;  "year"
-;;  "artist"
-;;  "author"
-;;  "book"
-;;  "publisher"
-;;  "publish_location"
-;;  "w"
-;;  "h"
-;;  "technique"
-;;  "paper"
-;;  "color"
-;;  "onlinen"
-;;  "av_repro"
-;;  "latin_name"
-;;  "nbre"
-;;  "online"
-;;  "seller"
-;;  "people"
-;;  "related_doc"
-;;  "brand"
-;;  "translation"
-;;  "date"
-;;  "user_name"
-;;  "done"
-;;  "job_name"
-;;  "locked"
-;;  "keywords_type"
-;;  "text_quote"
-;;  "theme3"
-;;  "theme2"
-;;  "c6"
-;;  "weight"
-;;  "c5"
-;;  "composer"
-;;  "uri"
-;;  "year_year"
-;;  "notes"
-;;  "volume"
-;;  "edition"
-;;  "page"
-;;  "bct"
-;;  "categ_doc"
-;;  "c1_doc"
-;;  "c2_doc"
-;;  "c3_doc"
-;;  "ebay_final"
-;;  "ebay_price"
-;;  "ebay_title"
-;;  "ebay_id"
-;;  "seo_title"
-;;  "description_seo"
-;;  "keywords_seo"
-;;  "date_edit"
-;;  "edit_history")
-
-
-;; 
+;; (make-parsed-class-slot-init-accessor-name "parsed-ref" "keywords_type" "init")
+;;    <SLOT>              <TRANSFORM>  |  <INIT>  <ACCESSOR>  
+;;
+;; '(
+;;
+;;   "ref"             ;;
+;;
+;;  "title" 	       ;;
+;;  "desc_fr"	       ;; description-french
+;;  "desc_en"	       ;; description-english
+;;  "histo_fr"	       ;; 
+;;  "histo_en"	       ;;
+;;  "text_quote"       ;;
+;;  "notes"	       ;;
+;;  "translation"      ;;
+;;
+;;  "people"	       ;; ???
+;;  "brand"	       ;; 
+;;  "composer"	       ;;
+;;  "artist"	       ;;
+;;  "author"           ;;
+;;  "latin_name"       ;; Linnaean
+;;
+;;  "book"             ;; publication
+;;  "publisher"        ;; publication-publisher
+;;  "publish_location" ;; publication-location-published
+;;  "volume"	       ;; publication-volume
+;;  "edition"	       ;; publication-edition
+;;  "page"	       ;; publication-page
+;;  "Plate_number"     ;; publication-plate
+;;  "issue"	       ;; publication-issue
+;;
+;;  "year"	       ;; publication-date
+;;  "year_year"	       ;; publication-date-range
+;;  "date"	       ;; ???
+;;
+;;  "categ"	       ;; category-0
+;;  "c1"	       ;; category-1
+;;  "c2"	       ;; category-2
+;;  "c3"	       ;; category-3
+;;  "c4"	       ;; category-4
+;;  "c6"	       ;; category-6
+;;  "c5"	       ;; category-5
+;;
+;;  "theme"	       ;; theme-0
+;;  "theme2"	       ;; theme-1
+;;  "theme3"	       ;; theme-2
+;;
+;;  "keywords"	       ;;
+;;
+;;  "technique"        ;; 
+;;  "paper"            ;; paper-type 
+;;  "color"            ;; color-p
+;;  "onlinen"          ;; on-linen-p
+;;  "w"                ;; width
+;;  "h"                ;; height
+ ;;  "price"	       ;;
+;;  "condition"	       ;;
+;;
+;;  "nbre"             ;; number    ;; probably empty
+;;  "av_repro"         ;; repro-p
+;;  "online"           ;; active-p ;; note online is to similiar onlinen
+;;  "seller"           ;;
+;;  "bar_code" 	       ;;
+;;  "weight"	       ;;
+;;  "user_name"	       ;;
+;;  "done"	       ;; job-complete
+;;  "job_name"	       ;; job-id
+;;  "locked"	       ;;
+;;
+;;  "uri"	       ;;
+;;  "keywords_type"    ;;
+;;  "bct"	       ;;
+;;
+;;  "related_doc"      ;;
+;;  "categ_doc"	       ;; category-doc
+;;  "c1_doc"	       ;; category-1-doc
+;;  "c2_doc"	       ;; category-2-doc
+;;  "c3_doc"	       ;; category-3-doc
+;;
+;;  "ebay_final"       ;; 
+;;  "ebay_price"       ;;
+;;  "ebay_title"       ;;
+;;  "ebay_id"	       ;;
+;;  "seo_title"	       ;;
+;;  "description_seo"  ;; seo-description
+;;  "keywords_seo"     ;; seo-keywords
+;;
+;;  "date_edit"	       ;; edit-date
+;;  "edit_history    ;; edit-history
+;;  ")
+;;
 
 
 ;;; ==============================
 ;;; :TODO methods  
 
-;; `dbc-convert-1-0-x-field' 
+;; `field-convert-1-0-x' 
 ;; brand, people, latin_name,
 ;; date, year
 ;; Plate_number, issue, 
@@ -176,7 +213,7 @@
 
 ;;; ==============================
 ;; 
-;; (defun dbc-split-ref-multi-naf (naf-multi-ref)
+;; (defun split-ref-multi-naf (naf-multi-ref)
 ;; 
 ;; split on "&"
 ;; :REF-FIELDS artist, author, people, brand, 
@@ -253,7 +290,7 @@
 ;; - Strip "x"
 ;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 
 ;;; ==============================
 ;; :FIELD "desc_en"
@@ -288,7 +325,7 @@
 ;;  "0" "1"
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 ;;
 ;; - Looks like this might be a boolean 
 
@@ -305,7 +342,7 @@
 ;;  "0"
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 
 
 ;;; ==============================
@@ -321,7 +358,7 @@
 ;;
 ;; - Strip "x"
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 
 ;;; ==============================
 ;; :FIELD "histo_en"
@@ -336,7 +373,7 @@
 ;;  "0"
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 
 ;;; ==============================
 ;; :FIELD "text_quote"
@@ -385,7 +422,7 @@
 ;;
 ;; - Strip "x"
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 
 ;;; ==============================
 ;; :FIELD "volume"
@@ -457,7 +494,7 @@
 ;; - May contain "date" remove/ignore it.
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 
 
 ;;; ==============================
@@ -475,7 +512,7 @@
 ;; "1755 - 1787"  :SEE `ref` 7476
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 ;;
 
 ;;; ==============================
@@ -589,7 +626,7 @@
 ;; - Strip "x" 
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 ;;
 ;; - This field will have a class-instance if it is non-nil
 
@@ -608,7 +645,7 @@
 ;; - Strip "x"
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 ;;
 ;; - This field will have a class-instance if it is non-nil
 
@@ -663,7 +700,7 @@
 ;; - Strip "x"
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 
 
 ;;; ==============================
@@ -845,7 +882,7 @@
 ;;   1 | 0 
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 ;;
 
 ;;; ==============================
@@ -998,7 +1035,7 @@
 ;; :EXAMPLE-VALUES 
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 ;;
 ;; - Is this ever used?
 
@@ -1014,7 +1051,7 @@
 ;; :EXAMPLE-VALUES 
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 ;;
 ;; - Is this ever used?
 
@@ -1031,7 +1068,7 @@
 ;;  "1040"
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 ;;
 ;; - Is this ever used? Yes, at least once :SEE `ref` 9644
 
@@ -1048,7 +1085,7 @@
 ;; :EXAMPLE-VALUES 
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 ;;
 ;; - Is this ever used?
 
@@ -1128,10 +1165,10 @@
 ;; :EXAMPLE-VALUES 
 ;;  "air, plane, airplane, Biplane, aircraft, expo, center, blimp, dirigible,"
 ;;
-;; - `dbc-split-comma-field' works so long as we can be sure that there are
+;; - `split-comma-field' works so long as we can be sure that there are
 ;;   never free commas as used as an SEO descriptor:
 ;;
-;;  (dbc-split-comma-field
+;;  (split-comma-field
 ;;   "air, plane, airplane, Biplane,, aircraft, expo, center, blimp, dirigible,")
 
 
@@ -1256,7 +1293,7 @@
 ;;  0
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 ;;
 ;; - Should maybe be a float as like 'ebay_price" but not used anyways... (floatp 0) => nil
 
@@ -1272,7 +1309,7 @@
 ;; :EXAMPLE-VALUES 
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 ;; 
 ;; - Shold we convert these 0 values to 0.0, e.g:
 ;;   (floatp 0.0) => T
@@ -1305,7 +1342,7 @@
 ;;
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 
 
 ;;; ==============================
@@ -1364,7 +1401,7 @@
 ;;  - May contain "bar_code" remove/ignore it
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 
 
 ;;; ==============================
@@ -1393,7 +1430,7 @@
 ;;  1
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 ;; - Verify that this is always 1 | 0
 
 ;;; ==============================
@@ -1415,7 +1452,7 @@
 ;; - May contain "job_name", remove/ignor it.
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 
 ;;; ==============================
 ;; :FIELD "date_edit"
@@ -1511,7 +1548,7 @@
 ;;  0
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 ;; 
 ;; - Pretty sure this was _never_ used. 
 

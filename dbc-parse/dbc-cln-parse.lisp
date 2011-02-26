@@ -202,11 +202,27 @@
                 (notany #'alpha-char-p y))
        :collect y)))
 
+(defun field-convert-empty-string-nil (empty-field &key w-no-error)
+  (if (mon:string-null-or-empty-p empty-field)
+      nil
+      (if (stringp empty-field)
+          empty-field
+          (if w-no-error
+              (values empty-field (type-of empty-field))
+              (mon:simple-error-mon :w-sym 'field-convert-empty-string-nil
+                                    :w-type 'function
+                                    :w-spec "Arg EMPTY-FIELD not `cl:stringp'"
+                                    :w-got  empty-field
+                                    :w-type-of t
+                                    :signal-or-only nil)))))
+
 (defun field-convert-1-0-x (convert-field)
   ;; (declare (optimize (speed 3) (space 0) (safety 0)))
+  ;; :NOTE Should this call `field-convert-empty-string-nil' at top
   (setf convert-field
-        (if (and (simple-string-p convert-field)
-                 (eql (length convert-field) 1))
+        (if (and ;; (simple-string-p convert-field)
+             (stringp convert-field)
+             (eql (length convert-field) 1))
             (char convert-field 0)
             convert-field))
   (typecase  convert-field
@@ -420,7 +436,7 @@ When coupled with the string values in the cons at the first elt in return value
 we can be reasonably sure that the integer parse is correct.~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
 
-(mon:fundoc'split-comma-field
+(mon:fundoc 'split-comma-field
 "Split a comma delitied dbc field.~%~@
 Intended for use with SEO and \"keyword\" like fields in the `refs` table.~%~@
 :EXAMPLE~%~@
@@ -453,7 +469,7 @@ return CONVERT-FIELD.~%~@
  \(field-convert-1-0-x \"Return Me\"\)~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
 
-(mon:fundoc 'format-entity-role 
+(mon:fundoc 'format-entity-role
 "Format dbc entity-roles list for presentation.~%~@
 Arg ENTITY-ROLES is a list of strings with each string designating a role played
 by a dbc entity, e.g. Artist, Author, Publisher, etc.~%~@
@@ -478,6 +494,20 @@ should suffix ENTITY-ROLE-PREFIX.  Default is 14.~%~@
  ;     :ARTIST-ROLE   Designer
  ;     :ARTIST-ROLE   Fashion Illustrator
  ;     :ARTIST-ROLE   Fashion Designer\"~%~@
+:SEE-ALSO `<XREF>'.~%►►►")
+
+(mon:fundoc 'field-convert-empty-string-nil
+"If EMPTY-FIELD is null or `mon:string-empty-p' return nil.~%~@
+If EMPTY-FIELD is `cl:stringp' return EMPTY-FIELD, else signal an error unless
+keyword W-NO-ERROR is non-nil in which case do not signal an error and return
+as if by `cl:values' first value is EMPTY-FIELD second is its `cl:type-of'.~%~@
+:EXAMPLE~%~@
+ (field-convert-empty-string-nil nil)~%
+ (field-convert-empty-string-nil "")~%
+ \(field-convert-empty-string-nil \"bubba\"\)~%
+ (field-convert-empty-string-nil t)~%
+ (field-convert-empty-string-nil t :w-no-error t)~%
+ (field-convert-empty-string-nil t :w-no-error t)~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
 
 

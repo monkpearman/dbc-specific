@@ -1,5 +1,5 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-01-04T16:36:51-05:00Z}#{11012} - by MON>
-;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-classes/dbc-class-artist.lisp
+;;; :FILE dbc-specific/dbc-classes/dbc-class-artist.lisp
 ;;; ==============================
 
 
@@ -26,7 +26,7 @@
 ;;    name="cancel_num"
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 
 ;;; ==============================
 ;; + name="online"
@@ -36,7 +36,7 @@
 ;;   "1" | "0"
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 ;; 
 
 ;;; ==============================
@@ -107,7 +107,7 @@
 ;;   - May appear with " | " at end of string.
 ;;
 ;;   - Split on " | " then `string-trim-whitespace'd per split.
-;;     Use `dbc:dbc-split-used-fors' to do this, the function is written.
+;;     Use `split-used-fors' to do this, the function is written.
 ;;
 ;;   - Should identify these as well:
 ;;     -- (pseudonym)
@@ -164,12 +164,12 @@
 ;;      NNNN-
 ;; 
 ;;     -  Call a follow up function when both car/cdr of
-;;       `dbc-split-lifespan' are each "NNNN" and normalize these to integer
+;;       `split-lifespan' are each "NNNN" and normalize these to integer
 ;;       values. This will allow numeric lifespan range functions, e.g. 
 ;;        (- <DEATH> <BIRTH>) 
 ;;       Or, queries of type: "Find all artists born between 1850 and 1900"
 ;;       The latter is important for any indexing scheme using btrees (i.e. Rucksack)
-;;     - Use `dbc-split-lifespan'/`dbc-split-lifespan-string-int-pairs' functions are written. 
+;;     - Use `split-lifespan'/`split-lifespan-string-int-pairs' functions are written. 
 ;;       :Note does not check replace for `#\[' `#\]' for frob strings of type "[?+]".
 
 ;;; ==============================
@@ -215,7 +215,7 @@
 ;;  - When this is `0' ignore it.
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 
 ;;; ==============================
 ;; + name="role"
@@ -225,8 +225,8 @@
 ;;         "Painter, Illustrator."
 ;;
 ;;   - Split on commas.  Be careful about trailing period `.' 
-;;     Use `dbc-split-roles' function is written.
-;;     :SEE-ALSO `dbc-split-comma-field'
+;;     Use `split-roles' function is written.
+;;     :SEE-ALSO `split-comma-field'
 ;;
 ;;   - Normalize known roles.
 ;;
@@ -247,7 +247,7 @@
 ;;
 ;;   - May appear as `n 83043434`, `nb2007017414`
 ;;
-;;   - Maybe use `dbc:dbc-split-loc-pre'? 
+;;   - Maybe use `split-loc-pre'? 
 ;;     It isn't clear if this is desirable b/c "n 83043434" may actually be the
 ;;     canonical control number...
 ;; 
@@ -260,7 +260,7 @@
 ;;         "500007646"
 ;;
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 ;;
 ;; - Should we try to verify the "type" of control number. 
 ;;   If so, this requires identifying a ULAN type control versus some other type
@@ -282,8 +282,8 @@
 ;;
 ;;  - (search-forward-regexp "name=\"appeared_in\"><") 
 ;;
-;;  - Use `dbc-split-appeared-in' or adapted variant.
-;;   (dbc-split-appeared-in (format nil "Le Rire | Le Sourire |~% Femina | La Rampe "))
+;;  - Use `split-appeared-in' or adapted variant.
+;;   (split-appeared-in (format nil "Le Rire | Le Sourire |~% Femina | La Rampe "))
 
 
 ;;; ==============================
@@ -324,7 +324,7 @@
 ;;  "0"
 ;;
 ;; - This is currently either 1/0 these should be converted to t/nil
-;;   Replace the 0 default with T/NIL Use `dbc-convert-1-0-x-field'
+;;   Replace the 0 default with T/NIL Use `field-convert-1-0-x'
 ;;   
 ;; - (search-forward-regexp "also_author">1)
 
@@ -336,7 +336,7 @@
 ;; :EXAMPLE-VALUES 
 ;;  "0"
 ;; - Replace the 0 default with T/NIL
-;;   Use `dbc-convert-1-0-x-field'
+;;   Use `field-convert-1-0-x'
 ;;
 
 ;;; ==============================
