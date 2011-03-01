@@ -4,22 +4,7 @@
 
 ;; /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-classes/dbc-class-refs-convert.lisp
 
-;;; ==============================
-;; functions written for cleaning
-;; field-name-underscore-to-dash
-;; field-str-cons
-;; field-cln-x
-;; split-used-fors
-;; split-appeared-in
-;; split-roles
-;; split-loc-pre
-;; split-lifespan
-;; split-lifespan-string-int-pairs
-;; split-comma-field
-;; field-convert-1-0-x
-;; format-entity-role
-;; field-convert-empty-string-nil
-;;; ==============================
+
 
 
 (in-package #:dbc)
@@ -53,21 +38,36 @@
                    :do (setf (gethash key ref-hash) val)))
     ref-hash))
 
-;; (find-class 'parsed-ref)
-;; (make-parsed-class-slot-init-accessor-name "parsed-ref" "keywords_type")
-;; 
-;; "artist"    = PARSED-REF
-;; "condition" = PARSED-REF
-;; "price"     = PARSED-REF
-;; "ref"       = PARSED-REF
-;; "year"      = PARSED-REF
-
+
 ;;; ==============================
 (defclass parsed-ref (parsed-class)
   ()
   (:documentation "Class for parsed dbc xml refs."))
 
 ;; :initform *parsed-ref-class-name* :allocation 
+
+;; (mon:find-class-name-as-string 'parsed-ref "DBC")
+;; "PARSED-REF", PARSED-REF, PARSED-REF, :EXTERNAL
+;;; ==============================
+
+
+
+;;; ==============================
+;; :NOTE Exisiting functions written for cleaning
+;; `field-name-underscore-to-dash'
+;; `field-str-cons'
+;; `field-cln-x'
+;; `split-used-fors'
+;; `split-appeared-in'
+;; `split-roles'
+;; `split-loc-pre'
+;; `split-lifespan'
+;; `split-lifespan-string-int-pairs'
+;; `split-comma-field'
+;; `field-convert-1-0-x'
+;; `format-entity-role'
+;; `field-convert-empty-string-nil'
+;;; ==============================
 
 
 ;;; ==============================
@@ -90,56 +90,90 @@
 ;;  "edit_history")
 
 
-;;  
-;; ( <FIELD-NAME>  <RENAME-TO>  (<INITP> <INIT-PFX>) )
-;; :SEE make-parsed-class-slot-accessor-name etc.
-
 ;;; ==============================
-;; Linnaean
+;; :TODO `make-parsed-class-slot-init-accessor-name'
+;;  - Separete the slot init-arg frobbing into a dedicated function
+;;  - change optional arg PREFIX-INITARG-W should be a keyword PREFIX-INIT- W
+;;  - add additional keyword SFX-INIT-W
+;;  - add additional keyword TRANSFORM (or NORMALIZE ???) when non-nil should
+;;    rename from PARSED-FIELD to TRANSFORM
+;; - Return value should have teh format:
+;;    <SLOT>  <TRANSFORM>  |  (<INIT> {INIT-PFX | INIT-SFX} )  <ACCESSOR>
+;;
+;; :SEE make-parsed-class-slot-accessor-name etc.
+;;
+;; --
+;;  Current signature is:
+;;   (make-parsed-class-slot-init-accessor-name named-class parsed-field &optional prefix-initarg-w)
+;;
+;; Current return values have the format:
+;;  <SLOT>  ( <INIT-PFX> <FIELD-NAME> ) <ACCESSOR>
+;;
+;; Current return values are:
+;;  (make-parsed-class-slot-init-accessor-name "parsed-ref"  "artist"  "p")
+;;   => ("ARTIST" "P-ARTIST" "PARSED-REF-ARTIST")
+;;
+;;  (make-parsed-class-slot-init-accessor-name "parsed-ref" "keywords_type")
+;;  => ("KEYWORDS-TYPE" "KEYWORDS-TYPE" "PARSED-REF-KEYWORDS-TYPE")
+;;  
+;;
+
+;;; ==============================
+;;
 ;;
 ;; (make-parsed-class-slot-init-accessor-name "parsed-ref" "keywords_type" "init")
-;;    <SLOT>              <TRANSFORM>  |  <INIT>  <ACCESSOR>  
-;;
+;;    <SLOT>  <TRANSFORM>  |  (<INIT> {INIT-PFX | INIT-SFX})  <ACCESSOR>  
 ;; '(
 ;;
 ;;   "ref"             ;;
 ;;
-;;  "title" 	       ;;
-;;  "desc_fr"	       ;; description-french
-;;  "desc_en"	       ;; description-english
-;;  "histo_fr"	       ;; 
-;;  "histo_en"	       ;;
+;;  "title" 	       ;;                      ;; `field-convert-1-0-x'
+;;  "desc_fr"	       ;; description-french   ;; `field-convert-1-0-x'
+;;  "desc_en"	       ;; description-english  ;; `field-convert-1-0-x'
+;;  "histo_fr"	       ;;                      ;; `field-convert-1-0-x'
+;;  "histo_en"	       ;;                      ;; `field-convert-1-0-x'
 ;;  "text_quote"       ;;
 ;;  "notes"	       ;;
 ;;  "translation"      ;;
 ;;
-;;  "people"	       ;; ???
-;;  "brand"	       ;; 
+;;  "people"	       ;; person               ;; `field-convert-1-0-x'
+;;  "brand"	       ;;                      ;; `field-convert-1-0-x'
 ;;  "composer"	       ;;
 ;;  "artist"	       ;;
 ;;  "author"           ;;
-;;  "latin_name"       ;; Linnaean
+;;  "latin_name"       ;; Linnaean             ;; `field-convert-1-0-x' 
+;;
 ;;
 ;;  "book"             ;; publication
 ;;  "publisher"        ;; publication-publisher
-;;  "publish_location" ;; publication-location-published
+;;  "publish_location" ;; publication-location-published OR publication-location ???
 ;;  "volume"	       ;; publication-volume
 ;;  "edition"	       ;; publication-edition
 ;;  "page"	       ;; publication-page
-;;  "Plate_number"     ;; publication-plate
-;;  "issue"	       ;; publication-issue
+;;  "Plate_number"     ;; publication-plate       ;; `field-convert-1-0-x' 
+;;  "issue"	       ;; publication-issue       ;; `field-convert-1-0-x' 
 ;;
-;;  "year"	       ;; publication-date
-;;  "year_year"	       ;; publication-date-range
-;;  "date"	       ;; ???
+;;  :NOTE `parsed-artist' class has "appeared_in" -> "publication-appeared-in"
 ;;
-;;  "categ"	       ;; category-0
-;;  "c1"	       ;; category-1
-;;  "c2"	       ;; category-2
-;;  "c3"	       ;; category-3
-;;  "c4"	       ;; category-4
-;;  "c6"	       ;; category-6
-;;  "c5"	       ;; category-5
+;; It isn't totally clear yet that these are neccesarrily publication related fields:
+;;  "year"	       ;; publication-date        ;; `field-convert-1-0-x'  
+;;  "year_year"	       ;; publication-date-range  ;; 
+;;  "date"	       ;; ???                     ;; `field-convert-1-0-x'
+;;
+;;
+;;  "categ"	       ;; category-0              ;; `field-convert-1-0-x'
+;;  "c1"	       ;; category-1              ;; `field-convert-1-0-x'
+;;  "c2"	       ;; category-2              ;; `field-convert-1-0-x'
+;;  "c3"	       ;; category-3              ;; `field-convert-1-0-x'
+;;  "c4"	       ;; category-4		  ;; `field-convert-1-0-x'
+;;  "c6"	       ;; category-6		  ;; `field-convert-1-0-x'
+;;  "c5"	       ;; category-5		  ;; `field-convert-1-0-x'
+;;  "bct"	       ;; category-precedence-list
+;;
+;;  "categ_doc"	       ;; category-0-doc          ;; `field-convert-1-0-x'
+;;  "c1_doc"	       ;; category-1-doc          ;; `field-convert-1-0-x'
+;;  "c2_doc"	       ;; category-2-doc          ;; `field-convert-1-0-x'
+;;  "c3_doc"	       ;; category-3-doc          ;; `field-convert-1-0-x'
 ;;
 ;;  "theme"	       ;; theme-0
 ;;  "theme2"	       ;; theme-1
@@ -147,43 +181,42 @@
 ;;
 ;;  "keywords"	       ;;
 ;;
-;;  "technique"        ;; 
+
+;;  "condition"	       ;;
+;;  "onlinen"          ;; mount-type
+;;  "technique"        ;; technique-type
 ;;  "paper"            ;; paper-type 
-;;  "color"            ;; color-p
-;;  "onlinen"          ;; on-linen-p
+;;  "color"            ;; color-type              ;; `field-convert-1-0-x'
 ;;  "w"                ;; width
 ;;  "h"                ;; height
- ;;  "price"	       ;;
-;;  "condition"	       ;;
+;;  "price"	       ;; price-ask       
+;;                     ;; The "-ask" suffix is for congruence with "price-ebay"
+;;                     ;; :NOTE Need price-paid, price-sold, 
 ;;
 ;;  "nbre"             ;; number    ;; probably empty
 ;;  "av_repro"         ;; repro-p
-;;  "online"           ;; active-p ;; note online is to similiar onlinen
+;;  "online"           ;; active ;; note "online" is too similiar with "onlinen"
 ;;  "seller"           ;;
 ;;  "bar_code" 	       ;;
 ;;  "weight"	       ;;
 ;;  "user_name"	       ;;
-;;  "done"	       ;; job-complete
-;;  "job_name"	       ;; job-id
+;;  "done"	       ;; job-complete     ;; `field-convert-1-0-x'
+;;  "job_name"	       ;; job-id           ;; `field-convert-1-0-x' 
 ;;  "locked"	       ;;
 ;;
 ;;  "uri"	       ;;
 ;;  "keywords_type"    ;;
-;;  "bct"	       ;;
 ;;
-;;  "related_doc"      ;;
-;;  "categ_doc"	       ;; category-doc
-;;  "c1_doc"	       ;; category-1-doc
-;;  "c2_doc"	       ;; category-2-doc
-;;  "c3_doc"	       ;; category-3-doc
+;;  "related_doc"      ;;                   ;; `field-convert-1-0-x'
+
 ;;
-;;  "ebay_final"       ;; 
-;;  "ebay_price"       ;;
-;;  "ebay_title"       ;;
-;;  "ebay_id"	       ;;
-;;  "seo_title"	       ;;
+;;  "ebay_final"       ;; price-sold-ebay
+;;  "ebay_price"       ;; price-ask-ebay
+;;  "ebay_title"       ;; title-ebay
+;;  "ebay_id"	       ;; id-ebay ???
+;;  "seo_title"	       ;; title-seo
 ;;  "description_seo"  ;; seo-description
-;;  "keywords_seo"     ;; seo-keywords
+;;  "keywords_seo"     ;; keywords-seo
 ;;
 ;;  "date_edit"	       ;; edit-date
 ;;  "edit_history    ;; edit-history
@@ -234,7 +267,7 @@
 ;; - This should be a UUID
 
 ;;; ==============================
-;; :FIELD "price"
+;; :FIELD "price" :TRANSFORM  "price-ask"
 ;;
 ;;         :TYPE "int(10)"
 ;;         :NULL-P "NO"
@@ -245,7 +278,12 @@
 ;; :EXAMPLE-VALUES 
 ;;  150
 ;;
+;; :NOTE The "-ask" suffix is for congruence with "price-ebay"
+;; :TODO Need "price-paid", "price-sold"
+;; This would imply that price is a class e.g. "price-class" 
 
+;; (defclass price-class (base-dbc)
+;; (price-paid :initarg :price-paid 
 
 
 ;;; ==============================
@@ -857,7 +895,7 @@
 ;; - Use `mon:number-to-string' or `parse-integer'
 
 ;;; ==============================
-;; :FIELD "color"
+;; :FIELD "color"  :TRANSFORM "color-type"
 ;;
 ;;         :TYPE "tinyint(3) unsigned"
 ;;         :NULL-P "NO"
@@ -868,6 +906,18 @@
 ;; :EXAMPLE-VALUES 
 ;;
 ;;
+;; :NOTE This has never really been correct. The value is ternary not binary.
+;; In the current binary configuration the following 
+;; TRUE indicates a non greyscale image.
+;; FALSE indicates a greyscale or monochromatic image.
+;; Better, would be to indicate as follows:
+;; - polychromatic-multi  -- a polychromatic multi-colored imaged
+;; - polychromatic-grey   -- a polychromatic grayscale (greyscale) image
+;; - monochromatic-binary -- a binary image black and white
+;; These would map as:
+;;  0 - black and white
+;;  1 - greyscale
+;;  2 - color 
 
 ;;; ==============================
 ;; :FIELD "onlinen"
