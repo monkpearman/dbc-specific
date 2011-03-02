@@ -1,26 +1,6 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-03-01T16:35:31-05:00Z}#{11092} - by MON>
-;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-classes/dbc-class-regexps.lisp
+;;; :FILE dbc-specific/dbc-classes/dbc-class-regexps.lisp
 ;;; ==============================
-
-
-#|
-;;; ==============================
-
- :NOTES
- - Each instance of class with a control name e.g.: 
-   naf-<ENTITY>, category-<ENTITY>, theme-<ENTITY>
-   should have corresponding regexp(s) which may be used to identify it in
-   descriptions, documentation, keyword lists, etc.
-
- - instances of regexp-classes should be instantiated with a corresponding
- - object UUID value for the instance it identifies.
-
- - regexp-matchers/UUID key value pairs should be stored to a corresponding
-   hash-table specific to the type of entity the regexp-matcher identifies
-
-;;; ==============================
-#|
-
 
 
 ;;; ==============================
@@ -117,8 +97,15 @@
       "Class implementing the core slots for implementing subtyped entity matchers.
 Don't instantiate directly from this class.")))
 
+
 
 ;;; ==============================
+;;; :THEMES
+;;; ==============================
+(defvar *theme-entity-regexp-matcher-db* nil) ;;(make-hash-table))
+
+(defvar *theme-entity-regexp-entity-db* nil) ;;(make-hash-table))
+
 (defclass theme-entity-regexp (entity-regexp)
   ;; match-entity-class
   ;; match-container-uuid
@@ -127,6 +114,14 @@ Don't instantiate directly from this class.")))
   ;; match-matcher-db
   ()
   (:documentation "An entity-regexp sub-class for themes."))
+
+;;; ==============================
+;;; :CATERORIES
+;;; ==============================
+
+(defvar *category-entity-regexp-matcher-db* nil) ;;(make-hash-table))
+
+(defvar *category-entity-regexp-entity-db* nil) ;;(make-hash-table))
 
 (defclass category-entity-regexp (entity-regexp)
   ;; match-entity-class
@@ -137,7 +132,10 @@ Don't instantiate directly from this class.")))
   ()
   (:documentation "An entity-regexp sub-class for categories."))
 
+
 
+;;; ==============================
+;;; :NAFS
 ;;; ==============================
 (defclass naf-entity-type-regexp (entity-regexp)
   ;; match-entity-class
@@ -149,67 +147,100 @@ Don't instantiate directly from this class.")))
   ()
   (:documentation "An entity-regexp sub-class for NAFs."))
 
-;;; control/alt
 (defclass naf-entity-control-name-regexp (naf-entity-type-regexp)
   (
    ;; (match-entity-container-type :initform 'closure)
    ;; (match-entity-matcher
    )
   (:documentation 
-   #.(format nil
-   "A `naf-entity-type-regexp' subclass for matching the primary control-name of NAF instances.
-Naf control-names are considered canonical and are _rarely_ mutated.
-The matchers named by instances of this class should be run _before_ other regexps.
-The match-entity-container-type slot of this class is defaulted to 'closure with the intent that this 
-the match
-"))
+   #.(format nil "A `naf-entity-type-regexp' subclass for matching primary NAF control-names.~%~@
+                  Naf control-names are considered canonical and are _rarely_ mutated.~%~@
+                  The matchers named by instances of this class should run _before_ other regexps.~%~@
+                  The MATCH-ENTITY-CONTAINER-TYPE slot of this class is defaulted to 'closure with~@
+                  the intent that the MATCH-ENTITY-MATCHER will be implemented as a cl-ppcre closure.")))
   
 (defclass naf-entity-alt-name-regexp (naf-entity-type-regexp)
   ( 
    ;;(match-entity-container-type :initform 'list)
    )
   (:documentation 
-   #.(format nil   
-"A `naf-entity-type-regexp' subclass for NAFs with matchable alternative name forms.~%~@
-Alternative name forms might include:~%~%~
- pseudonyms, also knowns, used-fors, variant spellings, rotated name forms, etc.
-
-The matchers named by instances of this class should be run _only_after_all_
-control name matchers have had a chance to run and should _never_ destructively
-modify the things they match.
-This constraint is intented to prevent corruption of control-names which should
-always have precedence of an alternative name form.")))
-
+   #.(format nil "A `naf-entity-type-regexp' subclass for NAFs with matchable alternative name forms.~%~@
+                  Alternative name forms might include:~%~% ~
+                   pseudonyms, also knowns, used-fors, variant spellings, rotated name forms, etc.~%~@
+                 The matchers named by instances of this class should be run _only_after_all_~
+                 control name matchers have had a chance to run and should _never_ destructively~
+                 modify the things they match.~%~@
+                 This constraint is intented to prevent corruption of control-names which should~
+                 always have precedence of an alternative name form.")))
 
 ;;; ==============================
-(defclass naf-entity-artist-control-regexp (naf-entity-regexp)
+;;; :NAF-ARTIST
+;;; ==============================
+(defvar *naf-artist-entity-control-regexp-matcher-db* nil) ;;(make-hash-table))
+
+(defvar *naf-artist-entity-regexp-entity-db* nil) ;;(make-hash-table))
+
+(defclass naf-entity-artist-control-regexp (naf-entity-control-name-regexp)
   ()
   (:documentation "A `naf-entity-regexp' subclass for artists entities"))
 
-(defclass naf-entity-artist-alt-regexp (naf-entity-regexp)
+(defclass naf-entity-artist-alt-regexp (naf-entity-alt-name-regexp)
   ()
   (:documentation "A `naf-entity-regexp' subclass for artists entities"))
 
-;;; ==============================
-(defclass naf-entity-brand-control-regexp (naf-entity-regexp)
-  ()
-  (:documentation "A `naf-entity-regexp' subclass for brand entities."))
-
-(defclass naf-entity-brand-alt-regexp (naf-entity-regexp)
-  ()
-  (:documentation "A `naf-entity-regexp' subclass for brand entities."))
 
 ;;; ==============================
-(defclass naf-entity-person-control-regexp (naf-entity-regexp)
+;;; NAF-PERSON
+;;; ==============================
+(defvar *naf-person-entity-control-regexp-matcher-db* nil) ;;(make-hash-table))
+
+(defvar *naf-person-entity-regexp-entity-db* nil) ;;(make-hash-table))
+
+(defclass naf-entity-person-control-regexp (naf-entity-control-name-regexp)
   ()
   (:documentation "A `naf-entity-regexp' subclass for person entities."))
 
-(defclass naf-entity-person-alt-regexp (naf-entity-regexp)
+(defclass naf-entity-person-alt-regexp (naf-entity-alt-name-regexp)
   ()
   (:documentation "A `naf-entity-regexp' subclass for person entities."))
 
 ;;; ==============================
-(defclass naf-entity-publication-regexp (naf-entity-regexp)
+;;; :NAF-AUTHOR
+;;; ==============================
+
+(defvar *naf-author-entity-control-regexp-matcher-db* nil) ;;(make-hash-table))
+
+(defvar *naf-author-entity-regexp-entity-db* nil) ;;(make-hash-table))
+
+(defclass naf-entity-author-control-regexp (naf-entity-control-name-regexp)
+  ()
+  (:documentation "A `naf-entity-control-name-regexp' subclass for author entities."))
+
+(defclass naf-entity-author-alt-regexp (naf-entity-alt-name-regexp)
+  ()
+  (:documentation "A `naf-entity-regexp' subclass for author entities."))
+
+;;; ==============================
+;;; :NAF-BRAND
+;;; ==============================
+
+(defvar *naf-brand-entity-control-regexp-matcher-db* nil) ;;(make-hash-table))
+
+(defvar *naf-brand-entity-regexp-entity-db* nil) ;;(make-hash-table))
+
+(defclass naf-entity-brand-control-regexp (naf-entity-control-name-regexp)
+  ()
+  (:documentation "A `naf-entity-regexp' subclass for brand entities."))
+
+(defclass naf-entity-brand-alt-regexp (naf-entity-alt-name-regexp)
+  ()
+  (:documentation "A `naf-entity-regexp' subclass for brand entities."))
+
+;;; ==============================
+
+(defvar *naf-publication-entity-control-regexp-matcher-db* nil) ;;(make-hash-table))
+
+(defclass naf-entity-publication-control-regexp (naf-entity-control-name-regexp)
   ()
   (:documentation "A `naf-entity-regexp' subclass for publication entities"))
 

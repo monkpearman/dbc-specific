@@ -78,6 +78,41 @@
              #:make-ref-maker-symbol
              #:make-ref-lookup-table
              ;;
+           ;; dbc-classes/dbc-class-regexps.lisp
+             ;;
+             ;; :CLASSES
+             #:base-regexp
+             #:entity-regexp
+             #:theme-entity-regexp
+             #:category-entity-regexp
+             #:naf-entity-type-regexp
+             #:naf-entity-control-name-regexp
+             #:naf-entity-alt-name-regexp
+             #:naf-entity-artist-control-regexp
+             #:naf-entity-artist-alt-regexp
+             #:naf-entity-author-control-regexp
+             #:naf-entity-author-alt-regexp
+             #:naf-entity-person-alt-regexp
+             #:naf-entity-person-control-regexp
+             #:naf-entity-brand-control-regexp
+             #:naf-entity-brand-alt-regexp
+             #:naf-entity-publication-control-regexp
+             ;; :VARIABLES
+             #:*theme-entity-regexp-matcher-db*
+             #:*theme-entity-regexp-entity-db*
+             #:*category-entity-regexp-entity-db*
+             #:*category-entity-regexp-matcher-db*
+             #:*naf-artist-entity-control-regexp-matcher-db*
+             #:*naf-artist-entity-regexp-entity-db*
+             #:*naf-author-entity-control-regexp-matcher-db*
+             #:*naf-author-entity-regexp-entity-db*
+             #:*naf-person-entity-control-regexp-matcher-db*
+             #:*naf-person-entity-regexp-entity-db*
+             #:*naf-brand-entity-control-regexp-matcher-db*
+             #:*naf-brand-entity-regexp-entity-db*
+             #:*naf-publication-entity-control-regexp-matcher-db*
+
+             ;;
            ;; :MODULE dbc-parse
              ;;
              ;;
