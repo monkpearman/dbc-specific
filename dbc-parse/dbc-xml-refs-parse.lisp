@@ -122,9 +122,9 @@
 		      ;;(let ((nm (klacks:get-attribute s "name")))
                       (cond ((equal (klacks:current-lname s) "row")
 			       (format ous "~A~%" (make-string 68 :initial-element #\;)))
-			      ;; :NOTE What about when there are multiple attributes?
-			      ;; This doesn't happen in the current case but it
-			      ;; will if we ever try to generalize around this function.
+                            ;; :NOTE What about when there are multiple attributes?
+                            ;; This doesn't happen in the current case but it
+                            ;; will if we ever try to generalize around this function.
 			      ((equal (klacks:current-lname s) "field")
 			       ;; :NOTE Parsing happens here with `field-attribs-consume-if'
 			       (let ((conspair (field-attribs-consume-if s)))

@@ -71,8 +71,8 @@
 ;;; ==============================
 
 (mon:fundoc 'make-parsed-class-slot-init-accessor-name
- "Return 3 elt list strings suitable for interning as slot, initarg, and accessor. 
-NAMED-CLASS is a string naming a class which will subclass `dbc:parsed-class'.
+ "Return 3 elt list strings suitable for interning as slot, initarg, and accessor.~%~@
+NAMED-CLASS is a string naming a class which will subclass `dbc:parsed-class'.~%~@
 PARSED-FIELD is a string field name in an xml table.~%~@
 It is transformed with `dbc:field-name-underscore-to-dash'.~%~@
 PREFIX-INITARG-W is a string to prefix a slot initarg name with. When ommited
