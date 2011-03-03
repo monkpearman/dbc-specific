@@ -125,101 +125,103 @@
 ;;    <SLOT>  <TRANSFORM>  |  (<INIT> {INIT-PFX | INIT-SFX})  <ACCESSOR>  
 ;; '(
 ;;
-;;   "ref"             ;;
+;;  "ref"              ;; item-number
 ;;
-;;  "title" 	       ;;                      ;; `field-convert-1-0-x'
-;;  "desc_fr"	       ;; description-french   ;; `field-convert-1-0-x'
-;;  "desc_en"	       ;; description-english  ;; `field-convert-1-0-x'
-;;  "histo_fr"	       ;;                      ;; `field-convert-1-0-x'
-;;  "histo_en"	       ;;                      ;; `field-convert-1-0-x'
+;;  "title"            ;;
+;;  "desc_fr"          ;; description-french     ;; description-class
+;;  "desc_en"          ;; description-english    ;; description-class
+;;  "histo_fr"         ;;
+;;  "histo_en"         ;;
 ;;  "text_quote"       ;;
-;;  "notes"	       ;;
-;;  "translation"      ;;
+;;  "translation"      ;; description-translation
 ;;
-;;  "people"	       ;; person               ;; `field-convert-1-0-x'
-;;  "brand"	       ;;                      ;; `field-convert-1-0-x'
-;;  "composer"	       ;;
-;;  "artist"	       ;;
-;;  "author"           ;;
-;;  "latin_name"       ;; Linnaean             ;; `field-convert-1-0-x' 
+;;  "people"           ;; person-entity-coref
+;;  "brand"            ;; brand-entity-coref
+;;  "composer"         ;; composer-entity-coref
+;;  "artist"           ;; artist-entity-coref
+;;  "author"           ;; author-entity-coref
+;;  "latin_name"       ;; taxon-entity-coref  ;; linnaean-entity-coref???
 ;;
 ;;
-;;  "book"             ;; publication
+;;  "book"             ;; publication-entity-coref
 ;;  "publisher"        ;; publication-publisher
-;;  "publish_location" ;; publication-location-published OR publication-location ???
-;;  "volume"	       ;; publication-volume
-;;  "edition"	       ;; publication-edition
-;;  "page"	       ;; publication-page
-;;  "Plate_number"     ;; publication-plate       ;; `field-convert-1-0-x' 
-;;  "issue"	       ;; publication-issue       ;; `field-convert-1-0-x' 
+;;  "publish_location" ;; publication-location   ;; For congruence with birth-location death-location
+;;  "volume"           ;; publication-volume
+;;  "edition"          ;; publication-edition
+;;  "page"             ;; publication-page
+;;  "Plate_number"     ;; publication-plate
+;;  "issue"            ;; publication-issue
 ;;
 ;;  :NOTE `parsed-artist' class has "appeared_in" -> "publication-appeared-in"
 ;;
 ;; It isn't totally clear yet that these are neccesarrily publication related fields:
-;;  "year"	       ;; publication-date        ;; `field-convert-1-0-x'  
-;;  "year_year"	       ;; publication-date-range  ;; 
-;;  "date"	       ;; ???                     ;; `field-convert-1-0-x'
+;;  "year"             ;; publication-date        ;; For congruence with birth-date death-date 
+;;  "year_year"        ;; publication-date-range  ;;
+;;  "date"             ;; ???
 ;;
+;;  "categ"            ;; category-0
+;;  "c1"               ;; category-1
+;;  "c2"               ;; category-2
+;;  "c3"               ;; category-3
+;;  "c4"               ;; category-4
+;;  "c6"               ;; category-6
+;;  "c5"               ;; category-5
+;;  "bct"              ;; category-precedence-list
 ;;
-;;  "categ"	       ;; category-0              ;; `field-convert-1-0-x'
-;;  "c1"	       ;; category-1              ;; `field-convert-1-0-x'
-;;  "c2"	       ;; category-2              ;; `field-convert-1-0-x'
-;;  "c3"	       ;; category-3              ;; `field-convert-1-0-x'
-;;  "c4"	       ;; category-4		  ;; `field-convert-1-0-x'
-;;  "c6"	       ;; category-6		  ;; `field-convert-1-0-x'
-;;  "c5"	       ;; category-5		  ;; `field-convert-1-0-x'
-;;  "bct"	       ;; category-precedence-list
+;;  "categ_doc"        ;; documentation-category-0
+;;  "c1_doc"           ;; documentation-category-1
+;;  "c2_doc"           ;; documentation-category-2
+;;  "c3_doc"           ;; documentation-category-3
 ;;
-;;  "categ_doc"	       ;; category-0-doc          ;; `field-convert-1-0-x'
-;;  "c1_doc"	       ;; category-1-doc          ;; `field-convert-1-0-x'
-;;  "c2_doc"	       ;; category-2-doc          ;; `field-convert-1-0-x'
-;;  "c3_doc"	       ;; category-3-doc          ;; `field-convert-1-0-x'
+;;  "theme"            ;; theme-0
+;;  "theme2"           ;; theme-1
+;;  "theme3"           ;; theme-2
 ;;
-;;  "theme"	       ;; theme-0
-;;  "theme2"	       ;; theme-1
-;;  "theme3"	       ;; theme-2
-;;
-;;  "keywords"	       ;;
+;;  "keywords"         ;;
 ;;
 
-;;  "condition"	       ;;
+;;  "condition"        ;; description-condition  ;; description-class
 ;;  "onlinen"          ;; mount-type
 ;;  "technique"        ;; technique-type
-;;  "paper"            ;; paper-type 
-;;  "color"            ;; color-type              ;; `field-convert-1-0-x'
-;;  "w"                ;; width
-;;  "h"                ;; height
-;;  "price"	       ;; price-ask       
+;;  "paper"            ;; paper-type
+;;  "color"            ;; color-type
+;;  "w"                ;; unit-width
+;;  "h"                ;; unit-height
+;;  "price"            ;; price-ask
 ;;                     ;; The "-ask" suffix is for congruence with "price-ebay"
-;;                     ;; :NOTE Need price-paid, price-sold, 
+;;                     ;; :NOTE Need price-paid, price-sold,
 ;;
 ;;  "nbre"             ;; number    ;; probably empty
-;;  "av_repro"         ;; repro-p
-;;  "online"           ;; active ;; note "online" is too similiar with "onlinen"
-;;  "seller"           ;;
-;;  "bar_code" 	       ;;
-;;  "weight"	       ;;
-;;  "user_name"	       ;;
-;;  "done"	       ;; job-complete     ;; `field-convert-1-0-x'
-;;  "job_name"	       ;; job-id           ;; `field-convert-1-0-x' 
-;;  "locked"	       ;;
 ;;
-;;  "uri"	       ;;
-;;  "keywords_type"    ;;
+;;  "seller"           ;; item-seller
+;;  "bar_code"         ;; 
+;;  "weight"           ;; unit-weight
+;;  "user_name"        ;; edit-by       ;; edit-by-creator
+;;  "done"             ;; job-complete
+;;  "job_name"         ;; job-id
+;;  "locked"           ;; job-locked
+;;  "online"           ;; item-posted
 ;;
-;;  "related_doc"      ;;                   ;; `field-convert-1-0-x'
+;;  "uri"              ;; item-uri
 
+;;  "notes"            ;; IGNORABLE
+;;  "keywords_type"    ;; IGNORABLE
+;;  "av_repro"         ;; IGNORABLE 
+
+;;
+;;  "related_doc"      ;; documentation-related
+;;
 ;;
 ;;  "ebay_final"       ;; price-sold-ebay
 ;;  "ebay_price"       ;; price-ask-ebay
 ;;  "ebay_title"       ;; title-ebay
-;;  "ebay_id"	       ;; id-ebay ???
-;;  "seo_title"	       ;; title-seo
-;;  "description_seo"  ;; seo-description
+;;  "ebay_id"          ;; id-ebay ??? uuid-ebay
+;;  "seo_title"        ;; title-seo
+;;  "description_seo"  ;; description-seo
 ;;  "keywords_seo"     ;; keywords-seo
 ;;
-;;  "date_edit"	       ;; edit-date
-;;  "edit_history    ;; edit-history
+;;  "date_edit"        ;; edit-date
+;;  "edit_history      ;; edit-history
 ;;  ")
 ;;
 
@@ -253,7 +255,7 @@
 
 
 ;;; ==============================
-;; :FIELD "ref"
+;; :FIELD "ref" :TRANSFORM item-number
 ;;
 ;;         :TYPE "mediumint(8) unsigned"
 ;;         :NULL-P "NO"
@@ -267,7 +269,7 @@
 ;; - This should be a UUID
 
 ;;; ==============================
-;; :FIELD "price" :TRANSFORM  "price-ask"
+;; :FIELD "price" :TRANSFORM "price-ask"
 ;;
 ;;         :TYPE "int(10)"
 ;;         :NULL-P "NO"
@@ -291,7 +293,7 @@
 ;;; ==============================
 
 ;;; ==============================
-;; :FIELD "title"
+;; :FIELD "title" :TRANSFORM description-title :CLASS description-class
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -304,6 +306,7 @@
 ;;  "Eve.- Voyons, Adam..."
 ;;  "A Sa Toilette..."
 ;;  " Whinchat"
+;; " Hermés Accessories"
 ;;  "x"
 ;;
 ;; - What to do about "Translation"? 
@@ -312,9 +315,12 @@
 ;; - How often were these used to hold translation data, b/c they weren't always
 ;;  
 ;; - `mon:string-trim-whitespace' these. 
+;;
+;; - `field-convert-1-0-x' 
+;; 
 
 ;;; ==============================
-;; :FIELD "desc_fr"
+;; :FIELD "desc_fr" :TRANSFORM description-english  :CLASS description-class
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -324,14 +330,12 @@
 ;; :EXAMPLE-VALUES 
 ;;  "Couverture couleur illustrée"
 ;;  "x"
+;;  "0"
 ;;
-;; - Strip "x"
-;
-;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
 
 ;;; ==============================
-;; :FIELD "desc_en"
+;; :FIELD "desc_en" :TRANSFORM description-french  :CLASS description-class
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -344,14 +348,14 @@
 ;;  including the Wright Brothers plane, it is more than 95 years old."
 ;; 
 ;; "Cover Page From Le Sourire. rare!"
-;;  
+;; "&lt;br&gt;&lt;br&gt"
 ;; - Note, above wrapped for clarity.
 ;;
 ;; - Remove all occurences of "rare!"
-
+;; - Remove "&lt;br&gt"
 
 ;;; ==============================
-;; :FIELD "translation"
+;; :FIELD "translation" :TRANSFORM description-translation
 ;;
 ;;         :TYPE "tinyint(3) unsigned"
 ;;         :NULL-P "NO"
@@ -368,7 +372,7 @@
 ;; - Looks like this might be a boolean 
 
 ;;; ==============================
-;; :FIELD "related_doc"
+;; :FIELD "related_doc" :TRANSFORM documentation-related
 ;;
 ;;         :TYPE "tinyint(3) unsigned"
 ;;         :NULL-P "NO"
@@ -384,7 +388,7 @@
 
 
 ;;; ==============================
-;; :FIELD "histo_fr"
+;; :FIELD "histo_fr" :TRANSFORM 
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -394,12 +398,14 @@
 ;; :EXAMPLE-VALUES 
 ;;  "x"
 ;;
+;; (search-forward-regexp "<field name=\"histo_fr\">[[:graph:]]+<" nil t)
+;;
 ;; - Strip "x"
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
 
 ;;; ==============================
-;; :FIELD "histo_en"
+;; :FIELD "histo_en" :TRANSFORM 
 ;;
 ;;         :TYPE "mediumint(9)"
 ;;         :NULL-P "NO"
@@ -410,11 +416,13 @@
 ;; :EXAMPLE-VALUES 
 ;;  "0"
 ;;
+;; (search-forward-regexp "<field name=\"histo_en\">[[:graph:]]+<" nil t)
+;;
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
 
 ;;; ==============================
-;; :FIELD "text_quote"
+;; :FIELD "text_quote" :TRANSFORM 
 ;;
 ;;         :TYPE "varchar(100)"
 ;;         :NULL-P "NO"
@@ -424,13 +432,13 @@
 ;;
 ;; :EXAMPLE-VALUES 
 ;;  "text_quote"
+;;  "4617 "
+;; - May contain "text_quote", remove/ignore it.
 ;;
-;; - May contain "text_quote", remove/ignor it.
-;;
-;; - Is this is actually used?
+;; - Is this is actually used? Yes,  see ref 4617
 
 ;;; ==============================
-;; :FIELD "notes"
+;; :FIELD "notes" :TRANSFORM 
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -438,16 +446,19 @@
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
+;; "è %EF%BF%BD - Crèches (Nativity scenes)" 
+;; "Générale_et_Particulière<"
 ;;
-;; - Is this used?
-
+;; - Is this used? Yes, twice see `ref` 3126, 424
+;; 
+;; (search-forward-regexp "notes\">[^<0].*<" nil t)
 
 ;;; ==============================
 ;;; DATE-VOLUME-ISSUE
 ;;; ==============================
 
 ;;; ==============================
-;; :FIELD "Plate_number"
+;; :FIELD "Plate_number" :TRANSFORM publication-plate
 ;;
 ;;         :TYPE "varchar(100)"
 ;;         :NULL-P "NO"
@@ -457,13 +468,19 @@
 ;;
 ;; :EXAMPLE-VALUES 
 ;;  "x"
+;;  "51"
+;;  " 35"
+;;  " 13"
 ;;
-;; - Strip "x"
+;; - Strip "x" 
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
+;; :NOTE stripping X may not be possible if this is "PLATE X" the Roman numeral!
+;;
+;; - `mon:string-trim-whitespace'
 
 ;;; ==============================
-;; :FIELD "volume"
+;; :FIELD "volume" :TRANSFORM publication-volume
 ;;
 ;;         :TYPE "varchar(45)"
 ;;         :NULL-P "NO"
@@ -476,7 +493,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "edition"
+;; :FIELD "edition" :TRANSFORM publication-edition
 ;;
 ;;         :TYPE "varchar(45)"
 ;;         :NULL-P "NO"
@@ -485,11 +502,11 @@
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
-;;
+;;  "First Octavo"
 ;;
 
 ;;; ==============================
-;; :FIELD "issue"
+;; :FIELD "issue" :TRANSFORM publication-issue
 ;;
 ;;         :TYPE "varchar(5)"
 ;;         :NULL-P "NO"
@@ -500,11 +517,14 @@
 ;; :EXAMPLE-VALUES 
 ;;  "9999"
 ;;  "280"
+;;  "20"
+;;  "0"
 ;;
 ;; - Strip "9999"
+;; - Use `field-convert-1-0-x'
 
 ;;; ==============================
-;; :FIELD "page"
+;; :FIELD "page" :TRANSFORM publication-page
 ;;
 ;;         :TYPE "varchar(45)"
 ;;         :NULL-P "NO"
@@ -517,7 +537,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "date"
+;; :FIELD "date" :TRANSFORM edit-date-orig
 ;;
 ;;         :TYPE "varchar(100)"
 ;;         :NULL-P "NO"
@@ -527,16 +547,23 @@
 ;;
 ;; :EXAMPLE-VALUES 
 ;;  "date" 
-;;   "0"
+;;  "0"
 ;;
+;; - Following appears to be the _original_ edit-date field. with only one such
+;;   occurence for entire file:
+;;   "20040811125434" 
+;;
+;; (search-forward-regexp "date\">[^<0].*<" nil t)
+;; 
 ;; - May contain "date" remove/ignore it.
 ;;
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
 
 
+
 ;;; ==============================
-;; :FIELD "year_year"
+;; :FIELD "year_year" :TRANSFORM publication-date-range
 ;;
 ;;         :TYPE "int(10) unsigned"
 ;;         :NULL-P "NO"
@@ -547,14 +574,14 @@
 ;; :EXAMPLE-VALUES 
 ;;  "0"
 ;;  "1828"
-;; "1755 - 1787"  :SEE `ref` 7476
+;;  "1755 - 1787"  :SEE `ref` 7476
 ;;
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
 ;;
 
 ;;; ==============================
-;; :FIELD "year"
+;; :FIELD "year" :TRANSFORM publication-date-year
 ;;
 ;;         :TYPE "varchar(100)"
 ;;         :NULL-P "NO"
@@ -570,9 +597,13 @@
 ;;  "0 , 0 , 1820"
 ;;  "0 , 0 , 1900"
 ;;  "0 , 0 , 1896"
-;;  "1832-1837"              ;; Should this have been in year_year? See `ref` 8652
+;;  "1832-1837"               ;; Should this have been in year_year? See `ref` 8652
+;;  "1749-1783"               ;; ref 427 has year_year as 1749
+;;  "1837-1839"               ;; ref 399,400 year_year as 1837
+;;  "1717 - 1725"             ;; ref 9311 year is 1717 ;; replaced 20 times
 ;;  "0"
 ;;  "December, ,1946"
+;;  ",,1810"                 ;; 7496 
 ;;
 ;; - And/or maybe `string-split-on-chars' 
 ;; 
@@ -580,8 +611,11 @@
 ;;	      (mon::string-split-on-chars "December , 10 , 1910" " ,"))
 ;;
 ;; - Frob with `local-time'?
-
-
+;;
+;; - Use `field-convert-1-0-x'
+;;
+;; (search-forward-regexp "year\">[[:digit:]]\\{4,4\\}-[[:digit:]]\\{4,4\\}<" nil t)
+;; (search-forward-regexp "ref\">[[:digit:]]\\{4,4\\}<" nil t)
 
 
 ;;; ==============================
@@ -589,7 +623,7 @@
 ;;; ==============================
 
 ;;; ==============================
-;; :FIELD "artist"
+;; :FIELD "artist" :TRANSFORM artist-entity-coref
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -600,12 +634,15 @@
 ;; :EXAMPLE-VALUES 
 ;; "Audubon (John James) &amp; Audubon (John Woodhouse) &amp; Havell (Robert, Jr.)"
 ;; "Steinlen (Theophile Alexandre)"
+;; " Mourgue (Pierre)"
 ;;
 ;; - split on "&"
-;; 
+;;
+;; - Use `mon:string-trim-whitespace'
+
 
 ;;; ==============================
-;; :FIELD "author"
+;; :FIELD "author" :TRANSFORM  author-entity-coref
 ;;
 ;;         :TYPE "varchar(100)"
 ;;         :NULL-P "NO"
@@ -622,7 +659,7 @@
 ;; - This field will have a class-instance if it is non-nil
 
 ;;; ==============================
-;; :FIELD "book"
+;; :FIELD "book" :TRANSFORM  publication-entity-coref
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -632,11 +669,13 @@
 ;;
 ;; :EXAMPLE-VALUES 
 ;;  "Gil Blas Illustre"
+;;  "Unknown"
 ;;
 ;; - This will field will have a class-instance if it is non-nil
+;; 
 
 ;;; ==============================
-;; :FIELD "composer"
+;; :FIELD "composer" :TRANSFORM composer-entity-coref
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "YES"
@@ -648,7 +687,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "brand"
+;; :FIELD "brand" :TRANSFORM brand-entity-coref
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -669,7 +708,7 @@
 ;; - This field will have a class-instance if it is non-nil
 
 ;;; ==============================
-;; :FIELD "people"
+;; :FIELD "people" :TRANSFORM person-entity-coref
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -693,7 +732,7 @@
 ;;; ==============================
 
 ;;; ==============================
-;; :FIELD "publisher"
+;; :FIELD "publisher" :TRANSFORM publication-publisher
 ;;
 ;;         :TYPE "varchar(100)"
 ;;         :NULL-P "NO"
@@ -702,11 +741,17 @@
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
+;; " Wallace"
+;; "John T. Bowen,  J.J. Audubon, and  J.B. Chevalier"
+;; "x"
 ;;
+;; - Use `field-convert-1-0-x'
+;; - Use `mon:string-trim-whitespace'
 ;;
+;; (field-convert-1-0-x (mon:string-trim-whitespace "x"))
 
 ;;; ==============================
-;; :FIELD "publish_location"
+;; :FIELD "publish_location" :TRANSFORM location-published
 ;;
 ;;         :TYPE "varchar(100)"
 ;;         :NULL-P "NO"
@@ -715,13 +760,17 @@
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
+;;  " Weimar"
 ;;  " London" 
-;;
+;;  " France"
+;;  "Paris, 15 Rue de la Parcheminerie"
+;;  "34 North Front Street, Philadelphia and 77 William Street, New York"
+;; 
 ;; - `mon:string-trim-whitespace' these.
 
 
 ;;; ==============================
-;; :FIELD "latin_name"
+;; :FIELD "latin_name" :TRANSFORM taxon-entity-coref
 ;;
 ;;         :TYPE "varchar(192)"
 ;;         :NULL-P "NO"
@@ -730,7 +779,11 @@
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
+;; "Passerina ciris (Linnaeus, 1758) | Fringilla Emberiza (Ciris)"
 ;; "Cathartes Atratus | Cathartes Aura (Linnaeus)"
+;; "Tachycineta Thalassina (Swainson) | Hirundo Malassinus | Tachycineta thalassina"
+;; "Asclepias tuberosa | Spizella pallida (Swainson, 1832) | Emberiza pallida (Swainson &amp; Richardson)"
+;;
 ;;  "x"
 ;;
 ;; - Split on "|"
@@ -748,7 +801,7 @@
 ;; The themes should be dedicated class instances.
 
 ;;; ==============================
-;; :FIELD "theme"
+;; :FIELD "theme" :TRANSFORM theme-0
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -760,9 +813,11 @@
 ;;  "Artists' models"
 ;;  "Eating &amp; drinking"        -> "Eating and drinking"
 ;;  "Patterns (Design elements)"
+;;
+;; - Replace "&amp;" -> "and"
 
 ;;; ==============================
-;; :FIELD "theme2"
+;; :FIELD "theme2" :TRANSFORM theme-1
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "YES"
@@ -772,9 +827,10 @@
 ;; :EXAMPLE-VALUES 
 ;;  "Portraits"
 ;;
+;; - Replace "&amp;" -> "and"
 
 ;;; ==============================
-;; :FIELD "theme3"
+;; :FIELD "theme3" :TRANSFORM theme-2
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "YES"
@@ -785,6 +841,7 @@
 ;;  "Walking"
 ;;  "Relations between the sexes"
 ;;
+;; - Replace "&amp;" -> "and"
 
 
 ;;; ==============================
@@ -792,7 +849,7 @@
 ;;; ==============================
 
 ;;; ==============================
-;; :FIELD "technique"
+;; :FIELD "technique" :TRANSFORM technique-type
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -807,7 +864,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "paper"
+;; :FIELD "paper" :TRANSFORM paper-type
 ;;
 ;;         :TYPE "varchar(100)"
 ;;         :NULL-P "NO"
@@ -817,12 +874,13 @@
 ;;
 ;; :EXAMPLE-VALUES 
 ;;  "Antique Wove Paper"
+;;  "Machine pressed" 
 ;;
 ;; - This field has a naf UUID and is (at least currently) a relatively small set.
 ;;
 
 ;;; ==============================
-;; :FIELD "condition"
+;; :FIELD "condition" :TRANSFORM description-condition
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -832,6 +890,7 @@
 ;; :EXAMPLE-VALUES 
 ;;  "[8] Archival Conservation and Mounted on Linen. light age staining."
 ;;  "[9] "
+;;  " [9]"
 ;;  "[8]"
 ;;  "[9 ] Strong print and plate marks. Beautiful hand coloring"
 ;;  "[4 ] moderate age staining in top margin, light age staining in other margins."
@@ -843,11 +902,14 @@
 ;;  "[8+] One small fox mark shown in image. Strong print marks and beaitiful handcoloring."
 ;;  "[8+] Professional archival conservation. Very light offsetting. [Typical]."
 ;;  "[8+]  Very light offsetting."
+;;  "[7 ] Light age toning. Very light offsetting."
 ;;
 ;; - Separate out the `[<N>]` values when present.
+;;
 ;; - Convert "[<N>+]" to "N.5"
 ;;
 ;; -- Split the string on whitespace, Should capitalize first word, and concatenate the result
+;; 
 ;; -- Return (8 . "Condition String here")
 ;; 
 ;; - But, really these should be a separated into dedicated slots:
@@ -859,9 +921,13 @@
 ;;   :damage-location
 ;;   :damage-description
 ;;   :damage-type
+;;
+;; - string-left-trim
+;;
+;; - remove trailing period 
 
 ;;; ==============================
-;; :FIELD "w"
+;; :FIELD "w" :TRANSFORM unit-width
 ;;
 ;;         :TYPE "float unsigned"
 ;;         :NULL-P "NO"
@@ -878,7 +944,7 @@
 ;; - Use `mon:number-to-string' or `parse-integer'
 
 ;;; ==============================
-;; :FIELD "h"
+;; :FIELD "h" :TRANSFORM unit-height
 ;;
 ;;         :TYPE "float unsigned"
 ;;         :NULL-P "NO"
@@ -920,7 +986,7 @@
 ;;  2 - color 
 
 ;;; ==============================
-;; :FIELD "onlinen"
+;; :FIELD "onlinen" :TRANSFORM mount-type
 ;;
 ;;         :TYPE "tinyint(3) unsigned"
 ;;         :NULL-P "NO"
@@ -936,7 +1002,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "weight"
+;; :FIELD "weight" :TRANSFORM unit-weight
 ;;
 ;;         :TYPE "tinyint(4)"
 ;;         :NULL-P "NO"
@@ -945,8 +1011,10 @@
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
-;;  "1"
+;;  "1" 
+;;  "0"
 ;;
+;; - These integers are 
 ;; - Convert these values to somthing more meaningful?
 
 
@@ -956,7 +1024,7 @@
 ;;; ==============================
 
 ;;; ==============================
-;; :FIELD "bct"
+;; :FIELD "bct" :TRANSFORM category-precedence-list
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -977,7 +1045,7 @@
 
 
 ;;; ==============================
-;; :FIELD "categ"
+;; :FIELD "categ" :TRANSFORM category-0
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -987,16 +1055,27 @@
 ;;
 ;; :EXAMPLE-VALUES 
 ;;  "Books and Publications"
+;;  "0"
 ;;
+;; - It is never the case that the `categ` field is empty.
+;;   e.g. there are no matches for the following search:
+;;    (search-forward-regexp "<field name=\"categ\"></field>" nil t)
+;; 
 ;; - These are effectively classes and should be treated as such. By creating an
 ;;   instance of the deepest most categ we will automatically inherit from the
 ;;   class precedence heirarchy. And, we can then get multiple-inheritance!
 ;;
-;; - In the sub-categs there is a "1" to indicate max depth.
-
+;; - In the sub-categs it appears that "1" is used to to indicate max depth. 
+;;   BUT there are Le Rire issues that use the item number for the "c6" see for
+;;   example the ~4600 range of items e.g. 4607
+;;    - When such occurs the following fields  all refer to the item number:
+;;       `job_name` `keywords_type` `text_quote` and `c6` (sometimes)
+;;    Additionally, the `locked` and `done` fields have the value 127
+;;
+;; (search-forward-regexp "<field name=\"categ\"></field>" nil t)
 
 ;;; ==============================
-;; :FIELD "c1"
+;; :FIELD "c1" :TRANSFORM :TRANSFORM category-1
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1009,7 +1088,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "c2"
+;; :FIELD "c2" :TRANSFORM category-2
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1022,7 +1101,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "c3"
+;; :FIELD "c3" :TRANSFORM category-3
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1035,7 +1114,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "c4"
+;; :FIELD "c4" :TRANSFORM category-4
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1048,20 +1127,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "c5"
-;;
-;;         :TYPE "varchar(255)"
-;;         :NULL-P "NO"
-;;         :KEY ""
-;;         :DEFAULT ""
-;;         :EXTRA ""
-;;
-;; :EXAMPLE-VALUES 
-;;
-;;
-
-;;; ==============================
-;; :FIELD "c6"
+;; :FIELD "c5" :TRANSFORM category-5
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1074,7 +1140,21 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "categ_doc"
+;; :FIELD "c6" :TRANSFORM category-6
+;;
+;;         :TYPE "varchar(255)"
+;;         :NULL-P "NO"
+;;         :KEY ""
+;;         :DEFAULT ""
+;;         :EXTRA ""
+;;
+;; :EXAMPLE-VALUES 
+;;  1
+;;  4622
+;; - The "1" value _may_ be used to indicate depth in the class tree 
+
+;;; ==============================
+;; :FIELD "categ_doc" :TRANSFORM documentation-category-0
 ;;
 ;;         :TYPE "int(10) unsigned"
 ;;         :NULL-P "NO"
@@ -1087,10 +1167,12 @@
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
 ;;
-;; - Is this ever used?
+;; - Is this ever used? Yep once, see ref 8941
+;;
+;; - (search-forward-regexp "categ_doc\">[^<0].*<" nil t)
 
 ;;; ==============================
-;; :FIELD "c1_doc"
+;; :FIELD "c1_doc" :TRANSFORM documentation-category-1
 ;;
 ;;         :TYPE "int(10) unsigned"
 ;;         :NULL-P "NO"
@@ -1099,14 +1181,15 @@
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
+;;  0
 ;;
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
 ;;
-;; - Is this ever used?
+;; - Is this ever used? No.
 
 ;;; ==============================
-;; :FIELD "c2_doc"
+;; :FIELD "c2_doc" :TRANSFORM documentation-category-2
 ;;
 ;;         :TYPE "int(10) unsigned"
 ;;         :NULL-P "NO"
@@ -1120,11 +1203,11 @@
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
 ;;
-;; - Is this ever used? Yes, at least once :SEE `ref` 9644
+;; - Is this ever used? Yes, at least once :SEE `ref` 8942
 
 
 ;;; ==============================
-;; :FIELD "c3_doc"
+;; :FIELD "c3_doc" :TRANSFORM documentation-category-3
 ;;
 ;;         :TYPE "int(10) unsigned"
 ;;         :NULL-P "NO"
@@ -1133,11 +1216,12 @@
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
+;;  0
 ;;
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
 ;;
-;; - Is this ever used?
+;; - Is this ever used? NO
 
 
  
@@ -1146,7 +1230,7 @@
 ;;; ==============================
 
 ;;; ==============================
-;; :FIELD "uri"
+;; :FIELD "uri" :TRANSFORM item-uri
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "YES"
@@ -1163,10 +1247,11 @@
 ;;
 ;; - Remove occurences of "_No-Signature_", "Unknown", "No_Signature" 
 ;;
+;; - Remove the ".htm" extension we can always add it back in as needed.
 ;;
 
 ;;; ==============================
-;; :FIELD "seo_title"
+;; :FIELD "seo_title" :TRANSFORM title-seo
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1186,8 +1271,13 @@
 ;;  "x, Original Print -January , 18 , 1908 - X FROM LE SOURIRE"
 ;;
 ;; "Huard (Charles), Original Print - - HUARD  FROM LE SOURIRE"
+;;
 ;; "  -  No Signature &amp; , Original Print -1929 - 1930 -  FROM NOUVEAUTES PAPIERS PEINTS"
 ;;
+;; "Alfredo Bouret - Original Boucheron Advert - linen backed Print - circa 1952
+;;  - FROM PLAISIR DE FRANCE"
+;;
+;; "  -  , Original Print -0 -  FROM"
 ;;
 ;; - Note, above wrapped for clarity.
 ;;
@@ -1198,6 +1288,16 @@
 ;;
 ;; - Fix this shit: "- ,,"
 ;;
+;; - Remove leading " - "
+;;
+;; - Replace " - - " -> " - "
+;;
+;; - Replace " Original Print -<MONTH>" ->  "Original Print - <MONTH>"
+;;
+;; - Remove "x,"
+;;
+;; - Remove "&amp;"
+;;
 ;; - What to do about trailing "| DerbyCityPrints.com"?
 ;; 
 ;; - These can probably be safely `string-lef-trimmed'
@@ -1205,7 +1305,7 @@
 ;; - What fucking mess... 
 
 ;;; ==============================
-;; :FIELD "description_seo"
+;; :FIELD "description_seo" :TRANSFORM description-seo :CLASS description-class
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -1223,7 +1323,7 @@
 
 
 ;;; ==============================
-;; :FIELD "keywords"
+;; :FIELD "keywords" :TRANSFORM 
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -1256,15 +1356,18 @@
 ;;  illustrations Tree limbs 1832 1833 1834 1835 1836 1837 Anthus Arboreus R. and
 ;;  J.E. Taylor"
 ;;
+;; "1 1 1 1 1 x Parfums Lanvin Aljanvic x Lanvin x Natural History Street
+;; vendors Flowers Sidewalks 1948 x x"
+;;
 ;; - Note, above examples wrapped for clarity, should genrally appears as one longline.
 ;;
 ;; - May contain  chars e.g. #\Return  and #\Tab these are effectively delimiters
 ;;
 ;; - Split on chars: "|" "," #\Tab #\Return #\&
 ;;
-;; - Split on words: "Unknown", "Unsigned", "No Signature", "Anonymous" "Translation"
+;; - Split on words: "Unknown", "Unsigned", "No Signature", "Anonymous" "Translation" "&amp;"
 ;;
-;; - Maybe can split on years "<YYYY>"
+;; - Maybe can split on years "<YYYY>" - If so we should replace with "circa <YYYY>"
 ;;
 ;; - Replace occurencs of: " - Pseudonym" -> " (pseudonym)" 
 ;;   Or, maybe try to catch all of them:  "Pseudonym" -> "(pseudonym)"
@@ -1293,9 +1396,8 @@
 ;;  
 ;;; 
 
-
 ;;; ==============================
-;; :FIELD "keywords_type"
+;; :FIELD "keywords_type" :TRANSFORM 
 ;;
 ;;         :TYPE "varchar(100)"
 ;;         :NULL-P "NO"
@@ -1308,11 +1410,12 @@
 ;;
 ;; - May contain "keywords_type", remove/ignore it.
 ;; 
-;; - Was this actually used?
+;; - Was this actually used? Nope.
 ;;
+;; (search-forward-regexp "keywords_type\">[^<0].*<" nil t)
 
 ;;; ==============================
-;; :FIELD "keywords_seo"
+;; :FIELD "keywords_seo" :TRANSFORM 
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -1331,7 +1434,7 @@
 ;;; :NOTE The ebay stuff Should be subclassed. It was never used but does have utility.
 
 ;;; ==============================
-;; :FIELD "ebay_final"
+;; :FIELD "ebay_final" :TRANSFORM 
 ;;
 ;;         :TYPE "int(10) unsigned"
 ;;         :NULL-P "NO"
@@ -1348,7 +1451,7 @@
 ;; - Should maybe be a float as like 'ebay_price" but not used anyways... (floatp 0) => nil
 
 ;;; ==============================
-;; :FIELD "ebay_price"
+;; :FIELD "ebay_price" :TRANSFORM 
 ;;
 ;;         :TYPE "float unsigned"
 ;;         :NULL-P "NO"
@@ -1367,7 +1470,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "ebay_title"
+;; :FIELD "ebay_title" :TRANSFORM 
 ;;
 ;;         :TYPE "varchar(55)"
 ;;         :NULL-P "NO"
@@ -1380,7 +1483,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "ebay_id"
+;; :FIELD "ebay_id" :TRANSFORM 
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1401,7 +1504,7 @@
 
 
 ;;; ==============================
-;; :FIELD "nbre"
+;; :FIELD "nbre" :TRANSFORM 
 ;;
 ;;         :TYPE "tinyint(3) unsigned"
 ;;         :NULL-P "NO"
@@ -1414,7 +1517,7 @@
 ;; - This doesn't appear to ever have been used
 
 ;;; ==============================
-;; :FIELD "online"
+;; :FIELD "online" :TRANSFORM item-posted
 ;;
 ;;         :TYPE "tinyint(3) unsigned"
 ;;         :NULL-P "NO"
@@ -1435,7 +1538,7 @@
 
 
 ;;; ==============================
-;; :FIELD "bar_code"
+;; :FIELD "bar_code" :TRANSFORM item-bar-code
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1447,8 +1550,9 @@
 ;;  "x"
 ;;  "bar_code"
 ;;  "Bree2nd-117"
+;;  "AudBirds-006"
 ;;
-;;  - May contain "bar_code" remove/ignore it
+;; - May contain "bar_code" remove/ignore it
 ;;
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
@@ -1468,7 +1572,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "done"
+;; :FIELD "done" :TRANSFORM job-done
 ;;
 ;;         :TYPE "tinyint(4)"
 ;;         :NULL-P "NO"
@@ -1478,13 +1582,17 @@
 ;;
 ;; :EXAMPLE-VALUES 
 ;;  1
+;;  127
 ;;
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
-;; - Verify that this is always 1 | 0
+;;
+;; - Verify that this is always 1 | 0. Its not see ref 4603 with value 127 and corresponding locked value 127
+;; (search-forward-regexp "name=\"done\">127</field>" nil t)
+;; (search-forward-regexp "name=\"locked\">127</field>" nil t)
 
 ;;; ==============================
-;; :FIELD "job_name"
+;; :FIELD "job_name" :TRANSFORM job-id
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1499,13 +1607,13 @@
 ;;  "CuvierBrd318-386"
 ;;  "0"
 ;;
-;; - May contain "job_name", remove/ignor it.
+;; - May contain "job_name", remove/ignore it.
 ;;
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
 
 ;;; ==============================
-;; :FIELD "date_edit"
+;; :FIELD "date_edit" :TRANSFORM edit-date 
 ;;
 ;;         :TYPE "timestamp"
 ;;         :NULL-P "NO"
@@ -1519,11 +1627,13 @@
 ;;  "2009-01-27 22:00:31"
 ;; 
 ;; - Use local-time
+;;
 ;; - Convert "0000-00-00 00:00:00" to nil
+;;
 ;; - :SEE edit_history below
 
 ;;; ==============================
-;; :FIELD "edit_history"
+;; :FIELD "edit_history" :TRANSFORM edit-history
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -1573,7 +1683,7 @@
 ;;; ==============================
 
 ;;; ==============================
-;; :FIELD "locked"
+;; :FIELD "locked" :TRANSFORM job-locked
 ;;
 ;;         :TYPE "tinyint(4)"
 ;;         :NULL-P "NO"
@@ -1582,11 +1692,14 @@
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
+;; "0"
 ;;
 ;; - This field can prob. be ignored.
+;;
+;; - use `field-convert-1-0-x'
 
 ;;; ==============================
-;; :FIELD "av_repro"
+;; :FIELD "av_repro" :TRANSFORM item-can-repro
 ;;
 ;;         :TYPE "tinyint(3) unsigned"
 ;;         :NULL-P "NO"
@@ -1601,9 +1714,11 @@
 ;;   Use `field-convert-1-0-x'
 ;; 
 ;; - Pretty sure this was _never_ used. 
+;;
+;; - Can effictively be ignored.
 
 ;;; ==============================
-;; :FIELD "seller"
+;; :FIELD "seller" :TRANSFORM item-seller
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"

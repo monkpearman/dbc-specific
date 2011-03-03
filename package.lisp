@@ -97,6 +97,8 @@
              #:naf-entity-brand-control-regexp
              #:naf-entity-brand-alt-regexp
              #:naf-entity-publication-control-regexp
+             ;; #:parsed-field-name-regexp
+             ;;
              ;; :VARIABLES
              #:*theme-entity-regexp-matcher-db*
              #:*theme-entity-regexp-entity-db*
@@ -111,7 +113,7 @@
              #:*naf-brand-entity-control-regexp-matcher-db*
              #:*naf-brand-entity-regexp-entity-db*
              #:*naf-publication-entity-control-regexp-matcher-db*
-
+             ;; #:*parsed-field-name-regexp-matcher-db*
              ;;
            ;; :MODULE dbc-parse
              ;;

@@ -275,7 +275,7 @@ When optional arg W-COLON is non-nil return prefixed with a colon.
 :EXAMPLE~%
  \(field-name-underscore-to-dash \"keyword_seo\"\)~%
  \(field-name-underscore-to-dash \"keyword_seo\" t\)~%
-:SEE-ALSO `<XREF>'.~%►►►")
+:SEE-ALSO `mon:string-underscore-to-dash', `cl-ppcre:regex-replace-all'.~%►►►")
 
 (mon:fundoc 'field-str-cons
   "Return a three element list according to the `type-of' FIELD-STR.~%~@

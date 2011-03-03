@@ -2,6 +2,13 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-regexps.lisp
 ;;; ==============================
 
+;; cl-ppcre::case-sensitive
+;; (let ((scanner (cl-ppcre:create-scanner "abc")))
+;;    (type-of scanner))
+;; (cl-ppcre:create-scanner "abc")
+
+;; bknr-datastore-20100901-git
+
 
 ;;; ==============================
 (in-package #:dbc)
@@ -11,6 +18,7 @@
 ;;; ==============================
 
 (defclass base-regexp (base-dbc)
+  ()
   (:documentation "Base class for matching control names of dbc entity instances"))
 
 (defclass entity-regexp (base-regexp)
@@ -88,15 +96,25 @@
     #.(format nil 
               "A matcher object for matching an entity.~%~@
                Its type should should be as specified by MATCH-CONTAINER-TYPE.~%~@
-               Its values is accessed by association with the MATCH-CONTAINER-UUID in the
+               Its values is accessed by association with the MATCH-CONTAINER-UUID in the~@
                applicable MATCH-MATCHER-DB.~%~@
                It should match an entity with a UUID value in the applicable MATCH-ENTITY-DB
-               for the instances MATCH-ENTITY-CLASS.~%~@")))
+               for the instances MATCH-ENTITY-CLASS.")))
   (:documentation 
    #.(format nil
       "Class implementing the core slots for implementing subtyped entity matchers.
 Don't instantiate directly from this class.")))
 
+;;; ==============================
+;;; 
+;;; ==============================
+;; #:*parsed-field-name-regexp-matcher-db*
+;; #:parsed-field-name-regexp
+(defvar *parsed-field-name-regexp-matcher-db* nil) ;; (make-hash-table)
+
+(defclass parsed-field-name-regexp (entity-regexp)
+  ()
+  (:documentation "An `entity-regexp' subclass for matching XML-refs parsed field-names."))
 
 
 ;;; ==============================
@@ -113,7 +131,7 @@ Don't instantiate directly from this class.")))
   ;; match-entity-db
   ;; match-matcher-db
   ()
-  (:documentation "An entity-regexp sub-class for themes."))
+  (:documentation "An `entity-regexp' sub-class for themes."))
 
 ;;; ==============================
 ;;; :CATERORIES
@@ -130,7 +148,7 @@ Don't instantiate directly from this class.")))
   ;; match-entity-db
   ;; match-matcher-db
   ()
-  (:documentation "An entity-regexp sub-class for categories."))
+  (:documentation "An `entity-regexp' sub-class for categories."))
 
 
 
@@ -145,7 +163,7 @@ Don't instantiate directly from this class.")))
   ;; match-matcher-db
   ;; match-entity-class-type 
   ()
-  (:documentation "An entity-regexp sub-class for NAFs."))
+  (:documentation "An `entity-regexp' sub-class for NAFs."))
 
 (defclass naf-entity-control-name-regexp (naf-entity-type-regexp)
   (
@@ -182,11 +200,11 @@ Don't instantiate directly from this class.")))
 
 (defclass naf-entity-artist-control-regexp (naf-entity-control-name-regexp)
   ()
-  (:documentation "A `naf-entity-regexp' subclass for artists entities"))
+  (:documentation "A `naf-entity-control-name-regexp' subclass for artists entities"))
 
 (defclass naf-entity-artist-alt-regexp (naf-entity-alt-name-regexp)
   ()
-  (:documentation "A `naf-entity-regexp' subclass for artists entities"))
+  (:documentation "A `naf-entity-alt-name-regexp' subclass for artists entities"))
 
 
 ;;; ==============================
@@ -198,11 +216,11 @@ Don't instantiate directly from this class.")))
 
 (defclass naf-entity-person-control-regexp (naf-entity-control-name-regexp)
   ()
-  (:documentation "A `naf-entity-regexp' subclass for person entities."))
+  (:documentation "A `naf-entity-control-name-regexp' subclass for person entities."))
 
 (defclass naf-entity-person-alt-regexp (naf-entity-alt-name-regexp)
   ()
-  (:documentation "A `naf-entity-regexp' subclass for person entities."))
+  (:documentation "A `naf-entity-control-name-regexp' subclass for person entities."))
 
 ;;; ==============================
 ;;; :NAF-AUTHOR
@@ -218,7 +236,7 @@ Don't instantiate directly from this class.")))
 
 (defclass naf-entity-author-alt-regexp (naf-entity-alt-name-regexp)
   ()
-  (:documentation "A `naf-entity-regexp' subclass for author entities."))
+  (:documentation "A `naf-entity-alt-name-regexp' subclass for author entities."))
 
 ;;; ==============================
 ;;; :NAF-BRAND
@@ -230,11 +248,11 @@ Don't instantiate directly from this class.")))
 
 (defclass naf-entity-brand-control-regexp (naf-entity-control-name-regexp)
   ()
-  (:documentation "A `naf-entity-regexp' subclass for brand entities."))
+  (:documentation "A `naf-entity-control-name-regexp' subclass for brand entities."))
 
 (defclass naf-entity-brand-alt-regexp (naf-entity-alt-name-regexp)
   ()
-  (:documentation "A `naf-entity-regexp' subclass for brand entities."))
+  (:documentation "A `naf-entity-alt-name-regexp' subclass for brand entities."))
 
 ;;; ==============================
 
@@ -242,10 +260,7 @@ Don't instantiate directly from this class.")))
 
 (defclass naf-entity-publication-control-regexp (naf-entity-control-name-regexp)
   ()
-  (:documentation "A `naf-entity-regexp' subclass for publication entities"))
-
-
-
+  (:documentation "A `naf-entity-control-name-regexp' subclass for publication entities"))
 
 
 ;;; ==============================
