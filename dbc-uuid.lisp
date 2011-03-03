@@ -2,7 +2,6 @@
 ;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-uuid.lisp
 ;;; ==============================
 
-
 (defparameter *tt-uuid* (make-hash-table))
 (setf *tt-uuid* (make-hash-table))
 
