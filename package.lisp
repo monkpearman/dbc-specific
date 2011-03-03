@@ -70,13 +70,24 @@
              ;;
              #:make-parsed-class-slot-init-accessor-name
              ;;
-           ;; /dbc-classes/dbc-class-refs-convert.lisp
              ;;
-             #:parsed-ref     ;; <CLASS>
+           ;; dbc-classes/dbc-class-edit.lisp
              ;;
-             #:make-ref-maker-sym-name 
-             #:make-ref-maker-symbol
-             #:make-ref-lookup-table
+              #:base-edit
+             ;;
+           ;; dbc-classes/dbc-class-uuid.lisp
+             #:base-uuid
+             ;;
+           ;; dbc-classes/dbc-class-users.lisp
+             ;;
+             #:base-user
+             ;;
+           ;; dbc-classes/dbc-class-description.lisp
+             ;;
+             #:base-description
+             ;;
+           ;; dbc-classes/dbc-class-documentation.lisp
+             #:base-documenation
              ;;
            ;; dbc-classes/dbc-class-regexps.lisp
              ;;
@@ -114,6 +125,15 @@
              #:*naf-brand-entity-regexp-entity-db*
              #:*naf-publication-entity-control-regexp-matcher-db*
              ;; #:*parsed-field-name-regexp-matcher-db*
+             ;;
+             ;;
+           ;; dbc-classes/dbc-class-refs-convert.lisp
+             ;;
+             #:parsed-ref     ;; <CLASS>
+             ;;
+             #:make-ref-maker-sym-name 
+             #:make-ref-maker-symbol
+             #:make-ref-lookup-table
              ;;
            ;; :MODULE dbc-parse
              ;;

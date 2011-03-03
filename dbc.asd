@@ -50,10 +50,15 @@
             :components                 
             (
              (:file "dbc-class")
+             (:file "dbc-class-uuid")             
              (:file "dbc-class-paths")
-             (:file "dbc-class-parse-convert")
-             (:file "dbc-class-refs-convert")
              (:file "dbc-class-regexps")
+             (:file "dbc-class-users")
+             (:file "dbc-class-description")
+             (:file "dbc-class-documentation")
+             (:file "dbc-class-refs-convert")
+             (:file "dbc-class-parse-convert")
+             
              ;; (:file "dbc-class-artist-convert.lisp")
              ;;(:file "dbc-tgm.lisp")))
              ))

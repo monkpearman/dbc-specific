@@ -2,12 +2,14 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-regexps.lisp
 ;;; ==============================
 
+;;; ==============================
+;; :NOTES
 ;; cl-ppcre::case-sensitive
 ;; (let ((scanner (cl-ppcre:create-scanner "abc")))
 ;;    (type-of scanner))
 ;; (cl-ppcre:create-scanner "abc")
+;;; ==============================
 
-;; bknr-datastore-20100901-git
 
 
 ;;; ==============================
@@ -21,9 +23,10 @@
   ()
   (:documentation "Base class for matching control names of dbc entity instances"))
 
+
 (defclass entity-regexp (base-regexp)
   ((match-entity-class
-    :initarg :match-enitity-class 
+    :initarg :match-entity-class 
     :initform nil
     ;; :accessor regexp-match-entity-class ;
     :documentation 
@@ -104,6 +107,15 @@
    #.(format nil
       "Class implementing the core slots for implementing subtyped entity matchers.
 Don't instantiate directly from this class.")))
+
+
+;; (make-instance 'entity-regexp 
+;;                :match-entity-class 'liza-terry 
+;;                :match-entity-db *liza-terry-db* 
+;;                :match-matcher-db *liza-terry-matcher-db* 
+;;                :match-container-type 'closure
+;;                :match-container-uuid <GENERATE>
+;;                :match-entity-matcher (cl-ppcre:create-scanner "liza-terry 342"))
 
 ;;; ==============================
 ;;; 
@@ -198,6 +210,10 @@ Don't instantiate directly from this class.")))
 
 (defvar *naf-artist-entity-regexp-entity-db* nil) ;;(make-hash-table))
 
+;; *package*
+;; (defparameter  *tt--eg-neacr*
+;;   (make-instance 'naf-entity-artist-control-regexp))
+
 (defclass naf-entity-artist-control-regexp (naf-entity-control-name-regexp)
   ()
   (:documentation "A `naf-entity-control-name-regexp' subclass for artists entities"))
@@ -262,6 +278,15 @@ Don't instantiate directly from this class.")))
   ()
   (:documentation "A `naf-entity-control-name-regexp' subclass for publication entities"))
 
+
+
+;;; ==============================
+
 
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; show-trailing-whitespace: t
+;; mode: lisp-interaction
+;; End:
 ;;; ==============================
 ;;; EOF

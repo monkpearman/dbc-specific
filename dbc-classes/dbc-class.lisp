@@ -21,12 +21,6 @@
   (:documentation "Base class for dbc objects."))
 
 #|
-(defclass uuid-dbc (base-dbc)
-  ((uuid-type)
-   ;; :initform :initarg :accessor
-   (read-only :initform nil :initarg :read-only)) ;;:reader)
-  ;; :documentation "a base uuid class")
-  :documentation "UUID fo subclasses of class base-dbc")
 
 (defclass doc-dbc (base-dbc)
   (doc-uuid 

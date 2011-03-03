@@ -127,7 +127,7 @@
 ;;
 ;;  "ref"              ;; item-number
 ;;
-;;  "title"            ;;
+;;  "title"            ;; description-title
 ;;  "desc_fr"          ;; description-french     ;; description-class
 ;;  "desc_en"          ;; description-english    ;; description-class
 ;;  "histo_fr"         ;;
@@ -348,11 +348,18 @@
 ;;  including the Wright Brothers plane, it is more than 95 years old."
 ;; 
 ;; "Cover Page From Le Sourire. rare!"
+;;
 ;; "&lt;br&gt;&lt;br&gt"
+;;
+;; "&quot;The Arabians called it the 'Column of Columns'... 88 ft tall and 8 ft
+;; in Diameter...&quot; it was located in Alexandria Egypt. Vol VI No. 39."
+;;
 ;; - Note, above wrapped for clarity.
 ;;
 ;; - Remove all occurences of "rare!"
+;;
 ;; - Remove "&lt;br&gt"
+;; - Remove "&quot;"
 
 ;;; ==============================
 ;; :FIELD "translation" :TRANSFORM description-translation
@@ -1821,6 +1828,13 @@
 
 ;; </table_structure>
 ;; <table_data name="refs">
+;;; ==============================
 
+
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; show-trailing-whitespace: t
+;; mode: lisp-interaction
+;; End:
 ;;; ==============================
 ;;; EOF
