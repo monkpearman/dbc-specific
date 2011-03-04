@@ -39,5 +39,12 @@ uuid:+namespace-x500+
 ;=> EADF6826-9568-4016-8BA5-5707C3ED1BD0
 ;=> 30C0DB39-0303-4D11-B37F-4994A14ADD92
 
+
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; show-trailing-whitespace: t
+;; mode: lisp-interaction
+;; End:
+
 ;;; ==============================
 ;;; EOF
