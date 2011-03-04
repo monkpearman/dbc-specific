@@ -1,9 +1,6 @@
-;;-*- Mode: LISP; Syntax: COMMON-LISP; Encoding: utf-8; Base: 10 -*-
-
-;; (in-package #:cl-user)
 
 
-(defpackage #:dbc (:use #:common-lisp )
+(defpackage #:dbc (:use #:common-lisp)
 	    ;;
 	    ;; (:nicknames #:dbc-sys)
 	    ;;
@@ -206,8 +203,14 @@
              ;;
 	    ))
 
-
 
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; show-trailing-whitespace: t
+;; mode: lisp-interaction
+;; package: DBC
+;; End:
+
 ;;; ==============================
 ;;; EOF			
 

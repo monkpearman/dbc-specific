@@ -1,7 +1,6 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-01-01T14:14:51-05:00Z}#{11526} - by MON>
-;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc.asd
+;;; :FILE dbc-specific/dbc.asd
 ;;; ==============================
-;;; -*- mode: lisp -*-
 
 
 ;; (push #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/" asdf:*central-registry*)
@@ -18,11 +17,11 @@
 ;; (dired "/home/sp/.cache/common-lisp/sbcl-1.0.45.3-linux-x86/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/")
 
 
-(defpackage #:dbc-build-system (:use :common-lisp :asdf))
+(defpackage #:dbc-build-system (:use #:common-lisp #:asdf))
 
 (in-package #:dbc-build-system)
 
-(defsystem :dbc
+(defsystem #:dbc
   ;; :name ""
   ;; :author  "MON KEY"
   ;; :maintainer "MON KEY"
@@ -32,8 +31,10 @@
   :depends-on (:cxml
 	       :closure-html
 	       :split-sequence
-	       :mon
-	       ;; :alexandria
+	       :ironclad
+               :mon
+	       
+               ;; :alexandria
 	       ;; :cl-ppcre
 	       ;; :local-time
 	       ;; :cl-fad
@@ -43,13 +44,18 @@
   ;; :perform (load-op :after (op mon) (pushnew :mon *features*))
   :serial t    
   :components 
+  
   ((:file "package")
+   ;;
+   (:module "dbc-uuid"
+            :components
+            ((:file "dbc-uuid")))
+   ;;
    (:file "specials")
    (:file "conditions")
    (:module "dbc-classes"
             :components                 
-            (
-             (:file "dbc-class")
+            ((:file "dbc-class")
              (:file "dbc-class-uuid")             
              (:file "dbc-class-paths")
              (:file "dbc-class-regexps")
@@ -83,5 +89,11 @@
 ;;  
 
 
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; show-trailing-whitespace: t
+;; mode: lisp-interaction
+;; End:
+
 ;;; ==============================
 ;;; EOF

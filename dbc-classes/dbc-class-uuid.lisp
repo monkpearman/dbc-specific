@@ -14,6 +14,10 @@
 ;; (uuid:make-v5-uuid (uuid:make-uuid-from-string "9CEA357D-470C-42D2-9CC8-298F6A27C04F") "Cappiello (Leonetto)")
 ;; 5B12B7DA-FF63-5FA2-98A3-D2483E627B7D
 
+;; :NOTE `uuid-print-bytes' returns a string with the #\- chars stripped. 
+;; This value is basically the same thing couchDB/chillax return!
+;; (print-bytes nil (make-uuid-from-string "6ba7b814-9dad-11d1-80b4-00c04fd430c8"))
+
 
 (in-package #:dbc)
 
