@@ -1,3 +1,4 @@
+
 ;;;; Author Boian Tzonev <boiantz@gmail.com>
 ;;;; 2007, All Rights Reserved 
 ;;;;
@@ -12,8 +13,7 @@
 ;; :NOTE These Now exported from dbc-specific/package.lisp 
 ;;
 
-(defpackage :uuid
-  (:use :common-lisp :ironclad)
+(defpackage :uuid (:use :common-lisp) ;; :ironclad)
   ;; Why do we have to :USE ironclad ???
   ;; ironclad:ascii-string-to-byte-array
   ;; ironclad:produce-digest
@@ -21,15 +21,14 @@
 
   ;; :NOTE ironclad shadows `cl:null' to declare its null-cypher.
   ;; We don't use it here so take it from COMMON-LISP
-  (:shadowing-import-from :common-lisp #:null) 
+  ;; (:shadowing-import-from :common-lisp #:null) 
   (:export 
-   #:+namespace-dns+   ;; :RENAMED `+namespace-dns+'  -> `*uuid-namespace-dns*' 
-   #:+namespace-url+   ;; :RENAMED `+namespace-url+'  -> `*uuid-namespace-url*' 
-   #:+namespace-oid+   ;; :RENAMED `+namespace-oid+'  -> `*uuid-namespace-oid*' 
-   #:+namespace-x500+  ;; :RENAMED `+namespace-x500+' -> `*uuid-namespace-x500*'
+   #:*uuid-namespace-dns*    ;; :RENAMED `+namespace-dns+'   -> `*uuid-namespace-dns-default*' 
+   #:*uuid-namespace-url*    ;; :RENAMED `+namespace-url+'   -> `*uuid-namespace-url-default*' 
+   #:*uuid-namespace-oid*    ;; :RENAMED `+namespace-oid+'   -> `*uuid-namespace-oid-default*' 
+   #:*uuid-namespace-x500*   ;; :RENAMED `+namespace-x500+' -> `*uuid-namespace-x500-default*'
    ;;
    #:uuid 
-   ;; #:ticks-per-count* not used
    #:make-null-uuid
    #:make-uuid-from-string
    #:make-v1-uuid
@@ -42,6 +41,9 @@
    #:uuid-from-byte-array  ;; :RENAMED `byte-array-to-uuid' -> `uuid-from-byte-array'
    ;; :RENAMED `format-as-urn' -> `format-uuid-as-urn'
    ;; :RENAMED `load-bytes'    -> `uuid-load-bytes'
+   ;; 
+   ;; :UNUSED
+   ;; #:*ticks-per-count*
    ))
 
 ;; :WAS (in-package :uuid)
@@ -70,6 +72,8 @@
   (setf *random-state* (make-random-state t))
   
   ;; :NOTE The accessor are never really used effectively.
+  ;;; We have base-uuid in dbc-classes/dbc-class-uuid.lisp 
+  ;;; This should be ;; unique-and-universal-identifier
   (defclass uuid ()
     ((%uuid_time-low 
       :initarg :%uuid_time-low
@@ -80,12 +84,12 @@
       :initform 0 
       :accessor %uuid_time-mid)
      (%uuid_time-high-and-version
-      :initarg :%uuid_time-high
+      :initarg :%uuid_time-high-and-version
       :initform 0
       :accessor %uuid_time-high)
      (%uuid_clock-seq-and-reserved
-      :accessor %uuid_clock-seq-var 
-      :initarg :%uuid_clock-seq-var
+      :accessor %uuid_clock-seq-var
+      :initarg :%uuid_clock-seq-and-reserved
       :initform 0)
      (%uuid_clock-seq-low
       :initarg :%uuid_clock-seq-low
@@ -105,22 +109,23 @@
     (make-instance 'uuid
 		   :%uuid_time-low (parse-integer uuid-string :start 0 :end 8 :radix 16)
 		   :%uuid_time-mid (parse-integer uuid-string :start 9 :end 13 :radix 16)
-		   :%uuid_time-high (parse-integer uuid-string :start 14 :end 18 :radix 16)
-		   :%uuid_clock-seq-var (parse-integer uuid-string :start 19 :end 21 :radix 16)
+		   :%uuid_time-high-and-version (parse-integer uuid-string :start 14 :end 18 :radix 16)
+		   :%uuid_clock-seq-and-reserved (parse-integer uuid-string :start 19 :end 21 :radix 16)
 		   :%uuid_clock-seq-low (parse-integer uuid-string :start 21 :end 23 :radix 16)
 		   :%uuid_node (parse-integer uuid-string :start 24 :end 36 :radix 16))))
 
-;;; uses the :reader methods
+;;; No longer uses the :reader methods
 (defmethod print-object ((id uuid) stream)
   "Print UUID ID to to STREAM in string represenatation
    (example string 6ba7b810-9dad-11d1-80b4-00c04fd430c8)"
-  (format stream "~8,'0X-~4,'0X-~4,'0X-~2,'0X~2,'0X-~12,'0X" 
-	  (%uuid_time-low id)
-	  (%uuid_time-mid id)
-	  (%uuid_time-high id)
-	  (%uuid_clock-seq-var id)
-	  (%uuid_clock-seq-low id)
-	  (%uuid_node id)))
+  (with-slots (%uuid_time-low %uuid_time-mid %uuid_time-high
+               %uuid_clock-seq-and-reserved ;;%uuid_clock-seq-var
+               %uuid_clock-seq-low %uuid_node)
+      id
+    (format stream "~8,'0X-~4,'0X-~4,'0X-~2,'0X~2,'0X-~12,'0X" 
+            %uuid_time-low %uuid_time-mid %uuid_time-high
+            %uuid_clock-seq-and-reserved ;; %uuid_clock-seq-var
+            %uuid_clock-seq-low %uuid_node)))
 	    
 (defun uuid-load-bytes (byte-array &key (byte-size 8) (start 0) end)
   "Helper function. load bytes from BYTE-ARRAY
@@ -133,38 +138,71 @@
     ret-val))
 
 
+;; (declaim (inline %verify-version-3-or-5))
+;; 
+(defun %verify-version-3-or-5 (version)
+  (declare (optimize (speed 3)  (debug 0)))
+  (or (and (typep version '(unsigned-byte 3))
+           (or (= version 3)
+               (= version 5))
+           version)
+      (error "arg VERSION is not integer 3 nor 5")))
+
+(defun %verify-version-3-or-5 (version)
+  ;;(declare (optimize (speed 3)  (debug 0)))
+  (or (and (typep version '(unsigned-byte 3))
+           (or (= version 3)
+               (= version 5))
+           version)
+      (error "arg VERSION is not integer 3 nor 5")))
+
+(defun %verify-digest-version (chk-version)
+  (or (and (= (%verify-version-3-or-5 chk-version) 3) :md5) :sha1))
+
+
+  
+;; (lambda (a b)
+;;   (declare ((integer 1 1) a)
+;;            (type (integer 0 1) b)
+;;            (optimize debug))
+;;   (lambda () (< b a)))
+
+
 (defun format-v3or5-uuid (hash uuid-version)
-  "Helper function to format UUIDv3 and UUIDv5 hashes according to.
+  "Helper function to format UUIDv3 and UUIDv5 hashes according to UUID-VERSION.
    Formatting means setting the appropriate version bytes."
+  ;; :WAS
   (when (or (= uuid-version 3)
             (= uuid-version 5))
+  ;; (let ((version-if (%verify-version-3-or-5 uuid-version)))
+  ;;   (declare ((mod 6) version-if))
     (make-instance 'uuid
 		   :%uuid_time-low (uuid-load-bytes hash :start 0 :end 3)
 		   :%uuid_time-mid (uuid-load-bytes hash :start 4 :end 5)
-		   :%uuid_time-high (cond ((= uuid-version 3)
-				     (dpb #b0011 (byte 4 12) (uuid-load-bytes hash :start 6 :end 7)))
-				    ((= uuid-version 5)
-				     (dpb #b0101 (byte 4 12) (uuid-load-bytes hash :start 6 :end 7))))
-		   :%uuid_clock-seq-var (dpb #b10 (byte 2 6) (aref hash 8))
+		   :%uuid_time-high-and-version 
+                   (cond ((= uuid-version 3)
+                          (dpb #b0011 (byte 4 12) (uuid-load-bytes hash :start 6 :end 7)))
+                         ((= uuid-version 5)
+                          (dpb #b0101 (byte 4 12) (uuid-load-bytes hash :start 6 :end 7))))
+                   (dpb version-if (byte 4 12) (uuid-load-bytes hash :start 6 :end 7))
+		   :%uuid_clock-seq-and-reserved (dpb #b10 (byte 2 6) (aref hash 8))
 		   :%uuid_clock-seq-low (aref hash 9)
 		   :%uuid_node (uuid-load-bytes hash :start 10 :end 15))))
 
-;;; uses the :reader method
+;;; No longer uses the :reader method
 (defun uuid-print-bytes (stream uuid)
   "Prints the raw bytes of UUID in hexadecimal format to STREAM.
    (example output 6ba7b8109dad11d180b400c04fd430c8)"
   (declare (type stream stream))
-  (with-slots (%uuid_time-low %uuid_time-mid %uuid_time-high-and-version %uuid_clock-seq-and-reserved %uuid_clock-seq-low %uuid_node) ;node
+  (with-slots (%uuid_time-low %uuid_time-mid %uuid_time-high-and-version
+               %uuid_clock-seq-and-reserved %uuid_clock-seq-low %uuid_node)
       uuid 
     (format stream "~8,'0X~4,'0X~4,'0X~2,'0X~2,'0X~12,'0X" 
-	  ;; (%uuid_time-low uuid)
-	  ;; (%uuid_time-mid uuid)
-	  ;; (%uuid_time-high uuid)
-	  ;; (%uuid_clock-seq-var uuid)
-	  ;; (%uuid_clock-seq-low uuid)
-	  ;; (%uuid_node uuid)
-          %uuid_time-low %uuid_time-mid %uuid_time-high %uuid_clock-seq-var %uuid_clock-seq-low %uuid_node))
-
+            %uuid_time-low %uuid_time-mid 
+            %uuid_time-high-and-version  ;; %uuid_time-high
+            %uuid_clock-seq-and-reserved ;; %uuid_clock-seq-var
+            %uuid_clock-seq-low %uuid_node)))
+  
 (defun format-uuid-as-urn (stream uuid)
   "Prints UUID as a URN (Universal Resource Name) to STREAM.
   Return value has the format:
@@ -189,49 +227,52 @@
   (make-instance 'uuid
 		 :%uuid_time-low (random #xffffffff)
 		 :%uuid_time-mid (random #xffff)
-		 :%uuid_time-high (dpb #b0100 (byte 4 12) (ldb (byte 12 0) (random #xffff)))
-		 :%uuid_clock-seq-var (dpb #b10 (byte 2 6) (ldb (byte 8 0) (random #xff)))
+		 :%uuid_time-high-and-version (dpb #b0100 (byte 4 12) (ldb (byte 12 0) (random #xffff)))
+		 :%uuid_clock-seq-and-reserved (dpb #b10 (byte 2 6) (ldb (byte 8 0) (random #xff)))
 		 :%uuid_clock-seq-low (random #xff)
 		 :%uuid_node (random #xffffffffffff)))
 
 (defun make-v5-uuid (namespace name)
-  "Generates a version 5 (name based SHA1) uuid."
+  "Generates a UUID-v5 (SHA1) with NAME in NAMESPACE."
   (format-v3or5-uuid 
    (digest-uuid 5 (get-bytes (uuid-print-bytes nil namespace)) name)
    5))
 
 
 (defun uuid-to-byte-array (uuid)
-  "Converts an uuid to byte-array"
+  "Convert UUID to byte-array"
   (let ((array (make-array 16 :element-type '(unsigned-byte 8))))
-    (with-slots (%uuid_time-low %uuid_time-mid %uuid_time-high-and-version %uuid_clock-seq-and-reserved %uuid_clock-seq-low %uuid_node)
+    (with-slots (%uuid_time-low 
+                 %uuid_time-mid 
+                 %uuid_time-high-and-version
+                 %uuid_clock-seq-and-reserved
+                 %uuid_clock-seq-low %uuid_node)
         uuid
-      (loop for i from 3 downto 0
+      (loop
+         for i from 3 downto 0
          do (setf (aref array (- 3 i)) (ldb (byte 8 (* 8 i)) %uuid_time-low)))
-      (loop for i from 5 downto 4
+      (loop
+         for i from 5 downto 4
          do (setf (aref array i) (ldb (byte 8 (* 8 (- 5 i))) %uuid_time-mid)))
-      (loop for i from 7 downto 6
+      (loop
+         for i from 7 downto 6
          do (setf (aref array i) (ldb (byte 8 (* 8 (- 7 i))) %uuid_time-high-and-version)))
       (setf (aref array 8) (ldb (byte 8 0) %uuid_clock-seq-and-reserved))
       (setf (aref array 9) (ldb (byte 8 0) %uuid_clock-seq-low))
-      (loop for i from 15 downto 10
+      (loop
+         for i from 15 downto 10
          do (setf (aref array i) (ldb (byte 8 (* 8 (- 15 i))) %uuid_node)))
       array)))
 
 
-
-
-;;; this can prob be a fletd/labels in `uuid-from-byte-array'
-(defmacro arr-to-bytes (from to array)
-  "Helper macro used in `uuid-from-byte-array'."
-  `(loop for i from ,from to ,to
-	 with res = 0
-	 do (setf (ldb (byte 8 (* 8 (- ,to i))) res) (aref ,array i))
-	 finally (return res)))
-
-;; (let ((i -1))
-;;   (declare ((mod 17) i))
-;;   i)
+;;; :NOTE this is now `macrolet'd in `uuid-from-byte-array'
+;; (defmacro arr-to-bytes (from to array)
+;;   "Helper macro used in `uuid-from-byte-array'."
+;;   `(loop for i from ,from to ,to
+;; 	 with res = 0
+;; 	 do (setf (ldb (byte 8 (* 8 (- ,to i))) res) (aref ,array i))
+;; 	 finally (return res)))
+;;
 ;;; 
 ;;;  "Helper macro used in `uuid-from-byte-array'."
 ;; (macrolet ((arr-to-bytes (from to w-array)
@@ -264,6 +305,7 @@
                    (array)
                    "Please provide a one-dimensional array with 16 elements of type (unsigned-byte 8)")
            (macrolet ((arr-to-bytes (from to w-array)
+                        "Helper macro used in `uuid-from-byte-array'."
                         (declare ((mod 17) from to))
                         `(loop 
                             for i from ,from to ,to
@@ -273,8 +315,8 @@
              (make-instance 'uuid::uuid
                             :%uuid_time-low (arr-to-bytes 0 3 array)
                             :%uuid_time-mid (arr-to-bytes 4 5 array)
-                            :%uuid_time-high (arr-to-bytes 6 7 array)
-                            :%uuid_clock-seq-var (aref array 8)
+                            :%uuid_time-high-and-version (arr-to-bytes 6 7 array)
+                            :%uuid_clock-seq-and-reserved (aref array 8)
                             :%uuid_clock-seq-low (aref array 9)
                             :%uuid_node (arr-to-bytes 10 15 array))))
 
@@ -294,25 +336,26 @@ namespace and a string.
     (ironclad:produce-digest digester)))
 
 (defun get-bytes (uuid-string)
-  "Convert UUID-STRING \(as returned by `uuid-print-bytes'\) to a string of characters
-built according code-char of each number in UUID-STRING."
-  
-  (with-output-to-string (out)
-    (loop for i = 0 then (+ i 2)
+  "Convert UUID-STRING \(as returned by `uuid-print-bytes'\) to a string of
+characters built according code-char of each number in UUID-STRING."
+  ;; :WAS (with-output-to-string (out)
+  (with-output-to-string (out nil :element-type 'standard-char)
+    (loop
+       for i = 0 then (+ i 2)
        as j = (+ i 2)
        with max = (- (length uuid-string) 2)
        as cur-pos = (parse-integer (subseq uuid-string i j) :radix 16)
-       do (format out "~a" (code-char cur-pos))
+       do (format out "~A" (code-char cur-pos))
        while (< i max))
     out))
 
 
 #|
  ;; ==============================
- ;; :NOTE The variables `*%uuid_clock-seq*', `*node*', `*ticks-per-count*' are not
+ ;; :NOTE The variables `*clock-seq*', `*node*', `*ticks-per-count*' are not
  ;; needed b/c we don't use `make-v1-uuid'
-
- (defvar *%uuid_clock-seq* 0 
+;; *clock-seq*
+ (defvar *clock-seq* 0 
    "Holds the clock sequence. Is is set when a version 1 uuid is 
   generated for the first time and remains unchanged during a whole session.")
 
@@ -413,16 +456,16 @@ built according code-char of each number in UUID-STRING."
  (defun make-v1-uuid ()
    "Generates a version 1 (time-based) uuid."
    (let ((timestamp (get-timestamp)))
-     (when (zerop *%uuid_clock-seq*)
-       (setf *%uuid_clock-seq* (random 10000)))
+     (when (zerop *clock-seq*)
+       (setf *clock-seq* (random 10000)))
      (unless *node*
        (setf *node* (get-node-id)))
      (make-instance 'uuid
                     :%uuid_time-low (ldb (byte 32 0) timestamp)
                     :%uuid_time-mid (ldb (byte 16 32) timestamp)
-                    :%uuid_time-high (dpb #b0001 (byte 4 12) (ldb (byte 12 48) timestamp))
-                    :%uuid_clock-seq-var (dpb #b10 (byte 2 6) (ldb (byte 6 8) *%uuid_clock-seq*))
-                    :%uuid_clock-seq-low (ldb (byte 8 0) *%uuid_clock-seq*) 
+                    :%uuid_time-high-and-version (dpb #b0001 (byte 4 12) (ldb (byte 12 48) timestamp))
+                    :%uuid_clock-seq-and-reserved (dpb #b10 (byte 2 6) (ldb (byte 6 8) *clock-seq*))
+                    :%uuid_clock-seq-low (ldb (byte 8 0) *clock-seq*) 
                     :%uuid_node *node*)))
 |#
 ;;; ==============================
