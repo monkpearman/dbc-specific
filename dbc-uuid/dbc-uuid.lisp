@@ -9,11 +9,13 @@
 ;;;; (URL `http://www.ietf.org/rfc/rfc4122.txt')
 
 
+;; cl-mongo
+
 ;;; ==============================
 ;; :NOTE These Now exported from dbc-specific/package.lisp 
 ;;
 
-(defpackage :uuid (:use :common-lisp) ;; :ironclad)
+;; (defpackage :uuid (:use :common-lisp) ;; :ironclad)
   ;; Why do we have to :USE ironclad ???
   ;; ironclad:ascii-string-to-byte-array
   ;; ironclad:produce-digest
@@ -27,6 +29,7 @@
    #:*uuid-namespace-url*    ;; :RENAMED `+namespace-url+'   -> `*uuid-namespace-url-default*' 
    #:*uuid-namespace-oid*    ;; :RENAMED `+namespace-oid+'   -> `*uuid-namespace-oid-default*' 
    #:*uuid-namespace-x500*   ;; :RENAMED `+namespace-x500+' -> `*uuid-namespace-x500-default*'
+   #:*uuid-random-state*
    ;;
    #:uuid 
    #:make-null-uuid
@@ -67,10 +70,29 @@
   "The x500+ namespace as provided by RFC-4122 appendix C. 
    May be used for generating UUIDv3 and UUIDv5.")
 
+;; (defparameter *
+
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  #+:sbcl
-  (setf *random-state* (make-random-state t))
   
+  ;; IIUC UUID's original intent with:
+  ;;  (setf *random-state* (make-random-state t))
+  ;; was to guarantee that there is a new *random-state*
+  ;; whenever it is loaded. 
+  ;; It did this by generating a new *RANDOM-STATE* inside an EVAL-WHEN rather
+  ;; than creating its own *NON-GLOBAL-RANDOM-STATE* and passing that state to
+  ;; RANDOM instead. This is prob. not good b/c it steps on the original
+  ;; *random-state* which is a global special variable and should be treated as
+  ;; privelged.
+  ;;
+  ;; So, rather than adding optional/key args to the _two_ functions which rely
+  ;; on return value of `cl:random'/*random-state* we might just as well pass
+  ;; along a NON-GLOBAL random state to `cl:random' instead... 
+  ;; we shall name her: `*uuid-random-state*'
+  ;;
+  ;; :WAS #+:sbcl (setf *random-state* (make-random-state t))
+
+  (defparameter *uuid-random-state* (make-random-state t))
+
   ;; :NOTE The accessor are never really used effectively.
   ;;; We have base-uuid in dbc-classes/dbc-class-uuid.lisp 
   ;;; This should be ;; unique-and-universal-identifier
@@ -78,28 +100,34 @@
     ((%uuid_time-low 
       :initarg :%uuid_time-low
       :initform 0
-      :accessor %uuid_time-low)
+      ;; :accessor %uuid_time-low
+      )
      (%uuid_time-mid
       :initarg :%uuid_time-mid
       :initform 0 
-      :accessor %uuid_time-mid)
+      ;; :accessor %uuid_time-mid
+      )
      (%uuid_time-high-and-version
       :initarg :%uuid_time-high-and-version
       :initform 0
-      :accessor %uuid_time-high)
+      ;; :accessor %uuid_time-high
+      )
      (%uuid_clock-seq-and-reserved
-      :accessor %uuid_clock-seq-var
       :initarg :%uuid_clock-seq-and-reserved
-      :initform 0)
+      :initform 0
+      ;; :accessor %uuid_clock-seq-var
+      )
      (%uuid_clock-seq-low
       :initarg :%uuid_clock-seq-low
       :initform 0
-      :accessor %uuid_clock-seq-low)
+      ;; :accessor %uuid_clock-seq-low
+      )
      (%uuid_node
       :initarg :%uuid_node
       :initform 0
-      :accessor %uuid_node))
-    (:documentation "Represents an uuid"))
+      ;; :accessor %uuid_node
+      ))
+    (:documentation "Represents an uuid."))
 
   (defun make-uuid-from-string (uuid-string)
     "Creates an UUID from the string represenation of an UUID-STRING. 
@@ -149,7 +177,7 @@
       (error "arg VERSION is not integer 3 nor 5")))
 
 (defun %verify-version-3-or-5 (version)
-  ;;(declare (optimize (speed 3)  (debug 0)))
+  (declare (optimize (speed 3)  (debug 0)))
   (or (and (typep version '(unsigned-byte 3))
            (or (= version 3)
                (= version 5))
@@ -158,8 +186,6 @@
 
 (defun %verify-digest-version (chk-version)
   (or (and (= (%verify-version-3-or-5 chk-version) 3) :md5) :sha1))
-
-
   
 ;; (lambda (a b)
 ;;   (declare ((integer 1 1) a)
@@ -174,8 +200,8 @@
   ;; :WAS
   (when (or (= uuid-version 3)
             (= uuid-version 5))
-  ;; (let ((version-if (%verify-version-3-or-5 uuid-version)))
-  ;;   (declare ((mod 6) version-if))
+    ;; (let ((version-if (%verify-version-3-or-5 uuid-version)))
+    ;;   (declare ((mod 6) version-if))
     (make-instance 'uuid
 		   :%uuid_time-low (uuid-load-bytes hash :start 0 :end 3)
 		   :%uuid_time-mid (uuid-load-bytes hash :start 4 :end 5)
@@ -225,12 +251,12 @@
 (defun make-v4-uuid ()
   "Generates a version 4 (random) uuid"
   (make-instance 'uuid
-		 :%uuid_time-low (random #xffffffff)
-		 :%uuid_time-mid (random #xffff)
-		 :%uuid_time-high-and-version (dpb #b0100 (byte 4 12) (ldb (byte 12 0) (random #xffff)))
-		 :%uuid_clock-seq-and-reserved (dpb #b10 (byte 2 6) (ldb (byte 8 0) (random #xff)))
-		 :%uuid_clock-seq-low (random #xff)
-		 :%uuid_node (random #xffffffffffff)))
+		 :%uuid_time-low (random #xffffffff *uuid-random-state*) ;; *uuid-random-state*
+		 :%uuid_time-mid (random #xffff     *uuid-random-state*)
+		 :%uuid_time-high-and-version (dpb #b0100 (byte 4 12) (ldb (byte 12 0) (random #xffff *uuid-random-state*)))
+		 :%uuid_clock-seq-and-reserved (dpb #b10 (byte 2 6) (ldb (byte 8 0) (random #xff *uuid-random-state*)))
+		 :%uuid_clock-seq-low (random #xff *uuid-random-state*)
+		 :%uuid_node (random #xffffffffffff *uuid-random-state*)))
 
 (defun make-v5-uuid (namespace name)
   "Generates a UUID-v5 (SHA1) with NAME in NAMESPACE."
@@ -457,8 +483,9 @@ characters built according code-char of each number in UUID-STRING."
    "Generates a version 1 (time-based) uuid."
    (let ((timestamp (get-timestamp)))
      (when (zerop *clock-seq*)
-       (setf *clock-seq* (random 10000)))
-     (unless *node*
+     ;;  :WAS (setf *clock-seq* (random 10000 )))
+    (setf *clock-seq* (random 10000 *uuid-random-state*)))
+    (unless *node*
        (setf *node* (get-node-id)))
      (make-instance 'uuid
                     :%uuid_time-low (ldb (byte 32 0) timestamp)
