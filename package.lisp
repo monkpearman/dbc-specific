@@ -33,6 +33,25 @@
              #:w-system-object-locus    ;; reader system-path-error
              #:w-system-slot-locus      ;; reader system-path-error
 	     ;;
+             ;;
+           ;; dbc-uuid/dbc-uuid.lisp
+             ;;
+             #:*uuid-namespace-dns*
+             #:*uuid-namespace-url* 
+             #:*uuid-namespace-oid* 
+             #:*uuid-namespace-x500*
+             #:*uuid-random-state*
+             ;;
+             #:uuid 
+             #:make-null-uuid
+             #:make-uuid-from-string
+             #:make-v3-uuid 
+             #:make-v4-uuid
+             #:make-v5-uuid
+             ;;
+             #:uuid-print-bytes  
+             #:uuid-to-byte-array
+             #:uuid-from-byte-array
 	     ;;
 	     ;; dbc-classes/dbc-class.lisp
 	     ;;

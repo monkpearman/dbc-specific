@@ -8,51 +8,61 @@
 ;;;;
 ;;;; (URL `http://www.ietf.org/rfc/rfc4122.txt')
 
+;;; ==============================
+;;; :NOTE The only Quicklisp project currently using UUID is CL-MONGO
+;;; prob. worth taking a look at what it does with it as well...
+;;;
+;;; ==============================
 
-;; cl-mongo
+
+(in-package #:dbc)
+
+;; *package*
 
 ;;; ==============================
 ;; :NOTE These Now exported from dbc-specific/package.lisp 
 ;;
-
+;; Why did this originally have to ":USE" ironclad ???
+;; Following are the symbols relied upon: 
+;; `ironclad:produce-digest', `ironclad:update-digest'
+;; `ironclad:ascii-string-to-byte-array' :NOTE :SEE `mon:string-ascii-to-byte-array'
+;;
 ;; (defpackage :uuid (:use :common-lisp) ;; :ironclad)
-  ;; Why do we have to :USE ironclad ???
-  ;; ironclad:ascii-string-to-byte-array
-  ;; ironclad:produce-digest
-  ;; ironclad:update-digest
-
-  ;; :NOTE ironclad shadows `cl:null' to declare its null-cypher.
-  ;; We don't use it here so take it from COMMON-LISP
-  ;; (:shadowing-import-from :common-lisp #:null) 
-  (:export 
-   #:*uuid-namespace-dns*    ;; :RENAMED `+namespace-dns+'   -> `*uuid-namespace-dns-default*' 
-   #:*uuid-namespace-url*    ;; :RENAMED `+namespace-url+'   -> `*uuid-namespace-url-default*' 
-   #:*uuid-namespace-oid*    ;; :RENAMED `+namespace-oid+'   -> `*uuid-namespace-oid-default*' 
-   #:*uuid-namespace-x500*   ;; :RENAMED `+namespace-x500+' -> `*uuid-namespace-x500-default*'
-   #:*uuid-random-state*
-   ;;
-   #:uuid 
-   #:make-null-uuid
-   #:make-uuid-from-string
-   #:make-v1-uuid
-   #:make-v3-uuid 
-   #:make-v4-uuid
-   #:make-v5-uuid
-   ;;
-   #:uuid-print-bytes           ;; :RENAMED `print-bytes' -> `uuid-print-bytes'
-   #:uuid-to-byte-array
-   #:uuid-from-byte-array  ;; :RENAMED `byte-array-to-uuid' -> `uuid-from-byte-array'
-   ;; :RENAMED `format-as-urn' -> `format-uuid-as-urn'
-   ;; :RENAMED `load-bytes'    -> `uuid-load-bytes'
-   ;; 
-   ;; :UNUSED
-   ;; #:*ticks-per-count*
-   ))
+;;
+;; :NOTE The original uuid defpackage form said:
+;; ,----
+;; | "ironclad shadows `cl:null' to declare its null-cypher.
+;; |  We don't use it here so take it from COMMON-LISP"
+;; `----
+;; (:shadowing-import-from :common-lisp #:null) 
+  
+;; These need to be _MOVED_ to dbc-specific/package.lisp
+;; (:export 
+;;    #:*uuid-namespace-dns*    ;; :RENAMED `+namespace-dns+'   -> `*uuid-namespace-dns-default*' 
+;;    #:*uuid-namespace-url*    ;; :RENAMED `+namespace-url+'   -> `*uuid-namespace-url-default*' 
+;;    #:*uuid-namespace-oid*    ;; :RENAMED `+namespace-oid+'   -> `*uuid-namespace-oid-default*' 
+;;    #:*uuid-namespace-x500*   ;; :RENAMED `+namespace-x500+' -> `*uuid-namespace-x500-default*'
+;;    #:*uuid-random-state*
+;;    ;;
+;;    #:uuid 
+;;    #:make-null-uuid
+;;    #:make-uuid-from-string
+;;    #:make-v3-uuid 
+;;    #:make-v4-uuid
+;;    #:make-v5-uuid
+;;    ;;
+;;    #:uuid-print-bytes      ;; :RENAMED `print-bytes' -> `uuid-print-bytes'
+;;    #:uuid-to-byte-array
+;;    #:uuid-from-byte-array  ;; :RENAMED `byte-array-to-uuid' -> `uuid-from-byte-array'
+;;    ;; :RENAMED `format-as-urn' -> `format-uuid-as-urn'
+;;    ;; :RENAMED `load-bytes'    -> `uuid-load-bytes'
+;;    ;; 
+;;    ;; :UNUSED
+;;    ;; #:*ticks-per-count*
+;;    ;; #:make-v1-uuid not used
+;;    )
 
 ;; :WAS (in-package :uuid)
-
-;; (in-package #:dbc)
-;; *package*
 
 (defparameter *uuid-namespace-dns* (make-uuid-from-string "6ba7b810-9dad-11d1-80b4-00c04fd430c8")
   "The DNS namespace as provided by RFC-4122.
@@ -70,9 +80,9 @@
   "The x500+ namespace as provided by RFC-4122 appendix C. 
    May be used for generating UUIDv3 and UUIDv5.")
 
-;; (defparameter *
-
-(eval-when (:compile-toplevel :load-toplevel :execute)
+;; I don't see any reason for the eval-when here:
+;; 
+;; (eval-when (:compile-toplevel :load-toplevel :execute)
   
   ;; IIUC UUID's original intent with:
   ;;  (setf *random-state* (make-random-state t))
@@ -95,7 +105,8 @@
 
   ;; :NOTE The accessor are never really used effectively.
   ;;; We have base-uuid in dbc-classes/dbc-class-uuid.lisp 
-  ;;; This should be ;; unique-and-universal-identifier
+  ;;; This should be something like `unique-and-universal-identifier'
+  
   (defclass uuid ()
     ((%uuid_time-low 
       :initarg :%uuid_time-low
@@ -140,7 +151,9 @@
 		   :%uuid_time-high-and-version (parse-integer uuid-string :start 14 :end 18 :radix 16)
 		   :%uuid_clock-seq-and-reserved (parse-integer uuid-string :start 19 :end 21 :radix 16)
 		   :%uuid_clock-seq-low (parse-integer uuid-string :start 21 :end 23 :radix 16)
-		   :%uuid_node (parse-integer uuid-string :start 24 :end 36 :radix 16))))
+		   :%uuid_node (parse-integer uuid-string :start 24 :end 36 :radix 16)))
+
+;; ) ;; :CLOSE eval-when
 
 ;;; No longer uses the :reader methods
 (defmethod print-object ((id uuid) stream)
@@ -165,9 +178,7 @@
        do (setf ret-val (dpb (aref byte-array i) (byte byte-size (* pos byte-size)) ret-val)))
     ret-val))
 
-
 ;; (declaim (inline %verify-version-3-or-5))
-;; 
 (defun %verify-version-3-or-5 (version)
   (declare (optimize (speed 3)  (debug 0)))
   (or (and (typep version '(unsigned-byte 3))
@@ -176,40 +187,27 @@
            version)
       (error "arg VERSION is not integer 3 nor 5")))
 
-(defun %verify-version-3-or-5 (version)
-  (declare (optimize (speed 3)  (debug 0)))
-  (or (and (typep version '(unsigned-byte 3))
-           (or (= version 3)
-               (= version 5))
-           version)
-      (error "arg VERSION is not integer 3 nor 5")))
-
+;; (declaim (inline %verify-digest-version))
 (defun %verify-digest-version (chk-version)
+  (declare (optimize (speed 3) (debug 0)))
   (or (and (= (%verify-version-3-or-5 chk-version) 3) :md5) :sha1))
-  
-;; (lambda (a b)
-;;   (declare ((integer 1 1) a)
-;;            (type (integer 0 1) b)
-;;            (optimize debug))
-;;   (lambda () (< b a)))
-
 
 (defun format-v3or5-uuid (hash uuid-version)
   "Helper function to format UUIDv3 and UUIDv5 hashes according to UUID-VERSION.
    Formatting means setting the appropriate version bytes."
-  ;; :WAS
-  (when (or (= uuid-version 3)
-            (= uuid-version 5))
-    ;; (let ((version-if (%verify-version-3-or-5 uuid-version)))
-    ;;   (declare ((mod 6) version-if))
+  ;; :WAS 
+  ;; (when (or (= uuid-version 3)
+  ;;           (= uuid-version 5))
+  (let ((version-if (%verify-version-3-or-5 uuid-version)))
+    (declare ((mod 6) version-if))
     (make-instance 'uuid
 		   :%uuid_time-low (uuid-load-bytes hash :start 0 :end 3)
 		   :%uuid_time-mid (uuid-load-bytes hash :start 4 :end 5)
 		   :%uuid_time-high-and-version 
-                   (cond ((= uuid-version 3)
-                          (dpb #b0011 (byte 4 12) (uuid-load-bytes hash :start 6 :end 7)))
-                         ((= uuid-version 5)
-                          (dpb #b0101 (byte 4 12) (uuid-load-bytes hash :start 6 :end 7))))
+                   ;; :WAS (cond ((= uuid-version 3)
+                   ;;             (dpb #b0011 (byte 4 12) (uuid-load-bytes hash :start 6 :end 7)))
+                   ;;            ((= uuid-version 5)
+                   ;;             (dpb #b0101 (byte 4 12) (uuid-load-bytes hash :start 6 :end 7))))
                    (dpb version-if (byte 4 12) (uuid-load-bytes hash :start 6 :end 7))
 		   :%uuid_clock-seq-and-reserved (dpb #b10 (byte 2 6) (aref hash 8))
 		   :%uuid_clock-seq-low (aref hash 9)
@@ -254,7 +252,7 @@
 		 :%uuid_time-low (random #xffffffff *uuid-random-state*) ;; *uuid-random-state*
 		 :%uuid_time-mid (random #xffff     *uuid-random-state*)
 		 :%uuid_time-high-and-version (dpb #b0100 (byte 4 12) (ldb (byte 12 0) (random #xffff *uuid-random-state*)))
-		 :%uuid_clock-seq-and-reserved (dpb #b10 (byte 2 6) (ldb (byte 8 0) (random #xff *uuid-random-state*)))
+		 :%uuid_clock-seq-and-reserved (dpb #b10  (byte 2 6)  (ldb (byte 8 0)  (random #xff *uuid-random-state*)))
 		 :%uuid_clock-seq-low (random #xff *uuid-random-state*)
 		 :%uuid_node (random #xffffffffffff *uuid-random-state*)))
 
@@ -325,26 +323,26 @@
 (defun uuid-from-byte-array (array)
   "Converts a byte-array generated with uuid-to-byte-array to an uuid."
   (declare ((simple-array (unsigned-byte 8) (16)) array))
-           #-sbcl 
-           (assert (and (= (array-rank array) 1)
-                        (= (array-total-size array) 16))
-                   (array)
-                   "Please provide a one-dimensional array with 16 elements of type (unsigned-byte 8)")
-           (macrolet ((arr-to-bytes (from to w-array)
-                        "Helper macro used in `uuid-from-byte-array'."
-                        (declare ((mod 17) from to))
-                        `(loop 
-                            for i from ,from to ,to
-                            with res = 0
-                            do (setf (ldb (byte 8 (* 8 (- ,to i))) res) (aref ,w-array i))
-                            finally (return res))))
-             (make-instance 'uuid::uuid
-                            :%uuid_time-low (arr-to-bytes 0 3 array)
-                            :%uuid_time-mid (arr-to-bytes 4 5 array)
-                            :%uuid_time-high-and-version (arr-to-bytes 6 7 array)
-                            :%uuid_clock-seq-and-reserved (aref array 8)
-                            :%uuid_clock-seq-low (aref array 9)
-                            :%uuid_node (arr-to-bytes 10 15 array))))
+  #-sbcl 
+  (assert (and (= (array-rank array) 1)
+               (= (array-total-size array) 16))
+          (array)
+          "Please provide a one-dimensional array with 16 elements of type (unsigned-byte 8)")
+  (macrolet ((arr-to-bytes (from to w-array)
+               "Helper macro used in `uuid-from-byte-array'."
+               (declare ((mod 17) from to))
+               `(loop 
+                   for i from ,from to ,to
+                   with res = 0
+                   do (setf (ldb (byte 8 (* 8 (- ,to i))) res) (aref ,w-array i))
+                   finally (return res))))
+    (make-instance 'uuid
+                   :%uuid_time-low (arr-to-bytes 0 3 array)
+                   :%uuid_time-mid (arr-to-bytes 4 5 array)
+                   :%uuid_time-high-and-version (arr-to-bytes 6 7 array)
+                   :%uuid_clock-seq-and-reserved (aref array 8)
+                   :%uuid_clock-seq-low (aref array 9)
+                   :%uuid_node (arr-to-bytes 10 15 array))))
 
 
 (defun digest-uuid (digest-version uuid name)
@@ -354,11 +352,14 @@ namespace and a string.
    Used for the  generation of UUIDv3 and UUIDv5 uuids."
   (let ( ;; (ironclad:make-digest (cond ((= digest-version 3)  :md5) ((= digest-version 5)  :sha1 )))
         ;; (ironclad:make-digest (ecase digest-version (3 :md5) (5 :sha1)))))
-        (digester  (ironclad:make-digest (or 
-                                          (and (= digest-version 3) :md5)
-                                          (and (= digest-version 5) :sha1)))))
-    (ironclad:update-digest digester (ironclad:ascii-string-to-byte-array uuid))
-    (ironclad:update-digest digester (ironclad:ascii-string-to-byte-array name))
+        (digester  (ironclad:make-digest ;; :WAS (or 
+                    ;;       (and (= digest-version 3) :md5)
+                    ;;       (and (= digest-version 5) :sha1))
+                    (%verify-digest-version digest-version)
+                    )))
+    ;; :NOTE `mon:ascii-string-to-byte-array'
+    (ironclad:update-digest  digester (ironclad:ascii-string-to-byte-array uuid))
+    (ironclad:update-digest  digester (ironclad:ascii-string-to-byte-array name))
     (ironclad:produce-digest digester)))
 
 (defun get-bytes (uuid-string)
@@ -368,7 +369,7 @@ characters built according code-char of each number in UUID-STRING."
   (with-output-to-string (out nil :element-type 'standard-char)
     (loop
        for i = 0 then (+ i 2)
-       as j = (+ i 2)
+       as  j = (+ i 2)
        with max = (- (length uuid-string) 2)
        as cur-pos = (parse-integer (subseq uuid-string i j) :radix 16)
        do (format out "~A" (code-char cur-pos))
