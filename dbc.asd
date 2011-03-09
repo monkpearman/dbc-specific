@@ -46,12 +46,10 @@
   :components 
   
   ((:file "package")
-   ;;
+   (:file "specials")
    (:module "dbc-uuid"
             :components
             ((:file "dbc-uuid")))
-   ;;
-   (:file "specials")
    (:file "conditions")
    (:module "dbc-classes"
             :components                 

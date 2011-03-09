@@ -84,6 +84,15 @@
 
 ;; (substitute #\- #\_ (format nil "~:@(~A~)" "keywords_seo"))
 
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defvar *uuid-random-state* (make-random-state t)))
+
+(defparameter *uuid-namespace-dns*  nil) ;; (make-uuid-from-string "6ba7b810-9dad-11d1-80b4-00c04fd430c8")
+(defparameter *uuid-namespace-url*  nil) ;; (make-uuid-from-string "6ba7b811-9dad-11d1-80b4-00c04fd430c8")
+(defparameter *uuid-namespace-oid*  nil);; (make-uuid-from-string "6ba7b812-9dad-11d1-80b4-00c04fd430c8")
+(defparameter *uuid-namespace-x500* nil) ;; (make-uuid-from-string "6ba7b814-9dad-11d1-80b4-00c04fd430c8")
+
 
 ;;; ==============================
 ;;; :SPECIALS-DOCUMENTATION
@@ -157,6 +166,54 @@ variable `dbc:*xml-refs-match-table*'.~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `<XREF>'.~%►►►"))
+
+
+;;; ==============================
+;;; :SPECIALS-UUID-DOCUMENTATION
+;;; ==============================
+
+(setf (documentation '*uuid-random-state* 'type)
+      #.(format nil
+"A random-state objet for use when generating UUIDv4 UUIDs.~%~@
+:EXAMPLE~%~@
+ { ... <EXAMPLE> ... } ~%~@
+:SEE-ALSO `<XREF>'.~%►►►"))
+
+(setf (documentation '*uuid-namespace-dns* 'type)
+      #.(format nil
+  "The DNS namespace as provided by RFC-4122.~%~@
+Bound at system loadtime with `dbc:make-uuid-namespace-loadtime-vars'.~%~@
+May be used for generating UUIDv3 and UUIDv5~%~@
+:EXAMPLE~%~@
+ { ... <EXAMPLE> ... } ~%~@
+:SEE-ALSO `dbc:make-v3-uuid', `dbc:make-v5-uuid', `dbc:make-v4-uuid'.~%►►►"))
+ 
+(setf (documentation '*uuid-namespace-url* 'type)
+      #.(format nil
+  "The URL namespace as provided by RFC-4122.~%~@
+Bound at system loadtime with `dbc:make-uuid-namespace-loadtime-vars'.~%~@
+May be used for generating UUIDv3 and UUIDv5.~%~@
+:EXAMPLE~%~@
+ { ... <EXAMPLE> ... } ~%~@
+:SEE-ALSO `dbc:make-v3-uuid', `dbc:make-v5-uuid', `dbc:make-v4-uuid'.~%►►►"))
+
+(setf (documentation '*uuid-namespace-oid* 'type)
+      #.(format nil
+"The OID namespace as provided with RFC-4122 appendix C.~%~@
+Bound at system loadtime with `dbc:make-uuid-namespace-loadtime-vars'.~%~@
+May be used for generating UUIDv3 and UUIDv5.~%~@
+:EXAMPLE~%~@
+ { ... <EXAMPLE> ... } ~%~@
+:SEE-ALSO `dbc:make-v3-uuid', `dbc:make-v5-uuid', `dbc:make-v4-uuid'.~%►►►"))
+
+(setf (documentation '*uuid-namespace-x500* 'type)
+      #.(format nil
+"The x500+ namespace as provided by RFC-4122 appendix C.~%~@
+Bound at system loadtime with `dbc:make-uuid-namespace-loadtime-vars'.~%~@
+May be used for generating UUIDv3 and UUIDv5.~%~@
+:EXAMPLE~%~@
+ { ... <EXAMPLE> ... } ~%~@
+:SEE-ALSO `dbc:make-v3-uuid', `dbc:make-v5-uuid', `dbc:make-v4-uuid'.~%►►►"))
 
 
 ;;; ==============================

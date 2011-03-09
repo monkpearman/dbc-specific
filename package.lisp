@@ -14,16 +14,21 @@
              #:*system-path*	     
              #:*system-notes-dir*
 	     #:*xml-output-dir* 
-             #:*xml-output-refs-name*        ;; ---> OUTPUT
-             #:*xml-output-refs-ext*         ;; ---> OUTPUT
+             #:*xml-output-refs-name*          ;; ---> OUTPUT
+             #:*xml-output-refs-ext*           ;; ---> OUTPUT
              #:*xml-input-dir*                 ;; <--- INPUT
              #:*xml-input-refs-name*           ;; <--- INPUT
-             #:*xml-input-refs-name-temp* ;; <--- INPUT
+             #:*xml-input-refs-name-temp*      ;; <--- INPUT
              #:*xml-refs-match-list*
              #:*xml-refs-match-table*
              ;;
              #:*parsed-ref-class-name*
 	     ;;
+             #:*uuid-random-state*
+             #:*uuid-namespace-dns*
+             #:*uuid-namespace-url* 
+             #:*uuid-namespace-oid* 
+             #:*uuid-namespace-x500*
 	     ;;
            ;; conditions.lisp
 	     #:dbc-error
@@ -36,23 +41,28 @@
              ;;
            ;; dbc-uuid/dbc-uuid.lisp
              ;;
-             #:*uuid-namespace-dns*
-             #:*uuid-namespace-url* 
-             #:*uuid-namespace-oid* 
-             #:*uuid-namespace-x500*
-             #:*uuid-random-state*
              ;;
-             #:uuid 
+             #:unique-universal-identifier
              #:make-null-uuid
-             #:make-uuid-from-string
-             #:make-v3-uuid 
+             #:make-v3-uuid
              #:make-v4-uuid
              #:make-v5-uuid
              ;;
-             #:uuid-print-bytes  
+             #:uuid-string-p
+             #:uuid-string
+             #:make-uuid-from-string
+             #:uuid-print-bytes
+             #:uuid-get-bytes
+             ;; #:make-uuid-from-string-if ;INTERNAL
+             ;; #:uuid-load-bytes    ; INTERNAL
+             ;; #:format-v3or5-uuid  ; INTERNAL
+             ;; #:%verify-digest-version ; INTERNAL
+             ;; #:%verify-version-3-or-5 ; INTERNAL
              #:uuid-to-byte-array
              #:uuid-from-byte-array
-	     ;;
+             #:format-uuid-as-urn	     
+             #:make-uuid-namespace-loadtime-vars
+             ;;
 	     ;; dbc-classes/dbc-class.lisp
 	     ;;
              #:base-dbc                     ;; <CLASS>
