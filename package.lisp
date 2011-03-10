@@ -48,16 +48,28 @@
              #:make-v4-uuid
              #:make-v5-uuid
              ;;
-             #:uuid-string-p
-             #:uuid-string
+             #:uuid-byte-string    ; TYPE
+             #:uuid-byte-array     ; TYPE
+             #:uuid-string-32      ; TYPE
+             #:uuid-string-36      ; TYPE
+             #:uuid-hex-string-32  ; TYPE
+             #:uuid-hex-string-36  ; TYPE
+             #:uuid-byte-array-p
+             #:uuid-byte-string-p
+             #:uuid-string-32-p
+             #:uuid-string-36-p
+             #:uuid-hex-string-32-p
+             #:uuid-hex-string-36-p
              #:make-uuid-from-string
              #:uuid-print-bytes
              #:uuid-get-bytes
-             ;; #:make-uuid-from-string-if ;INTERNAL
-             ;; #:uuid-load-bytes    ; INTERNAL
-             ;; #:format-v3or5-uuid  ; INTERNAL
-             ;; #:%verify-digest-version ; INTERNAL
-             ;; #:%verify-version-3-or-5 ; INTERNAL
+             ;; #:uuid-digest-uuid-string  ; INTERNAL
+             ;; #:make-uuid-from-string-if ; INTERNAL
+             ;; #:uuid-load-bytes          ; INTERNAL
+             ;; #:format-v3or5-uuid        ; INTERNAL
+             ;; #:%verify-digest-version   ; INTERNAL
+             ;; #:%verify-version-3-or-5   ; INTERNAL
+             ;; #:%uuid-get-bytes-if       ; INTERNAL
              #:uuid-to-byte-array
              #:uuid-from-byte-array
              #:format-uuid-as-urn	     
