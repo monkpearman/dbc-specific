@@ -49,12 +49,18 @@
              #:make-v5-uuid
              ;;
              #:uuid-byte-string    ; TYPE
-             #:uuid-byte-array     ; TYPE
+             #:uuid-ub48           ; TYPE
+             #:uuid-ub32           ; TYPE
+             #:uuid-ub16           ; TYPE
+             #:uuid-ub8            ; TYPE
+             #:uuid-byte-array-16  ; TYPE
+             #:uuid-byte-array-20  ; TYPE
              #:uuid-string-32      ; TYPE
              #:uuid-string-36      ; TYPE
              #:uuid-hex-string-32  ; TYPE
              #:uuid-hex-string-36  ; TYPE
-             #:uuid-byte-array-p
+             #:uuid-byte-array-16-p
+             #:uuid-byte-array-20-p
              #:uuid-byte-string-p
              #:uuid-string-32-p
              #:uuid-string-36-p
@@ -72,8 +78,9 @@
              ;; #:%uuid-get-bytes-if       ; INTERNAL
              #:uuid-to-byte-array
              #:uuid-from-byte-array
-             #:format-uuid-as-urn	     
+             #:format-uuid-as-urn
              #:make-uuid-namespace-loadtime-vars
+             #:string-to-sha1-byte-array
              ;;
 	     ;; dbc-classes/dbc-class.lisp
 	     ;;

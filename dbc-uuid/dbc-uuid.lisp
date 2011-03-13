@@ -133,15 +133,20 @@
 ;;;   `uuid-hex-string-32'
 ;;;   `uuid-hex-string-36'
 ;;;   `uuid-byte-string'
-;;;   `uuid-byte-array'
+;;;   `uuid-byte-array-16'
 ;;;   `uuid-string-32-p'
 ;;;   `uuid-string-36-p'
 ;;;   `uuid-hex-string-32-p'
 ;;;   `uuid-hex-string-36-p'
 ;;;   `uuid-byte-string-p'
-;;;   `uuid-byte-array-p'
+;;;   `uuid-byte-array-16-p'
+;;;   `uuid-ub48'
+;;;   `uuid-ub32'
+;;;   `uuid-ub16'
+;;;   `uuid-ub8'
+;;;
 ;;;   `*uuid-random-state*'
-
+;;;   `string-to-sha1-byte-array'
 ;;;
 ;;; :UNUSED 
 ;;; `*clock-seq*',  `*node*', `*ticks-per-count*', 
@@ -169,23 +174,94 @@
 
 ;;; ==============================
 
+
+;;; ==============================
+;; :TESTING v5 dbc/uuid/elisp-uuid
+;; (make-v5-uuid *uuid-namespace-dns* "bubba")
+;; => EEA1105E-3681-5117-99B6-7B2B5FE1F3C7
+;;
+;; (make-v5-uuid *uuid-namespace-dns* "ésiaλ")
+;; => BB7CB880-7D2A-5DB6-86FF-AFADC974A7B3
+;;
+;; (uuid:make-v5-uuid uuid:+namespace-dns+ "bubba")
+;; => EEA1105E-3681-5117-99B6-7B2B5FE1F3C7
+;;
+;; (uuid:make-v5-uuid uuid:+namespace-dns+ "ésiaλ")
+;; => BB7CB880-7D2A-5DB6-86FF-AFADC974A7B3
+;;
+;; (insert (uuid-5 "6ba7b810-9dad-11d1-80b4-00c04fd430c8" "bubba"))
+;;  => EEA1105E-3681-5117-99B6-7B2B5FE1F3C7
+;; 
+;; (insert (uuid-5 "6ba7b810-9dad-11d1-80b4-00c04fd430c8" "ésiaλ"))
+;; => bb7cb880-7d2a-5db6-86ff-afadc974a7b3
+;;; ==============================
+;; :TEST v3
+;;
+;; (make-v3-uuid *uuid-namespace-dns* "bubba")
+;; => 5E320838-7157-3039-8383-652D96705A7D
+;;
+;; (make-v3-uuid *uuid-namespace-dns* "ésiaλ")
+;; => 6AE2D886-F18B-30C8-82A3-47F5B6909F7B
+;;
+;; (uuid:make-v3-uuid uuid:+namespace-dns+ "bubba")
+;; => 5E320838-7157-3039-8383-652D96705A7D
+;;
+;; (uuid:make-v3-uuid uuid:+namespace-dns+ "ésiaλ")
+;; => 6AE2D886-F18B-30C8-82A3-47F5B6909F7B
+;;
+;; (insert (uuid-3 "6ba7b810-9dad-11d1-80b4-00c04fd430c8" "bubba"))
+;; => 5e320838-7157-3039-8383-652d96705a7d
+;;
+;; (insert (uuid-3 "6ba7b810-9dad-11d1-80b4-00c04fd430c8" "ésiaλ"))
+;; => 6ae2d886-f18b-30c8-82a3-47f5b6909f7b
+;;
+;; (defparameter *tt--array*
+;;   (make-array 16 :element-type 'uuid-ub8 :initial-contents '(;; 004 163 243 087 
+;;                                                              255 255 255 255
+;;                                                              131 056 113 209
+;;                                                              192 078 ;; 199 013 186 219 156 252)))
+;;                                                              255 255 255 255 255 255)))
+;;
+;;; ==============================
+
 
 (in-package #:dbc)
 ;; *package*
 
+(deftype uuid-ub48 ()
+  ;; (48 bits, #xFFFFFFFFFFFF, 281474976710655, #o7777777777777777, #b111111111111111111111111111111111111111111111111)
+  ;; 6 octets 
+ '(unsigned-byte 48))
+
+(deftype uuid-ub32 ()
+  ;; 4 octets
+  ;; (32 bits, #xFFFFFFFF, 4294967295,  #o37777777777, #b11111111111111111111111111111111)
+ '(unsigned-byte 32))
+
+(deftype uuid-ub16 ()
+  ;; 2 octets
+  ;; (16 bits, #xFFFF, 65535,  #o177777, #b1111111111111111)
+  '(unsigned-byte 16))
+
+(deftype uuid-ub8 ()
+  ;; 1 octet
+  ;; (8 bits, #xFF, 255, #o377, #b11111111)
+  '(unsigned-byte 8))
+
 (deftype uuid-byte-string ()
   '(simple-array character (16)))
 
-;; Consider renaming to `uuid-byte-array-16' b/c `uuid-digest-uuid-string' 
-;; v5 SHA1 returns an array of type: (simple-array (unsigned-byte 8) (20))
-;; v3 MD5 returns an array of type: (simple-array (unsigned-byte 8) (16))
 (deftype uuid-byte-array ()
-  '(simple-array (unsigned-byte 8) (16)))
+  ;; '(or uuid-byte-array-16 uuid-byte-array-20))
+  '(simple-array (unsigned-byte 8) (*)))
 
-;; (deftype uuid-byte-array-16 ()
-;;   '(simple-array (unsigned-byte 8) (16)))
-;; (deftype uuid-byte-array-20 ()
-;;   '(simple-array (unsigned-byte 8) (20)))
+;; v3 MD5 returns an array of type: (simple-array (unsigned-byte 8) (16))
+(deftype uuid-byte-array-16 ()
+  '(and uuid-byte-array (simple-array (unsigned-byte 8) (16))))
+
+;; v5 SHA1 returns an array of type: (simple-array (unsigned-byte 8) (20))
+(deftype uuid-byte-array-20 ()
+  '(and uuid-byte-array (simple-array (unsigned-byte 8) (20))))
 
 (deftype uuid-string-32 ()
   '(array character (32)))
@@ -207,6 +283,12 @@
 
 (defun uuid-byte-array-p (maybe-uuid-byte-array)
   (typep maybe-uuid-byte-array 'uuid-byte-array))
+
+(defun uuid-byte-array-16-p (maybe-uuid-byte-array-16)
+  (typep maybe-uuid-byte-array-16 'uuid-byte-array-16))
+
+(defun uuid-byte-array-20-p (maybe-uuid-byte-array-20)
+  (typep maybe-uuid-byte-array-20 'uuid-byte-array-20))
 
 (defun uuid-byte-string-p (maybe-uuid-byte-string)
   (typep maybe-uuid-byte-string 'uuid-byte-string))
@@ -232,56 +314,63 @@
 ;;; 
 ;;; (eval-when (:compile-toplevel :load-toplevel :execute)
 ;;; :WAS #+:sbcl (setf *random-state* (make-random-state t))
-;;; 
 ;;
-;; :TODO Add slot level documentation corresponding to the the RFC.
 (defclass unique-universal-identifier ()
   ((%uuid_time-low 
       :initarg :%uuid_time-low
+      :type uuid-ub32
       :initform 0
       ;; :accessor %uuid_time-low
       :documentation
-      #.(format nil "A 4 octet value.~%~@
+      #.(format nil "A 4 octet value of type `uuid-ub32'.~%~@
                      Occurs as the 0 element in a UUID string delimited by #\\-.~%~@
-                     Its string representation is 8 characters."))
+                     Its string representation is 8 hexadecimal characters."))
      (%uuid_time-mid
       :initarg :%uuid_time-mid
+      :type uuid-ub16
       :initform 0 
       ;; :accessor %uuid_time-mid
       :documentation
-      #.(format nil "A 2 octet value.~%~@
+      #.(format nil "A 2 octet value of type `uuid-ub16'.~%~@
                      Occurs as the 1 element in a UUID string delimited by #\\-.~%~@
                      Its string representation is 4 hexadecimal characters."))
      (%uuid_time-high-and-version
       :initarg :%uuid_time-high-and-version
+      :type uuid-ub16
       :initform 0
       ;; :accessor %uuid_time-high
       :documentation
-      #.(format nil "A 2 octet value.~%~@
+      #.(format nil "A 2 octet value of type `uuid-ub16'.~%~@
                      Occurs as the 2 element in a UUID string delimited by #\\-.~%
                      Its string representation is 4 hexadecimal characters."))
      (%uuid_clock-seq-and-reserved
       :initarg :%uuid_clock-seq-and-reserved
+      :type uuid-ub8
       :initform 0
       ;; :accessor %uuid_clock-seq-var
       :documentation
-      #.(format nil "An octet.~%~@
+      #.(format nil "An octet value of type `uuid-ub8'.~%~@
                      Occurs in the upper portion of the 3 element in a UUID string delimited by #\\-.~%~@
                      Its string representation is 2 hexadecimal characters."))
      (%uuid_clock-seq-low
       :initarg :%uuid_clock-seq-low
+      :type uuid-ub8
       :initform 0
       ;; :accessor %uuid_clock-seq-low
       :documentation
-      #.(format nil "An octet.~%~@
+      #.(format nil "An octet of type `uuid-ub8'.~%~@
                      Occurs in the lower portion of the 3 element in a UUID string delimited by #\\-.~%~@
                      Its string representation is 2 hexadecimal characters."))
      (%uuid_node
       :initarg :%uuid_node
+      :type uuid-ub48
       :initform 0
       ;; :accessor %uuid_node
       :documentation 
-      #.(format nil "A 3 octet value. Its string representation is 6 hexadecimal characters.")))
+      #.(format nil "A 6 octet value of type `uuid-ub48'.~%~@
+                    Occurs as the final or 4 element in a UUID string delimited by #\\-.~%~@
+                    Its string representation is 12 hexadecimal characters.")))
+
   (:documentation
      #.(format nil "Representation of an UUID.~%~@
                     The string representation of A UUID has the format:~%~%~4T
@@ -307,17 +396,23 @@
 
 (defun make-uuid-from-string (uuid-hex-string-36)
   (let ((chk-uuid-str (make-uuid-from-string-if uuid-hex-string-36)))
-    (declare (uuid-string-36 chk-uuid-str))
+    (declare (uuid-string-36 chk-uuid-str)
+             (optimize (speed 3)))
     (make-instance 'unique-universal-identifier
-                   :%uuid_time-low (parse-integer chk-uuid-str :start 0 :end 8 :radix 16)
-                   :%uuid_time-mid (parse-integer chk-uuid-str :start 9 :end 13 :radix 16)
-                   :%uuid_time-high-and-version (parse-integer chk-uuid-str :start 14 :end 18 :radix 16)
-                   :%uuid_clock-seq-and-reserved (parse-integer chk-uuid-str :start 19 :end 21 :radix 16)
-                   :%uuid_clock-seq-low (parse-integer chk-uuid-str :start 21 :end 23 :radix 16)
-                   :%uuid_node (parse-integer chk-uuid-str :start 24 :end 36 :radix 16))))
+                   :%uuid_time-low 
+                   (the uuid-ub32 (parse-integer chk-uuid-str :start 0 :end 8 :radix 16))
+                   :%uuid_time-mid 
+                   (the uuid-ub16 (parse-integer chk-uuid-str :start 9 :end 13 :radix 16))
+                   :%uuid_time-high-and-version 
+                   (the uuid-ub16 (parse-integer chk-uuid-str :start 14 :end 18 :radix 16))
+                   :%uuid_clock-seq-and-reserved 
+                   (the uuid-ub8 (parse-integer chk-uuid-str :start 19 :end 21 :radix 16))
+                   :%uuid_clock-seq-low 
+                   (the uuid-ub8 (parse-integer chk-uuid-str :start 21 :end 23 :radix 16))
+                   :%uuid_node 
+                   (the uuid-ub48 (parse-integer chk-uuid-str :start 24 :end 36 :radix 16)))))
 
-;; ) ;; :CLOSE eval-when
-
+;; *uuid-namespace-dns*
 (defmethod print-object ((id unique-universal-identifier) stream)
   ;;  "Print UNIQUE-UNIVERSAL-IDENTIFIER ID to to STREAM in string represenatation.
   ;;  (example string 6ba7b810-9dad-11d1-80b4-00c04fd430c8)"
@@ -329,6 +424,10 @@
                %uuid_clock-seq-low
                %uuid_node)
       id
+    (declare (type uuid-ub32 %uuid_time-low)
+             (type uuid-ub16 %uuid_time-mid %uuid_time-high-and-version)
+             (type uuid-ub8 %uuid_clock-seq-and-reserved %uuid_clock-seq-low)
+             (type uuid-ub48 %uuid_node))
     (format stream "~8,'0X-~4,'0X-~4,'0X-~2,'0X~2,'0X-~12,'0X" 
             %uuid_time-low 
             %uuid_time-mid 
@@ -336,8 +435,14 @@
             %uuid_clock-seq-and-reserved
             %uuid_clock-seq-low
             %uuid_node)))
-	    
+
+;;; ==============================
+;;; :PASTE 120426:
+;;; :TITLE Informing loop of integer size -- how to do it idiomatically?
+;;; :SEE (URL `http://paste.lisp.org/+2KX6')
 (defun uuid-load-bytes (byte-array &key (byte-size 8) (start 0) end)
+  (declare (type uuid-byte-array byte-array)
+           (optimize (speed 3)))
   (let ((ret-val 0))
     (loop 
        :for i :from start :to end
@@ -362,30 +467,237 @@
            (optimize (speed 3) (debug 0)))
   (or (and (= (%verify-version-3-or-5 chk-version) 3) :md5) :sha1))
 
-;;; 
-;; (length "c4abb93f686afde0fa00c68874fd5e2c2f06aea7")
-;; elisp
-;;; (vconcat (sha1 "format-v3or5-uuid this is ignoring the any bytes above 15 returned by" nil nil t))
-;;; => [205 206 201 149 18 122 40 92 97 222 85 144 162 56 65 204 179 193 245 53]
-;;; format-v3or5-uuid this is ignoring the any bytes above 15 returned by
-;;; `uuid-digest-uuid-string'.
+
 (defun format-v3or5-uuid (digest-byte-array uuid-version) 
-  (declare (inline %verify-version-3-or-5))
+  (declare (inline %verify-version-3-or-5)
+           (uuid-byte-array digest-byte-array)
+           (optimize (speed 3)))
   (let ((version-if (%verify-version-3-or-5 uuid-version)))
     (declare ((mod 6) version-if))
-    (make-instance 'unique-universal-identifier
-		   :%uuid_time-low (uuid-load-bytes digest-byte-array :start 0 :end 3)
-		   :%uuid_time-mid (uuid-load-bytes digest-byte-array :start 4 :end 5)
-                   :%uuid_time-high-and-version  (dpb version-if (byte 4 12) (uuid-load-bytes digest-byte-array :start 6 :end 7))
-		   :%uuid_clock-seq-and-reserved (dpb #b10 (byte 2 6) (aref digest-byte-array 8))
-		   :%uuid_clock-seq-low (aref digest-byte-array 9)
-		   :%uuid_node (uuid-load-bytes digest-byte-array :start 10 :end 15))))
+    (case version-if 
+      (3 (format-v3-uuid (the uuid-byte-array-16 digest-byte-array)))
+      (5 (format-v5-uuid (the uuid-byte-array-20 digest-byte-array))))))
+
+
+#|
+  ;; x86s are :litte-endian
+  ;; network byte order is big endian
+  ;;
+  1) Convert the name to a canonical sequence of octets (as defined by
+     the standards or conventions of its name space); put the name
+     space ID in network byte order (big endian).
+  2) Compute the hash of the name space ID concatenated with the name.
+  3) Set octets zero through 3 of the time_low field to octets zero through 3 of the hash.
+  4) Set octets zero and one of the time_mid field to octets 4 and 5 of the hash.
+  5) Set octets zero and one of the time_hi_and_version field to octets 6 and 7 of the hash.
+  6) Set the four most significant bits (bits 12 through 15) of the time_hi_and_version field 
+     to the appropriate 4-bit version number from Section 4.1.3.
+  7) Set the clock_seq_hi_and_reserved field to octet 8 of the hash.
+  8) Set the two most significant bits (bits 6 and 7) of the clock_seq_hi_and_reserved
+     to zero and one, respectively.
+  9) Set the clock_seq_low field to octet 9 of the hash.
+ 10) Set octets zero through five of the node field to octets 10 through 15 of the hash.
+ 11) Convert the resulting UUID to local byte order.
+|#
+
+
+;;; ==============================
+;;; :COURTESY nyef (URL `http://paste.lisp.org/+2KX6/1')
+(defun request-integer (array offset length &key little-endian sign-extend)
+  "Decode an integer of LENGTH octets from ARRAY starting at OFFSET.
+ The OFFSET is effectively :start and 
+ LENGTH is :end where :end => (+ offset length)
+ x86-32 OSs are LITTLE-ENDIAN but network-byte-order is big-endian...
+ Sign extension is the operation, in computer arithmetic, of increasing the
+ number of bits of a binary number while preserving the number's sign
+ (positive/negative) and value. This is done by appending digits to the most
+ significant side of the number, following a procedure dependent on the
+ particular signed number representation used.
+
+ For example, if six bits are used to represent the number \"00 1010\" \(decimal
+ positive 10\) and the sign extend operation increases the word length to 16 bits,
+ then the new \(big endian, i.e. the left-most bit is the most significant bit\)
+ representation is simply \"0000 0000 0000 1010\". Thus, both the value and the
+ fact that the value was positive are maintained.
+
+ If ten bits are used to represent the value \"11 1111 0001\" \(decimal negative 15\)
+ using two's complement, and this is sign extended to sixteen bits, the new
+ representation is \"1111 1111 1111 0001\". Thus, by padding the left side with
+ ones, the negative sign and the value of the original number are maintained.
+
+ In the x86 instruction set, used by most home PCs, there are two ways of doing
+ sign extension:
+
+    * using the instructions cbw, cwd, cwde, and cdq (convert byte to word,
+      doubleword, extended doubleword, and quadword, respectively; in the x86
+      context, a byte has 8 bits, a word 16 bits, a doubleword and extended
+      doubleword 32 bits, and a quadword 64 bits);
+
+    * using one of the sign extended moves, accomplished by the movsx \(\"move
+      with sign extension\"\) family of instructions."
+  (let ((value (loop
+                  for i from 0 below length
+                  for octet = (aref array (+ offset
+                                             (if little-endian
+                                                 i
+                                                 (- length i 1))))
+                  sum (ash octet (* i 8)))))
+    (if (and sign-extend
+             (logbitp (1- (* length 8)) value))
+        (logior (lognot (1- (ash 1 (1- (* length 8))))) value)
+        value)))
+;;
+(define-compiler-macro request-integer (&whole form array offset length &key little-endian sign-extend)
+  (if (and (member length '(1 2 4))
+           (member little-endian '(t nil))
+           (member sign-extend '(t nil)))
+      `(let* (,@(loop
+                   for i from 0 below length
+                   for var in '(byte-0 byte-1 byte-2 byte-3)
+                   collect `(,var (aref ,array (+ ,offset
+                                                  ,(if little-endian
+                                                       i
+                                                       (- length i 1))))))
+              (value ,(elt '(#1=byte-0
+                             #2=(dpb byte-1 (byte 8 8) #1#)
+                             #3=(dpb byte-2 (byte 8 16) #2#)
+                             (dpb byte-3 (byte 8 24) #3#))
+                           (1- length))))
+         ,(if sign-extend
+              `(if (logbitp ,(1- (* length 8)) value)
+                   (logior ,(lognot (1- (ash 1 (1- (* length 8))))) value)
+                   value)
+              'value))
+      form))
+
+(declaim (inline %uuid_time-low-request))
+(defun %uuid_time-low-request (byte-array)
+  ;; RFC4122 Section 4.3
+  ;; Step three:
+  ;; - Set octets zero through 3 of the time_low field to octets zero through 3 of the hash.
+  (declare (type uuid-byte-array byte-array)
+           (optimize (speed 3)))
+  ;; (uuid-load-bytes byte-array :start 0 :end 3) ))
+  ;; (uuid-load-bytes *tt--array* :start 0 :end 3) 4294967295 => 77853527
+  ;; (request-integer *tt--array* 0 4)  => 77853527
+  (request-integer byte-array 0 4))
+
+(declaim (inline %uuid_time-mid-request))
+(defun %uuid_time-mid-request (byte-array)
+  ;; RFC4122 Section 4.3
+  ;; Step four
+  ;; - Set octets zero and one of the time_mid field to octets 4 and 5 of the hash.
+  (declare (type uuid-byte-array byte-array)
+           (optimize (speed 3)))
+  (the (values uuid-ub16 &optional)
+    ;; (uuid-load-bytes byte-array :start 4 :end 5)
+    ;; (uuid-load-bytes  *tt--array* :start 4 :end 5) ;=> 33592
+    ;; (request-integer *tt--array* 4 2) ;=> 33592
+    (request-integer byte-array 4 2)))
+
+(declaim (inline %uuid_time-high-and-version-request))
+(defun %uuid_time-high-and-version-request (byte-array version)
+  ;; RFC4122 Section 4.3
+  ;; Step five: (occurs in the inner `uuid-load-bytes' form)
+  ;; - Set octets zero and one of the time_hi_and_version field to octets 6 and 7 of the hash.
+  ;; Step six: (occurs in the outer `dpb' form)
+  ;; - Set the four most significant bits (bits 12 through 15) of the time_hi_and_version field 
+  ;;   to the appropriate 4-bit version number from Section 4.1.3.
+  ;;    Msb0  Msb1  Msb2  Msb3   Version
+  ;;       0     1     0     1        5
+  ;;       0     0     1     1        3
+  (declare (type uuid-byte-array byte-array)
+           ((mod 6) version)
+           (optimize (speed 3)))
+  (the uuid-ub16 
+    (dpb version (byte 4 12)
+         ;; (the uuid-ub16 (uuid-load-bytes byte-array :start 6 :end 7))
+         ;; (the uuid-ub16 (uuid-load-bytes *tt--array* :start 6 :end 7)) => 29137
+         ;; (request-integer *tt--array* 6 2) => 29137
+         (the uuid-ub16 (request-integer byte-array 6 2)))))
+
+(declaim (inline %uuid_clock-seq-and-reserved-request))
+(defun %uuid_clock-seq-and-reserved-request (byte-array)
+  ;; RFC4122 Section 4.3
+  ;; Step seven: (occurs in the inner `uuid-load-bytes' form)
+  ;; - Set the clock_seq_hi_and_reserved field to octet 8 of the hash.
+  ;; Step eight: (occurs in the outer `dpb' form)
+  ;; - Set the two most significant bits (bits 6 and 7) of the clock_seq_hi_and_reserved
+  ;;   to zero and one, respectively. IOW, set bit 6 to 0 - Set bit 7 to 1
+  (declare (type uuid-byte-array byte-array)
+           (optimize (speed 3)))
+  (the uuid-ub8 (dpb #b0010 (byte 2 6) (the uuid-ub8 (aref byte-array 8)))))
+
+(declaim (inline %uuid_node-request))
+(defun %uuid_node-request (byte-array)
+  ;; RFC4122 Section 4.3 step ten:
+  ;; - Set octets zero through five of the node field to octets 10 through 15 of the hash.
+  (declare (type uuid-byte-array byte-array)
+           (optimize (speed 3)))
+  ;; (uuid-load-bytes byte-array :start 10 :end 15)))
+  (request-integer byte-array 10 6))
+
+(defun format-v5-uuid (v5-digest-byte-array)
+  (declare (uuid-byte-array-20 v5-digest-byte-array)
+           (optimize (speed 3)
+                     (safety 1))
+           (inline %uuid_time-low-request
+                   %uuid_time-mid-request
+                   %uuid_time-high-and-version-request
+                   %uuid_clock-seq-and-reserved-request
+                   %uuid_node-request))
+  (make-instance 'unique-universal-identifier
+                 ;; 
+                 ;; :%uuid_time-low  (the uuid-ub32 (uuid-load-bytes v5-digest-byte-array :start 0 :end 3))
+                 :%uuid_time-low (%uuid_time-low-request v5-digest-byte-array)
+                 ;;
+                 ;; :%uuid_time-mid (the uuid-ub16 (uuid-load-bytes v5-digest-byte-array :start 4 :end 5))
+                 :%uuid_time-mid (%uuid_time-mid-request v5-digest-byte-array)
+                 ;;
+                 ;; :%uuid_time-high-and-version
+                 ;; (the uuid-ub16 (dpb #b0101 (byte 4 12) (the uuid-ub16 (uuid-load-bytes v5-digest-byte-array :start 6 :end 7))))
+                 :%uuid_time-high-and-version (%uuid_time-high-and-version-request v5-digest-byte-array 5)
+                 ;; 
+                 ;; :%uuid_clock-seq-and-reserved (the uuid-ub8 (dpb #b0010 (byte 2 6) (the uuid-ub8 (aref v5-digest-byte-array 8))))
+                 :%uuid_clock-seq-and-reserved (%uuid_clock-seq-and-reserved-request v5-digest-byte-array)
+                 ;; Step nine:
+                 ;; - Set the clock_seq_low field to octet 9 of the hash.
+                 :%uuid_clock-seq-low (the uuid-ub8 (aref v5-digest-byte-array 9))
+                 ;;
+                 ;; :%uuid_node (the uuid-ub48 (uuid-load-bytes v5-digest-byte-array :start 10 :end 15))))
+                 :%uuid_node (%uuid_node-request v5-digest-byte-array)))
+
+(defun format-v3-uuid (v3-digest-byte-array)
+  (declare (uuid-byte-array-16 v3-digest-byte-array)
+           (inline %uuid_time-low-request
+                   %uuid_time-mid-request
+                   %uuid_time-high-and-version-request
+                   %uuid_clock-seq-and-reserved-request
+                   %uuid_node-request)
+           (optimize (speed 3)))
+  (make-instance 'unique-universal-identifier
+                 ;; :%uuid_time-low (the uuid-ub32 (uuid-load-bytes v3-digest-byte-array :start 0 :end 3))
+                 :%uuid_time-low (%uuid_time-low-request v3-digest-byte-array)
+                 ;; :%uuid_time-mid (the uuid-ub16 (uuid-load-bytes v3-digest-byte-array :start 4 :end 5))
+                 :%uuid_time-mid (%uuid_time-mid-request v3-digest-byte-array)
+                 ;; :%uuid_time-high-and-version 
+                 ;; (the uuid-ub16 (dpb #b0011 (byte 4 12) (the uuid-ub16 (uuid-load-bytes v3-digest-byte-array :start 6 :end 7))))
+                 :%uuid_time-high-and-version (%uuid_time-high-and-version-request v3-digest-byte-array 3)
+                 ;;
+                 ;; :%uuid_clock-seq-and-reserved (the uuid-ub8 (dpb #b10 (byte 2 6) (the uuid-ub8 (aref v3-digest-byte-array 8))))
+                 :%uuid_clock-seq-and-reserved (%uuid_clock-seq-and-reserved-request v3-digest-byte-array)
+                 ;; 
+                 :%uuid_clock-seq-low (aref v3-digest-byte-array 9)
+                 ;; 
+                 ;; :%uuid_node (the uuid-ub48 (uuid-load-bytes v3-digest-byte-array :start 10 :end 15))))
+                 :%uuid_node (the uuid-ub48 (%uuid_node-request v3-digest-byte-array))))
 
 (defun uuid-print-bytes (stream uuid)
   ;; :NOTE Incorporate following??? :
   ;; (mon:open-stream-output-stream-p stream :allow-booleans t :w-error t)
   (declare (type mon:stream-or-boolean stream)
-           (unique-universal-identifier uuid))
+           (type unique-universal-identifier uuid)
+           (optimize (speed 3)))
   (with-slots (%uuid_time-low
                %uuid_time-mid
                %uuid_time-high-and-version
@@ -393,6 +705,10 @@
                %uuid_clock-seq-low
                %uuid_node)
       uuid
+    (declare (type uuid-ub32 %uuid_time-low)
+             (type uuid-ub16 %uuid_time-mid %uuid_time-high-and-version)
+             (type uuid-ub8  %uuid_clock-seq-and-reserved %uuid_clock-seq-low)
+             (type uuid-ub48 %uuid_node))
     (format stream "~8,'0X~4,'0X~4,'0X~2,'0X~2,'0X~12,'0X" 
             %uuid_time-low
             %uuid_time-mid 
@@ -401,7 +717,7 @@
             %uuid_clock-seq-low
             %uuid_node)))
 
-;; (declaim  (inline %uuid-get-bytes-if))
+(declaim (inline %uuid-get-bytes-if))
 (defun %uuid-get-bytes-if (chk-uuid-str)
   (or (and (uuid-hex-string-32-p chk-uuid-str)
            (the uuid-string-32 chk-uuid-str))
@@ -413,7 +729,8 @@
                             :signal-or-only nil)))
 
 (defun uuid-get-bytes (uuid-string)
-  (declare (optimize (speed 3) (debug 0)))
+  (declare (optimize (speed 3) (debug 0))
+           (inline %uuid-get-bytes-if))
   (let ((uuid-str-if (%uuid-get-bytes-if uuid-string))
         (outstr (make-array 16 :element-type 'character :initial-element #\NUL :fill-pointer 0)))
     (declare (uuid-string-32 uuid-str-if)
@@ -423,81 +740,66 @@
          for i = 0 then (+ i 2)
          as  j = (+ i 2)
          with max = (- (length uuid-str-if) 2)
-         as cur-pos = (parse-integer (subseq uuid-str-if i j) :radix 16)
-         do (format out "~A" (code-char cur-pos))
+         as cur-pos = (the uuid-ub8 (parse-integer (subseq uuid-str-if i j) :radix 16))
+         do (format out "~A" (code-char (the uuid-ub8 cur-pos)))
          while (< i max))
       (the uuid-byte-string (make-array 16 :element-type 'character :initial-contents outstr)))))
 
-
-;; (uuid::digest-uuid 3 (uuid::get-bytes (uuid::print-bytes nil uuid:+namespace-dns+)) "bubbammm")
-;; => #(138 230 134 121 226 152 242 124 86 47 178 159 160 80 220 230)
-
+;;; ==============================
 ;;; :NOTE the signaure of the arrray returned by `uuid-digest-uuid-string' differs for :MD5 vs :SHA1
 ;;; v5 :SHA1 returns an array of type: (simple-array (unsigned-byte 8) (20))
 ;;; v3 :MD5 returns  an array of type: (simple-array (unsigned-byte 8) (16))
-;;
-;; (digest-uuid 3 (get-bytes (print-bytes nil +namespace-dns+)) "bubbammm")
-;;(uuid-digest-uuid-string 3 (uuid-get-bytes (uuid-print-bytes nil *uuid-namespace-dns*)) "bubbammm")
-;;=> #(138 230 134 121 226 152 242 124 86 47 178 159 160 80 220 230)
-;; (format-v3or5-uuid (uuid-digest-uuid-string 3 (uuid-get-bytes (uuid-print-bytes nil *uuid-namespace-dns*)) "bubbammm") 3)
-;; => 8AE68679-E298-327C-962F-B29FA050DCE6
-;; DBC> (uuid-digest-uuid-string 5 (uuid-get-bytes (uuid-print-bytes nil *uuid-namespace-dns*)) "bubbammm")
-;; => #(212 69 66 249 217 185 146 102 140 103 61 111 162 234 250 131 230 90 215 102)
-;; DBC> (format-v3or5-uuid (uuid-digest-uuid-string 5 (uuid-get-bytes (uuid-print-bytes nil *uuid-namespace-dns*)) "bubbammm") 5)
-;; => D44542F9-D9B9-5266-8C67-3D6FA2EAFA83
-;; 
-;; (uuid-digest-uuid-string 3 *uuid-namespace-dns-default* "bubba")
-;; (uuid-digest-uuid-string 5 (uuid-get-bytes (uuid-print-bytes nil *uuid-namespace-dns*)) "bubba")
-;; (uuid-digest-uuid-string 5 (uuid-get-bytes (uuid-print-bytes nil *uuid-namespace-dns*)) "bubba")
-;; (simple-array (unsigned-byte 8) (20))
-(defun uuid-digest-uuid-string (digest-version uuid name)
+(defun uuid-digest-uuid-string (digest-version string-uuid name)
+  ;; This is step two of RFC4122 section 4.3 
+  ;; -  Compute the hash of the name space ID concatenated with the name.
   (declare ((mod 6) digest-version)
-           (type string name) )
+           (type string name string-uuid))
   (let ((digester  (ironclad:make-digest (%verify-digest-version digest-version))))
     ;; :NOTE `mon:ascii-string-to-byte-array'
-    (ironclad:update-digest  digester (ironclad:ascii-string-to-byte-array uuid))
-    (ironclad:update-digest  digester (ironclad:ascii-string-to-byte-array name))
-    (ironclad:produce-digest digester)))
-
-
-;; (flexi-streams:string-to-octets "abcÿ►" :external-format :UTF-8)
-;; (babel:string-to-octets "abcÿ►"  :encoding :UTF-8)
-;; (sb-ext:string-to-octets "abcÿ►" :external-format :UTF-8)
-;;
-;; (flexi-streams:string-to-octets "abcÿ►" :external-format :UTF-8)
-;; (babel:string-to-octets "abcÿ►"  :encoding :UTF-8)
-;; (sb-ext:string-to-octets "abcÿ►" :external-format :UTF-8)
+    (ironclad:update-digest digester (ironclad:ascii-string-to-byte-array string-uuid))
+    (ironclad:update-digest digester 
+                            ;; :WAS (ironclad:ascii-string-to-byte-array name))
+                            ;; #-sbcl (trivial-utf-8:string-to-utf-8-bytes name))
+                            #-sbcl (the uuid-byte-array (flexi-streams:string-to-octets name :external-format :UTF-8))
+                            #+sbcl (the uuid-byte-array (sb-ext:string-to-octets name :external-format :UTF-8)))
+    (the (values uuid-byte-array &optional) (ironclad:produce-digest digester))))
 
 (defun make-v3-uuid (namespace name)
   (declare (type string name)
-           (unique-universal-identifier namespace))
+           (unique-universal-identifier namespace)
+           (optimize (speed 3)))
+  ;; (format-v3or5-uuid (uuid-digest-uuid-string 3 (uuid-get-bytes (uuid-print-bytes nil namespace)) name) 3))
   (format-v3or5-uuid
-   (uuid-digest-uuid-string 3 (uuid-get-bytes (uuid-print-bytes nil namespace)) name)
-   3))
+   (the uuid-byte-array-16    
+     (uuid-digest-uuid-string 3 
+       (the uuid-byte-string 
+         (uuid-get-bytes 
+          (the uuid-string-32
+            (uuid-print-bytes nil namespace)))) name)) 3))
 
-;;; :NOTE this fails (uuid::make-v5-uuid uuid:+namespace-dns+ "►►►") b/c the
-;;; following form from `uuid-digest-uuid-string' won't accept anything but latin-1 chars:
-;;;  (ironclad:update-digest  digester (ironclad:ascii-string-to-byte-array name))
-;;; ironclad:ascii-string-to-byte-array
 (defun make-v5-uuid (namespace name)
   (declare (type string name)
-           (unique-universal-identifier namespace))
-  (format-v3or5-uuid 
-   (uuid-digest-uuid-string 5 (uuid-get-bytes (uuid-print-bytes nil namespace)) name)
-   5))
+           (unique-universal-identifier namespace)
+           (optimize (speed 3)))
+  ;; (format-v3or5-uuid (uuid-digest-uuid-string  5 (uuid-get-bytes (uuid-print-bytes nil namespace)) name) 5))
+  (format-v3or5-uuid
+   (the uuid-byte-array-20
+     (uuid-digest-uuid-string 5
+       (the uuid-byte-string 
+         (uuid-get-bytes 
+          (the uuid-string-32
+            (uuid-print-bytes nil namespace)))) name)) 5))
 
 (defun make-v4-uuid ()
   (let ((*random-state* (the random-state *uuid-random-state*)))
-    ;;(declare (special *random-state*))
+    ;; (declare (special *random-state*))
     (make-instance 'unique-universal-identifier
-                   :%uuid_time-low (random #xffffffff)  ; *uuid-random-state*)
-                   :%uuid_time-mid (random #xffff     ) ;*uuid-random-state*)
-                   :%uuid_time-high-and-version (dpb #b0100 (byte 4 12) 
-                                                     (ldb (byte 12 0) (random #xffff))) ;*uuid-random-state*)))
-                   :%uuid_clock-seq-and-reserved (dpb #b10  (byte 2 6)
-                                                      (ldb (byte 8 0)  (random #xff))) ; *uuid-random-state*)))
-                   :%uuid_clock-seq-low (random #xff) ; *uuid-random-state*)
-                   :%uuid_node (random #xffffffffffff)))) ; *uuid-random-state*)))
+                   :%uuid_time-low (the uuid-ub32 (random #xffffffff))
+                   :%uuid_time-mid (the uuid-ub16 (random #xffff))
+                   :%uuid_time-high-and-version  (the uuid-ub16 (dpb #b0100 (byte 4 12) (ldb (byte 12 0) (random #xffff))))
+                   :%uuid_clock-seq-and-reserved  (the uuid-ub8 (dpb #b0010 (byte 2 6)(ldb (byte 8 0) (random #xff))))
+                   :%uuid_clock-seq-low (the uuid-ub8 (random #xff))
+                   :%uuid_node (the uuid-ub48 (random #xffffffffffff)))))
 
 (defun format-uuid-as-urn (stream uuid)
   (declare (type mon:stream-or-boolean stream)
@@ -508,17 +810,20 @@
   (make-instance 'unique-universal-identifier))
 
 ;; (simple-array character (16))
-;; 
 (defun uuid-to-byte-array (uuid)
   (declare (unique-universal-identifier uuid))
   (let ((array (make-array 16 :element-type '(unsigned-byte 8))))
-    (declare (uuid-byte-array array))
+    (declare (uuid-byte-array-16 array))
     (with-slots (%uuid_time-low 
                  %uuid_time-mid 
                  %uuid_time-high-and-version
                  %uuid_clock-seq-and-reserved
                  %uuid_clock-seq-low %uuid_node)
         uuid
+      (declare (type uuid-ub32 %uuid_time-low)
+               (type uuid-ub16 %uuid_time-mid %uuid_time-high-and-version)
+               (type uuid-ub8 %uuid_clock-seq-and-reserved %uuid_clock-seq-low)
+               (type uuid-ub48 %uuid_node))
       (loop
          for i from 3 downto 0
          do (setf (aref array (- 3 i)) (ldb (byte 8 (* 8 i)) %uuid_time-low)))
@@ -533,10 +838,12 @@
       (loop
          for i from 15 downto 10
          do (setf (aref array i) (ldb (byte 8 (* 8 (- 15 i))) %uuid_node)))
-      (the uuid-byte-array array))))
-           
+      (the uuid-byte-array-16 array))))
+
 (defun uuid-from-byte-array (byte-array)
-  (declare (uuid-byte-array byte-array))
+  ;; Can't declare this uuid-byte-array-16 because SHA-1s are arrays of 20 elts
+  ;;
+  (declare (type uuid-byte-array byte-array))
   ;; :WAS #-sbcl (assert (and (= (array-rank byte-array) 1)
   ;;           (= (array-total-size byte-array) 16))
   #-sbcl (assert (uuid-byte-array-p byte-array) (byte-array)
@@ -550,12 +857,28 @@
                    do (setf (ldb (byte 8 (* 8 (- ,to i))) res) (aref ,w-array i))
                    finally (return res))))
     (make-instance 'unique-universal-identifier
-                   :%uuid_time-low (arr-to-bytes 0 3 byte-array)
-                   :%uuid_time-mid (arr-to-bytes 4 5 byte-array)
-                   :%uuid_time-high-and-version (arr-to-bytes 6 7 byte-array)
-                   :%uuid_clock-seq-and-reserved (aref byte-array 8)
-                   :%uuid_clock-seq-low (aref byte-array 9)
-                   :%uuid_node (arr-to-bytes 10 15 byte-array))))
+                   :%uuid_time-low (the uuid-ub32 (arr-to-bytes 0 3 byte-array))
+                   :%uuid_time-mid (the uuid-ub16 (arr-to-bytes 4 5 byte-array))
+                   :%uuid_time-high-and-version (the uuid-ub16 (arr-to-bytes 6 7 byte-array))
+                   :%uuid_clock-seq-and-reserved (the uuid-ub8 (aref byte-array 8))
+                   :%uuid_clock-seq-low (the uuid-ub8 (aref byte-array 9))
+                   :%uuid_node (the uuid-ub48 (arr-to-bytes 10 15 byte-array)))))
+
+(defun string-to-sha1-byte-array (string)
+  ;; :NOTE we can compare the output of `string-to-sha1-byte-array' with output
+  ;; Emacs lisp' `sha1-binary':
+  ;;  uuid>  (string-to-sha1-byte-array "bubba")
+  ;;           => #(32 193 148 189 4 164 89 163 52 78 106 202 121 61 200 118 132 25 134 11)
+  ;;  elisp> (vconcat (sha1-binary "bubba"))
+  ;;          => [32 193 148 189 4 164 89 163 52 78 106 202 121 61 200 118 132 25 134 11]
+  ;; `uuid-digest-uuid-string'
+  (declare (type string string))
+  (let ((digester (ironclad:make-digest :sha1)))
+    (ironclad:update-digest digester 
+                            ;; :WAS (ironclad:ascii-string-to-byte-array string)
+                            #+sbcl (sb-ext:string-to-octets string :external-format :UTF-8)
+                            #-sbcl (flexi-streams:string-to-octets string :external-format :UTF-8))
+    (ironclad:produce-digest digester)))
 
 ;; ;;; :DOESN'T work
 ;; (defun make-uuid-namespace-loadtime-vars (namespace-pairs)
@@ -577,15 +900,68 @@
 
 
 ;;; ==============================
-;;; :UUID-DOCUMENTATION
+;;; :UUID-TYPES-DOCUMENTATION
 ;;; ==============================
+
+
+(setf (documentation 'uuid-ub48 'type)
+      #.(format nil
+"An object of type: \(unsigned-byte 48\)~%~@
+Octets:         6
+Bits:          48
+Hex value:     #xFFFFFFFFFFFF, 
+Decimal value: 281474976710655
+Octal value:   #o7777777777777777
+:Binary value: #b111111111111111111111111111111111111111111111111~%~@
+:EXAMPLE~%~@
+ { ... <EXAMPLE> ... } ~%~@
+:SEE-ALSO `uuid-ub48', `uuid-ub32', `uuid-ub16', `uuid-ub8'.~%►►►"))
+
+(setf (documentation 'uuid-ub32 'type)
+      #.(format nil
+"An object of type: \(unsigned-byte 32\)~%~@
+Octets:         4
+Bits:          32 
+Hex value:     #xFFFFFFFF
+Decimal value: 4294967295
+Octal value:   #o37777777777
+Binary value:  #b11111111111111111111111111111111~%~@
+:EXAMPLE~%~@
+ { ... <EXAMPLE> ... } ~%~@
+:SEE-ALSO `uuid-ub48', `uuid-ub32', `uuid-ub16', `uuid-ub8'.~%►►►"))
+
+(setf (documentation 'uuid-ub16 'type)
+      #.(format nil
+"An object of type: \(unsigned-byte 16\)~%~@
+Octets:          2
+Bits:           16 
+Hex value:      #xFFFF
+Decimal value:  65535
+Octal value:    #o177777
+Binary value:   #b1111111111111111~%~@
+:EXAMPLE~%~@
+ { ... <EXAMPLE> ... } ~%~@
+:SEE-ALSO `uuid-ub48', `uuid-ub32', `uuid-ub16', `uuid-ub8'.~%►►►"))
+
+(setf (documentation 'uuid-ub8 'type)
+      #.(format nil
+"An object of type: \(unsigned-byte 8\)~%~@
+Octets:         1
+Bits:           8
+Hex value:      #xFF
+Decimal value:  255
+Octal value:    #o377
+Binary value:   #b11111111~%~@
+:EXAMPLE~%~@
+ { ... <EXAMPLE> ... } ~%~@
+:SEE-ALSO `uuid-ub48', `uuid-ub32', `uuid-ub16', `uuid-ub8'.~%►►►"))
 
 (setf (documentation 'uuid-string-36 'type)
       #.(format nil
 "An object with the tyep signature: \(array character \(32\)\)
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `dbc:uuid-byte-string', `dbc:uuid-byte-array', `dbc:uuid-string-32',
+:SEE-ALSO `dbc:uuid-byte-string', `dbc:uuid-byte-array-16', `dbc:uuid-string-32',
 `dbc:uuid-string-36', `dbc:uuid-hex-string-32', `dbc:uuid-hex-string-36',
 `dbc:uuid-hex-string-32-p', `dbc:uuid-hex-string-36-p',.~%►►►"))
 
@@ -594,7 +970,7 @@
 "An object with the tyep signature: \(array character \(36\)\)~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `dbc:uuid-byte-string', `dbc:uuid-byte-array', `dbc:uuid-string-32',
+:SEE-ALSO `dbc:uuid-byte-string', `dbc:uuid-byte-array-16', `dbc:uuid-string-32',
 `dbc:uuid-string-36', `dbc:uuid-hex-string-32', `dbc:uuid-hex-string-36',
 `dbc:uuid-hex-string-32-p', `dbc:uuid-hex-string-36-p'.~%►►►"))
 
@@ -625,14 +1001,26 @@ And satisfies `mon:string-all-hex-char-p'.~%~@
  "An object of with type signature: \(simple-array character \(16\)\)~%~@
 :EXAMPLE~%
  \(typep \(uuid-get-bytes \(uuid-print-bytes nil *uuid-namespace-dns*\)\) 'uuid-byte-string\)~%~@
-:SEE-ALSO `dbc:uuid-byte-array', `dbc:uuid-hex-string-36'.~%►►►"))
+:SEE-ALSO `dbc:uuid-byte-array-16', `dbc:uuid-hex-string-36'.~%►►►"))
 
-(setf (documentation 'uuid-byte-array 'type)
+(setf (documentation 'uuid-byte-array-16 'type)
       #.(format nil
  "An object which has the type signature: \(simple-array \(unsigned-byte 8\) \(16\)\)~%~@
 :EXAMPLE~%
- \(typep \(uuid-to-byte-array *uuid-namespace-dns*\) 'uuid-byte-array\)~%~@
+ \(typep \(uuid-to-byte-array *uuid-namespace-dns*\) 'uuid-byte-array-16\)~%~@
 :SEE-ALSO `dbc:uuid-hex-string-36'.~%►►►"))
+
+(setf (documentation 'uuid-byte-array-20 'type)
+      #.(format nil
+ "An object which has the type signature: \(simple-array \(unsigned-byte 8\) \(20\)\)~%~@
+:EXAMPLE~%
+ \(typep \(string-to-sha1-byte-array \"bubba\"\) 'uuid-byte-array-20\)~%~@
+:SEE-ALSO `dbc:uuid-hex-string-36'.~%►►►"))
+
+
+;;; ==============================
+;;; :UUID-FUNCTIONS-DOCUMENTATION
+;;; ==============================
 
 (mon:fundoc 'uuid-string-32-p
 "Whether object is of type `dbc:uuid-string-32'.~%~@
@@ -653,8 +1041,8 @@ Return T when MAYBE-UUID-HEX-STRING-36 satisfies the following constraints:~%
  - When split to list of strings on #\\- delimter the list is of length is 5~%
  - The length of each string in the list matches the pattern 8-4-4-4-12~%
  - each string in the list satisfies `mon:string-all-hex-char-p'~%
-:EXAMPLE~%
- \(uuid-hex-string-36-p \"6ba7b810-9dad-11d1-80b4-00c04fd430c8\"\)~%
+:EXAMPLE~% 
+\(uuid-hex-string-36-p \"6ba7b810-9dad-11d1-80b4-00c04fd430c8\"\)~%
  \(uuid-hex-string-36-p \"6BA7B810-9DAD-11D1-80B4-00C04FD430C8\"\)~%~@
 ;; Following fails successfully:~%
  \(uuid-hex-string-36-p \"6BA7B810--9DAD-11D1-80B4-00C04FD430C8\"\)~%~@
@@ -672,13 +1060,23 @@ and satisfies `mon:string-all-hex-char-p'.~%~@
  \(uuid-hex-string-32-p \(print-object *uuid-namespace-dns* nil\)\)~%~@
 :SEE-ALSO `dbc:uuid-hex-string-36', `dbc:uuid-hex-string-36-p'.~%►►►")
 
-(mon:fundoc 'uuid-byte-array-p
-"Wheter MAYBE-UUID-BYTE-ARRAY is of type `dbc:uuid-byte-array'.~%~@
-Return T when MAYBE-UUID-BYTE-ARRAY has the type signature:~%
+(mon:fundoc 'uuid-byte-array-16-p
+"Wheter MAYBE-UUID-BYTE-ARRAY-16 is of type `dbc:uuid-byte-array-16'.~%~@
+Return T when MAYBE-UUID-BYTE-ARRAY-16 has the type signature:~%
  \(simple-array \(unsigned-byte 8\) \(16\)\)~%~@
 :EXAMPLE~%~@
- \(uuid-byte-array-p \(uuid-to-byte-array *uuid-namespace-dns*\)\)~%~@
+ \(uuid-byte-array-16-p \(uuid-to-byte-array *uuid-namespace-dns*\)\)~%~@
 :SEE-ALSO `dbc:uuid-hex-string-36', `dbc:uuid-hex-string-36-p'.~%►►►")
+
+
+(mon:fundoc 'uuid-byte-array-20-p
+"Wheter MAYBE-UUID-BYTE-ARRAY-16 is of type `dbc:uuid-byte-array-20'.~%~@
+Return T when MAYBE-UUID-BYTE-ARRAY-16 has the type signature:~%
+ \(simple-array \(unsigned-byte 8\) \(20\)\)~%~@
+:EXAMPLE~%
+ \(uuid-byte-array-20-p \(string-to-sha1-byte-array \"bubba\"\)\)~%~@
+:SEE-ALSO `dbc:uuid-hex-string-36', `dbc:uuid-hex-string-36-p'.~%►►►")
+
 
 (mon:fundoc 'uuid-byte-string-p
 "Whether object is of type `dbc:uuid-byte-string'.~%~@
@@ -686,7 +1084,7 @@ Return T when object has the type signature:~%
  \(simple-array character \(16\)\)~%~@
 :EXAMPLE~%
  \(uuid-byte-string-p \(uuid-get-bytes \(uuid-print-bytes nil *uuid-namespace-dns*\)\)\)~%~@
-:SEE-ALSO `dbc:uuid-hex-string-36-p', `dbc:uuid-byte-array-p'.~%►►►")
+:SEE-ALSO `dbc:uuid-hex-string-36-p', `dbc:uuid-byte-array-16-p'.~%►►►")
 
 (mon:fundoc 'make-uuid-from-string-if
 "Helper function for `dbc:make-uuid-from-string'.~%~@
@@ -789,8 +1187,8 @@ Signal an error if not.~%~@
 
 (mon:fundoc 'uuid-digest-uuid-string
   "Helper function producing an ironclad digest.~%~@
-Reutrn value is an object of type `dbc:uuid-byte-array' and will satisfy the
-precicate `dbc:uuid-byte-array-p'.~%~@
+Reutrn value is an object of type `dbc:uuid-byte-array-16' and will satisfy the
+precicate `dbc:uuid-byte-array-16-p'.~%~@
 DIGEST-VERSION is a symbol suitable for uase as an argument to
 `ironclad:make-digest'. It is is either :MD5 or :SHA1, and should satisfy
 `dbc::%verify-digest-version' an error is signalled if not.~%~@
@@ -857,9 +1255,9 @@ type `dbc:uuid-to-byte-array' and satisfy the predicate
 (mon:fundoc 'uuid-to-byte-array
   "Convert UUID to a byte-array.~%~@
 Arg UUID should be an instance of the UNIQUE-UNIVERSAL-IDENTIFIER class.~%~@
-Return value is an array of type `dbc:uuid-byte-array' with the type signature:~%
+Return value is an array of type `dbc:uuid-byte-array-16' with the type signature:~%
  \(simple-array \(unsigned-byte 8\) \(16\)\)~%~@
-It will satisfy the predicate `dbc:uuid-byte-array-p'.
+It will satisfy the predicate `dbc:uuid-byte-array-16-p'.
 :EXAMPLE~%~@
  \(uuid-to-byte-array *uuid-namespace-dns*\)~%~@
 :SEE-ALSO `dbc:uuid-from-byte-array'.~%►►►")

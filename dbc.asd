@@ -30,15 +30,17 @@
   :version "1.0.0"
   :depends-on (:cxml
 	       :closure-html
-	       :split-sequence
 	       :ironclad
+	       ;; :local-time
+	       ;; :drakma
                :mon
-	       
+               :mon-test
+               ;; :NTOE Following pulled in by :mon
+               ;; :flexi-streams 
+	       ;; :split-sequence
                ;; :alexandria
 	       ;; :cl-ppcre
-	       ;; :local-time
 	       ;; :cl-fad
-	       ;; :drakma
 	       )
 
   ;; :perform (load-op :after (op mon) (pushnew :mon *features*))
@@ -77,6 +79,7 @@
    ))
 
 (defmethod asdf:perform :after ((op asdf:load-op) (system (eql (asdf:find-system :dbc))))
+  (asdf:operate 'asdf:load-op 'dbc-test)
   (pushnew :dbc cl:*features*)
   (let ((chk-if (fad:file-exists-p 
                  (make-pathname :directory `(,@(mon:pathname-directory-system :dbc))
