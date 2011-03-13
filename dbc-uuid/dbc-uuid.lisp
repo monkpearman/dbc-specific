@@ -416,7 +416,7 @@
 (defmethod print-object ((id unique-universal-identifier) stream)
   ;;  "Print UNIQUE-UNIVERSAL-IDENTIFIER ID to to STREAM in string represenatation.
   ;;  (example string 6ba7b810-9dad-11d1-80b4-00c04fd430c8)"
-  (declare (type mon:stream-or-boolean stream))
+  ;;(declare (type mon:stream-or-boolean stream))
   (with-slots (%uuid_time-low 
                %uuid_time-mid
                %uuid_time-high-and-version
@@ -695,7 +695,7 @@
 (defun uuid-print-bytes (stream uuid)
   ;; :NOTE Incorporate following??? :
   ;; (mon:open-stream-output-stream-p stream :allow-booleans t :w-error t)
-  (declare (type mon:stream-or-boolean stream)
+  (declare ;;(type mon:stream-or-boolean stream)
            (type unique-universal-identifier uuid)
            (optimize (speed 3)))
   (with-slots (%uuid_time-low

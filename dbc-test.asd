@@ -1,5 +1,5 @@
 
-(defpackage #:mon-test-system (:use :common-lisp :asdf))
+(defpackage #:dbc-test-system (:use :common-lisp :asdf))
 
 (in-package #:dbc-test-system)
 
