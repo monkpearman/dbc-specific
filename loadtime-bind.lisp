@@ -15,12 +15,51 @@
 (setf *uuid-namespace-x500* (make-uuid-from-string "6ba7b814-9dad-11d1-80b4-00c04fd430c8"))
 ;;; ==============================
 
+
 ;; `*system-path*'
 (unless (not (null *system-path*))
   (setf *system-path* (make-instance 'system-path))
   (setf (system-base-path *system-path*) (find-system-path))
   (prog1 t (terpri))
   (system-described *system-path* t))
+
+;; `*system-tests-dir*' `*system-tests-temp-dir*'
+(let* ((dbc-test-base (asdf:system-source-directory (asdf:find-system :dbc-test)))
+       (test-dir (and dbc-test-base 
+                      (fad:directory-exists-p
+                       (merge-pathnames (make-pathname :directory '(:relative "dbc-tests"))
+                                        dbc-test-base))))
+       (test-temp-dir (and test-dir 
+                           (fad:directory-exists-p
+                            (merge-pathnames (make-pathname :directory '(:relative "tests"))
+                                             test-dir))))
+       (path-tree (list dbc-test-base test-dir test-temp-dir)))
+  (or 
+   (and (loop 
+           for paths in path-tree 
+           always (pathnamep paths))
+        (and (not (null dbc:*system-path*))
+             (stringp dbc::*system-tests-dir*)
+             (equal (mon:last-elt (pathname-directory (elt path-tree 0)))
+                    (mon:last-elt (pathname-directory (dbc:system-base-path dbc:*system-path*))))
+             (dbc:system-subdir-init-w-var 'dbc::*system-tests-dir*
+                                           :parent-path (elt path-tree 0)))
+        (when (and (typep dbc::*system-tests-dir* 'dbc:system-subdir)
+                   (dbc:sub-path dbc::*system-tests-dir*)
+                   (stringp dbc::*system-tests-temp-dir*)
+                   (string= (namestring (merge-pathnames 
+                                         (make-pathname :directory `(:relative ,dbc::*system-tests-temp-dir*))
+                                         (dbc:sub-path dbc::*system-tests-dir*)))
+                            (namestring (elt path-tree 2))))
+          (dotimes (i 3) (terpri))
+          (dbc:system-subdir-init-w-var 'dbc::*system-tests-temp-dir*
+                                        :parent-path (dbc:sub-path dbc::*system-tests-dir*))
+          (terpri)))
+   (warn "~%At loadtime a pathname did not satisfy `fad:directory-exists-p'~%~
+            declining to set value of variables:~% ~
+           `dbc:*system-tests-dir*' or `dbc:*system-tests-temp-dir*'~%~
+            got:~% ~S~%"
+         path-tree)))
 
 ;; `*xml-output-dir*'
 (and (not (null *system-path*))
@@ -32,7 +71,7 @@
 (progn
   ;; `*system-notes-dir*'
   (system-subdir-init-w-var '*system-notes-dir* 
-                      :parent-path (system-base-path *system-path*))
+                            :parent-path (system-base-path *system-path*))
   (when (sub-path *system-notes-dir*)
     ;; :NOTE `system-subdir-init-w-var' should take care of describing to *standard-output*
     ;; (system-described *system-notes-dir* nil)

@@ -43,6 +43,8 @@
              ;;
              ;;
              #:unique-universal-identifier
+             #:unique-universal-identifier-p
+             #:uuid-copy-uuid
              #:make-null-uuid
              #:make-v3-uuid
              #:make-v4-uuid
@@ -69,6 +71,7 @@
              #:make-uuid-from-string
              #:uuid-print-bytes
              #:uuid-get-bytes
+             #:uuid-number-to-byte-array
              ;; #:uuid-digest-uuid-string  ; INTERNAL
              ;; #:make-uuid-from-string-if ; INTERNAL
              ;; #:uuid-load-bytes          ; INTERNAL
@@ -76,8 +79,10 @@
              ;; #:%verify-digest-version   ; INTERNAL
              ;; #:%verify-version-3-or-5   ; INTERNAL
              ;; #:%uuid-get-bytes-if       ; INTERNAL
+             ;; #:%verify-slot-boundp-and-type ; INTERNAL 
              #:uuid-to-byte-array
              #:uuid-from-byte-array
+             #:uuid-princ-to-string
              #:format-uuid-as-urn
              #:make-uuid-namespace-loadtime-vars
              #:string-to-sha1-byte-array

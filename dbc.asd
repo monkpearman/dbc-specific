@@ -79,12 +79,12 @@
    ))
 
 (defmethod asdf:perform :after ((op asdf:load-op) (system (eql (asdf:find-system :dbc))))
-  (asdf:operate 'asdf:load-op 'dbc-test)
-  (pushnew :dbc cl:*features*)
   (let ((chk-if (fad:file-exists-p 
                  (make-pathname :directory `(,@(mon:pathname-directory-system :dbc))
                                 :name "loadtime-bind" :type "lisp"))))
-    (and chk-if (load  chk-if))))
+    (and chk-if (load  chk-if)))
+  (asdf:operate 'asdf:load-op 'dbc-test)
+  (pushnew :dbc cl:*features*))
 
 ;; (member :DBC cl:*features*)
 ;;  

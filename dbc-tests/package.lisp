@@ -11,6 +11,8 @@
   (:use #:common-lisp) ;; #:mon-test)
   (:export
    ;;
+ ;; dbc-tests/tests.lisp
+   #:system-test-temp-dir-exists-p
    ;;
  ;; dbc-tests/dbc-uuid-profile.lisp
    #:make-v5-uuid-test

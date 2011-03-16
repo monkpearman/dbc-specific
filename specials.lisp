@@ -17,6 +17,11 @@
 
 (defparameter *system-notes-dir*    "notes-versioned")
 
+(defparameter *system-tests-dir*   "dbc-tests") ;; the dir for dbc-tests package
+
+(defparameter *system-tests-temp-dir* "tests") ;; dir to write results of dbc-test:<TEST-FNCN> to
+
+
 
 ;;; ==============================
 ;; XML Parsing INPUT/OUTUPT paths and paths names
@@ -90,7 +95,7 @@
 
 (defparameter *uuid-namespace-dns*  nil) ;; (make-uuid-from-string "6ba7b810-9dad-11d1-80b4-00c04fd430c8")
 (defparameter *uuid-namespace-url*  nil) ;; (make-uuid-from-string "6ba7b811-9dad-11d1-80b4-00c04fd430c8")
-(defparameter *uuid-namespace-oid*  nil);; (make-uuid-from-string "6ba7b812-9dad-11d1-80b4-00c04fd430c8")
+(defparameter *uuid-namespace-oid*  nil) ;; (make-uuid-from-string "6ba7b812-9dad-11d1-80b4-00c04fd430c8")
 (defparameter *uuid-namespace-x500* nil) ;; (make-uuid-from-string "6ba7b814-9dad-11d1-80b4-00c04fd430c8")
 
 
