@@ -269,8 +269,13 @@
              #:number-to-french-hundred
              #:number-to-french-thousand
              #:number-to-french-big
-             #:number-to-french-big-designationp
+             #:number-to-french-big-designation
              ;;
+             ;;
+           ;; dbc-translate/dbc-french-dates.lisp
+              #:*french-weekday-names*
+              #:*french-month-names*
+              ;;
            ;; loadtime-bind.lisp
              ;;
 	    ))

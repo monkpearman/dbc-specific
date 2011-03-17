@@ -33,7 +33,7 @@
 ;; (asdf:system-relative-pathname 'dbc-test "dbc-tests/tests")
 ;; (asdf:find-component 
 ;; (asdf:component-name-to-pathname-components
-(let* ((dbc-test-base (asdf:system-source-directory (asdf:find-system :dbc-test)))
+(let* ((dbc-test-base (asdf:system-relative-pathname :dbc-test ""))
        (test-dir (and dbc-test-base 
                       (fad:directory-exists-p
                        (merge-pathnames (make-pathname :directory '(:relative "dbc-tests"))
@@ -51,9 +51,11 @@
              (stringp *system-tests-dir*)
              (equal (mon:last-elt (pathname-directory (elt path-tree 0)))
                     (mon:last-elt (pathname-directory (system-base-path *system-path*))))
-             (dotimes (i 3) (terpri))
-             (system-subdir-init-w-var '*system-tests-dir*
-                                       :parent-path (elt path-tree 0)))
+             (progn 
+               (dotimes (i 3) (terpri))
+               (system-subdir-init-w-var '*system-tests-dir*
+                                         :parent-path (elt path-tree 0))
+               t))
         (when (and (typep *system-tests-dir* 'dbc:system-subdir)
                    (sub-path *system-tests-dir*)
                    (stringp *system-tests-temp-dir*)
@@ -61,10 +63,12 @@
                                          (make-pathname :directory `(:relative ,*system-tests-temp-dir*))
                                          (sub-path *system-tests-dir*)))
                             (namestring (elt path-tree 2))))
-          (dotimes (i 3) (terpri))
-          (system-subdir-init-w-var '*system-tests-temp-dir*
-                                    :parent-path (sub-path *system-tests-dir*))
-          (terpri)))
+          (progn
+            (dotimes (i 3) (terpri))
+            (system-subdir-init-w-var '*system-tests-temp-dir* 
+                                      :parent-path (sub-path *system-tests-dir*))
+            (terpri)
+            t)))
    (warn "~%At loadtime a pathname did not satisfy `fad:directory-exists-p'~%~
             declining to set value of variables:~% ~
            `dbc:*system-tests-dir*' or `dbc:*system-tests-temp-dir*'~%~
@@ -75,7 +79,7 @@
 (and (not (null *system-path*))
      (system-path-xml-dump-dir-ensure)
      (setf (system-path-var-binding *xml-output-dir*) '*xml-output-dir*)
-     (prog1 t (terpri))
+     (prog1 t (terpri) (terpri))
      (system-described *xml-output-dir* t))
 
 (progn
@@ -90,6 +94,7 @@
     ;; `*xml-input-dir*'
     (system-subdir-init-w-var '*xml-input-dir*
                         :parent-path (sub-path *system-notes-dir*))
+    (terpri)
     ;; :NOTE `system-subdir-init-w-var' should take care of describing to *standard-output*
     ;; (when (sub-path *xml-input-dir*)
     ;;   (system-described *xml-input-dir* nil))
