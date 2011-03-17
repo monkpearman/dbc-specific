@@ -13,6 +13,8 @@
 	     ;; :VARIABLES
              #:*system-path*	     
              #:*system-notes-dir*
+             #:*system-tests-dir*
+             #:*system-tests-temp-dir*
 	     #:*xml-output-dir* 
              #:*xml-output-refs-name*          ;; ---> OUTPUT
              #:*xml-output-refs-ext*           ;; ---> OUTPUT
@@ -251,6 +253,23 @@
 	     ;; #:p/sax-integer-string       ;; `string-to-number'
 	     ;; #:p/sax-float-string         ;; `string-to-number'
 	     ;; #:p/sax-extract-tr
+             ;;
+             ;;
+           ;; dbc-translate/dbc-french-numbers.lisp
+             ;;
+             #:*number-to-french-below-20*
+             #:*number-to-french-tens*
+             #:*number-to-french-thousands*
+             #:*number-to-french-big-prefix*
+             #:*number-to-french-bof*
+             #:*number-to-french-denominators*
+             #:number-to-french
+             #:number-to-french-ordinal
+             #:number-to-french-ten
+             #:number-to-french-hundred
+             #:number-to-french-thousand
+             #:number-to-french-big
+             #:number-to-french-big-designationp
              ;;
            ;; loadtime-bind.lisp
              ;;

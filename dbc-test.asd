@@ -21,21 +21,6 @@
 (defmethod asdf:perform :after ((op asdf:load-op) (system (eql (asdf:find-system :dbc-test))))
   (pushnew :dbc-test cl:*features*))
 
-
-;; dbc-test path heirarchy:
-;;
-;; (let* ((dbc-test-base (asdf:system-source-directory (asdf:find-system :dbc-test)))
-;;        (test-dir (and dbc-test-base 
-;;                       (fad:directory-exists-p
-;;                        (merge-pathnames (make-pathname :directory '(:relative "dbc-tests"))
-;;                                         dbc-test-base))))
-;;        (test-temp-dir (and test-dir 
-;;                            (fad:directory-exists-p
-;;                             (merge-pathnames (make-pathname :directory '(:relative "tests"))
-;;                                              test-dir)))))
-;;   (list dbc-test-base test-dir test-temp-dir))
-  
-
 
 ;; Local Variables:
 ;; indent-tabs-mode: nil

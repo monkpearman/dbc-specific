@@ -1432,7 +1432,7 @@ Return value has the format:
  \(make-null-uuid\)~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
 
-(fundoc 'uuid-number-to-byte-array
+(mon:fundoc 'uuid-number-to-byte-array
 "Return NUMBER as if by `cl:values' a byte-array and the count of its elements.~%~@
 byte-array is in big-endian format with LSB as first elt and MSB as last elt.~%~@
 :EXAMPLE~%~@

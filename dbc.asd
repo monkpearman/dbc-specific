@@ -75,6 +75,9 @@
              (:file "dbc-xml-refs-parse")
 	    ;; (:file "psa-parse-table.lisp")
 	    ))
+   (:module "dbc-translate"
+            ((:file "dbc-french-numbers")
+             ))
    ;; (:file "loadtime-bind") ;; :SEE asdf:perform below
    ))
 

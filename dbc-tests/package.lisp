@@ -12,7 +12,7 @@
   (:export
    ;;
  ;; dbc-tests/tests.lisp
-   #:system-test-temp-dir-exists-p
+   #:system-test-temp-dir-exists-p ;; `fad:directory-exists-p'
    ;;
  ;; dbc-tests/dbc-uuid-profile.lisp
    #:make-v5-uuid-test

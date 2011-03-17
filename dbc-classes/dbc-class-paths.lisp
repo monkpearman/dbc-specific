@@ -11,14 +11,38 @@
 ;;; :GENERIC-FUNCTIONS
 ;;; ==============================
 
-(defgeneric system-base-path (dbc-system))
+(defgeneric system-base-path (dbc-system)
+  (:documentation 
+   #.(format nil
+"Access the class allocated slot value `system-path' of DBC-SYSTEM.~%~@
+The value of the `system-path' slot affects _all_ instances of `system-path' and~@
+subclassed instances.
+User code should not specialize methods on this function use system-path instead.")))
 
 (defgeneric (setf system-base-path) (path dbc-system)
   (:documentation 
    #.(format nil
-             "Set PATH for DBC-SYSTEM.~%~@
-              Bind the class allocated slot system-path for instances of `system-path' and~@
-             subclasses.")))
+"Set class allocated slot `system-path' to PATH for DBC-SYSTEM.~%~@
+Setting the `system-path' slot affects _all_ instances of `system-path' class and
+subclassing instances.~%~@
+The intent is that this slot be bound _once_ at system loadtime.
+IOW not intendend for user code method specializers!")))
+
+(defgeneric system-path (dbc-system)
+  (:documentation 
+   #.(format nil
+             "Access the class allocated slot value `system-path' of DBC-SYSTEM.~%~@
+The value of the the `system-path' slot affects _all_ instances of `system-path' and~@
+subclassed instances. It is not intendend that this slot be setfable.
+User code should specialize methods on this function.")))
+
+;; :SEE (URL `http://paste.lisp.org/+2L12/1')
+(defgeneric (setf system-path) (var dbc-system)
+  (:documentation 
+   #.(format nil
+"A no-op when attempting to set class allocated slot value `system-path' of DBC-SYSTEM.~%~@
+The value of the the `system-path' slot affects _all_ instances of `system-path' and~@
+subclassed instances. It is not intendend that this slot be directly setfable!")))
 
 (defgeneric system-described  (obj stream)
   (:documentation "Describer for instances of subclasses of `system-base'." ))
@@ -93,6 +117,23 @@
 
 (defmethod (setf system-base-path) (path (system system-path))
   (setf (slot-value system 'system-path) path))
+
+(defmethod system-path ((system system-path))
+  (system-base-path system))
+
+;; Make sure a primary (setf system-path) method exists or SBCL complains:
+;; There is no primary method for the generic function {...}
+;; [Condition of type SB-PCL::NO-PRIMARY-METHOD]
+(defmethod (setf system-path) (path (system system-path))
+  path)
+
+;; Don't violate expectations of the `setf' protocol.
+;; The (setf system-path) :around method should return PATH.
+(defmethod (setf system-path) :around (path (system system-path))
+  ;; (declare (ignore path))
+  (progn 
+    (setf (slot-value system 'system-path) (slot-value system 'system-path))
+    path))
 
 (defmethod system-path-var-binding ((obj system-subdir))
   (slot-value obj 'var-name))

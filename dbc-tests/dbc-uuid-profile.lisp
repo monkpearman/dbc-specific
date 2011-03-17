@@ -7,13 +7,6 @@
 
 ;; *package*
 
-;; :NOTE The dbc package defines the parameters `dbc:*system-tests-dir*' and
-;; `dbc:*system-tests-temp-dir*' at loadtime and sets them to instances of
-;; `dbc:system-subdir' a system relative path at loadtime.
-;;  The `cl:pathname-directory' of each is accessible with:
-;;  (dbc:sub-path dbc::*system-tests-dir*)
-;;  (dbc:sub-path dbc::*system-tests-temp-dir*)
-
 (defun make-v5-uuid-test (n namespace)
   ;; :USAGE (dbc:make-v5-uuid-test 3 dbc:*uuid-namespace-dns* t)
 
@@ -95,25 +88,22 @@
 ;; (uuid-get-namespace-bytes-TEST *uuid-namespace-oid*)
 ;; (uuid-get-namespace-bytes-TEST *uuid-namespace-x500*)
 ;;
-;;
 
-  
-(and (pathnamep (dbc:sub-path dbc::*system-tests-temp-dir*))
 
-(let ((gthr '())
-      (pthnm (merge-pathnames (make-pathname :name "1000-uuids") 
-                              (dbc:sub-path dbc::*system-tests-temp-dir*))
-              )))
+;; (let ((gthr '())
+;;       (pthnm (merge-pathnames (make-pathname :name "1000-uuids") 
+;;                               (dbc:sub-path dbc::*system-tests-temp-dir*))
+;;               )))
 
-  (setf gthr 
-        (loop
-           repeat 10000 
-           collect (nth-value 1 (sb-ext:get-time-of-day))))
-  (setf gthr (sort gthr #'>))
-  (with-file-overwritten (s pthnm)
-    (loop 
-       for num in gthr
-       do (print num s))))
+;;   (setf gthr 
+;;         (loop
+;;            repeat 10000 
+;;            collect (nth-value 1 (sb-ext:get-time-of-day))))
+;;   (setf gthr (sort gthr #'>))
+;;   (with-file-overwritten (s pthnm)
+;;     (loop 
+;;        for num in gthr
+;;        do (print num s))))
 
 
 

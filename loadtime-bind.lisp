@@ -23,7 +23,16 @@
   (prog1 t (terpri))
   (system-described *system-path* t))
 
+;; so what is the asdf magic for simple locating the 
+;; basically i have a top-level loadtime form that _was_ doing this:
+;;  (asdf:system-source-directory (asdf:find-system :FOO-test))
+;; That form is inside a file loadtime-bind.lisp that is loaded inside and asdf:perform :after
 ;; `*system-tests-dir*' `*system-tests-temp-dir*'
+;; (asdf:system-relative-pathname 'dbc-test "dbc-tests/tests" :type "lisp")
+;; (make-pathname :directory '(:relative "dbc-tests" "tests"))
+;; (asdf:system-relative-pathname 'dbc-test "dbc-tests/tests")
+;; (asdf:find-component 
+;; (asdf:component-name-to-pathname-components
 (let* ((dbc-test-base (asdf:system-source-directory (asdf:find-system :dbc-test)))
        (test-dir (and dbc-test-base 
                       (fad:directory-exists-p
@@ -38,22 +47,23 @@
    (and (loop 
            for paths in path-tree 
            always (pathnamep paths))
-        (and (not (null dbc:*system-path*))
-             (stringp dbc::*system-tests-dir*)
+        (and (not (null *system-path*))
+             (stringp *system-tests-dir*)
              (equal (mon:last-elt (pathname-directory (elt path-tree 0)))
-                    (mon:last-elt (pathname-directory (dbc:system-base-path dbc:*system-path*))))
-             (dbc:system-subdir-init-w-var 'dbc::*system-tests-dir*
-                                           :parent-path (elt path-tree 0)))
-        (when (and (typep dbc::*system-tests-dir* 'dbc:system-subdir)
-                   (dbc:sub-path dbc::*system-tests-dir*)
-                   (stringp dbc::*system-tests-temp-dir*)
+                    (mon:last-elt (pathname-directory (system-base-path *system-path*))))
+             (dotimes (i 3) (terpri))
+             (system-subdir-init-w-var '*system-tests-dir*
+                                       :parent-path (elt path-tree 0)))
+        (when (and (typep *system-tests-dir* 'dbc:system-subdir)
+                   (sub-path *system-tests-dir*)
+                   (stringp *system-tests-temp-dir*)
                    (string= (namestring (merge-pathnames 
-                                         (make-pathname :directory `(:relative ,dbc::*system-tests-temp-dir*))
-                                         (dbc:sub-path dbc::*system-tests-dir*)))
+                                         (make-pathname :directory `(:relative ,*system-tests-temp-dir*))
+                                         (sub-path *system-tests-dir*)))
                             (namestring (elt path-tree 2))))
           (dotimes (i 3) (terpri))
-          (dbc:system-subdir-init-w-var 'dbc::*system-tests-temp-dir*
-                                        :parent-path (dbc:sub-path dbc::*system-tests-dir*))
+          (system-subdir-init-w-var '*system-tests-temp-dir*
+                                    :parent-path (sub-path *system-tests-dir*))
           (terpri)))
    (warn "~%At loadtime a pathname did not satisfy `fad:directory-exists-p'~%~
             declining to set value of variables:~% ~

@@ -17,21 +17,20 @@
 
 (defparameter *system-notes-dir*    "notes-versioned")
 
-(defparameter *system-tests-dir*   "dbc-tests") ;; the dir for dbc-tests package
+(defparameter *system-tests-dir*      "dbc-tests") ;; the dir for dbc-tests package
 
 (defparameter *system-tests-temp-dir* "tests") ;; dir to write results of dbc-test:<TEST-FNCN> to
-
 
 
 ;;; ==============================
 ;; XML Parsing INPUT/OUTUPT paths and paths names
 ;; `*system-notes-dir*'
-;; `*xml-output-dir*'                   ---> OUTPUT
+;; `*xml-output-dir*'              ---> OUTPUT
 ;; `*xml-output-refs-name*'        ---> OUTPUT
 ;; `*xml-output-refs-ext*'         ---> OUTPUT
-;; `*xml-input-dir*'                 <--- INPUT
-;; `*xml-input-refs-name*'           <--- INPUT
-;; `*xml-input-refs-name-temp*' <--- INPUT
+;; `*xml-input-dir*'               <--- INPUT
+;; `*xml-input-refs-name*'         <--- INPUT
+;; `*xml-input-refs-name-temp*'    <--- INPUT
 ;; 
 
 ;;; ---> PARSED OUTPUT
@@ -112,6 +111,51 @@ An instance of the system-path class holds the class allocated slot system-path
           \(class-name \(find-class 'system-path\)\)\)
      \(system-base-path *system-path*\)\)~%~@
 :SEE-ALSO `dbc:system-path'.~%►►►"))
+
+;;; ==============================
+;;; :SPECIALS-DBC-TEST-PATHS-DOCUMENTATION
+;;; ==============================
+
+(setf (documentation '*system-tests-dir* 'variable)
+      #.(format nil
+"Initially set to the string \"dbc-tests\".~%~@
+The dbc package defines this parameter and `dbc:*system-tests-temp-dir*' in
+:FILE dbc-specific/specials.lisp~%~@
+Its value is set at loadtime from :FILE dbc-specific/loadtime-bind.lisp~%~@
+Once set the parameter is an instance of `dbc:system-subdir' with a parent-path
+as if by the return value of `dbc:find-system-path', e.g.:~%
+ \(equal \(dbc:parent-path dbc:*system-tests-dir*\)
+        \(dbc:find-system-path\)\)~%~@
+Its pathname is accessible with the `dbc:sub-path' accessor.~%~@
+:EXAMPLE~%
+  \(dbc:sub-path dbc:*system-tests-dir*\)~%
+  \(pathname-directory \(dbc:sub-path dbc:*system-tests-dir*\)\)~%~@
+:SEE-ALSO `<XREF>'.~%►►►"))
+
+(setf (documentation '*system-tests-temp-dir* 'variable)
+      #.(format nil
+"Initially set to the string \"tests\".
+The dbc package defines this parameter and `dbc:*system-tests-temp-dir*' in
+:FILE dbc-specific/specials.lisp~%~@
+Its value is set at loadtime from :FILE dbc-specific/loadtime-bind.lisp~%~@
+Once set the parameter is an instance of `dbc:system-subdir' with a parent-path
+relative to `dbc:*system-tests-dir*' which has a parent-path relative to return
+value of `dbc:find-system-path', e.g.:~%
+ \(equal \(find-system-path\)
+   \(and \(equal 
+         \(dbc:parent-path dbc::*system-tests-temp-dir*\)
+         \(dbc:sub-path dbc::*system-tests-dir*\)\)
+        \(slot-value dbc::*system-tests-temp-dir* 'system-path\)\)\)~%~@
+Its pathname is accessible with the `dbc:sub-path' accessor.~%~@
+:EXAMPLE~%
+  \(dbc:sub-path dbc::*system-tests-temp-dir*\)~%
+  \(pathname-directory \(dbc:sub-path dbc::*system-tests-temp-dir*\)\)~%~@
+:SEE-ALSO `<XREF>'.~%►►►"))
+
+
+;;; ==============================
+;;; :SPECIALS-XML-PATHS-DOCUMENTATION
+;;; ==============================
 
 (setf (documentation '*xml-output-dir* 'variable)
       #.(format nil
@@ -221,5 +265,12 @@ May be used for generating UUIDv3 and UUIDv5.~%~@
 :SEE-ALSO `dbc:make-v3-uuid', `dbc:make-v5-uuid', `dbc:make-v4-uuid'.~%►►►"))
 
 
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; show-trailing-whitespace: t
+;; mode: lisp-interaction
+;; package: dbc
+;; End:
+
 ;;; ==============================
 ;;; EOF
