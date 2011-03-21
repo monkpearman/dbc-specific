@@ -73,6 +73,7 @@
              #:make-uuid-from-string
              #:uuid-print-bytes
              #:uuid-get-bytes
+             #:uuid-get-bytes-for-integer
              #:uuid-number-to-byte-array
              ;; #:uuid-digest-uuid-string  ; INTERNAL
              ;; #:make-uuid-from-string-if ; INTERNAL
@@ -133,6 +134,13 @@
            ;; dbc-classes/dbc-class-users.lisp
              ;;
              #:base-user
+             ;;
+             ;;
+           ;; dbc-classes/dbc-class-entity.lisp
+             #:base-entity
+             #:base-category-entity
+             #:base-theme-entity
+             #:base-naf-entity
              ;;
            ;; dbc-classes/dbc-class-description.lisp
              ;;

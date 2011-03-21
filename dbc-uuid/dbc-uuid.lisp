@@ -233,7 +233,7 @@
 
 (deftype uuid-ub48 ()
   ;; (48 bits, #xFFFFFFFFFFFF, 281474976710655, #o7777777777777777, #b111111111111111111111111111111111111111111111111)
-  ;; 6 octets 
+  ;; 6 octets
  '(unsigned-byte 48))
 
 (deftype uuid-ub32 ()
@@ -277,6 +277,14 @@
 
 (deftype uuid-hex-string-36 ()
   '(and uuid-string-36 (satisfies uuid-hex-string-36-p)))
+
+(defmacro uuid-get-bytes-for-integer (unsigned-integer)
+  (declare (optimize (speed 3)))
+  `(ecase (integer-length ,unsigned-integer)
+     (,(mon:number-sequence 0  8)    1)
+     (,(mon:number-sequence 9  16)   2)
+     (,(mon:number-sequence 17 32)   4)
+     (,(mon:number-sequence 33 48)   6)))
 
 (defun uuid-string-32-p (maybe-uuid-string-32)
   (typep maybe-uuid-string-36 'uuid-string-32))
@@ -519,17 +527,7 @@
        :do (setf ret-val (dpb (aref  byte-array i) (byte byte-size (* pos byte-size)) ret-val)))
     ret-val))
 
-(defun uuid-number-to-byte-array (number)
-  ;; :FIXME this should return 6 elements array but returns only 5. 
-  ;;  (uuid-number-to-byte-array 825973027016) 
-  ;; the 0 elt should be the integer 0 such that:
-  ;; (request-integer #(0 192 79 212 48 200) 0 6)
-  ;; ;=> 825973027016
-  ;; currently without the 6 elt array uuid-get-namespace-bytes will return a 15 _not_ 16 elt array
-  ;;
-  ;; Return as if by cl:values a byte-array and the count of its elements.
-  ;; byte-array is in big-endian format with LSB as first elt and MSB as last elt.
-  ;;
+(defun uuid-number-to-byte-array (num)  ; &optional number-type)
   ;; (slot-value *uuid-namespace-dns* '%uuid_node) ;=> 825973027016
   ;; (logand 825973027016 255)          ;=> 200
   ;; (logand (ash 825973027016 -8) 255) ;=> 48
@@ -537,16 +535,22 @@
   ;; (logand (ash 12603348 -8) 255)     ;=> 79
   ;; (logand (ash 49231 -8) 255)        ;=> 192
   ;; (ash 192 -8)                       ;=> 0
-  (if (zerop number)
+  (declare (number num))
+  (if (zerop num)
       (values (make-array 1 :element-type 'uuid-ub8 :initial-contents (list 0)) 1)
       (loop
-         :for val = number :then (ash val -8)
-	 :for count :from 0 :until (zerop val)
+         ;; :NOTE the type-cnt verification is b/c if loop's count does :until (zerop val)
+         ;; then (uuid-number-to-byte-array 825973027016) was returning a 5 element array
+         ;;
+         :with type-cnt = (uuid-get-bytes-for-integer num)
+         :for val = num :then (ash val -8)
+         :for count :from 0 below type-cnt 
          ;; Knock down all 1 bits above 255 to 0 ;; #XFF -> 255
-	 :collect (logand val #XFF) :into bits 
+         :collect (logand val #XFF) :into bits
          :finally (return (values (make-array count 
                                               :element-type 'uuid-ub8 
-                                              :initial-contents (nreverse bits))
+                                              :initial-contents  (nreverse bits))
+                                  ;; type-cnt
                                   count)))))
 
 (defun uuid-get-namespace-bytes (uuid)
@@ -588,7 +592,20 @@
                                    :initial-contents rslt)))))
 
 ;; (uuid-get-namespace-bytes *uuid-namespace-dns*)
+;; (uuid-get-namespace-bytes (make-v4-uuid))
+;; 
+;; following is the proof:
 
+;; (let ((new-nmspc (make-v4-uuid)))
+;;   (list (uuid-get-namespace-bytes (make-v5-uuid new-nmspc "bubba"))
+;;         (ironclad:ascii-string-to-byte-array (uuid-get-bytes (uuid-print-bytes nil (make-v5-uuid new-nmspc "bubba"))))))
+;;
+;; => (#(27 38 0 193 81 202 82 186 187 104 105 188 142 176 0 123)
+;;     #(27 38 0 193 81 202 82 186 187 104 105 188 142 176 0 123))
+;; (uuid-get-namespace-bytes (make-v5-uuid *uuid-namespace-dns* "bubba"))
+;; => #(238 161 16 94 54 129 81 23 153 182 123 43 95 225 243 199)
+;; (ironclad:ascii-string-to-byte-array (uuid-get-bytes (uuid-print-bytes nil (make-v5-uuid *uuid-namespace-dns* "bubba"))))
+;; => #(238 161 16 94 54 129 81 23 153 182 123 43 95 225 243 199)
 
 
 (defun uuid-print-bytes (stream uuid)

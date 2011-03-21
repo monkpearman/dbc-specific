@@ -35,12 +35,11 @@
 ;; `hundred-to-french' -> `number-to-french-hundred'
 ;; `thousand-to-french'-> `number-to-french-thousand'
 ;; `big-to-french'     -> `number-to-french-big'
-;; `big-designationp'  -> `number-to-french-big-designation'
+;; `big-designation'  -> `number-to-french-big-designation'
 ;;
 ;; :ADDED type declarations
 ;;
 ;; :WAS (in-package #:com.hexstreamsoft.bigname)
-
 ;; 
 ;; `number-to-french' and `number-to-french-ordinal' in com.hexstreamsoft.bigname
 ;; depend on`with-output-to-string-or-stream' from com.hexstreamsoft.lib  / lib.lisp 
@@ -128,6 +127,7 @@
       (write-char #\Space stream)
       (number-to-french rest stream))))
 
+;;; :NOTE There is apparently a bug in this per Hexstream on ERC
 (defun number-to-french-big-designation (zeroes stream)
   (declare ((simple-vector 9)  *number-to-french-thousands*))
   (let ((groups (floor zeroes 3)))
@@ -145,7 +145,7 @@
 	 (rest (- number (* main lion))))
     (number-to-french main stream)
     (write-char #\Space stream)
-    (big-designation zeroes stream)
+    (number-to-french-big-designation zeroes stream)
     (if (> main 1)
 	(write-char #\s stream))
     (when (not (zerop rest))

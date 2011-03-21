@@ -18,7 +18,7 @@
 ;;; :FRENCH-DATES-VARIABLE-DOCUMENTATION
 ;;; ==============================
 
-(setf (documentation '*french-weekday-names* 'variable
+(setf (documentation '*french-weekday-names* 'variable)
       #.(format nil
 "(simple-vector 7)~%~@
 :EXAMPLE~%

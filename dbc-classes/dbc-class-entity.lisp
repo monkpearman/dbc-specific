@@ -1,11 +1,28 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-03-04T21:25:30-05:00Z}#{11095} - by MON>
-;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-classes/dbc-class-entity.lisp
+;;; :FILE dbc-classes/dbc-class-entity.lisp
 ;;; ==============================
 
 
 ;;; ==============================
-;;; :NOTE
+;;; :NOTE C-P-L for DBC entities
+;;; base-dbc
+;;; - base-entity
+;;; -- base-category-entity
+;;; -- base-theme-entity
+;;; -- base-naf-entity
+;;;     _________________ Below should have their own files
 ;;;
+;;; --- naf-entity-person
+;;; --- naf-entity-artist
+;;; --- naf-entity-author
+;;; --- naf-entity-brand
+;;; --- naf-entity-publication 
+;;;
+;;; --- naf-entity-publisher ???
+;;; --- naf-entity-linnaean  ???
+;;; --- naf-entity-location  ???
+;;; --- 
+;; 
 ;;; ==============================
 
 
@@ -17,7 +34,30 @@
 (defclass base-entity (base-dbc)
   ()
   (:documentation 
-   #.(format nil "Base class for referencing dbc system entites.")))
+   #.(format nil 
+             "Base class for referencing DBC system entites.~%~@
+An entity is a \"non-abstract\" object capable of being represented by the DBC
+ system.~%~@
+An object is not abstract if it represents an object knowable outside the~%~
+context of the DBC system.~%~@
+For an object to be characterized as of this type it should be a known~%~
+referenceable in common nomenclature or the nomenclature of its primary
+external domain.~%")))
+
+(defclass base-theme-entity (base-entity)
+  ()
+  (:documentation 
+   #.(format nil "Base class for referencing DBC system theme entites.")))
+
+(defclass base-category-entity (base-entity)
+  ()
+  (:documentation 
+   #.(format nil "Base class for referencing DBC system category entites.")))
+
+(defclass base-naf-entity (base-entity)
+  ()
+  (:documentation 
+   #.(format nil "Base class for referencing DBC system NAF entites.")))
 
 
 ;; 

@@ -16,6 +16,22 @@
 ;;; ==============================
 ;;; :FUNCTIONS
 ;;; ==============================
+
+;; :SOURCE quicklisp/quicklisp/dist.lisp :WAS `config-file-initargs'
+;; Modeled after `config-file-initargs' but use functions frome mon: package instead of quicklisp centric ones.
+;; Useful for reading in key value pairs from file by line use `mon:make-keyword-sanely'
+;; (defun read-key-val-args-from-file (file)
+;;   (let ((key-val-prs '())) 
+;;     (for-each-line (line file)
+;;       (unless (ignorable-line line)
+;;         (destructure-line (key-word val)
+;;             line
+;;           (let ((keyword (initarg-keyword (string-right-trim ":" key-word))))
+;;             (push value key-val-pr)
+;;             (push keyword key-val-pr)))))
+;;     key-val-prs))
+
+;;; ==============================
 ;; alexandria:symbolicate alexandria:format-symbol alexandria:make-keyword
 (defun make-parsed-class-slot-init-accessor-name (named-class parsed-field &optional prefix-initarg-w)
   ;; (make-parsed-class-slot-init-accessor-name "parsed-fef" "keyword_type" "INIT")
@@ -53,7 +69,8 @@
 ;;  <slot> :initarg <ACCESSOR> 
 ;; symbols for <CLASS> in <PACKAGE> 
 ;; Define classe _AFTER_ pushing the return  values onto a hashtable.
-
+;;
+;; :NOTE Use `mon:string-case' for this.
 
 
 ;;; ==============================
