@@ -50,28 +50,28 @@
 (in-package #:dbc)
 ;; *package*
 
-(defparameter *number-to-french-below-20*
+(defconst* *number-to-french-below-20* (simple-vector 20)
   #("zéro" "un" "deux" "trois" "quatre" "cinq"
     "six" "sept" "huit" "neuf"
     "dix" "onze" "douze" "treize" "quatorze" "quinze"
     "seize" "dix-sept" "dix-huit" "dix-neuf"))
 
-(defparameter *number-to-french-tens*
+(defconst* *number-to-french-tens* (simple-vector 10)
   #("zéro" "dix" "vingt" "trente" "quarante" "cinquante" 
     "soixante" "soixante-dix" "quatre-vingt" "quatre-vingt-dix"))
 
-(defparameter *number-to-french-thousands*
+(defconst* *number-to-french-thousands* (simple-vector 9)
   #("m" "b" "tr" "quatr" "quint" "sext" "sept"  "oct" "non"))
 
-(defparameter *number-to-french-denominators*
+(defconst* *number-to-french-denominators* (simple-vector 3)
   #("demi" "tiers" "quart"))
 
 ;; :NOTE doesn't apear to be getting used:
-(defparameter *number-to-french-big-prefix*
+(defconst* *number-to-french-big-prefix* (simple-vector 10)
   #("" "un" "duo" "tre" "quattuor" "quin" "sex" "septen" "octo" "novem"))
 
 ;; :NOTE doesn't apear to be getting used:
-(defparameter *number-to-french-bof*
+(defconst* *number-to-french-bof* (simple-vector 9)
   #("dec" "vi" "tri" "quadra" "quinqua" "sexa" "septua" "octo" "nona"))
 
 (defun number-to-french-ten (number stream)
@@ -208,8 +208,7 @@
 ;;; :FRENCH-NUMBERS-VARIABLES-DOCUMENTATION
 ;;; ==============================
 
-(setf (documentation '*number-to-french-below-20* 'variable)
-      #.(format nil
+(vardoc '*number-to-french-below-20*
 "Of type: \(simple-vector 20\)~%~@
 :EXAMPLE~%
  \(type-of *number-to-french-below-20*\)~%
@@ -217,10 +216,9 @@
 :SEE-ALSO `number-to-french-ten', `*number-to-french-below-20*',
 `*number-to-french-tens*', `*number-to-french-thousands*',
 `*number-to-french-big-prefix*' `*number-to-french-bof*',
-`*number-to-french-denominators*'.~%►►►"))
+`*number-to-french-denominators*'.~%►►►")
 
-(setf (documentation '*number-to-french-tens* 'variable)
-      #.(format nil
+(vardoc '*number-to-french-tens*
 "Of type: \(simple-vector 10\)~%~@
 :EXAMPLE~%
  \(type-of *number-to-french-tens*\)~%
@@ -228,10 +226,9 @@
 :SEE-ALSO `number-to-french-ten', `number-to-french-hundred',
 `*number-to-french-below-20*', `*number-to-french-tens*',
 `*number-to-french-thousands*', `*number-to-french-big-prefix*'
-`*number-to-french-bof*', `*number-to-french-denominators*'.~%►►►"))
+`*number-to-french-bof*', `*number-to-french-denominators*'.~%►►►")
 
-(setf (documentation '*number-to-french-thousands* 'variable)
-      #.(format nil
+(vardoc '*number-to-french-thousands*
 "Of type: \(simple-vector 9\)~%~@
 :EXAMPLE~%
  \(type-of *number-to-french-thousands*\)~%
@@ -240,10 +237,9 @@
 `number-to-french-thousand', `*number-to-french-below-20*',
 `*number-to-french-tens*', `*number-to-french-thousands*',
 `*number-to-french-big-prefix*', `*number-to-french-bof*',
-`*number-to-french-denominators*'.~%►►►"))
+`*number-to-french-denominators*'.~%►►►")
 
-(setf (documentation '*number-to-french-big-prefix* 'variable)
-      #.(format nil
+(vardoc '*number-to-french-big-prefix*
 "Of type: \(simple-vector 10\)~%~@
 :EXAMPLE~%
  \(type-of *number-to-french-big-prefix*\)~%
@@ -251,34 +247,32 @@
 :SEE-ALSO `number-to-french-big', `number-to-french-big-designation',
 `*number-to-french-below-20*', `*number-to-french-tens*',
 `*number-to-french-thousands*', `*number-to-french-big-prefix*',
-`*number-to-french-bof*', `*number-to-french-denominators*'.~%►►►"))
+`*number-to-french-bof*', `*number-to-french-denominators*'.~%►►►")
 
-(setf (documentation '*number-to-french-bof* 'variable)
-      #.(format nil
+(vardoc '*number-to-french-bof*
 "Of type: \(simple-vector 9\)~%~@
 :EXAMPLE~%
  \(type-of *number-to-french-bof*\)~%
  \(svref *number-to-french-bof* 8\)~%~@
 :SEE-ALSO `*number-to-french-below-20*', `*number-to-french-tens*',
 `*number-to-french-thousands*', `*number-to-french-big-prefix*',
-`*number-to-french-bof*', `*number-to-french-denominators*'.~%►►►"))
+`*number-to-french-bof*', `*number-to-french-denominators*'.~%►►►")
 
-(setf (documentation '*number-to-french-denominators* 'variable)
-      #.(format nil
+(vardoc '*number-to-french-denominators*
 "Of type: \(simple-vector 3\)~%~@
 :EXAMPLE~%
  \(type-of *number-to-french-denominators*\)~%
  \(svref *number-to-french-denominators* 2\)~%~@
 :SEE-ALSO `*number-to-french-below-20*', `*number-to-french-tens*',
 `*number-to-french-thousands*', `*number-to-french-big-prefix*'
-`*number-to-french-bof*', `*number-to-french-denominators*'.~%►►►"))
+`*number-to-french-bof*', `*number-to-french-denominators*'.~%►►►")
 
 
 ;;; ==============================
 ;;; :FRENCH-NUMBERS-FUNCTIONS-DOCUMENTATION
 ;;; ==============================
 
-(mon:fundoc 'number-to-french
+(fundoc 'number-to-french
 " <DOCSTR> ~%~@
 :EXAMPLE~%~@
  \(number-to-french -132894362727827234/19837298127\)~%
@@ -286,7 +280,7 @@
 `number-to-french-hundred', `number-to-french-thousand', `number-to-french-big',
 `number-to-french-big-designation', `number-to-french-ordinal'.~%►►►")
 
-(mon:fundoc 'number-to-french-ten
+(fundoc 'number-to-french-ten
 " <DOCSTR> ~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
@@ -295,7 +289,7 @@
 `number-to-french-big-designation', `number-to-french-ordinal',
 `*number-to-french-below-20*', `*number-to-french-tens*'.~%►►►")
 
-(mon:fundoc 'number-to-french-hundred
+(fundoc 'number-to-french-hundred
 " <DOCSTR> ~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
@@ -304,7 +298,7 @@
 `number-to-french-big-designation', `number-to-french-ordinal',
 `*number-to-french-denominators*'.~%►►►")
 
-(mon:fundoc 'number-to-french-thousand
+(fundoc 'number-to-french-thousand
 " <DOCSTR> ~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
@@ -313,7 +307,7 @@
 `number-to-french-big-designation', `number-to-french-ordinal',
 `*number-to-french-thousands*'.~%►►►")
 
-(mon:fundoc 'number-to-french-big
+(fundoc 'number-to-french-big
 " <DOCSTR> ~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
@@ -322,7 +316,7 @@
 `number-to-french-big-designation', `number-to-french-ordinal',
 `*number-to-french-big-prefix*'.~%►►►")
 
-(mon:fundoc 'number-to-french-big-designation
+(fundoc 'number-to-french-big-designation
 " <DOCSTR> ~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
@@ -331,7 +325,7 @@
 `number-to-french-big-designation', `number-to-french-ordinal',
 `*number-to-french-big-prefix*'.~%►►►")
 
-(mon:fundoc 'number-to-french-ordinal
+(fundoc 'number-to-french-ordinal
 " <DOCSTR> ~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@

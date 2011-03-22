@@ -1,10 +1,9 @@
-
 ;;; :FILE ../dbc-specific/dbc-parse/dbc-xml-sql-parse.lisp
 ;;; ==============================
 
-
 
 (in-package #:dbc)
+;; *package*
 
 ;;; ==============================
 ;;; :REQUIRES klacks:peek klacks:with-open-source
@@ -110,7 +109,7 @@
 ;;; ==============================
 
 
-(mon:fundoc  'field-table-parse-out
+(fundoc  'field-table-parse-out
   "Return parsed results for MySQL xml dump file SQL-XML-DMP.~%
 SQL-XML-DMP becomes a source as if by `klacks:with-open-source'.~%
 It is a pathname or variable suitable for use with `cxml:make-source' e.g.:~%
@@ -122,7 +121,7 @@ return:~%
  :FIELD-NAME field-value~%
 :SEE-ALSO `field-table-parse-out', `field-str-cons', `field-cln-x'.~%►►►")
 
-(mon:fundoc 'field-parse-attribs
+(fundoc 'field-parse-attribs
 "Map the attributes of the current klacks event.
 CURR-SRC is a klacks-source as per return value of `cxml:make-source'
 The current klacks event should be `:START-EVENT`, e.g. 
@@ -141,6 +140,15 @@ If so retrun value is a list of elements each the form:~%
 :NOTE Like `klacks:list-attributes' but does not return a structure object.~%~@
 :SEE-ALSO `klacks:map-attributes'.~%►►►")
 
+;;; ==============================
+
+
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; show-trailing-whitespace: t
+;; mode: lisp-interaction
+;; package: dbc
+;; End:
 
 
 ;;; ==============================

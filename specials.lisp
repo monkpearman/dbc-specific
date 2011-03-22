@@ -60,12 +60,6 @@
 ;; (mon:class-name-of (format nil "~S" (class-name (find-class 'parsed-ref)))
 ;; "parsed-ref"
 ;; (class
-(setf (documentation '*parsed-ref-class-name* 'variable)
-      #.(format nil
-"String naming the class \"PARSED-REF\"
-:EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%►►►"))
 
 (defparameter *xml-refs-match-table* nil)
 
@@ -102,22 +96,20 @@
 ;;; :SPECIALS-DOCUMENTATION
 ;;; ==============================
 
-(setf (documentation '*system-path* 'variable)
-      #.(format nil
+(vardoc '*system-path*
 "The base dbc-sytsem path.~%~@
 An instance of the system-path class holds the class allocated slot system-path
 :EXAMPLE~%
  \(and \(eql \(mon:class-name-of *system-path*\) 
           \(class-name \(find-class 'system-path\)\)\)
      \(system-base-path *system-path*\)\)~%~@
-:SEE-ALSO `dbc:system-path'.~%►►►"))
+:SEE-ALSO `dbc:system-path'.~%►►►")
 
 ;;; ==============================
 ;;; :SPECIALS-DBC-TEST-PATHS-DOCUMENTATION
 ;;; ==============================
 
-(setf (documentation '*system-tests-dir* 'variable)
-      #.(format nil
+(vardoc '*system-tests-dir*
 "Initially set to the string \"dbc-tests\".~%~@
 The dbc package defines this parameter and `dbc:*system-tests-temp-dir*' in
 :FILE dbc-specific/specials.lisp~%~@
@@ -130,10 +122,9 @@ Its pathname is accessible with the `dbc:sub-path' accessor.~%~@
 :EXAMPLE~%
   \(dbc:sub-path dbc:*system-tests-dir*\)~%
   \(pathname-directory \(dbc:sub-path dbc:*system-tests-dir*\)\)~%~@
-:SEE-ALSO `<XREF>'.~%►►►"))
+:SEE-ALSO `<XREF>'.~%►►►")
 
-(setf (documentation '*system-tests-temp-dir* 'variable)
-      #.(format nil
+(vardoc '*system-tests-temp-dir*
 "Initially set to the string \"tests\".
 The dbc package defines this parameter and `dbc:*system-tests-temp-dir*' in
 :FILE dbc-specific/specials.lisp~%~@
@@ -150,119 +141,115 @@ Its pathname is accessible with the `dbc:sub-path' accessor.~%~@
 :EXAMPLE~%
   \(dbc:sub-path dbc::*system-tests-temp-dir*\)~%
   \(pathname-directory \(dbc:sub-path dbc::*system-tests-temp-dir*\)\)~%~@
-:SEE-ALSO `<XREF>'.~%►►►"))
+:SEE-ALSO `<XREF>'.~%►►►")
+
+;;; ==============================
+
+(vardoc '*parsed-ref-class-name*
+"String naming the class \"PARSED-REF\"
+:EXAMPLE~%~@
+ { ... <EXAMPLE> ... } ~%~@
+:SEE-ALSO `<XREF>'.~%►►►")
 
 
 ;;; ==============================
 ;;; :SPECIALS-XML-PATHS-DOCUMENTATION
 ;;; ==============================
 
-(setf (documentation '*xml-output-dir* 'variable)
-      #.(format nil
+(vardoc '*xml-output-dir*
 "System relative directory pathname object for storing dbc-xml-dump files.~%~@
 Evaluated when system is loaded.
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%►►►"))
+:SEE-ALSO `<XREF>'.~%►►►")
 
-(setf (documentation '*xml-output-refs-name* 'variable)
-      #.(format nil
+(vardoc '*xml-output-refs-name*
 "---> Output file name with directory components.~%~@
 Use when dumping parsed dbc XML files.~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%►►►"))
+:SEE-ALSO `<XREF>'.~%►►►")
 
-(setf (documentation '*xml-output-refs-ext* 'variable)
-      #.(format nil
+(vardoc '*xml-output-refs-ext*
 "---> Output file name extension with directory components.~%~@
 Use when dumping parsed dbc XML files.
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%►►►"))
+:SEE-ALSO `<XREF>'.~%►►►")
 
-(setf (documentation '*xml-input-refs-name* 'variable)
-      #.(format nil
+(vardoc '*xml-input-refs-name*
 "<--- Input file.~%~@
 Use when parsing XML full dbc refs table.~%~@
 Tweaked to remove non-valid portions at head of document.~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%►►►"))
+:SEE-ALSO `<XREF>'.~%►►►")
 
-(setf (documentation '*xml-input-refs-name-temp* 'variable)
-      #.(format nil
+(vardoc '*xml-input-refs-name-temp*
 "<--- Input file.~%~@
 Temporary file for parsing XML refs before handling the whole shebang.~%~@
 Use `*xml-input-refs-name*' when ready.~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%►►►"))
+:SEE-ALSO `<XREF>'.~%►►►")
 
-(setf (documentation '*xml-refs-match-table* 'variable)
-      #.(format nil
+(vardoc '*xml-refs-match-table*
   "A hash-table mapping field name to parsing-function for use when parsing dbc-xml-refs.~%~@
 Bound with `dbc:make-ref-lookup-table' to values of variable `dbc:*xml-refs-match-list*'.~%~@
 :EXAMPLE~%
  \(gethash \"ref\" *xml-refs-match-table*\)~%~@
-:SEE-ALSO `<XREF>'.~%►►►"))
+:SEE-ALSO `<XREF>'.~%►►►")
 
-(setf (documentation '*xml-refs-match-list* 'variable)
-      #.(format nil
+(vardoc '*xml-refs-match-list*
 "List of fields needed when parsing dbc-xml-refs.~%~@
 Bound at loadtime with `dbc:make-ref-lookup-table' as key values in hasthable of
 variable `dbc:*xml-refs-match-table*'.~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%►►►"))
+:SEE-ALSO `<XREF>'.~%►►►")
 
 
 ;;; ==============================
 ;;; :SPECIALS-UUID-DOCUMENTATION
 ;;; ==============================
 
-(setf (documentation '*uuid-random-state* 'type)
-      #.(format nil
+(vardoc '*uuid-random-state*
 "A random-state objet for use when generating UUIDv4 UUIDs.~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%►►►"))
+:SEE-ALSO `<XREF>'.~%►►►")
 
-(setf (documentation '*uuid-namespace-dns* 'type)
-      #.(format nil
+(vardoc '*uuid-namespace-dns*
   "The DNS namespace as provided by RFC-4122.~%~@
 Bound at system loadtime with `dbc:make-uuid-namespace-loadtime-vars'.~%~@
 May be used for generating UUIDv3 and UUIDv5~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `dbc:make-v3-uuid', `dbc:make-v5-uuid', `dbc:make-v4-uuid'.~%►►►"))
+:SEE-ALSO `dbc:make-v3-uuid', `dbc:make-v5-uuid', `dbc:make-v4-uuid'.~%►►►")
  
-(setf (documentation '*uuid-namespace-url* 'type)
-      #.(format nil
+(vardoc '*uuid-namespace-url*
   "The URL namespace as provided by RFC-4122.~%~@
 Bound at system loadtime with `dbc:make-uuid-namespace-loadtime-vars'.~%~@
 May be used for generating UUIDv3 and UUIDv5.~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `dbc:make-v3-uuid', `dbc:make-v5-uuid', `dbc:make-v4-uuid'.~%►►►"))
+:SEE-ALSO `dbc:make-v3-uuid', `dbc:make-v5-uuid', `dbc:make-v4-uuid'.~%►►►")
 
-(setf (documentation '*uuid-namespace-oid* 'type)
-      #.(format nil
+(vardoc '*uuid-namespace-oid*
 "The OID namespace as provided with RFC-4122 appendix C.~%~@
 Bound at system loadtime with `dbc:make-uuid-namespace-loadtime-vars'.~%~@
 May be used for generating UUIDv3 and UUIDv5.~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `dbc:make-v3-uuid', `dbc:make-v5-uuid', `dbc:make-v4-uuid'.~%►►►"))
+:SEE-ALSO `dbc:make-v3-uuid', `dbc:make-v5-uuid', `dbc:make-v4-uuid'.~%►►►")
 
-(setf (documentation '*uuid-namespace-x500* 'type)
-      #.(format nil
+(vardoc '*uuid-namespace-x500*
 "The x500+ namespace as provided by RFC-4122 appendix C.~%~@
 Bound at system loadtime with `dbc:make-uuid-namespace-loadtime-vars'.~%~@
 May be used for generating UUIDv3 and UUIDv5.~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `dbc:make-v3-uuid', `dbc:make-v5-uuid', `dbc:make-v4-uuid'.~%►►►"))
+:SEE-ALSO `dbc:make-v3-uuid', `dbc:make-v5-uuid', `dbc:make-v4-uuid'.~%►►►")
 
 
 ;; Local Variables:

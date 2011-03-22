@@ -21,8 +21,7 @@
 ;;; --- naf-entity-publisher ???
 ;;; --- naf-entity-linnaean  ???
 ;;; --- naf-entity-location  ???
-;;; --- 
-;; 
+;;;
 ;;; ==============================
 
 
@@ -42,24 +41,30 @@ An object is not abstract if it represents an object knowable outside the~%~
 context of the DBC system.~%~@
 For an object to be characterized as of this type it should be a known~%~
 referenceable in common nomenclature or the nomenclature of its primary
-external domain.~%")))
+external domain.~%
+:SEE-ALSO .~%►►►")))
 
 (defclass base-theme-entity (base-entity)
   ()
   (:documentation 
-   #.(format nil "Base class for referencing DBC system theme entites.")))
+   #.(format nil 
+             "Base class for referencing DBC system theme entites.~%~@
+             :SEE-ALSO `theme-entity-regexp'.~%►►►")))
 
 (defclass base-category-entity (base-entity)
   ()
   (:documentation 
-   #.(format nil "Base class for referencing DBC system category entites.")))
+   #.(format nil 
+"Base class for referencing DBC system category entites.~%~@
+:SEE-ALSO `category-entity-regexp'.~%►►►")))
 
 (defclass base-naf-entity (base-entity)
   ()
   (:documentation 
-   #.(format nil "Base class for referencing DBC system NAF entites.")))
-
-
+   #.(format nil 
+             "Base class for referencing DBC system NAF entites.~%~@
+             :SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp',~%~
+             `naf-entity-alt-name-regexp'.~%►►►")))
 ;; 
 
 ;; Local Variables:

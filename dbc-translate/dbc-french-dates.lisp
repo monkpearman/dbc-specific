@@ -18,21 +18,19 @@
 ;;; :FRENCH-DATES-VARIABLE-DOCUMENTATION
 ;;; ==============================
 
-(setf (documentation '*french-weekday-names* 'variable)
-      #.(format nil
+(vardoc '*french-weekday-names*
 "(simple-vector 7)~%~@
 :EXAMPLE~%
  \(type-of *french-weekday-names*\)~%
  \(svref *french-weekday-names* 6\)~%~@
-:SEE-ALSO `*french-month-names*'.~%►►►"))
+:SEE-ALSO `*french-month-names*'.~%►►►")
 
-(setf (documentation '*french-month-names*  'variable)
-      #.(format nil
+(vardoc '*french-month-names*
 "Type of: \(simple-vector 12\)~%~@
 :EXAMPLE~%
  \(type-of *french-month-names*\)~%
  \(svref *french-month-names* 11\)~%~@
-:SEE-ALSO `*french-weekday-names*'.~%►►►"))
+:SEE-ALSO `*french-weekday-names*'.~%►►►")
 
 
 

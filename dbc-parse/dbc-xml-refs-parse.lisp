@@ -154,5 +154,16 @@
 
 ;; (field-parse-refs *dbc-xml-dump-file-refs-temp-name*)
 
+
+;;; ==============================
+
+
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; show-trailing-whitespace: t
+;; mode: lisp-interaction
+;; package: dbc
+;; End:
+
 ;;; ==============================
 ;;; EOF

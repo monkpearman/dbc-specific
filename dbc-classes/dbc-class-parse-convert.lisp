@@ -76,6 +76,7 @@
 ;;; ==============================
 ;;; :CLASSES
 ;;; ==============================
+
 (defclass parsed-class (base-dbc)
   ;; :NOTE Which other slots accessors and generics should this class establish?
   ()
@@ -87,7 +88,7 @@
 ;;; :DBC-CLASS-PARSE-CONVERT-DOCUMENTATION
 ;;; ==============================
 
-(mon:fundoc 'make-parsed-class-slot-init-accessor-name
+(fundoc 'make-parsed-class-slot-init-accessor-name
  "Return 3 elt list strings suitable for interning as slot, initarg, and accessor.~%~@
 NAMED-CLASS is a string naming a class which will subclass `dbc:parsed-class'.~%~@
 PARSED-FIELD is a string field name in an xml table.~%~@
@@ -105,6 +106,15 @@ Return value has the form:~%
 :SEE-ALSO `<XREF>'.~%►►►")
 
 
+;;; ==============================
+
 
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; show-trailing-whitespace: t
+;; mode: lisp-interaction
+;; package: dbc
+;; End:
+
 ;;; ==============================
 ;;; EOF

@@ -1,7 +1,8 @@
-
 ;;; :FILE-CREATED <Timestamp: #{2011-01-31T22:43:22-05:00Z}#{11051} - by MON>
+;;; :FILE dbc-classes/dbc-class-paths.lisp
 ;;; ==============================
 
+
 (in-package #:dbc)
 ;; *package*
 
@@ -297,7 +298,7 @@ subclassed instances. It is not intendend that this slot be directly setfable!")
 ;; `dbc:find-system-path'
 ;; `dbc:system-subdir-init-w-var'
 
-(mon:fundoc 'system-path-xml-dump-dir-ensure
+(fundoc 'system-path-xml-dump-dir-ensure
 "Verify, bind, create a base system relative directory for dbc xml->CLOS.~%~@
 Evaluated after the dbc system is loaded.~%~@
 Binds value of `dbc:*xml-output-dir*' according to `dbc:*dbc-xml-dump-dir-name*'.
@@ -306,14 +307,14 @@ Return non-nil on success.~%~@
  \(ensure-dbc-xml-dump-dir\)~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
 
-(mon:fundoc 'find-system-path
+(fundoc 'find-system-path
 "Return the pathname-directory of the system.~%~@
 Signal an error if system can not be found or its directory does not exist.~%~@
 :EXAMPLE~%
  \(find-system-path\)~%~@
 :SEE-ALSO `dbc:system-path-if'.~%►►►")
 
-(mon:fundoc 'system-subdir-init-w-var
+(fundoc 'system-subdir-init-w-var
  "Make W-VAR an instance of class SYSTEM-SUBDIR.~%~@
 Return value is as per `system-described'.~%~@
 Keywords :SUB-NAME and :PARENT-PATH are as per SYSTEM-SUBDIR accessors.~%~@
@@ -324,6 +325,15 @@ When W-VAR is already an instance of class SYSTEM-SUBDIR signal an error.~%~@
                      :parent-path \(system-base-path *system-path*\)\)~%~@
 :SEE-ALSO `system-path-if'.~%►►►")
 
+;;; ==============================
+
+
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; show-trailing-whitespace: t
+;; mode: lisp-interaction
+;; package: dbc
+;; End:
 
 ;;; ==============================
 ;;; EOF

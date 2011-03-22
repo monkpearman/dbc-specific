@@ -1,11 +1,10 @@
-
-
 ;;; :FILE-CREATED <Timestamp: #{2011-02-18T19:33:01-05:00Z}#{11075} - by MON>
-;;; :FILE ../dbc-specific/dbc-parse/dbc-cln-parse.lisp
+;;; :FILE dbc-parse/dbc-cln-parse.lisp
 ;;; ==============================
 
 
 (in-package #:dbc)
+;; *package
 
 (defun field-str-cons (field-str)
   (typecase field-str  
@@ -269,7 +268,7 @@
 ;;; :DBC-CLN-PARSE--DOCUMENTATION
 ;;; ==============================
 
-(mon:fundoc 'field-name-underscore-to-dash
+(fundoc 'field-name-underscore-to-dash
  "Convert string FIELD-NAME with `cl:string-upcase'd removing any #\\_.~%~@
 When optional arg W-COLON is non-nil return prefixed with a colon.
 :EXAMPLE~%
@@ -277,7 +276,7 @@ When optional arg W-COLON is non-nil return prefixed with a colon.
  \(field-name-underscore-to-dash \"keyword_seo\" t\)~%
 :SEE-ALSO `mon:string-underscore-to-dash', `cl-ppcre:regex-replace-all'.~%►►►")
 
-(mon:fundoc 'field-str-cons
+(fundoc 'field-str-cons
   "Return a three element list according to the `type-of' FIELD-STR.~%~@
 List has the form:~%
  \(<SEQ-LENGTH> \(<TYPE-SPEC>\) FIELD-STR\)~%
@@ -285,7 +284,7 @@ List has the form:~%
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `field-table-parse-out', `field-str-cons', `field-cln-x'.~%►►►")
 
-(mon:fundoc 'field-cln-x
+(fundoc 'field-cln-x
   "Return nil when FIELD-STR-CONS is a string of length 1 with char value #\\x.~%
 Else return value of FIELD-STR-CONS.~%
 This is a short-circuiting procedure, e.g. it does nothing on success.~%
@@ -296,7 +295,7 @@ This is a short-circuiting procedure, e.g. it does nothing on success.~%
 \(field-cln-x '\(x y z\)\)~%
 :SEE-ALSO `field-table-parse-out', `field-str-cons', `field-cln-x'.~%►►►")
 
-(mon:fundoc 'split-used-fors
+(fundoc 'split-used-fors
 "Split USED-FOR-STRING on \"|\" barriers stripping leading and trailing whitespace~%~@
 Return value is a list of strings.~%~@
 :EXAMPLE~%
@@ -304,7 +303,7 @@ Return value is a list of strings.~%~@
 :SEE-ALSO `mon:string-split-on-chars', `split-roles',
 `split-appeared-in', `split-loc-pre', `split-lifespan'.~%►►►")
 
-(mon:fundoc 'split-appeared-in
+(fundoc 'split-appeared-in
 "Split APPEARED-IN-STRING on \"|\" barriers.~%~@
 Return value is a list of strings.~%~@
 Like `split-used-fors', but strip leading and trailing occurences of
@@ -319,7 +318,7 @@ Signal an error if APPEARED-IN-STRING is neither `null' nor `simple-string-p'.~%
 `split-lifespan'`mon:string-split-on-chars', `mon:string-trim-whitespace',
 `mon:*whitespace-chars*'.~%►►►")
  
-(mon:fundoc 'split-roles
+(fundoc 'split-roles
 "Split ROLE-STRING on \",\" barriers.~%~@
 Strip leading/trailing whitespace and \".\". Capitalize all roles.~%~@
 Return value is a list of strings.~%~@
@@ -334,7 +333,7 @@ Signal an error if ROLE-STRING is neither `null' nor `simple-string-p'.~%~@
 :SEE-ALSO `split-used-fors', `split-appeared-in', `split-loc-pre',
 `split-lifespan'.~%►►►")
 
-(mon:fundoc 'split-loc-pre
+(fundoc 'split-loc-pre
 "Trim leading \"n \" prefix from loc-control fields.~%~@
 :EXAMPLE~%
  \(split-loc-pre \"n 83043434\"\)~%
@@ -343,7 +342,7 @@ Signal an error if ROLE-STRING is neither `null' nor `simple-string-p'.~%~@
 :SEE-ALSO `split-roles', `split-used-fors', `split-appeared-in',
 `split-lifespan'.~%►►►")
 
-(mon:fundoc 'split-lifespan
+(fundoc 'split-lifespan
 "Split LIFESPAN-STR into a consed pair.~%~@
 LIFESPAN-STR should have one of the formats:~% 
  <YYYY>-<YYYY>~% -<YYYY>~% <YYYY>-~% <YYYY>-?~% ?-<YYYY>~%~@
@@ -367,7 +366,7 @@ Return value has the form:~%
 :SEE-ALSO `split-roles', `split-used-fors', `split-appeared-in',
 `split-loc-pre'.~%►►►")
 
-(mon:fundoc 'split-lifespan-string-int-pairs
+(fundoc 'split-lifespan-string-int-pairs
 "Attempt integer extraction from cons strings returned by `split-lifespan'.~%~@
 LIFESPAN-STR-PAIR is a consed pair with the value of each conscell satisfying
 either null or `simple-stringp', signal an error if not.~%~@
@@ -436,7 +435,7 @@ When coupled with the string values in the cons at the first elt in return value
 we can be reasonably sure that the integer parse is correct.~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
 
-(mon:fundoc 'split-comma-field
+(fundoc 'split-comma-field
 "Split a comma delitied dbc field.~%~@
 Intended for use with SEO and \"keyword\" like fields in the `refs` table.~%~@
 :EXAMPLE~%~@
@@ -446,7 +445,7 @@ used in a non-delimiting position, e.g. the following string will not parse corr
  \"Havell (Robert, Jr.), Havell (Robert, Sr.), Havell Lithograph, \"~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
 
-(mon:fundoc 'field-convert-1-0-x
+(fundoc 'field-convert-1-0-x
 "Attept to CONVERT-FIELD to a boolean.~%~@
 CONVERT-FIELD is a dbc field string value of length one satisfying 
 `mon:simple-string-or-null'.~%~@
@@ -469,7 +468,7 @@ return CONVERT-FIELD.~%~@
  \(field-convert-1-0-x \"Return Me\"\)~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
 
-(mon:fundoc 'format-entity-role
+(fundoc 'format-entity-role
 "Format dbc entity-roles list for presentation.~%~@
 Arg ENTITY-ROLES is a list of strings with each string designating a role played
 by a dbc entity, e.g. Artist, Author, Publisher, etc.~%~@
@@ -496,7 +495,7 @@ should suffix ENTITY-ROLE-PREFIX.  Default is 14.~%~@
  ;     :ARTIST-ROLE   Fashion Designer\"~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
 
-(mon:fundoc 'field-convert-empty-string-nil
+(fundoc 'field-convert-empty-string-nil
 "If EMPTY-FIELD is null or `mon:string-empty-p' return nil.~%~@
 If EMPTY-FIELD is `cl:stringp' return EMPTY-FIELD, else signal an error unless
 keyword W-NO-ERROR is non-nil in which case do not signal an error and return
@@ -509,6 +508,16 @@ as if by `cl:values' first value is EMPTY-FIELD second is its `cl:type-of'.~%~@
  (field-convert-empty-string-nil t :w-no-error t)~%
  (field-convert-empty-string-nil t :w-no-error t)~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
+
+;;; ==============================
+
+
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; show-trailing-whitespace: t
+;; mode: lisp-interaction
+;; package: dbc
+;; End:
 
 
 ;;; ==============================

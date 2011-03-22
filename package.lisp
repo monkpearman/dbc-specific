@@ -5,7 +5,7 @@
 	    ;; (:nicknames #:dbc-sys)
 	    ;;
 	    ;; Import relevant stuff from :mon
-	    ;; (:import-from #:mon {...} )
+	    (:import-from #:mon #:fundoc #:vardoc #:typedoc #:defconst*)
 	    ;; 
 	    (:export
 	     ;;
@@ -33,6 +33,7 @@
              #:*uuid-namespace-x500*
 	     ;;
            ;; conditions.lisp
+             ;;
 	     #:dbc-error
 	     #:system-path-error
              ;; reader system-path-error
@@ -70,24 +71,38 @@
              #:uuid-string-36-p
              #:uuid-hex-string-32-p
              #:uuid-hex-string-36-p
-             #:make-uuid-from-string
-             #:uuid-print-bytes
-             #:uuid-get-bytes
+             ;; #:uuid-digest-uuid-string              ; INTERNAL DEPRECATED
+             ;; #:uuid-print-bytes                     ; INTERNAL DEPRECATED
+             ;; #:uuid-get-bytes                       ; INTERNAL DEPRECATED
+             ;; #:uuid-load-bytes                      ; INTERNAL DEPRECATED
+             ;; #:%uuid-get-bytes-if                   ; INTERNAL DEPRECATED
+             ;; #:format-v3or5-uuid                    ; INTERNAL
+             ;;
+             ;; #:format-v3-uuid                       ; INTERNAL
+             ;; #:format-v5-uuid                       ; INTERNAL
+             ;; #:make-uuid-from-string-if             ; INTERNAL
+             ;; #:%verify-digest-version               ; INTERNAL
+             ;; #:%verify-version-3-or-5               ; INTERNAL
+             ;; #:%verify-slot-boundp-and-type         ; INTERNAL
+             ;; #:%uuid_time-mid-request               ; INTERNAL
+             ;; #:%uuid_time-low-request               ; INTERNAL
+             ;; #:%uuid_time-high-and-version-request  ; INTERNAL
+             ;; #:%uuid_clock-seq-and-reserved-request ; INTERNAL
+             ;; #:%uuid_clock-seq-low-request          ; INTERNAL
+             ;; #:%uuid_node-request                   ; INTERNAL
+             ;; #:request-integer                      ; INTERNAL
+             ;; 
+             ;; #:make-uuid-namespace-loadtime-vars    ; borken?
+             ;;
+             #:uuid-digest-uuid-instance
              #:uuid-get-bytes-for-integer
              #:uuid-number-to-byte-array
-             ;; #:uuid-digest-uuid-string  ; INTERNAL
-             ;; #:make-uuid-from-string-if ; INTERNAL
-             ;; #:uuid-load-bytes          ; INTERNAL
-             ;; #:format-v3or5-uuid        ; INTERNAL
-             ;; #:%verify-digest-version   ; INTERNAL
-             ;; #:%verify-version-3-or-5   ; INTERNAL
-             ;; #:%uuid-get-bytes-if       ; INTERNAL
-             ;; #:%verify-slot-boundp-and-type ; INTERNAL 
+             #:uuid-get-namespace-bytes
              #:uuid-to-byte-array
              #:uuid-from-byte-array
              #:uuid-princ-to-string
+             #:make-uuid-from-string             
              #:format-uuid-as-urn
-             #:make-uuid-namespace-loadtime-vars
              #:string-to-sha1-byte-array
              ;;
 	     ;; dbc-classes/dbc-class.lisp
@@ -151,8 +166,17 @@
              ;;
            ;; dbc-classes/dbc-class-regexps.lisp
              ;;
+             ;;
+             ;; :GENERIC-FUNCTIONS
+             #:regexp-match-entity-class
+             #:regexp-match-entity-db
+             #:regexp-match-matcher-db
+             #:regexp-match-container-type
+             #:regexp-match-container-uuid
+             #:regexp-matcher
              ;; :CLASSES
              #:base-regexp
+             #:entity-regexp-subclass-allocation
              #:entity-regexp
              #:theme-entity-regexp
              #:category-entity-regexp
@@ -184,7 +208,11 @@
              #:*naf-brand-entity-control-regexp-matcher-db*
              #:*naf-brand-entity-regexp-entity-db*
              #:*naf-publication-entity-control-regexp-matcher-db*
+             #:*naf-publication-entity-regexp-entity-db*
              ;; #:*parsed-field-name-regexp-matcher-db*
+             ;;
+             #:make-entity-regexp-subclass-allocation-if
+             #:make-entity-regexp-subclass-allocation
              ;;
              ;;
            ;; dbc-classes/dbc-class-refs-convert.lisp
