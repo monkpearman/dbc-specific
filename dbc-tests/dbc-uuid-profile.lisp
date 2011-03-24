@@ -58,23 +58,23 @@
   ;;        (1 . #(180)) 
   ;;        (5 . #(192 79 212 48 200))) ;; <- This should aways be a 6 elt array 
   ;;       5)  
-  (declare (type unique-universal-identifier uuid))
-  (with-slots (%uuid_time-low
-               %uuid_time-mid
-               %uuid_time-high-and-version
-               %uuid_clock-seq-and-reserved
-               %uuid_clock-seq-low
-               %uuid_node)
+  (declare (type dbc:unique-universal-identifier uuid))
+  (with-slots (dbc::%uuid_time-low
+               dbc::%uuid_time-mid
+               dbc::%uuid_time-high-and-version
+               dbc::%uuid_clock-seq-and-reserved
+               dbc::%uuid_clock-seq-low
+               dbc::%uuid_node)
       uuid
     ;; *uuid-namespace-dns*
-    (declare (type uuid-ub32 %uuid_time-low)
-             (type uuid-ub16 %uuid_time-mid %uuid_time-high-and-version)
-             (type uuid-ub8  %uuid_clock-seq-and-reserved %uuid_clock-seq-low)
-             (type uuid-ub48 %uuid_node))
+    (declare (type dbc:uuid-ub32 dbc::%uuid_time-low)
+             (type dbc:uuid-ub16 dbc::%uuid_time-mid dbc::%uuid_time-high-and-version)
+             (type dbc:uuid-ub8  dbc::%uuid_clock-seq-and-reserved dbc::%uuid_clock-seq-low)
+             (type dbc:uuid-ub48 dbc::%uuid_node))
     (loop 
-       for slots in `(,%uuid_time-low ,%uuid_time-mid ,%uuid_time-high-and-version
-                                      ,%uuid_clock-seq-and-reserved ,%uuid_clock-seq-low ,%uuid_node)
-       for (a b) = (multiple-value-list (uuid-number-to-byte-array slots))
+       for slots in `(,dbc::%uuid_time-low ,dbc::%uuid_time-mid ,dbc::%uuid_time-high-and-version
+                                      ,dbc::%uuid_clock-seq-and-reserved ,dbc::%uuid_clock-seq-low ,dbc::%uuid_node)
+       for (a b) = (multiple-value-list (dbc::uuid-number-to-byte-array slots))
        collect  (cons b a) )))
 
 ;; 

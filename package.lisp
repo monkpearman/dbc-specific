@@ -90,7 +90,7 @@
              ;; #:%uuid_clock-seq-and-reserved-request ; INTERNAL
              ;; #:%uuid_clock-seq-low-request          ; INTERNAL
              ;; #:%uuid_node-request                   ; INTERNAL
-             ;; #:request-integer                      ; INTERNAL
+             ;; #:uuid-request-integer                 ; INTERNAL
              ;; 
              ;; #:make-uuid-namespace-loadtime-vars    ; borken?
              ;;
@@ -103,7 +103,7 @@
              #:uuid-princ-to-string
              #:make-uuid-from-string             
              #:format-uuid-as-urn
-             #:string-to-sha1-byte-array
+             #:uuid-string-to-sha1-byte-array
              ;;
 	     ;; dbc-classes/dbc-class.lisp
 	     ;;

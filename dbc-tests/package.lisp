@@ -8,7 +8,7 @@
 ;; *package*
 
 (defpackage #:dbc-test 
-  (:use #:common-lisp #:dbc) ;; #:mon-test)
+  (:use #:common-lisp );; #:dbc) ;; #:mon-test)
   (:export
    ;;
  ;; dbc-tests/tests.lisp

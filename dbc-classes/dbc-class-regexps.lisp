@@ -55,7 +55,7 @@
 
 (defgeneric regexp-match-matcher-db (obj &key)
   (:documentation 
-   #.(format
+   #.(format nil
       "Return the matcher-db lookup table for OBJ.~%~
 :SEE-ALSO `entity-regexp-subclass-allocation', `entity-regexp', 
 `regexp-match-entity-class', `regexp-match-entity-db',
@@ -142,7 +142,6 @@
 ;; subclass-match-entity-class  <-> regexp-match-entity-class
 ;; subclass-match-entity-db     <-> regexp-match-entity-db
 ;; subclass-match-matcher-db    <-> regexp-match-matcher-db
-
 (defclass entity-regexp-subclass-allocation (base-regexp)
   ((;; entity-regexp slot match-entity-class
     subclass-match-entity-class
@@ -275,7 +274,7 @@
                      closure list string array hash-table~%~@
                     This slot is local per subclass instance.~%
                     Subclasses should access slot-value with a method specialized on.~%~
-                    `regexp-match-container-type'. This slot is setfable.~%~"))
+                    `regexp-match-container-type'. This slot is setfable.~%"))
    (match-container-uuid         ;; local-per-instance, access with regexp-match-container-id
     :initarg :match-container-id
     :initform nil
@@ -290,7 +289,7 @@
                    they don't overwrite an existing UUID.  An OBJ's UUID should be treated as an~%~
                    immutable constant in almost all circumstances.  Therefor, the intent of this~%~
                    function is to mediate generation of UUID's run :after initialize-instance~%~
-                   and/or when an instance is obsoleted with `cl:make-instances-obsolete'.~%~"))
+                   and/or when an instance is obsoleted with `cl:make-instances-obsolete'.~%"))
    (match-entity-matcher           ;; local-per-instance, access with regexp-matcher
     :initarg :match-entity-matcher
     :initform nil
@@ -537,7 +536,7 @@
                                                   match-matcher-db)
   ;; :NOTE We may have to declare these special if they aren't seen in the 
   ;;  outside the lexical enverionment 
-  ;; (declare (special match-entity-db match-matcher-db ))
+  ;;(declare (special match-entity-db match-matcher-db ))
   (and
    (or match-entity-class
        (error "must supply value for keyword MATCH-ENTITY-CLASS"))
@@ -549,15 +548,15 @@
        (error "Arg MATCH-ENTITY-CLASS does not return for `cl:find-class'"))
    (or (boundp match-entity-db)
        (error "Arg MATCH-ENTITY-DB not `cl:boundp'"))
-   (or (hash-table-p match-entity-db)
+   (or (hash-table-p (symbol-value match-entity-db))
        (error "Arg MATCH-ENTITY-DB not `cl:hash-table-p'"))
    (or (boundp match-matcher-db)
        (error "Arg MATCH-MATCHER-DB not `cl:boundp'"))
-   (or (hash-table-p match-matcher-db)
+   (or (hash-table-p (symbol-value match-matcher-db))
        (error "Arg MATCH-MATCHER-DB not `cl:hash-table-p'"))
-   (list :subclass-match-entity-class match-entity-class
-         :subclass-match-entity-class match-entity-db
-         :subclass-match-entity-class match-matcher-db)))
+   `(:subclass-match-entity-class ,match-entity-class
+     :subclass-match-entity-db    ,match-entity-db 
+     :subclass-match-matcher-db ,match-matcher-db)))
 
 (defun make-entity-regexp-subclass-allocation (&key
                                                match-entity-class
@@ -565,9 +564,101 @@
                                                match-matcher-db)
   (let ((chk-keys 
          (make-entity-regexp-subclass-allocation-if 
-          match-entity-class  match-entity-db match-entity-db)))
+          match-entity-class match-entity-db match-matcher-db)))
     (apply #'make-instance 'entity-regexp-subclass-allocation
            chk-keys)))
+
+;;; ==============================
+;; :TODO Following three should signal an error if they don't find a value b/c
+;; these are intended to run interception for the entity-regexp subclasses
+;; They should be called before/after/around??? the first instance of an
+;; entity-regexp class is initialized to set the class allocated slots
+;; e.g. entity-regexp sub-classes defined as:
+;; ((match-entity-class :allocation 'class)
+;;  (match-entity-db    :allocation 'class)
+;;  (match-matcher-db   :allocation 'class))
+;;
+;; If OBJ's subclass-match-entity-class slot is bound and its slot-value finds
+;; an existing class with the same class name eq that slot-value return as if by
+;; `cl:values' the class object and the symbol naming it.
+;;
+;; (regexp-match-entity-class *base-test-entity-regexp-instance*)
+;; (multiple-value-list (regexp-match-entity-class *base-test-entity-regexp-instance*))
+(defmethod regexp-match-entity-class ((obj entity-regexp-subclass-allocation) &key)
+  (let* ((if-bnd
+          (and (slot-boundp obj 'subclass-match-entity-class)
+               (slot-value obj  'subclass-match-entity-class)))
+         (fnd-class (and if-bnd 
+                         (mon:ref-bind fc (find-class if-bnd)
+                           (and (eql (class-name fc) if-bnd)
+                                fc)))))
+    (and if-bnd fnd-class
+         (values fnd-class if-bnd))))
+
+;; If OBJ's subclass-match-entity-db slot is bound and its slot-value is
+;; `cl:hash-table-p' return as if by `cl:values' the hash-table object and the
+;; symbol naming it.
+;; (regexp-match-entity-db *base-test-entity-regexp-instance*)
+;; (multiple-value-list (regexp-match-entity-db *base-test-entity-regexp-instance*))
+(defmethod regexp-match-entity-db ((obj entity-regexp-subclass-allocation) &key)
+  (let ((if-bnd
+         (and (slot-boundp obj 'subclass-match-entity-db)
+              (slot-value obj 'subclass-match-entity-db)))
+        (then-get-hsh nil))
+    (and (symbolp if-bnd)
+         (setf then-get-hsh 
+               (symbol-value if-bnd)))
+    (and then-get-hsh 
+         (hash-table-p then-get-hsh)
+         (values then-get-hsh if-bnd))))
+
+;; If OBJ's subclass-match-matcher-db slot is bound and its slot-value is
+;; `cl:hash-table-p' return as if by `cl:values' the hash-table object and the
+;; symbol naming it.
+;; (regexp-match-matcher-db *base-test-entity-regexp-instance*)
+;; (multiple-value-list (regexp-match-entity-db *base-test-entity-regexp-instance*))
+(defmethod regexp-match-matcher-db ((obj entity-regexp-subclass-allocation) &key)
+  (let ((if-bnd
+         (and (slot-boundp obj 'subclass-match-matcher-db)
+              (slot-value obj  'subclass-match-matcher-db)))
+        (then-get-hsh nil))
+    (and (symbolp if-bnd)
+         (setf then-get-hsh 
+               (symbol-value if-bnd)))
+    (and then-get-hsh 
+         (hash-table-p then-get-hsh)
+         (values then-get-hsh if-bnd))))
+
+;;; ==============================
+
+
+;;; ==============================
+;; (make-instance 'entity-regexp 
+;;                :match-entity-class 'liza-terry 
+;;                :match-entity-db *liza-terry-db* 
+;;                :match-matcher-db *liza-terry-matcher-db* 
+;;                :match-container-type 'closure
+;;                :match-container-uuid <GENERATE>
+;;                :match-entity-matcher (cl-ppcre:create-scanner "liza-terry 342"))
+;;; ==============================
+;; match-entity-class    ;; The class of the the thing matched e.g. an NAF-ARTIST-ENTITY
+;; match-entity-db       ;; A special variable of key/vals (match-container-uuid . entity-instance-uuid)
+;; match-matcher-db      ;; A special variable of key/vals (match-container-uuid . match-entity-matcher)
+;; match-container-type  ;; the type-of the match-entity-matcher 
+;; match-container-uuid  ;; uuid of the container holding the match-entity-matcher object
+;; match-entity-matcher  ;; a matcher object
+
+
+;; (defun make-instance-naf-entity-artist-control-regexp 
+;;     (&key 
+;;      ;; match-entity-class ;; global-per-subclass
+;;      ;; match-entity-db    ;; global-per-subclass
+;;      ;; match-matcher-db   ;; global-per-subclass
+;;      match-container-type  ;; local-per-instance
+;;      match-container-uuid  ;; local-per-instance
+;;      match-entity-matcher  ;; local-per-instance
+;;      )
+
 
 
 ;;; ==============================

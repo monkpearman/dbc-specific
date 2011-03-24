@@ -34,7 +34,7 @@
   ()
   (:documentation 
    #.(format nil 
-             "Base class for referencing DBC system entites.~%~@
+             "Base class for referencing DBC system entities.~%~@
 An entity is a \"non-abstract\" object capable of being represented by the DBC
  system.~%~@
 An object is not abstract if it represents an object knowable outside the~%~
@@ -48,23 +48,24 @@ external domain.~%
   ()
   (:documentation 
    #.(format nil 
-             "Base class for referencing DBC system theme entites.~%~@
+             "Base class for referencing DBC system theme entities.~%~@
              :SEE-ALSO `theme-entity-regexp'.~%►►►")))
 
 (defclass base-category-entity (base-entity)
   ()
   (:documentation 
    #.(format nil 
-"Base class for referencing DBC system category entites.~%~@
+"Base class for referencing DBC system category entities.~%~@
 :SEE-ALSO `category-entity-regexp'.~%►►►")))
 
 (defclass base-naf-entity (base-entity)
   ()
   (:documentation 
    #.(format nil 
-             "Base class for referencing DBC system NAF entites.~%~@
+             "Base class for referencing DBC system NAF entities.~%~@
              :SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp',~%~
              `naf-entity-alt-name-regexp'.~%►►►")))
+
 ;; 
 
 ;; Local Variables:

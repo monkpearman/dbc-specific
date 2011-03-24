@@ -36,6 +36,7 @@
                :mon
                :mon-test
                ;; :NTOE Following pulled in by :mon
+	       ;; :ironclad
                ;; :flexi-streams 
 	       ;; :split-sequence
                ;; :alexandria
@@ -64,9 +65,8 @@
              (:file "dbc-class-documentation")
              (:file "dbc-class-refs-convert")
              (:file "dbc-class-parse-convert")
-             
              ;; (:file "dbc-class-artist-convert.lisp")
-             ;;(:file "dbc-tgm.lisp")))
+             ;; (:file "dbc-tgm.lisp")))
              ))
    (:module "dbc-parse"
 	    :components
