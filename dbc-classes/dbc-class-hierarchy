@@ -1,0 +1,99 @@
+;;; :FILE-CREATED <Timestamp: #{2011-03-21T11:13:55-04:00Z}#{11121} - by MON>
+;;; :FILE dbc-classes/dbc-class-hierarchy
+;;; ==============================
+
+
+;;; :NOTE Following is an enumeration of the DBC class hierarchy.
+;;; This spec should not be considered normative and should be updated as
+;;; changes precipitate.
+
+
+dbc-classes/dbc-class.lisp
+base-dbc
+
+
+dbc-classes/dbc-class-paths.lisp
+
+system-base
+system-path
+system-subdir
+
+          
+dbc-classes/dbc-class-users.lisp
+
+base-user
+
+
+dbc-classes/dbc-class-uuid.lisp
+
+base-uuid
+
+
+dbc-classes/dbc-class-entity.lisp
+
+- base-entity
+-- base-category-entity (base-entity)
+-- base-theme-entity    (base-entity)
+-- base-naf-entity      (base-entity)
+    _________________ Below should have their own files
+
+--- naf-entity-person       (base-naf-entity)
+--- naf-entity-artist       (base-naf-entity)
+--- naf-entity-author       (base-naf-entity)
+--- naf-entity-brand        (base-naf-entity)
+--- naf-entity-publication  (base-naf-entity)
+    ______________________  These are as yet undecided w/r/t how to handle
+--- naf-entity-publisher    (base-naf-entity)
+--- naf-entity-linnaean     (base-naf-entity)
+--- naf-entity-location     (base-naf-entity)
+
+
+dbc-classes/dbc-class-regexps.lisp
+
+-- base-regexp                         	     (base-dbc)
+--- entity-regexp-subclass-allocation  	     (base-regexp)
+--- entity-regexp                      	     (base-regexp)
+---- parsed-field-name-regexp          	     (entity-regexp)
+---- theme-entity-regexp               	     (entity-regexp)
+---- category-entity-regexp            	     (entity-regexp)
+---- naf-entity-type-regexp            	     (entity-regexp)
+----- naf-entity-control-name-regexp   	     (naf-entity-type-regexp)
+------ naf-entity-artist-control-regexp	     (naf-entity-control-name-regexp)
+------ naf-entity-person-control-regexp	     (naf-entity-control-name-regexp)
+------ naf-entity-author-control-regexp	     (naf-entity-control-name-regexp)
+------ naf-entity-brand-control-regexp       (naf-entity-control-name-regexp)
+------ naf-entity-publication-control-regexp (naf-entity-control-name-regexp)
+
+----- naf-entity-alt-name-regexp             (naf-entity-alttype-regexp)
+------ naf-entity-artist-alt-regexp          (naf-entity-alt-name-regexp)
+------ naf-entity-person-alt-regexp          (naf-entity-alt-name-regexp)
+------ naf-entity-author-alt-regexp          (naf-entity-alt-name-regexp)
+------ naf-entity-brand-alt-regexp           (naf-entity-alt-name-regexp)
+------ naf-entity-publication-alt-regexp     (naf-entity-alt-name-regexp)
+
+
+dbc-classes/dbc-class-edit.lisp
+
+base-edit
+
+
+dbc-classes/dbc-class-description.lisp
+
+base-description
+
+
+dbc-classes/dbc-class-documentation.lisp
+
+base-documenation
+
+
+dbc-classes/dbc-class-parse-convert.lisp
+
+parsed-class
+
+           
+dbc-classes/dbc-class-refs-convert.lisp
+
+
+;;; ==============================
+;;; EOF
