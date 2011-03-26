@@ -19,9 +19,9 @@
 ;; (find-class 'base-testing-entity)
 
 (defclass test-entity-regexp (entity-regexp)
-  ((match-entity-class :allocation 'class)
-   (match-entity-db    :allocation 'class)
-   (match-matcher-db   :allocation 'class))
+  ((match-entity-class :allocation :class)
+   (match-entity-db    :allocation :class)
+   (match-matcher-db   :allocation :class))
   ;; match-container-uuid
   ;; match-container-type   
   (:documentation 
@@ -136,6 +136,8 @@ regexp-match-matcher-db
 ;; (let ((tt (make-instance 'tt--no-bound-slots)))
 ;;   (with-slots (tt-unbound) tt
 ;;     tt-unbound))
+
+;;; ==============================
 
 
 

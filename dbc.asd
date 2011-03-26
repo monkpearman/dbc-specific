@@ -46,8 +46,8 @@
 
   ;; :perform (load-op :after (op mon) (pushnew :mon *features*))
   :serial t    
+  ;; :in-order-to (asdf:compile-op "dbc-class-regexps" (asdf:load-source-op "dbc-class-doc" ))
   :components 
-  
   ((:file "package")
    (:file "specials")
    (:module "dbc-uuid"
@@ -56,7 +56,13 @@
    (:file "conditions")
    (:module "dbc-classes"
             :components                 
-            ((:file "dbc-class")
+            (
+             ;; This needs to be loaded.
+             ;; (compile-op "c"))
+             ;;  (load-op (load-op "foo")))
+             ;; :peform (asdf:load-source-op :before 
+             (:file "dbc-class-doc")
+             (:file "dbc-class")
              (:file "dbc-class-uuid")             
              (:file "dbc-class-paths")
              (:file "dbc-class-regexps")

@@ -46,10 +46,10 @@
                                                               :name slot
                                                               :w-obj obj
                                                               :w-not-slot-value slot)))))
-                        (sym   (mon::error-sym condition))
-                        (typ   (mon::ref-bind est (mon::error-sym-type condition)
-                                 (mon::format-error-symbol-type (or (and sym sym) 'system-path-error) est)
-                                 (mon::format-error-symbol-type (or (and sym sym) 'system-path-error) 'condition)))
+                        (sym   (mon:error-sym condition))
+                        (typ   (mon:ref-bind est (mon:error-sym-type condition)
+                                 (mon:format-error-symbol-type (or (and sym sym) 'system-path-error) est)
+                                 (mon:format-error-symbol-type (or (and sym sym) 'system-path-error) 'condition)))
                         (path  (system-path-locus condition))
                         (aux   (system-aux-msg condition))
                         (fmt   `(,(and typ (cons "~A" typ))
