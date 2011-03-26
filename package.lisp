@@ -192,24 +192,18 @@
              #:naf-entity-brand-control-regexp
              #:naf-entity-brand-alt-regexp
              #:naf-entity-publication-control-regexp
+             #:naf-entity-publication-alt-regexp
              ;; #:parsed-field-name-regexp
              ;;
              ;; :VARIABLES
-             #:*theme-entity-regexp-matcher-db*
-             #:*theme-entity-regexp-entity-db*
-             #:*category-entity-regexp-entity-db*
-             #:*category-entity-regexp-matcher-db*
-             #:*naf-artist-entity-control-regexp-matcher-db*
-             #:*naf-artist-entity-regexp-entity-db*
-             #:*naf-author-entity-control-regexp-matcher-db*
-             #:*naf-author-entity-regexp-entity-db*
-             #:*naf-person-entity-control-regexp-matcher-db*
-             #:*naf-person-entity-regexp-entity-db*
-             #:*naf-brand-entity-control-regexp-matcher-db*
-             #:*naf-brand-entity-regexp-entity-db*
-             #:*naf-publication-entity-control-regexp-matcher-db*
-             #:*naf-publication-entity-regexp-entity-db*
-             ;; #:*parsed-field-name-regexp-matcher-db*
+             #:*category-entity-regexp-db*
+             #:*theme-entity-regexp-db*
+             #:*parsed-field-name-regexp-db*
+             #:*naf-artist-entity-regexp-db*
+             #:*naf-person-entity-regexp-db*
+             #:*naf-author-entity-regexp-db*
+             #:*naf-brand-entity-regexp-db*
+             #:*naf-publication-entity-regexp-db*
              ;;
              #:make-entity-regexp-subclass-allocation-if
              #:make-entity-regexp-subclass-allocation

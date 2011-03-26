@@ -36,8 +36,6 @@
  '*test-entity-regexp-entity-db* 
  '*test-entity-regexp-matcher-db*)
 
-
-
 (let ((chk-entity
        (make-entity-regexp-subclass-allocation 
         :match-entity-class  'base-testing-entity
@@ -122,7 +120,16 @@
                       :match-entity-db    rmed
                       :match-matcher-db   rmmd)))
 
-               
+;; (funcall (lambda (&rest rest &key &allow-other-keys)
+;;            ;;(cons rest
+;;            ;; (apply #'make-array 3 rest)))
+;;            (funcall #'make-array 3 rest))
+;;          :element-type '(unsigned-byte 8) :initial-contents '(88 0 3))
+
+;; (funcall (lambda (&rest rest)
+;;            (apply #'make-array 3 rest))
+;;          :element-type '(unsigned-byte 8) :initial-contents '(88 0 3))
+
 
 regexp-match-matcher-db
 

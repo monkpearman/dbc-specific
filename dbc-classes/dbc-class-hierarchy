@@ -56,6 +56,7 @@ dbc-classes/dbc-class-regexps.lisp
 ---- parsed-field-name-regexp          	     (entity-regexp)
 ---- theme-entity-regexp               	     (entity-regexp)
 ---- category-entity-regexp            	     (entity-regexp)
+____
 ---- naf-entity-type-regexp            	     (entity-regexp)
 ----- naf-entity-control-name-regexp   	     (naf-entity-type-regexp)
 ------ naf-entity-artist-control-regexp	     (naf-entity-control-name-regexp)
@@ -63,7 +64,7 @@ dbc-classes/dbc-class-regexps.lisp
 ------ naf-entity-author-control-regexp	     (naf-entity-control-name-regexp)
 ------ naf-entity-brand-control-regexp       (naf-entity-control-name-regexp)
 ------ naf-entity-publication-control-regexp (naf-entity-control-name-regexp)
-
+_____
 ----- naf-entity-alt-name-regexp             (naf-entity-alttype-regexp)
 ------ naf-entity-artist-alt-regexp          (naf-entity-alt-name-regexp)
 ------ naf-entity-person-alt-regexp          (naf-entity-alt-name-regexp)

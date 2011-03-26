@@ -133,10 +133,7 @@
 
 (defclass base-regexp (base-dbc)
   ()
-  (:documentation 
-   #.(format nil
-"Base class for matching control names of DBC entity instances.~%~@
-:SEE-ALSO .~%►►►~%")))
+  (:documentation #.(classdoc 'base-regexp :class-doc)))
 
 ;;; ==============================
 ;; subclass-match-entity-class  <-> regexp-match-entity-class
@@ -162,20 +159,24 @@
 
 (defclass entity-regexp (base-regexp)
   (( ;; global-per-subclass access with regexp-match-entity-class
-     ;; entity-regexp-subclass-allocation subclass-match-entity-class
-    match-entity-class :initarg :match-entity-class :initform nil 
+    ;; entity-regexp-subclass-allocation subclass-match-entity-class
+    match-entity-class 
+    :initform nil 
     :documentation #.(classdoc 'entity-regexp :match-entity-class))
    ( ;; global-per-subclass access with regexp-match-entity-db
-     ;; entity-regexp-subclass-allocation subclasses-match-entity-db
-    match-entity-db :initarg :match-entity-db :initform nil
+    ;; entity-regexp-subclass-allocation subclasses-match-entity-db
+    match-entity-db 
+    :initform nil
     :documentation #.(classdoc 'entity-regexp :match-entity-db))
    ( ;; global-per-subclass, access with regexp-match-matcher-db
-     ;; entity-regexp-subclass-allocation subclass-match-matcher-db
-    match-matcher-db :initarg :match-matcher-db :initform nil
+    ;; entity-regexp-subclass-allocation subclass-match-matcher-db
+    match-matcher-db 
+    :initform nil
     :documentation #.(classdoc 'entity-regexp :match-matcher-db))
    ( ;; local-per-instance, access with regexp-match-container-type
     match-container-type
-    :initarg :match-container-type :initform nil
+    :initarg :match-container-type
+    :initform nil
     :documentation #.(classdoc 'entity-regexp :match-container-type))
    ( ;; local-per-instance, access with regexp-match-container-id
     match-container-uuid :initarg :match-container-id :initform nil
@@ -198,23 +199,17 @@
 ;;; ==============================
 ;; #:*parsed-field-name-regexp-matcher-db*
 ;; #:parsed-field-name-regexp
-(defvar *parsed-field-name-regexp-matcher-db* nil) ;; (make-hash-table)
+(defvar *parsed-field-name-regexp-db* nil)
 
 (defclass parsed-field-name-regexp (entity-regexp)
   ()
-  (:documentation 
-   #.(format nil
-"An `entity-regexp' subclass for matching XML-refs parsed field-names.~%~
-:SEE-ALSO .~%►►►~%")))
-
+  (:documentation #.(classdoc 'parsed-field-name-regexp :class-doc)))
 
 
 ;;; ==============================
 ;;; :THEMES
 ;;; ==============================
-(defvar *theme-entity-regexp-matcher-db* nil) ;;(make-hash-table))
-
-(defvar *theme-entity-regexp-entity-db* nil) ;;(make-hash-table))
+(defvar *theme-entity-regexp-db* nil)
 
 (defclass theme-entity-regexp (entity-regexp)
   ;; match-entity-class
@@ -223,19 +218,13 @@
   ;; match-entity-db
   ;; match-matcher-db
   ()
-  (:documentation 
-   #.(format nil
-"An `entity-regexp' sub-class for themes.~%~@
-:SEE-ALSO `base-theme-entity'.~%►►►")))
+  (:documentation #.(classdoc 'theme-entity-regexp :class-doc)))
 
 
 ;;; ==============================
 ;;; :CATERORIES
 ;;; ==============================
-
-(defvar *category-entity-regexp-matcher-db* nil) ;;(make-hash-table))
-
-(defvar *category-entity-regexp-entity-db* nil) ;;(make-hash-table))
+(defvar *category-entity-regexp-db* nil)
 
 (defclass category-entity-regexp (entity-regexp)
   ;; match-entity-class
@@ -244,10 +233,7 @@
   ;; match-entity-db
   ;; match-matcher-db
   ()
-  (:documentation
-   #.(format nil
-             "An `entity-regexp' sub-class for DBC categories.~%~
-:SEE-ALSO `base-category-entity'.~%►►►")))
+  (:documentation #.(classdoc 'category-entity-regexp :class-doc)))
 
 
 ;;; ==============================
@@ -261,145 +247,99 @@
   ;; match-matcher-db
   ;; match-entity-class-type 
   ()
-  (:documentation 
-   #.(format nil
-             "An `entity-regexp' sub-class for DBC NAF entities.~%~@
-              Instances subclassed from `base-naf-entity' with should instantiate instances of~%~
-              both `naf-entity-control-name-regexp', `naf-entity-alt-name-regexp' to enable~%~
-              system wide xrefing/indexing of entity name-form occurences.~%~@
-              :SEE-ALSO .~%►►►")))
+  (:documentation #.(classdoc 'naf-entity-type-regexp :class-doc)))
 
 (defclass naf-entity-control-name-regexp (naf-entity-type-regexp)
-  (
-   ;; (match-entity-container-type :initform 'closure)
-   ;; (match-entity-matcher
-   )
-  (:documentation 
-   #.(format nil "A `naf-entity-type-regexp' subclass for matching primary NAF control-names.~%~@
-                  Naf control-names are considered canonical and are _rarely_ mutated.~%~@
-                  The matchers named by instances of this class should run _before_ other regexps.~%~@
-                  The MATCH-ENTITY-CONTAINER-TYPE slot of this class is defaulted to 'closure with~@
-                  the intent that the MATCH-ENTITY-MATCHER will be implemented as a CL-PPCRE closure.~%~@
-                 :SEE-ALSO `base-naf-entity', `naf-entity-alt-name-regexp'.~%►►►")))
+  ;; (match-entity-container-type :initform 'closure)
+  ;; (match-entity-matcher
+  ()
+  (:documentation #.(classdoc 'naf-entity-control-name-regexp :class-doc)))
 
 (defclass naf-entity-alt-name-regexp (naf-entity-type-regexp)
-  ( 
-   ;;(match-entity-container-type :initform 'list)
-   )
-  (:documentation 
-   #.(format nil "A `naf-entity-type-regexp' subclass for NAFs with matchable alternative name forms.~%~@
-                  Alternative name forms might include:~%~% ~
-                   pseudonyms, also knowns, used-fors, variant spellings, rotated name forms, etc.~%~@
-                 The matchers named by instances of this class should be run _only_after_all_~
-                 control name matchers have had a chance to run and should _never_ destructively~
-                 modify the things they match.~%~@
-                 This constraint is intented to prevent corruption of control-names which should~
-                 always have precedence of an alternative name form.~%~@
-                 :SEE-ALSO `base-naf-entity', `naf-entity-control-name-regexp'.~%►►►~%")))
+  ;;(match-entity-container-type :initform 'list)
+  ()
+  (:documentation #.(classdoc 'naf-entity-alt-name-regexp :class-doc)))
+
+;;; ==============================
 
 ;;; ==============================
 ;;; :NAF-ARTIST
 ;;; ==============================
-(defvar *naf-artist-entity-control-regexp-matcher-db* nil) ;;(make-hash-table))
-
-(defvar *naf-artist-entity-regexp-entity-db* nil) ;;(make-hash-table))
-
-;; *package*
-;; (defparameter  *tt--eg-neacr*
-;;   (make-instance 'naf-entity-artist-control-regexp))
+(defvar *naf-artist-entity-regexp-db* nil) ;;(make-hash-table))
 
 ;; :match-entity-class
 (defclass naf-entity-artist-control-regexp (naf-entity-control-name-regexp)
   ()
-  (:documentation 
-   #.(format nil
-"A `naf-entity-control-name-regexp' subclass for DBC NAF artist entities.~%~@
-:SEE-ALSO .~%►►►~%")))
+  (:documentation #.(classdoc 'naf-entity-artist-control-regexp :class-doc)))
 
 (defclass naf-entity-artist-alt-regexp (naf-entity-alt-name-regexp)
   ()
-  (:documentation 
-   #.(format nil
-"A `naf-entity-alt-name-regexp' subclass for DBC NAF artist entities.~%~@
-:SEE-ALSO .~%►►►~%")))
+  (:documentation #.(classdoc 'naf-entity-artist-alt-regexp :class-doc)))
 
+(defclass naf-entity-artist-regexp (naf-entity-type-regexp)
+  ()
+  )
+
+;; (let ((base-naf-entity-regexp 
+;;        (make-entity-regexp-subclass-allocation 
+;;         :match-entity-class 'naf-entity-artist-regexp 
+;;         :match-entity-db    entity-db
+;;         :match-matcher-db   matcher-db)))
+;;   (setf *naf-artist-entity-regexp-db* base-naf-entity-regexp))
+
+;; (regexp-match-entity-db *naf-artist-entity-regexp-db*)
+;; (slot-value *naf-artist-entity-regexp-db* 'subclass-match-entity-db)
+;; (defmethod initialize-instance :after ((entity naf-entity-artist-regexp)
 
 ;;; ==============================
 ;;; NAF-PERSON
 ;;; ==============================
-(defvar *naf-person-entity-control-regexp-matcher-db* nil) ;;(make-hash-table))
-
-(defvar *naf-person-entity-regexp-entity-db* nil) ;;(make-hash-table))
+(defvar *naf-person-entity-regexp-db* nil)
 
 (defclass naf-entity-person-control-regexp (naf-entity-control-name-regexp)
   ()
-  (:documentation 
-   #.(format nil
-"A `naf-entity-control-name-regexp' subclass for DBC NAF person entities.~%~@
-:SEE-ALSO .~%►►►~%")))
+  (:documentation #.(classdoc 'naf-entity-person-control-regexp :class-doc)))
 
 (defclass naf-entity-person-alt-regexp (naf-entity-alt-name-regexp)
   ()
-  (:documentation
-   #.(format nil
- "A `naf-entity-control-name-regexp' subclass for DBC NAF  person entities.~%~@
-:SEE-ALSO .~%►►►~%")))
+  (:documentation #.(classdoc 'naf-entity-person-alt-regexp :class-doc)))
 
 ;;; ==============================
 ;;; :NAF-AUTHOR
 ;;; ==============================
-
-(defvar *naf-author-entity-control-regexp-matcher-db* nil) ;;(make-hash-table))
-
-(defvar *naf-author-entity-regexp-entity-db* nil) ;;(make-hash-table))
+(defvar *naf-author-entity-regexp-db* nil)
 
 (defclass naf-entity-author-control-regexp (naf-entity-control-name-regexp)
   ()
-  (:documentation 
-   #.(format nil
-   "A `naf-entity-control-name-regexp' subclass for DBC NAF author entities.~%~@
-:SEE-ALSO .~%►►►~%")))
+  (:documentation #.(classdoc 'naf-entity-author-control-regexp :class-doc)))
 
 (defclass naf-entity-author-alt-regexp (naf-entity-alt-name-regexp)
   ()
-  (:documentation
-   #.(format nil
-             "A `naf-entity-alt-name-regexp' subclass for DBC NAF author entities.~%~@
-:SEE-ALSO .~%►►►~%")))
+  (:documentation #.(classdoc ' :class-doc)))
 
 ;;; ==============================
 ;;; :NAF-BRAND
 ;;; ==============================
-
-(defvar *naf-brand-entity-control-regexp-matcher-db* nil) ;;(make-hash-table))
-
-(defvar *naf-brand-entity-regexp-entity-db* nil) ;;(make-hash-table))
+(defvar *naf-brand-entity-regexp-db* nil)
 
 (defclass naf-entity-brand-control-regexp (naf-entity-control-name-regexp)
   ()
-  (:documentation 
-   #.(format nil
-"A `naf-entity-control-name-regexp' subclass for DBC NAF brand entities.~%~@
-:SEE-ALSO .~%►►►~%")))
+  (:documentation #.(classdoc 'naf-entity-brand-control-regexp :class-doc)))
 
 (defclass naf-entity-brand-alt-regexp (naf-entity-alt-name-regexp)
   ()
-  (:documentation 
-   #.(format nil
-   "A `naf-entity-alt-name-regexp' subclass for DBC NAF brand entities.~%~@
-:SEE-ALSO .~%►►►~%")))
+  (:documentation #.(classdoc 'naf-entity-brand-alt-regexp :class-doc)))
 
 ;;; ==============================
-
-(defvar *naf-publication-entity-control-regexp-matcher-db* nil) ;;(make-hash-table))
-(defvar *naf-publication-entity-regexp-entity-db* nil) ;;(make-hash-table))
+(defvar *naf-publication-entity-regexp-db* nil)
 
 (defclass naf-entity-publication-control-regexp (naf-entity-control-name-regexp)
   ()
-  (:documentation 
-   #.(format nil
-             "A `naf-entity-control-name-regexp' subclass for DBC NAF publication entities.~%~@
-:SEE-ALSO `naf-entity-publication'.~%►►►~%")))
+  (:documentation #.(classdoc 'naf-entity-publication-control-regexp :class-doc)))
+
+(defclass naf-entity-publication-alt-regexp (naf-entity-control-name-regexp)
+  ()
+  (:documentation #.(classdoc 'naf-entity-publication-alt-regexp :class-doc)))
 
 
 
@@ -421,13 +361,17 @@
        (error "must supply value for keyword MATCH-MATCHER-DB"))
    (or (find-class match-entity-class)
        (error "Arg MATCH-ENTITY-CLASS does not return for `cl:find-class'"))
-   (or (boundp match-entity-db)
-       (error "Arg MATCH-ENTITY-DB not `cl:boundp'"))
-   (or (hash-table-p (symbol-value match-entity-db))
+   ;; (or (boundp match-entity-db)
+   ;;     (error "Arg MATCH-ENTITY-DB not `cl:boundp'"))
+   ;; (or (hash-table-p (symbol-value match-entity-db))
+   ;;     (error "Arg MATCH-ENTITY-DB not `cl:hash-table-p'"))
+   ;; (or (boundp match-matcher-db)
+   ;;     (error "Arg MATCH-MATCHER-DB not `cl:boundp'"))
+   ;; (or (hash-table-p (symbol-value match-matcher-db))
+   ;;     (error "Arg MATCH-MATCHER-DB not `cl:hash-table-p'"))
+   (or (hash-table-p match-entity-db)
        (error "Arg MATCH-ENTITY-DB not `cl:hash-table-p'"))
-   (or (boundp match-matcher-db)
-       (error "Arg MATCH-MATCHER-DB not `cl:boundp'"))
-   (or (hash-table-p (symbol-value match-matcher-db))
+   (or (hash-table-p match-matcher-db)
        (error "Arg MATCH-MATCHER-DB not `cl:hash-table-p'"))
    `(:subclass-match-entity-class ,match-entity-class
      :subclass-match-entity-db    ,match-entity-db 
@@ -480,12 +424,16 @@
          (and (slot-boundp obj 'subclass-match-entity-db)
               (slot-value obj 'subclass-match-entity-db)))
         (then-get-hsh nil))
-    (and (symbolp if-bnd)
-         (setf then-get-hsh 
-               (symbol-value if-bnd)))
-    (and then-get-hsh 
-         (hash-table-p then-get-hsh)
-         (values then-get-hsh if-bnd))))
+    ;; (and (symbolp if-bnd)
+    ;;      (setf then-get-hsh 
+    ;;            (symbol-value if-bnd)))
+    ;; (and then-get-hsh 
+    ;;      (hash-table-p then-get-hsh)
+    ;;      (values then-get-hsh if-bnd))))
+    ;; (and (symbolp if-bnd)
+    ;;      (setf then-get-hsh 
+    ;;            (symbol-value if-bnd)))
+    (and (hash-table-p if-bnd) if-bnd)))
 
 ;; If OBJ's subclass-match-matcher-db slot is bound and its slot-value is
 ;; `cl:hash-table-p' return as if by `cl:values' the hash-table object and the
@@ -555,7 +503,7 @@
 ;;; :CLASS-REGEXPS-FUNCTION-DOCUMENTATION
 ;;; ==============================
 
-(mon:fundoc 'make-entity-regexp-subclass-allocation-if 
+(fundoc 'make-entity-regexp-subclass-allocation-if 
 "Verify the keyword arguments for `make-entity-regexp-subclass-allocation'.~%~@
 If any of the following constraints are not met signal an error.~%~@
 Args MATCH-ENTITY-CLASS, MATCH-ENTITY-DB, and MATCH-MATCHER-DB must each be
@@ -567,7 +515,7 @@ Args MATCH-ENTITY-DB and MATCH-MATCHER-DB must each satisfy `cl:hash-table-p'.~%
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
 
-(mon:fundoc 'make-entity-regexp-subclass-allocation
+(fundoc 'make-entity-regexp-subclass-allocation
 "Instantiate an instance of the ENTITY-REGEXP-SUBCLASS-ALLOCATION class.~%
 Keyword MATCH-ENTITY-CLASS is the class-name of that matchers of a subclass of
 the ENTITY-REGEXP class will match.~%
