@@ -61,7 +61,8 @@ not expose via direct :reader :write :accesor methods.~%"))
 
 (make-documented-class 'entity-regexp
 :match-entity-class
-#.(format nil "The class of entity regexp subclasses match.~%~@
+#.(format nil
+"The class of entity regexp subclasses match.~%~@
 For example, regexp instances of a subclass which match artist NAFs by their
 control name would share the same MATCH-ENTITY-CLASS.~%~@
 Likewise, regexp instances of a subclass which match artist NAFs by their
@@ -245,7 +246,7 @@ always have precedence of an alternative name form.~%~@
  :class-doc
  #.(format nil
 "A `naf-entity-alt-name-regexp' subclass for DBC NAF artist entities.~%~@
-:SEE-ALSO .~%►►►~%")
+:SEE-ALSO .~%►►►~%"))
 
 ;;; ==============================
 ;; naf-entity-person-control-regexp
@@ -286,7 +287,7 @@ always have precedence of an alternative name form.~%~@
  :class-doc
  #.(format nil
 "A `naf-entity-control-name-regexp' subclass for DBC NAF brand entities.~%~@
-:SEE-ALSO .~%►►►~%")
+:SEE-ALSO .~%►►►~%"))
 
 ;;; ==============================
 ;;naf-entity-brand-alt-regexp
@@ -294,7 +295,7 @@ always have precedence of an alternative name form.~%~@
  :class-doc
  #.(format nil
 "A `naf-entity-alt-name-regexp' subclass for DBC NAF brand entities.~%~@
-:SEE-ALSO .~%►►►~%")
+:SEE-ALSO .~%►►►~%"))
 
 ;;; ==============================
 ;; naf-entity-publication-control-regexp

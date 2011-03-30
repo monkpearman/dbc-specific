@@ -63,6 +63,8 @@
              ;; :peform (asdf:load-source-op :before 
              (:file "dbc-class-doc")
              (:file "dbc-class")
+             (:file "dbc-class-edit")
+             (:file "dbc-class-entity")
              (:file "dbc-class-uuid")             
              (:file "dbc-class-paths")
              (:file "dbc-class-regexps")

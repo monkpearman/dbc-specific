@@ -315,7 +315,7 @@
 
 (defclass naf-entity-author-alt-regexp (naf-entity-alt-name-regexp)
   ()
-  (:documentation #.(classdoc ' :class-doc)))
+  (:documentation #.(classdoc 'naf-entity-author-alt-regexp :class-doc)))
 
 ;;; ==============================
 ;;; :NAF-BRAND
