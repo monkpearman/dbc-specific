@@ -14,6 +14,7 @@
 ;; *package*
 
 (defclass base-edit (base-dbc)
+  ()
   (:documentation
    #.(format nil
              "The intended use for subclassed instances of the base-edit class is to record~@
@@ -41,7 +42,7 @@
   ;; :documentation #.(format nil "")
   )
 
-#|
+|#
 
 
 ;;; ==============================
