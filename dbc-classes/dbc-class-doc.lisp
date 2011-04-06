@@ -10,6 +10,53 @@
 
 (eval-when (:compile-toplevel); :load-toplevel :execute)
 
+
+;;; ==============================
+;;; :FILE dbc-classes/dbc-class-paths.lisp
+
+;;; ==============================
+;;; system-base
+(make-documented-class 'system-base
+:class-doc
+#.(format nil 
+"Toplevel class for dbc system and system path related objects.~%►►►~%"))
+
+;;; ==============================
+;;; system-path
+(make-documented-class 'system-path 
+:system-path 
+#.(format nil 
+"Slot holding the base or topmost paths for dbc system.~%~@
+This slot is class allocated and all sub-systems in the dbc-system automatically
+inherit its value.~%~@
+This slot value is set automatically at loadtime and should not be rebound.~%~@
+User code should not attempt setf the value of this slot!~%")
+:class-doc
+#.(format nil "Base class for storing dbc system paths.~%►►►~%"))
+
+;;; ==============================
+;; system-subdir
+(make-documented-class 'system-subdir
+:sub-path
+#.(format nil 
+"An existing pathname with SUB-NAME in PARENT-PATH.~%")
+:sub-name
+#.(format nil 
+"Name component of a subdir of PARENT-PATH.~%")
+:parent-path
+#.(format nil 
+"The immediate PATHNAME containing the SUB-PATH with SUB-NAME.~%")
+:var-name
+#.(format nil 
+"Initially names the variable holding this object.~%~@
+Complex binding behaviour at loadtime.~%")
+:class-doc
+#.(format nil 
+"Slot values of this class access metatda related to subdir/subcomponents
+relative to the systems system-path.~%~@
+Instances of this class should be instantiated at loadtime enabling subsequent
+system introspection of the system at runtime.~%►►►~%"))
+
 ;;; ==============================
 ;; base-regexp
 (make-documented-class 'base-regexp

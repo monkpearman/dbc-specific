@@ -231,7 +231,36 @@
 ;;           (uuid-request-integer  arr 0 len)))
 ;;   (setf rslt `(,(eql rnd-trip-17 rslt) ,rslt)))
 ;;
+;; :NOTE Testing serialization/deserilization
+;; (let ((file (make-pathname :directory '(:absolute "tmp")
+;;                            :name "temp-bytes"))
+;;       (w-uuid (make-v5-uuid *uuid-namespace-dns* "bubba"))
+;;       ;; w-uuid => EEA1105E-3681-5117-99B6-7B2B5FE1F3C7
+;;       (gthr '()))
+;;   (with-open-file (s file
+;;                      :if-exists :supersede
+;;                      :if-does-not-exist :create
+;;                      :direction :output
+;;                      :element-type 'uuid-ub8)
+;;     (serialize-uuid w-uuid s))
+;;   ;; :NOTE following is basis for deserializing a uuid from file, e.g.: 
+;;   ;;  (defun deserialize-uuid (file) (...) )
+;;   (with-open-file (stream file :element-type 'uuid-ub8)
+;;     (do ((code (read-byte stream nil :eof) (read-byte stream nil :eof)))
+;;         ((eql code :eof))
+;;       (push code gthr)))
+;;   (and gthr
+;;        (setf gthr (uuid-from-byte-array (make-array 16
+;;                                                     :element-type 'uuid-ub8
+;;                                                     :initial-contents (nreverse gthr)))))
+;;   (unwind-protect 
+;;        (list (uuid-eql w-uuid gthr)
+;;              gthr
+;;              w-uuid)
+;;     (delete-file file)))
+;;
 ;;; ==============================
+
 
 
 (in-package #:dbc)
@@ -316,11 +345,14 @@
 
 (defun uuid-hex-string-36-p (maybe-uuid-hex-string-36)
   (when (uuid-string-36-p maybe-uuid-hex-string-36)
-    (let ((spilt-uuid (mon:string-split-on-chars (the uuid-string-36 maybe-uuid-hex-string-36) #\-)))
-      (and (= (length spilt-uuid) 5)
-           (equal (map 'list #'length spilt-uuid) (list 8 4 4 4 12))
+    (let ((split-uuid (split-sequence:split-sequence-if #'(lambda (x) 
+                                                            (char= #\- x))
+                                                        (the uuid-string-36 maybe-uuid-hex-string-36))))
+      (declare (list split-uuid))
+      (and (eq (length split-uuid) 5)
+           (equal (map 'list #'length split-uuid) (list 8 4 4 4 12))
            (loop
-              :for chk-hex :in spilt-uuid
+              :for chk-hex :in split-uuid
               :always (mon:string-all-hex-char-p (the string chk-hex)))))))
 
 ;;; ==============================
@@ -402,12 +434,48 @@
                     Each field is treated as an integer and has its value printed as a zero-filled~%~@
                     hexadecimal digit string with the most significant digit first.")))
 
-(defun unique-universal-identifier-p (maybe-uuid-instance)
-  (typep maybe-uuid-instance 'unique-universal-identifier))
+;; :SOURCE kyoto-persistence/uuid.lisp
+;; :SEE (URL `git://github.com/kraison/kyoto-persistence.git') 
+(defgeneric uuid-eql (uuid-a uuid-b)
+  (:method ((uuid-a unique-universal-identifier) (uuid-b unique-universal-identifier))
+    (equalp (uuid-get-namespace-bytes uuid-a) (uuid-get-namespace-bytes uuid-b)))
+  (:method ((uuid-a unique-universal-identifier) uuid-b)
+    nil)
+  (:method (uuid-a (uuid-b unique-universal-identifier))
+    nil)
+  (:method ((uuid-a t) (uuid-b t))
+    nil)
+  (:documentation 
+   #.(format nil 
+             "Whether object UUID-A is eql UUID-B.~%~@
+:EXAMPLE~%
+ \(uuid-eql \(make-v5-uuid *uuid-namespace-dns* \"bubba\"\)
+           \(make-v5-uuid *uuid-namespace-dns* \"bubba\"\)\)~%
+ \(uuid-eql \(make-v5-uuid *uuid-namespace-dns* \"bubba\"\)
+           \(make-v5-uuid *uuid-namespace-dns* \"bubbA\"\)\)~%
+ \(uuid-eql \"bubb\" \"bobby\"\)~%~@
+:SEE-ALSO `unique-universal-identifier-p'.~%►►►")))
+
+;;; ==============================
+;;; :NOTE using generic fun instead.
+;; (defun unique-universal-identifier-p (maybe-uuid-instance)
+;;   (typep maybe-uuid-instance 'unique-universal-identifier))
+(defgeneric unique-universal-identifier-p (object)
+  (:method ((object unique-universal-identifier)) t)
+  (:method (object) nil)
+  (:documentation
+   #.(format nil
+"Whether MAYBE-UUID-INSTANCE is a unique-universal-identifier.~%~@
+Return T when argument is an instace of the class
+`dbc:unique-universal-identifier' or one of its subclasses.~%~@
+:EXAMPLE~%
+ \(unique-universal-identifier-p *uuid-namespace-dns*\)~%
+ \(unique-universal-identifier-p t\)~%~@
+:SEE-ALSO `uuid-eql'.~%►►►")))
 
 (defmethod print-object ((id unique-universal-identifier) stream)
   ;;  "Print UNIQUE-UNIVERSAL-IDENTIFIER ID to to STREAM in string representation.
-  ;;  (example string 6ba7b810-9dad-11d1-80b4-00c04fd430c8)"
+  ;;  :EXAMPLE (print-object (make-v4-uuid) nil)"  
   (with-slots (%uuid_time-low 
                %uuid_time-mid
                %uuid_time-high-and-version
@@ -499,7 +567,7 @@
 ;; :NOTE What about `cl:read-from-string' instead of `cl:parse-integer' e.g.:
 ;;   (let ((*read-base* 16)) (read-from-string "88"))
 ;; No. When asked on #lisp noting that the bounds fo string and its contents are
-;; known and pre-verifed to be all hexadecimal chars -- nyef says:
+;; known and pre-verified to be all hexadecimal chars -- nyef says:
 ;; ,----
 ;; | Use PARSE-INTEGER. It's more efficient, and makes an explicit
 ;; | statement about what syntax you're expecting as input.
@@ -526,9 +594,69 @@
                    :%uuid_node 
                    (the uuid-ub48 (parse-integer chk-uuid-str :start 24 :end 36 :radix 16)))))
 
-;; (uuid-number-to-byte-array 825973027016)
 ;;; ==============================
+;; :NOTE vivace-graph-v2 serializes the integers of UUID not its bytes.
+;; :SOURCE vivace-graph-v2-GIT/uuid.lisp
+;; (defun serialize-uuid-vivace (uuid stream)
+;;   (with-slots 
+;; 	(time-low time-mid time-high-and-version clock-seq-and-reserved clock-seq-low 
+;; 		  node)
+;;       uuid
+;;     (loop for i from 3 downto 0
+;;        do (write-byte (ldb (byte 8 (* 8 i)) time-low) stream))
+;;     (loop for i from 5 downto 4
+;;        do (write-byte (ldb (byte 8 (* 8 (- 5 i))) time-mid) stream))
+;;     (loop for i from 7 downto 6
+;;        do (write-byte (ldb (byte 8 (* 8 (- 7 i))) time-high-and-version) stream))
+;;     (write-byte (ldb (byte 8 0) clock-seq-and-reserved) stream)
+;;     (write-byte (ldb (byte 8 0) clock-seq-low) stream)
+;;     (loop for i from 15 downto 10
+;;        do (write-byte (ldb (byte 8 (* 8 (- 15 i))) node) stream))))
+;;
+;; (defun serialize-uuid-vivace (uuid stream)
+;;   (declare (type unique-universal-identifier uuid)
+;;            (type stream stream)
+;;            (optimize (speed 3)))  
+;;   (with-slots (%uuid_time-low               ;; 4
+;;                %uuid_time-mid               ;; 2
+;;                %uuid_time-high-and-version  ;; 2
+;;                %uuid_clock-seq-and-reserved ;; 1
+;;                %uuid_clock-seq-low          ;; 1
+;;                %uuid_node)                  ;; 6
+;;       uuid
+;;     (declare (type uuid-ub32 %uuid_time-low)
+;;              (type uuid-ub16 %uuid_time-mid %uuid_time-high-and-version)
+;;              (type uuid-ub8  %uuid_clock-seq-and-reserved %uuid_clock-seq-low)
+;;              (type uuid-ub48 %uuid_node))
+;;     ;; :NOTE This is is uuid byte writer as `uuid-to-byte-array's is byte reader
+;;     (loop for i from 3 downto 0
+;;        do (write-byte (ldb (byte 8 (* 8 i)) %uuid_time-low) stream))
+;;     (loop for i from 5 downto 4
+;;        do (write-byte (ldb (byte 8 (* 8 (- 5 i))) %uuid_time-mid) stream))
+;;     (loop for i from 7 downto 6
+;;        do (write-byte (ldb (byte 8 (* 8 (- 7 i))) %uuid_time-high-and-version) stream))
+;;     (write-byte (ldb (byte 8 0) %uuid_clock-seq-and-reserved) stream)
+;;     (write-byte (ldb (byte 8 0) %uuid_clock-seq-low) stream)
+;;     (loop for i from 15 downto 10
+;;        do (write-byte (ldb (byte 8 (* 8 (- 15 i))) %uuid_node) stream))))
+;;; ==============================
+
+(defun serialize-uuid (uuid stream)
+  (declare (type unique-universal-identifier uuid)
+           (type stream stream)
+           (optimize (speed 3)))
+  (loop 
+     with bv = (the uuid-byte-array-16 (uuid-get-namespace-bytes uuid))
+     for i from 0 below 16
+     do (write-byte (aref bv i) stream)))
+
+
+
 (defun uuid-number-to-byte-array (num)  ; &optional number-type)
+  ;; :EXAMPLE
+  ;; (uuid-number-to-byte-array 825973027016)
+  ;;  => #(200 48 212 79 192 0), 6
+  ;;
   ;; (slot-value *uuid-namespace-dns* '%uuid_node) ;=> 825973027016
   ;; (logand 825973027016 255)          ;=> 200
   ;; (logand (ash 825973027016 -8) 255) ;=> 48
@@ -550,9 +678,6 @@
            ;; Knock down all 1 bits above 255 to 0
            :do (setf (aref byte-arr count) (logand val #XFF))
            :finally (return (values byte-arr type-cnt))))))
-;;
-;; (uuid-number-to-byte-array 825973027016)
-;; #(200 48 212 79 192 0), 6
 
 ;;; :NOTE `uuid-get-namespace-bytes' and `uuid-to-byte-array' are essentially the same.
 (defun uuid-get-namespace-bytes (uuid)
@@ -564,10 +689,11 @@
   ;;  (1 . #(180)) 
   ;;  (^ . #(0 192 79 212 48 200))) ;; <- This must _always_ be a 6 elt array
   ;;
-  ;; Replaces following from uuid-digest-uuid-string
+  ;; (length (uuid-get-namespace-bytes *uuid-namespace-dns*))
+  ;;
+  ;; Replaces following from `uuid-digest-uuid-string'
   ;; (ironclad:ascii-string-to-byte-array (uuid-get-bytes (uuid-print-bytes nil *uuid-namespace-dns*)))
   ;; 
-  ;; (length (uuid-get-namespace-bytes *uuid-namespace-dns*))
   (declare (type unique-universal-identifier uuid)
            (optimize (speed 3)))
   (with-slots (%uuid_time-low               ;; 4
@@ -586,31 +712,31 @@
                           %uuid_clock-seq-and-reserved %uuid_clock-seq-low %uuid_node)
        for (a b) of-type (uuid-byte-array (mod 7)) = (multiple-value-list (uuid-number-to-byte-array slots))
        summing b into len
-       ;; append (loop for idx from 0 below b collect (aref a idx)) into rslt
        nconc  (loop for idx from 0 below b collect (aref a idx)) into rslt
        finally (locally 
                    (declare ((integer 16 20) len)
                             (cons rslt))
                  (return (make-array len 
-                                     :element-type 'uuid-ub8 ;; '(unsigned-byte 8)
+                                     :element-type 'uuid-ub8
                                      :initial-contents rslt))))))
 ;; 
-;; following is the proof:
+;; Following is the proof:
 ;;
 ;; (let ((new-nmspc (make-v4-uuid)))
 ;;   (list (uuid-get-namespace-bytes (make-v5-uuid new-nmspc "bubba"))
-;;         (ironclad:ascii-string-to-byte-array (uuid-get-bytes (uuid-print-bytes nil (make-v5-uuid new-nmspc "bubba"))))))
-
-;;;;
+;;         (ironclad:ascii-string-to-byte-array
+;;            (uuid-get-bytes (uuid-print-bytes nil (make-v5-uuid new-nmspc "bubba"))))))
 ;; => (#(27 38 0 193 81 202 82 186 187 104 105 188 142 176 0 123)
 ;;     #(27 38 0 193 81 202 82 186 187 104 105 188 142 176 0 123))
+;;
 ;; (uuid-get-namespace-bytes (make-v5-uuid *uuid-namespace-dns* "bubba"))
 ;; => #(238 161 16 94 54 129 81 23 153 182 123 43 95 225 243 199)
-;; (ironclad:ascii-string-to-byte-array (uuid-get-bytes (uuid-print-bytes nil (make-v5-uuid *uuid-namespace-dns* "bubba"))))
+;;
+;; (ironclad:ascii-string-to-byte-array 
+;;   (uuid-get-bytes (uuid-print-bytes nil (make-v5-uuid *uuid-namespace-dns* "bubba"))))
 ;; => #(238 161 16 94 54 129 81 23 153 182 123 43 95 225 243 199)
 
-
-;; :NOTE specialized on objects that are uuid instances not the wacky return value of:
+;; :NOTE Specialized on objects that are uuid instances instead of the wacky return value of:
 ;;  (uuid-get-bytes (uuid-print-bytes nil *uuid-namespace-dns*))
 (defun uuid-digest-uuid-instance (digest-version uuid-instance name)
   ;; This is step two of RFC4122 section 4.3 
@@ -862,8 +988,6 @@
       (3 (format-v3-uuid (the uuid-byte-array-16 digest-byte-array)))
       (5 (format-v5-uuid (the uuid-byte-array-20 digest-byte-array))))))
 
-;;(format-v3or5-uuid (uuid-digest-uuid-instance 5 *uuid-namespace-dns* "bubba") 5)
-
 (defun make-v3-uuid (namespace name)
   (declare (type string name)
            (unique-universal-identifier namespace)
@@ -971,8 +1095,7 @@
 
 
 ;;; ==============================
-;;; :NOTE Everything below here is deprecated.
-;;; This includes `uuid-digest-uuid-string'
+;;; :NOTE Everything below here is deprecated, including `uuid-digest-uuid-string'.
 ;;; ==============================
 
 (defun uuid-load-bytes (byte-array &key (byte-size 8) (start 0) end)
@@ -1036,10 +1159,11 @@
       (the uuid-byte-string (make-array 16 :element-type 'character :initial-contents outstr)))))
 
 ;;; ==============================
-;;; :NOTE the signaure of the arrray returned by `uuid-digest-uuid-string' differs for :MD5 vs :SHA1
+;;; :NOTE The type signature of the arrray returned by `uuid-digest-uuid-string' differs for :MD5 vs :SHA1
 ;;; v5 :SHA1 returns an array of type: (simple-array (unsigned-byte 8) (20))
 ;;; v3 :MD5 returns  an array of type: (simple-array (unsigned-byte 8) (16))
-;;; :NOTE No longer using. This was specialized a on the return value of:
+;;
+;;; :NOTE No longer using. This was specialized on the return value of:
 ;;;  (uuid-get-bytes (uuid-print-bytes nil *uuid-namespace-dns*))
 (defun uuid-digest-uuid-string (digest-version string-uuid name)
   ;; This is step two of RFC4122 section 4.3 
@@ -1064,16 +1188,16 @@
 ;; (uuid-request-integer (uuid-digest-uuid-instance 5 *uuid-namespace-dns* "bubba") 10 6)
 ;; (make-v5-uuid *uuid-namespace-dns* "bubba") 
 ;; => EEA1105E-3681-5117-99B6-7B2B5FE1F3C7
-
+;;
 ;; (uuid-request-integer (uuid-digest-uuid-instance 5 *uuid-namespace-dns* "bubba") 10 6)
 ;; 135426222453703
 ;;
 ;; (uuid-request-integer (uuid-digest-uuid-string 5 (uuid-get-bytes (uuid-print-bytes nil *uuid-namespace-dns*)) "bubba") 10 6)
 ;; 135426222453703
-
+;;
 ;; (uuid-load-bytes (uuid-digest-uuid-string 5 (uuid-get-bytes (uuid-print-bytes nil *uuid-namespace-dns*)) "bubba") :start 10 :end 15)
 ;; => 135426222453703
-
+;;
 ;; (uuid-digest-uuid-instance 5 *uuid-namespace-dns* "bubba")
 ;; #(238 161 16 94 54 129 17 23 153 182 123 43 95 225 243 199 6 226 80 144)
 ;;
@@ -1092,61 +1216,18 @@
 ;;
 ;; (uuid-to-byte-array (make-v5-uuid *uuid-namespace-dns* "bubba"))
 ;; #(238 161 16 94 54 129 81 23 153 182 123 43 95 225 243 199)
-
-;;; ==============================
-;; :WAS the convoluted print-bytes/get-bytes route
-;; (defun make-v3-uuid (namespace name)
-;;   (declare (type string name)
-;;            (unique-universal-identifier namespace)
-;;            (optimize (speed 3)))
-;;   ;;;; (format-v3or5-uuid (uuid-digest-uuid-string 3 (uuid-get-bytes (uuid-print-bytes nil namespace)) name) 3))
-;;    (format-v3or5-uuid
-;;     (the uuid-byte-array-16    
-;;       (uuid-digest-uuid-string 3 
-;;         (the uuid-byte-string 
-;;           (uuid-get-bytes 
-;;            (the uuid-string-32
-;;              (uuid-print-bytes nil namespace)))) name)) 3))
-;;
-;; :WAS the convoluted print-bytes/get-bytes route
-;; (defun make-v5-uuid (namespace name)
-;;   (declare (type string name)
-;;            (unique-universal-identifier namespace)
-;;            (optimize (speed 3)))
-;;   ;; (format-v3or5-uuid (uuid-digest-uuid-string  5 (uuid-get-bytes (uuid-print-bytes nil namespace)) name) 5))
-;;   (format-v3or5-uuid
-;;    (the uuid-byte-array-20
-;;      (uuid-digest-uuid-string 5
-;;        (the uuid-byte-string 
-;;          (uuid-get-bytes 
-;;           (the uuid-string-32
-;;             (uuid-print-bytes nil namespace)))) name)) 5)
-;;
-;;
-;; (defun uuid-number-to-byte-array (num)
-;;   (declare ((integer 0 *) num))
-;;   (if (zerop num)
-;;       (values (make-array 1 :element-type 'uuid-ub8 :initial-contents (list 0)) 1)
-;;       (loop
-;;          :with type-cnt = (uuid-get-bytes-for-integer num)
-;;          :for val = num :then (ash val -8)
-;;          :for count :from 0 below type-cnt 
-;;          ;; Knock down all 1 bits above 255 to 0 ;; #XFF -> 255
-;;          :collect (logand val #XFF) :into bits
-;;          :finally (return (values (make-array count 
-;;                                               :element-type 'uuid-ub8 
-;;                                               :initial-contents  (nreverse bits))
-;;                                   count)))))
 ;;; ==============================
 
-;; ;;; :DOESN'T work
+
+;;; ==============================
+;; :DOESN'T work
 ;; (defun make-uuid-namespace-loadtime-vars (namespace-pairs)
 ;;   (loop 
 ;;      :for (nm . id-string)  namespace-pairs
 ;;      :when (uuid-hex-string-36-p id-string)
 ;;      :do  (setf nm (make-uuid-from-string id-string))))
 
-;; (mon:fundoc 'make-uuid-namespace-loadtime-vars
+;; (fundoc 'make-uuid-namespace-loadtime-vars
 ;; "Set values of NAMESPACE-PAIRS to UUIDs at loadtime.~%~@
 ;; NAMESPACE-PAIRS is a list of conses each of the form:~%
 ;;  \( <SYMBOL> . <UUID-HEX-STRING-36> \)~%~@
@@ -1161,7 +1242,6 @@
 ;;; ==============================
 ;;; :UUID-TYPES-DOCUMENTATION
 ;;; ==============================
-
 
 (typedoc 'uuid-ub48
 "An object of type: \(unsigned-byte 48\)~%~@
@@ -1358,14 +1438,14 @@ If the constraint fails signal a `mon:simple-error-mon' condition.~%~@
  \(make-uuid-from-string-if \"6ba7b810-9dad--11d1-80b4-00c04fd430c8\"\)~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
 
-(fundoc 'unique-universal-identifier-p
-"Whether MAYBE-UUID-INSTANCE is a unique-universal-identifier.
-Return T when argument is an instace of the class
-`dbc:unique-universal-identifier' or one of its subclasses.~%~@
-:EXAMPLE~%
- \(unique-universal-identifier-p *uuid-namespace-dns*\)
- \(unique-universal-identifier-p t\)~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
+;; (fundoc 'unique-universal-identifier-p
+;; "Whether MAYBE-UUID-INSTANCE is a unique-universal-identifier.
+;; Return T when argument is an instace of the class
+;; `dbc:unique-universal-identifier' or one of its subclasses.~%~@
+;; :EXAMPLE~%
+;;  \(unique-universal-identifier-p *uuid-namespace-dns*\)
+;;  \(unique-universal-identifier-p t\)~%~@
+;; :SEE-ALSO `<XREF>'.~%►►►")
 
 (fundoc 'uuid-princ-to-string
             "Return string representation fo UUID-INSTANCE as if by `cl:princ-to-string'.~%~@
@@ -1374,6 +1454,37 @@ signaled if not~%~@
 :EXAMPLE~%~@
  \(uuid-princ-to-string *uuid-namespace-dns*\)
  \(uuid-princ-to-string t\)
+:SEE-ALSO `<XREF>'.~%►►►")
+
+(fundoc 'serialize-uuid
+"Serialize UUID to STREAM.~%~@
+Bytes of UUID are written to STREAM.~%~@
+Stream should have an :element-type '\(unsigned-byte 8\).~%~@
+:EXAMPLE~%~@
+ \(let \(\(file \(make-pathname :directory '\(:absolute \"tmp\"\)
+                            :name \"temp-bytes\"\)\)
+       \(w-uuid \(make-v5-uuid *uuid-namespace-dns* \"bubba\"\)\)
+       \(gthr '\(\)\)\)
+   \(with-open-file \(s file
+                      :if-exists :supersede
+                      :if-does-not-exist :create
+                      :direction :output
+                      :element-type 'uuid-ub8)
+     \(serialize-uuid w-uuid s\)\)
+  ;; :NOTE basis for deserializing to file \(defun deserialize-uuid \(file\) ;
+   \(with-open-file \(stream file :element-type 'uuid-ub8\)
+     \(do \(\(code \(read-byte stream nil :eof\) \(read-byte stream nil :eof\)\)\)
+         \(\(eql code :eof\)\)
+       \(push code gthr\)\)\)
+   \(and gthr
+        \(setf gthr \(uuid-from-byte-array \(make-array 16
+                                                     :element-type 'uuid-ub8
+                                                     :initial-contents \(nreverse gthr\)\)\)\)\)
+   \(unwind-protect 
+        \(list \(uuid-eql w-uuid gthr\)
+              gthr
+              w-uuid\)
+     \(delete-file file\)\)\)~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
 
 (fundoc '%verify-slot-boundp-and-type
@@ -1627,6 +1738,53 @@ Emacs lisp' `sha1-binary':
 :SEE-ALSO `<XREF>'.~%►►►")
 
 
+;;; ==============================
+;;; UNUSED-FROM-ORIGINAL-UUID
+;;; ==============================
+;;
+;; :WAS The convoluted print-bytes/get-bytes route
+;; (defun make-v3-uuid (namespace name)
+;;   (declare (type string name)
+;;            (unique-universal-identifier namespace)
+;;            (optimize (speed 3)))
+;;   ;;;; (format-v3or5-uuid (uuid-digest-uuid-string 3 (uuid-get-bytes (uuid-print-bytes nil namespace)) name) 3))
+;;    (format-v3or5-uuid
+;;     (the uuid-byte-array-16    
+;;       (uuid-digest-uuid-string 3 
+;;         (the uuid-byte-string 
+;;           (uuid-get-bytes 
+;;            (the uuid-string-32
+;;              (uuid-print-bytes nil namespace)))) name)) 3))
+;;
+;; :WAS The convoluted print-bytes/get-bytes route
+;; (defun make-v5-uuid (namespace name)
+;;   (declare (type string name)
+;;            (unique-universal-identifier namespace)
+;;            (optimize (speed 3)))
+;;   ;; (format-v3or5-uuid (uuid-digest-uuid-string  5 (uuid-get-bytes (uuid-print-bytes nil namespace)) name) 5))
+;;   (format-v3or5-uuid
+;;    (the uuid-byte-array-20
+;;      (uuid-digest-uuid-string 5
+;;        (the uuid-byte-string 
+;;          (uuid-get-bytes 
+;;           (the uuid-string-32
+;;             (uuid-print-bytes nil namespace)))) name)) 5)
+;;
+;;
+;; (defun uuid-number-to-byte-array (num)
+;;   (declare ((integer 0 *) num))
+;;   (if (zerop num)
+;;       (values (make-array 1 :element-type 'uuid-ub8 :initial-contents (list 0)) 1)
+;;       (loop
+;;          :with type-cnt = (uuid-get-bytes-for-integer num)
+;;          :for val = num :then (ash val -8)
+;;          :for count :from 0 below type-cnt 
+;;          ;; Knock down all 1 bits above 255 to 0 ;; #XFF -> 255
+;;          :collect (logand val #XFF) :into bits
+;;          :finally (return (values (make-array count 
+;;                                               :element-type 'uuid-ub8 
+;;                                               :initial-contents  (nreverse bits))
+;;                                   count)))))
 ;;; ==============================
 ;; (defmacro arr-to-bytes (from to array)
 ;;   "Helper macro used in `uuid-from-byte-array'."

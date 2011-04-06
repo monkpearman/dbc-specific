@@ -18,7 +18,7 @@
 "Access the class allocated slot value `system-path' of DBC-SYSTEM.~%~@
 The value of the `system-path' slot affects _all_ instances of `system-path' and~@
 subclassed instances.
-User code should not specialize methods on this function use system-path instead.")))
+User code should not specialize methods on this function use system-path instead.~%►►►~%")))
 
 (defgeneric (setf system-base-path) (path dbc-system)
   (:documentation 
@@ -27,15 +27,15 @@ User code should not specialize methods on this function use system-path instead
 Setting the `system-path' slot affects _all_ instances of `system-path' class and
 subclassing instances.~%~@
 The intent is that this slot be bound _once_ at system loadtime.
-IOW not intendend for user code method specializers!")))
+IOW not intendend for user code method specializers!~%►►►~%")))
 
 (defgeneric system-path (dbc-system)
   (:documentation 
    #.(format nil
-             "Access the class allocated slot value `system-path' of DBC-SYSTEM.~%~@
+"Access the class allocated slot value `system-path' of DBC-SYSTEM.~%~@
 The value of the the `system-path' slot affects _all_ instances of `system-path' and~@
 subclassed instances. It is not intendend that this slot be setfable.
-User code should specialize methods on this function.")))
+User code should specialize methods on this function.~%►►►~%")))
 
 ;; :SEE (URL `http://paste.lisp.org/+2L12/1')
 (defgeneric (setf system-path) (var dbc-system)
@@ -43,25 +43,31 @@ User code should specialize methods on this function.")))
    #.(format nil
 "A no-op when attempting to set class allocated slot value `system-path' of DBC-SYSTEM.~%~@
 The value of the the `system-path' slot affects _all_ instances of `system-path' and~@
-subclassed instances. It is not intendend that this slot be directly setfable!")))
+subclassed instances. It is not intendend that this slot be directly setfable!~%►►►~%")))
 
+;; :NOTE What about specializing on the GF `cl:describe' instead??
 (defgeneric system-described  (obj stream)
-  (:documentation "Describer for instances of subclasses of `system-base'." ))
+  (:documentation
+   #.(format nil "Describer for instances of subclasses of `system-base'.~%►►►~%" )))
 
 (defgeneric system-path-var-binding (obj)
-  (:documentation "Names a variable bound to an object instance."))
+  (:documentation
+   #.(format nil "Names a variable bound to an object instance.~%►►►~%")))
 
 (defgeneric (setf system-path-var-binding) (var obj)
-  (:documentation "Set the name of  a variable bound to an object instance."))
+  (:documentation
+   #.(format nil "Set the name of  a variable bound to an object instance.~%►►►~%")))
 
 (defgeneric system-path-if (object)
-  (:documentation "Set the path for OBJECT if other slots are available and directory exists."))
+  (:documentation
+   #.(format nil"Set the path for OBJECT if other slots are available and directory exists.~%►►►~%")))
 
 ;; (defgeneric (setf system-path-if) (object)
 ;;   (:documentation "Set the path for OBJECT if other slots are available and directory exists."))
 
 (defgeneric system-parent-path-ensure (object &key)
-  (:documentation "Ensure the specified parent path for object exists."))
+  (:documentation
+   #.(format nil "Ensure the specified parent path for object exists.~%►►►~%")))
 
 
 ;;; ==============================
@@ -70,37 +76,39 @@ subclassed instances. It is not intendend that this slot be directly setfable!")
 
 (defclass system-base (base-dbc)
   ()
-  (:documentation "Toplevel class for dbc system and system path related objects."))
+  (:documentation #.(classdoc 'system-base :class-doc)))
 
 (defclass system-path (system-base)
   ((system-path 
     :initform nil
     :accessor system-base-path
-    :allocation :class))
-  (:documentation "Base class for storing dbc system paths."))
+    :allocation :class
+    :documentation #.(classdoc 'system-path :system-path)))
+  (:documentation  #.(classdoc 'system-path :class-doc)))
 
 (defclass system-subdir (system-path)
   ((sub-path 
     :initarg :sub-path
     :initform nil
     :accessor sub-path
-    :documentation "An existing pathname with SUB-NAME in PARENT-PATH.")
+    :documentation #.(classdoc 'system-subdir :sub-path))
    (sub-name
     :initarg :sub-name
     :initform nil
     :accessor sub-name
-    :documentation "Name component of a subdir of PARENT-PATH.")
+    :documentation #.(classdoc 'system-subdir :sub-name))
    (parent-path
     :initarg :parent-path
     :initform nil
     :accessor parent-path
-    :documentation "The immediate PATHNAME containing the SUB-PATH with SUB-NAME.")
+    :documentation #.(classdoc 'system-subdir :parent-path))
    (var-name
     :initarg :var-name
     :initform nil
     ;; :accessor ;var-name system-path-var-binding)
-    ))
-  (:documentation "Subdir in the system-path."))
+    :documentation #.(classdoc 'system-subdir :var-name)))
+  (:documentation  #.(classdoc 'system-subdir :class-doc)))
+
 
 ;; (find-method #'var-name nil '(system-subdir))
 ;=> #<SB-MOP:STANDARD-READER-METHOD VAR-NAME, slot:VAR-NAME, (SYSTEM-SUBDIR) {D0ED001}>
@@ -220,13 +228,22 @@ subclassed instances. It is not intendend that this slot be directly setfable!")
 ;;; :FUNCTIONS
 ;;; ==============================
 
+;; :NOTE As currently written, the let-binding of dbc-sys-chk with the
+;; conditional on `mon:pathname-directory-system' is likely damn near impossible
+;; to signal, esp. as we only intend that it be invoked at loadtime in a top level
+;; form from a file `cl:load'ed by way of an `asdf:perform' :after method
+;; specialized on `asdf:load-op'. IOW by the time the `dbc:find-system-path'
+;; form is evaluated the :dbc system _must_ present. And, if it isn't
+;; `mon:pathname-directory-system' will make it so...
+;; However, `mon:pathname-directory-system' may eventually be rewritten because I misunderstood the semantics of which asdf:find-system
 (defun find-system-path ()
-  (let* ((dbc-sys-chk (or ;; :NOTE what about `cl:*load-pathname*'?
-		       (mon:pathname-directory-system :dbc)
-		       (mon:simple-error-mon  :w-sym  'find-system-path
-					      :w-type 'function
-					      :w-spec "mon:pathname-directory-system can not find system :DBC"
-                                              :signal-or-only nil))) 
+  (let* ((dbc-sys-chk 
+          (or ;; :NOTE what about `cl:*load-pathname*'?
+           (pathname-directory (mon:pathname-directory-system :dbc))
+           (mon:simple-error-mon  :w-sym  'find-system-path
+                                  :w-type 'function
+                                  :w-spec "mon:pathname-directory-system can not find system :DBC"
+                                  :signal-or-only nil))) 
 	 (dbc-if (or
 		  (fad:directory-exists-p (make-pathname :directory dbc-sys-chk)) ;; Paranoia
 		  (mon:simple-error-mon  :w-sym  'find-system-path

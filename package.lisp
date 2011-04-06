@@ -94,6 +94,8 @@
              ;; 
              ;; #:make-uuid-namespace-loadtime-vars    ; borken?
              ;;
+             #:serialize-uuid
+             #:uuid-eql
              #:uuid-digest-uuid-instance
              #:uuid-get-bytes-for-integer
              #:uuid-number-to-byte-array
