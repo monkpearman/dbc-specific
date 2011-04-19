@@ -30,6 +30,7 @@
   :version "1.0.0"
   :depends-on (:cxml
 	       :closure-html
+               :unicly
                ;; 
 	       ;; :local-time
 	       ;; :drakma
@@ -50,9 +51,13 @@
   :components 
   ((:file "package")
    (:file "specials")
-   (:module "dbc-uuid"
-            :components
-            ((:file "dbc-uuid")))
+   ;;
+   ;; (:module "dbc-uuid"
+   ;;          :components
+   ;;          ((:file "dbc-uuid-types")
+   ;;           (:file "dbc-uuid-class" :depends-on ("dbc-uuid-types"))
+   ;;           (:file "dbc-uuid"       :depends-on ("dbc-uuid-types" "dbc-uuid-class"))))
+   ;;
    (:file "conditions")
    (:module "dbc-classes"
             :components                 

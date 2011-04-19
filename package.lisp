@@ -1,6 +1,6 @@
 
 
-(defpackage #:dbc (:use #:common-lisp)
+(defpackage #:dbc (:use #:common-lisp #:unicly)
 	    ;;
 	    ;; (:nicknames #:dbc-sys)
 	    ;;
@@ -15,6 +15,7 @@
              #:*system-notes-dir*
              #:*system-tests-dir*
              #:*system-tests-temp-dir*
+             #:*parsed-ref-field-name-slot-transform* ;; dbc-class-refs-convert.lisp
 	     #:*xml-output-dir* 
              #:*xml-output-refs-name*          ;; ---> OUTPUT
              #:*xml-output-refs-ext*           ;; ---> OUTPUT
@@ -26,12 +27,6 @@
              ;;
              #:*parsed-ref-class-name*
 	     ;;
-             #:*uuid-random-state*
-             #:*uuid-namespace-dns*
-             #:*uuid-namespace-url* 
-             #:*uuid-namespace-oid* 
-             #:*uuid-namespace-x500*
-	     ;;
            ;; conditions.lisp
              ;;
 	     #:dbc-error
@@ -42,70 +37,9 @@
              #:w-system-slot-locus      ;; reader system-path-error
 	     ;;
              ;;
+             ;; use UNICLY
            ;; dbc-uuid/dbc-uuid.lisp
              ;;
-             ;;
-             #:unique-universal-identifier
-             #:unique-universal-identifier-p
-             #:uuid-copy-uuid
-             #:make-null-uuid
-             #:make-v3-uuid
-             #:make-v4-uuid
-             #:make-v5-uuid
-             ;;
-             #:uuid-byte-string    ; TYPE
-             #:uuid-ub48           ; TYPE
-             #:uuid-ub32           ; TYPE
-             #:uuid-ub16           ; TYPE
-             #:uuid-ub8            ; TYPE
-             #:uuid-byte-array-16  ; TYPE
-             #:uuid-byte-array-20  ; TYPE
-             #:uuid-string-32      ; TYPE
-             #:uuid-string-36      ; TYPE
-             #:uuid-hex-string-32  ; TYPE
-             #:uuid-hex-string-36  ; TYPE
-             #:uuid-byte-array-16-p
-             #:uuid-byte-array-20-p
-             #:uuid-byte-string-p
-             #:uuid-string-32-p
-             #:uuid-string-36-p
-             #:uuid-hex-string-32-p
-             #:uuid-hex-string-36-p
-             ;; #:uuid-digest-uuid-string              ; INTERNAL DEPRECATED
-             ;; #:uuid-print-bytes                     ; INTERNAL DEPRECATED
-             ;; #:uuid-get-bytes                       ; INTERNAL DEPRECATED
-             ;; #:uuid-load-bytes                      ; INTERNAL DEPRECATED
-             ;; #:%uuid-get-bytes-if                   ; INTERNAL DEPRECATED
-             ;; #:format-v3or5-uuid                    ; INTERNAL
-             ;;
-             ;; #:format-v3-uuid                       ; INTERNAL
-             ;; #:format-v5-uuid                       ; INTERNAL
-             ;; #:make-uuid-from-string-if             ; INTERNAL
-             ;; #:%verify-digest-version               ; INTERNAL
-             ;; #:%verify-version-3-or-5               ; INTERNAL
-             ;; #:%verify-slot-boundp-and-type         ; INTERNAL
-             ;; #:%uuid_time-mid-request               ; INTERNAL
-             ;; #:%uuid_time-low-request               ; INTERNAL
-             ;; #:%uuid_time-high-and-version-request  ; INTERNAL
-             ;; #:%uuid_clock-seq-and-reserved-request ; INTERNAL
-             ;; #:%uuid_clock-seq-low-request          ; INTERNAL
-             ;; #:%uuid_node-request                   ; INTERNAL
-             ;; #:uuid-request-integer                 ; INTERNAL
-             ;; 
-             ;; #:make-uuid-namespace-loadtime-vars    ; borken?
-             ;;
-             #:serialize-uuid
-             #:uuid-eql
-             #:uuid-digest-uuid-instance
-             #:uuid-get-bytes-for-integer
-             #:uuid-number-to-byte-array
-             #:uuid-get-namespace-bytes
-             #:uuid-to-byte-array
-             #:uuid-from-byte-array
-             #:uuid-princ-to-string
-             #:make-uuid-from-string             
-             #:format-uuid-as-urn
-             #:uuid-string-to-sha1-byte-array
              ;;
 	     ;; dbc-classes/dbc-class.lisp
 	     ;;
@@ -138,6 +72,13 @@
              ;;
              #:parsed-class   ;; <CLASS>
              ;;
+             #:*regexp-whitespace-chars* ;; VARIABLE
+             #:preprocess-whitespace
+             #:preprocess-leading-trailing-dashes
+             #:preprocess-underscore-to-dash
+             #:preprocess-string-case
+             #:make-parsed-name-preprocess
+             #:preprocess-slot-transform
              #:make-parsed-class-slot-init-accessor-name
              ;;
              ;;

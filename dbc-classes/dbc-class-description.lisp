@@ -8,9 +8,7 @@
 ;;; ==============================
 
 
-;;; ==============================
 (in-package #:dbc)
-
 ;; *package*
 
 
@@ -24,7 +22,7 @@
                    description-english description-french~% ~
                    description-condition description-seo")))
 
-;; 
+;;; ==============================
 
 
 ;; Local Variables:

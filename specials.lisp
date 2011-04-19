@@ -1,9 +1,7 @@
-
-;; dbc-specific/specials.lisp
-
+;;; :FILE dbc-specific/specials.lisp
+;;; ==============================
 
 (in-package #:dbc)
-
 ;; *package*
 
 ;; :NOTE see class definition of `dbc-xml->clos-dump' in :FILE
@@ -177,7 +175,7 @@ Use when dumping parsed dbc XML files.
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
 
-(vardoc '*xml-input-refs-name*
+(Vardoc '*xml-input-refs-name*
 "<--- Input file.~%~@
 Use when parsing XML full dbc refs table.~%~@
 Tweaked to remove non-valid portions at head of document.~%~@
@@ -208,48 +206,8 @@ variable `dbc:*xml-refs-match-table*'.~%~@
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
 
-
+
 ;;; ==============================
-;;; :SPECIALS-UUID-DOCUMENTATION
-;;; ==============================
-
-(vardoc '*uuid-random-state*
-"A random-state objet for use when generating UUIDv4 UUIDs.~%~@
-:EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
-
-(vardoc '*uuid-namespace-dns*
-  "The DNS namespace as provided by RFC-4122.~%~@
-Bound at system loadtime with `dbc:make-uuid-namespace-loadtime-vars'.~%~@
-May be used for generating UUIDv3 and UUIDv5~%~@
-:EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `dbc:make-v3-uuid', `dbc:make-v5-uuid', `dbc:make-v4-uuid'.~%►►►")
- 
-(vardoc '*uuid-namespace-url*
-  "The URL namespace as provided by RFC-4122.~%~@
-Bound at system loadtime with `dbc:make-uuid-namespace-loadtime-vars'.~%~@
-May be used for generating UUIDv3 and UUIDv5.~%~@
-:EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `dbc:make-v3-uuid', `dbc:make-v5-uuid', `dbc:make-v4-uuid'.~%►►►")
-
-(vardoc '*uuid-namespace-oid*
-"The OID namespace as provided with RFC-4122 appendix C.~%~@
-Bound at system loadtime with `dbc:make-uuid-namespace-loadtime-vars'.~%~@
-May be used for generating UUIDv3 and UUIDv5.~%~@
-:EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `dbc:make-v3-uuid', `dbc:make-v5-uuid', `dbc:make-v4-uuid'.~%►►►")
-
-(vardoc '*uuid-namespace-x500*
-"The x500+ namespace as provided by RFC-4122 appendix C.~%~@
-Bound at system loadtime with `dbc:make-uuid-namespace-loadtime-vars'.~%~@
-May be used for generating UUIDv3 and UUIDv5.~%~@
-:EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `dbc:make-v3-uuid', `dbc:make-v5-uuid', `dbc:make-v4-uuid'.~%►►►")
 
 
 ;; Local Variables:

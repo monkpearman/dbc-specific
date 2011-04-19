@@ -55,7 +55,7 @@ external domain.~%
   ()
   (:documentation 
    #.(format nil 
-"Base class for referencing DBC system category entities.~%~@
+             "Base class for referencing DBC system category entities.~%~@
 :SEE-ALSO `category-entity-regexp'.~%►►►")))
 
 (defclass base-naf-entity (base-entity)

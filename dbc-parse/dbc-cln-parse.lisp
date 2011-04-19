@@ -290,6 +290,7 @@
 ;; alexandria:
 ;; alexandria:make-keyword
 
+
 ;;; ==============================
 ;;; :DBC-CLN-PARSE--DOCUMENTATION
 ;;; ==============================
@@ -300,7 +301,9 @@ When optional arg W-COLON is non-nil return prefixed with a colon.
 :EXAMPLE~%
  \(field-name-underscore-to-dash \"keyword_seo\"\)~%
  \(field-name-underscore-to-dash \"keyword_seo\" t\)~%
-:SEE-ALSO `mon:string-underscore-to-dash', `cl-ppcre:regex-replace-all'.~%►►►")
+:SEE-ALSO `preprocess-underscore-to-dash',
+`dbc:preprocess-leading-trailing-dashes', `mon:string-underscore-to-dash',
+`cl-ppcre:regex-replace-all'.~%►►►")
 
 (fundoc 'field-str-cons
   "Return a three element list according to the `type-of' FIELD-STR.~%~@

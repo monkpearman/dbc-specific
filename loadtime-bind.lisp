@@ -12,10 +12,10 @@
 ;;; :FILE dbc-uuid/dbc-uuid.lisp
 ;;; ==============================
 
-(setf *uuid-namespace-dns*  (make-uuid-from-string "6ba7b810-9dad-11d1-80b4-00c04fd430c8"))
-(setf *uuid-namespace-url*  (make-uuid-from-string "6ba7b811-9dad-11d1-80b4-00c04fd430c8"))
-(setf *uuid-namespace-oid*  (make-uuid-from-string "6ba7b812-9dad-11d1-80b4-00c04fd430c8"))
-(setf *uuid-namespace-x500* (make-uuid-from-string "6ba7b814-9dad-11d1-80b4-00c04fd430c8"))
+;; (setf *uuid-namespace-dns*  (make-uuid-from-string "6ba7b810-9dad-11d1-80b4-00c04fd430c8"))
+;; (setf *uuid-namespace-url*  (make-uuid-from-string "6ba7b811-9dad-11d1-80b4-00c04fd430c8"))
+;; (setf *uuid-namespace-oid*  (make-uuid-from-string "6ba7b812-9dad-11d1-80b4-00c04fd430c8"))
+;; (setf *uuid-namespace-x500* (make-uuid-from-string "6ba7b814-9dad-11d1-80b4-00c04fd430c8"))
 
 ;;; ==============================
 

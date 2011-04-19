@@ -17,7 +17,7 @@
                                       iterations: ~D~%~
                                       namespace: ~S~%" n namespace)
             repeat n
-            for obj = (dbc:make-v5-uuid namespace (mon-test:make-random-string))
+            for obj = (dbc::make-v5-uuid namespace (mon-test:make-random-string))
             do (print-object obj os)
               (terpri os)
             finally (return (princ (get-output-stream-string os) *standard-output*)))
@@ -48,34 +48,34 @@
 ;;     (close msos)))
 
 
-(defun uuid-get-namespace-bytes-TEST (uuid)
-  ;; used to erify the lenth of each elt of array returned from `uuid-number-to-byte-array'
-  ;; in particular look at the 5 elt of return value
-  ;; (elt '((4 . #(107 167 184 16))
-  ;;        (2 . #(157 173))
-  ;;        (2 . #(17 209))
-  ;;        (1 . #(128))
-  ;;        (1 . #(180)) 
-  ;;        (5 . #(192 79 212 48 200))) ;; <- This should aways be a 6 elt array 
-  ;;       5)  
-  (declare (type dbc:unique-universal-identifier uuid))
-  (with-slots (dbc::%uuid_time-low
-               dbc::%uuid_time-mid
-               dbc::%uuid_time-high-and-version
-               dbc::%uuid_clock-seq-and-reserved
-               dbc::%uuid_clock-seq-low
-               dbc::%uuid_node)
-      uuid
-    ;; *uuid-namespace-dns*
-    (declare (type dbc:uuid-ub32 dbc::%uuid_time-low)
-             (type dbc:uuid-ub16 dbc::%uuid_time-mid dbc::%uuid_time-high-and-version)
-             (type dbc:uuid-ub8  dbc::%uuid_clock-seq-and-reserved dbc::%uuid_clock-seq-low)
-             (type dbc:uuid-ub48 dbc::%uuid_node))
-    (loop 
-       for slots in `(,dbc::%uuid_time-low ,dbc::%uuid_time-mid ,dbc::%uuid_time-high-and-version
-                                      ,dbc::%uuid_clock-seq-and-reserved ,dbc::%uuid_clock-seq-low ,dbc::%uuid_node)
-       for (a b) = (multiple-value-list (dbc::uuid-number-to-byte-array slots))
-       collect  (cons b a) )))
+;; (defun uuid-get-namespace-bytes-TEST (uuid)
+;;   ;; used to erify the lenth of each elt of array returned from `uuid-number-to-byte-array'
+;;   ;; in particular look at the 5 elt of return value
+;;   ;; (elt '((4 . #(107 167 184 16))
+;;   ;;        (2 . #(157 173))
+;;   ;;        (2 . #(17 209))
+;;   ;;        (1 . #(128))
+;;   ;;        (1 . #(180)) 
+;;   ;;        (5 . #(192 79 212 48 200))) ;; <- This should aways be a 6 elt array 
+;;   ;;       5)  
+;;   (declare (type dbc::unique-universal-identifier uuid))
+;;   (with-slots (dbc::%uuid_time-low
+;;                dbc::%uuid_time-mid
+;;                dbc::%uuid_time-high-and-version
+;;                dbc::%uuid_clock-seq-and-reserved
+;;                dbc::%uuid_clock-seq-low
+;;                dbc::%uuid_node)
+;;       uuid
+;;     ;; *uuid-namespace-dns*
+;;     (declare (type dbc::uuid-ub32 dbc::%uuid_time-low)
+;;              (type dbc::uuid-ub16 dbc::%uuid_time-mid dbc::%uuid_time-high-and-version)
+;;              (type dbc::uuid-ub8  dbc::%uuid_clock-seq-and-reserved dbc::%uuid_clock-seq-low)
+;;              (type dbc::uuid-ub48 dbc::%uuid_node))
+;;     (loop 
+;;        for slots in `(,dbc::%uuid_time-low ,dbc::%uuid_time-mid ,dbc::%uuid_time-high-and-version
+;;                      ,dbc::%uuid_clock-seq-and-reserved ,dbc::%uuid_clock-seq-low ,dbc::%uuid_node)
+;;        for (a b) = (multiple-value-list (dbc::uuid-number-to-byte-array slots))
+;;        collect  (cons b a) )))
 
 ;; 
 ;; (loop 

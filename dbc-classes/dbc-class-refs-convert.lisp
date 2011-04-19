@@ -2,13 +2,21 @@
 ;;; :FILE ../dbc-classes/dbc-class-refs-convert.lisp
 ;;; ==============================
 
-;; /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-classes/dbc-class-refs-convert.lisp
-
-
 
 
 (in-package #:dbc)
 ;; *package*
+
+
+(defparameter *parsed-ref-field-name-slot-transform* (make-hash-table :test 'equal))
+
+(vardoc '*parsed-ref-field-name-slot-transform*
+        "Hashtable of field-name/transform pairs.~%~@
+To be populated with `dbc:preprocess-slot-transform' prior to constructing the
+slots for the class `parsed-ref'.
+:EXAMPLE~%~@
+ { ... <EXAMPLE> ... } ~%~@
+:SEE-ALSO `<XREF>'.~%►►►")
 
 ;;; ==============================
 (defun make-ref-maker-sym-name (ref-parse-field)
@@ -1830,11 +1838,15 @@
 ;; <table_data name="refs">
 ;;; ==============================
 
+;;; ==============================
+
 
 ;; Local Variables:
 ;; indent-tabs-mode: nil
 ;; show-trailing-whitespace: t
 ;; mode: lisp-interaction
+;; package: dbc
 ;; End:
+
 ;;; ==============================
 ;;; EOF

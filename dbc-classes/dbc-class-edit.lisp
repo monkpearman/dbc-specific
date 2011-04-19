@@ -4,13 +4,11 @@
 
 ;;; ==============================
 ;;; :NOTE
-;;
+;;;
 ;;; ==============================
 
 
-;;; ==============================
 (in-package #:dbc)
-
 ;; *package*
 
 (defclass base-edit (base-dbc)
@@ -52,6 +50,7 @@
 ;; indent-tabs-mode: nil
 ;; show-trailing-whitespace: t
 ;; mode: lisp-interaction
+;; package: dbc
 ;; End:
 
 ;;; ==============================
