@@ -86,7 +86,6 @@
         (setf (gethash field-name chk-hash) 
               (make-parsed-name-preprocess field-name :prefix-w prefix-w :suffix-w suffix-w)))))
 
-
 ;;; ==============================
 ;; :SOURCE quicklisp/quicklisp/dist.lisp :WAS `config-file-initargs'
 ;; Modeled after `config-file-initargs' but use functions frome mon: package instead of quicklisp centric ones.

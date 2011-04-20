@@ -169,6 +169,7 @@
              #:field-name-underscore-to-dash
 	     #:field-str-cons
 	     #:field-cln-x
+             #:field-name-convert-field-name
 	     ;;
 	     ;; mon:string-split-on-chars
 	     #:split-used-fors   
@@ -236,6 +237,7 @@
              #:*number-to-french-big-prefix*
              #:*number-to-french-bof*
              #:*number-to-french-denominators*
+             ;; 
              #:number-to-french
              #:number-to-french-ordinal
              #:number-to-french-ten

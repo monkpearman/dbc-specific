@@ -1,0 +1,49 @@
+#!/bin/sh
+#
+#
+###  ==============================
+# :FILE-CREATED <Timestamp: #{2011-04-20T12:58:07-04:00Z}#{11163} - by MON>
+# :FILE dbc-specific/make-dbc-specific-etags
+#
+#  Add the current directory to the tail of Emacs' `tags-table-list'
+# (add-to-list 'tags-table-list default-directory t)
+#
+# Make sure to tell customize or it'll wind up bitching:
+# (custom-note-var-changed 'tags-table-list)
+# 
+# Currently not tagging these:
+# ./dbc-time/dbc-parse-time.lisp \
+# ./dbc-time/date-calc.lisp \
+#
+###  ==============================
+etags ./specials.lisp \
+./package.lisp \
+./conditions.lisp \
+./loadtime-bind.lisp \
+./dbc-translate/dbc-french-dates.lisp \
+./dbc-translate/dbc-french-numbers.lisp \
+./dbc-tests/dbc-uuid-profile.lisp \
+./dbc-tests/package.lisp \
+./dbc-tests/tests.lisp \
+./dbc-classes/dbc-class-test-class.lisp \
+./dbc-classes/dbc-class.lisp \
+./dbc-classes/dbc-class-documentation.lisp  \
+./dbc-classes/dbc-class-paths.lisp \
+./dbc-classes/dbc-tgm.lisp \
+./dbc-classes/dbc-class-description.lisp \
+./dbc-classes/dbc-class-entity.lisp \
+./dbc-classes/dbc-class-regexps.lisp \
+./dbc-classes/dbc-class-users.lisp \
+./dbc-classes/dbc-class-refs-convert.lisp \
+./dbc-classes/dbc-class-doc.lisp \
+./dbc-classes/dbc-class-edit.lisp \
+./dbc-classes/dbc-class-uuid.lisp \
+./dbc-classes/dbc-class-artist-convert.lisp \
+./dbc-classes/dbc-class-parse-convert.lisp \
+./dbc-parse/dbc-xml-sql-parse.lisp \
+./dbc-parse/dbc-cln-parse.lisp \
+./dbc-parse/dbc-xml-refs-parse.lisp \
+--language=lisp
+
+###  ==============================
+### EOF

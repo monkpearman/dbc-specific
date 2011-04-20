@@ -265,6 +265,18 @@
     (or (and w-colon (concatenate 'string ":" no-under))
         no-under)))
 
+(defun field-name-convert-field-name (field-name field-value)
+  (declare (string field-name))
+  (when (mon:string-null-or-empty-p field-value) 
+    (return-from field-name-convert-field-name))
+  (when (not (stringp field-value)) 
+    (return-from field-name-convert-field-name field-value))
+  (if (string-equal field-name (mon:string-trim-whitespace field-value))
+      nil
+      field-value))
+
+
+
 ;;; ==============================
 ;; :TODO
 ;; (defun dbc-split-ref-multi-naf (naf-multi-ref)
@@ -536,6 +548,20 @@ as if by `cl:values' first value is EMPTY-FIELD second is its `cl:type-of'.~%~@
  (field-convert-empty-string-nil t)~%
  (field-convert-empty-string-nil t :w-no-error t)~%
  (field-convert-empty-string-nil t :w-no-error t)~%~@
+:SEE-ALSO `<XREF>'.~%►►►")
+
+(fundoc 'field-name-convert-field-name
+"If FIELD-VALUE is null or `cl:string-equal' FIELD-NAME return nil, else FIELD-VALUE.~%~@
+FIELD-NAME is a string.
+FIELD-VALUE is some sort of object.
+:EXAMPLE~%
+ \(field-name-convert-field-name \"field_name\" \"not the same\"\)~%
+ \(field-name-convert-field-name \"field_name\" \"field_name\"\)~%
+ \(field-name-convert-field-name \"field_name\" \"FIELD_NAME\"\)~%
+ \(field-name-convert-field-name \"field_name\" \"FIELD_NAME   \"\)~%
+ \(field-name-convert-field-name \"field_name\" \"   fieLd_Name\"\)~%
+ \(field-name-convert-field-name \"field_name\" nil\)~%
+ \(field-name-convert-field-name \"field_name\" 8\)~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
 
 ;;; ==============================
