@@ -3,18 +3,44 @@
 ;;; ==============================
 
 
-;; (push #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/" asdf:*central-registry*)
-
-;; :NOTE While debugging per file:
-;; (declaim (optimize (debug 3)))
-;; Or, (sb-ext:restrict-compiler-policy 'debug 3)
-
-;; To remove the compile fasls do
-;; (asdf:clear-system :mon)
-
-;; (ql:quickload :dbc :verbose t :explain t)
-
-;; (dired "/home/sp/.cache/common-lisp/sbcl-1.0.45.3-linux-x86/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/")
+;;; ==============================
+;;; :LOGICAL-PATHNAMES
+;;; ==============================
+;;;
+;;; (logical-pathname-translations "MON")
+;;; (translate-logical-pathname  "MON:dbc-specific;")
+;;;
+;;; (push (translate-logical-pathname  "MON:dbc-specific;") asdf:*central-registry*)
+;;;
+;;; Finding current fasls:
+;;; (logical-pathname-translations "FASL")
+;;; (translate-logical-pathname "FASL:dbc-specific;")
+;;;
+;;; ==============================
+;;;
+;;; :NOTE While debugging per file:
+;;; (declaim (optimize (debug 3)))
+;;; Or, (sb-ext:restrict-compiler-policy 'debug 3)
+;;;
+;;; (setf *break-on-signals* t)
+;;;
+;;; (setf sb-debug:*show-entry-point-details* t)
+;;;
+;;; ==============================
+;;; 
+;;; To remove the compile fasls do:
+;;;
+;;; (asdf:clear-system :dbc)
+;;; 
+;;; ==============================
+;;;
+;;; (ql:quickload :dbc :verbose t :explain t)
+;;;
+;;; ==============================
+;;;
+;;; (let (des) (do-external-symbols (i :dbc des) (push i des)))
+;;; 
+;;; ==============================
 
 
 (defpackage #:dbc-build-system (:use #:common-lisp #:asdf))
@@ -23,31 +49,39 @@
 
 (defsystem #:dbc
   ;; :name ""
-  ;; :author  "MON KEY"
-  ;; :maintainer "MON KEY"
-  ;; :license 
+  :author  "MON KEY"
+  :maintainer "MON KEY"
+  :license "BSD"
   :description "DBC agglomerated."
   :version "1.0.0"
   :depends-on (:cxml
 	       :closure-html
                :unicly
-               ;; 
-	       ;; :local-time
-	       ;; :drakma
                :mon
                :mon-test
-               ;; :NTOE Following pulled in by :mon
-	       ;; :ironclad
-               ;; :flexi-streams 
+               ;; :NOTE Following will be made available to system by :mon
 	       ;; :split-sequence
+               ;; :string-case
                ;; :alexandria
 	       ;; :cl-ppcre
-	       ;; :cl-fad
+               ;; :flexi-streams 	       
+	       ;; :ironclad
+               ;; :cl-fad
+               ;; :salza2
+               ;; :chipz
+               ;; :closer-mop
+               ;; ==============================
+               ;; :NOTE prob. better to use a separate system for drakma related dependencies. 
+	       ;; :drakma 
+               ;; ==============================
+               ;; :NOTE Time related dependencies should maybe use a separate
+               ;; time dedicated system for these (and others). 
+               ;; :SEE :FILE "dbc-french-dates.lisp" below.
+	       ;; :local-time
+               ;; :parse-time ;; Not sure which version to use
+               ;; :date-calc 
 	       )
-
-  ;; :perform (load-op :after (op mon) (pushnew :mon *features*))
   :serial t    
-  ;; :in-order-to (asdf:compile-op "dbc-class-regexps" (asdf:load-source-op "dbc-class-doc" ))
   :components 
   ((:file "package")
    (:file "specials")
@@ -61,12 +95,7 @@
    (:file "conditions")
    (:module "dbc-classes"
             :components                 
-            (
-             ;; This needs to be loaded.
-             ;; (compile-op "c"))
-             ;;  (load-op (load-op "foo")))
-             ;; :peform (asdf:load-source-op :before 
-             (:file "dbc-class-doc")
+            ((:file "dbc-class-doc")
              (:file "dbc-class")
              (:file "dbc-class-edit")
              (:file "dbc-class-entity")
@@ -93,19 +122,21 @@
             ((:file "dbc-french-numbers")
              (:file "dbc-french-dates")
              ))
-   ;; (:file "loadtime-bind") ;; :SEE asdf:perform below
    ))
 
 (defmethod asdf:perform :after ((op asdf:load-op) (system (eql (asdf:find-system :dbc))))
-  (let ((chk-if (fad:file-exists-p 
-                 (merge-pathnames (make-pathname :name "loadtime-bind" :type "lisp")
-                                  (mon:pathname-directory-system :dbc)))))
+  (pushnew :dbc cl:*features*)
+  (let ((chk-if 
+         #-is-mon(fad:file-exists-p 
+                  (merge-pathnames (make-pathname :name "loadtime-bind" :type "lisp")
+                                   (mon:pathname-directory-system :dbc)))
+         #+is-mon (probe-file (translate-logical-pathname "MON:DBC-SPECIFIC;loadtime-bind.lisp"))))
     (and chk-if (load  chk-if)))
-  (asdf:operate 'asdf:load-op 'dbc-test)
-  (pushnew :dbc cl:*features*))
+  (asdf:operate 'asdf:load-op 'dbc-test))
 
 ;; (member :DBC cl:*features*)
-;;  
+
+;;; ==============================
 
 
 ;; Local Variables:

@@ -80,15 +80,6 @@
 
 ;; (substitute #\- #\_ (format nil "~:@(~A~)" "keywords_seo"))
 
-
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defvar *uuid-random-state* (make-random-state t)))
-
-(defparameter *uuid-namespace-dns*  nil) ;; (make-uuid-from-string "6ba7b810-9dad-11d1-80b4-00c04fd430c8")
-(defparameter *uuid-namespace-url*  nil) ;; (make-uuid-from-string "6ba7b811-9dad-11d1-80b4-00c04fd430c8")
-(defparameter *uuid-namespace-oid*  nil) ;; (make-uuid-from-string "6ba7b812-9dad-11d1-80b4-00c04fd430c8")
-(defparameter *uuid-namespace-x500* nil) ;; (make-uuid-from-string "6ba7b814-9dad-11d1-80b4-00c04fd430c8")
-
 
 ;;; ==============================
 ;;; :SPECIALS-DOCUMENTATION
@@ -151,48 +142,11 @@ Its pathname is accessible with the `dbc:sub-path' accessor.~%~@
 
 
 ;;; ==============================
-;;; :SPECIALS-XML-PATHS-DOCUMENTATION
+;;; :XML-MATCH-TABLES
 ;;; ==============================
 
-(vardoc '*xml-output-dir*
-"System relative directory pathname object for storing dbc-xml-dump files.~%~@
-Evaluated when system is loaded.
-:EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
-
-(vardoc '*xml-output-refs-name*
-"---> Output file name with directory components.~%~@
-Use when dumping parsed dbc XML files.~%~@
-:EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
-
-(vardoc '*xml-output-refs-ext*
-"---> Output file name extension with directory components.~%~@
-Use when dumping parsed dbc XML files.
-:EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
-
-(Vardoc '*xml-input-refs-name*
-"<--- Input file.~%~@
-Use when parsing XML full dbc refs table.~%~@
-Tweaked to remove non-valid portions at head of document.~%~@
-:EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
-
-(vardoc '*xml-input-refs-name-temp*
-"<--- Input file.~%~@
-Temporary file for parsing XML refs before handling the whole shebang.~%~@
-Use `*xml-input-refs-name*' when ready.~%~@
-:EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
-
 (vardoc '*xml-refs-match-table*
-  "A hash-table mapping field name to parsing-function for use when parsing dbc-xml-refs.~%~@
+        "A hash-table mapping field name to parsing-function for use when parsing dbc-xml-refs.~%~@
 Bound with `dbc:make-ref-lookup-table' to values of variable `dbc:*xml-refs-match-list*'.~%~@
 :EXAMPLE~%
  \(gethash \"ref\" *xml-refs-match-table*\)~%~@
@@ -205,6 +159,76 @@ variable `dbc:*xml-refs-match-table*'.~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
+
+
+;;; ==============================
+;;; :SPECIALS-XML-PATHS-DOCUMENTATION
+;;; ==============================
+
+
+(vardoc '*xml-output-dir*
+"System relative directory pathname object for storing dbc-xml-dump files.~%~@
+Evaluated when system is loaded.
+:EXAMPLE~%
+ \(sub-path *xml-output-dir*\)
+ \(system-described *xml-output-dir* nil\)~%~@
+:SEE-ALSO `*xml-output-dir*', `*xml-output-refs-name*', `*xml-output-refs-ext*',
+`*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*'.~%►►►")
+
+(vardoc '*xml-output-refs-name*
+"---> Output file name with directory components.~%~@
+Use when dumping parsed dbc XML files.~%~@
+:EXAMPLE~%
+ \(pathname-directory *xml-output-refs-name*\)~%
+ \(pathname-name *xml-output-refs-name*\)~%
+ \(namestring *xml-output-refs-name*\)~%~@
+:SEE-ALSO `*xml-output-dir*', `*xml-output-refs-name*', `*xml-output-refs-ext*',
+`*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*'.~%►►►")
+
+
+(vardoc '*xml-output-refs-ext*
+"---> Output file name with extension and directory components.~%~@
+Use when dumping parsed dbc XML files.
+:EXAMPLE~%~@
+ \(pathname-directory *xml-output-refs-ext*\)~%
+ \(pathname-name *xml-output-refs-ext*\)~%
+ \(pathname-type *xml-output-refs-ext*\)~%
+ \(namestring *xml-output-refs-ext*\)~%~@
+:SEE-ALSO `*xml-output-dir*', `*xml-output-refs-name*', `*xml-output-refs-ext*',
+`*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*'.~%►►►")
+
+(vardoc '*xml-input-dir*
+"System relative directory pathname object for reading dbc-xml-dump files.~%~@
+Evaluated when system is loaded.
+:EXAMPLE~%
+ \(sub-path *xml-input-dir*\)
+ \(system-described *xml-input-dir* nil\)~%~@
+:SEE-ALSO `*xml-output-dir*', `*xml-output-refs-name*', `*xml-output-refs-ext*',
+`*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*'.~%►►►")
+
+(vardoc '*xml-input-refs-name*
+"<--- Input file.~%~@
+Use when parsing XML full dbc refs table.~%~@
+Tweaked to remove non-valid portions at head of document.~%~@
+:EXAMPLE~%
+ \(pathname-directory *xml-input-refs-name*\)~%
+ \(pathname-name *xml-input-refs-name*\)~%
+ \(namestring *xml-input-refs-name*\)~%~@
+:SEE-ALSO `*xml-output-dir*', `*xml-output-refs-name*', `*xml-output-refs-ext*',
+`*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*'.~%►►►")
+
+(vardoc '*xml-input-refs-name-temp*
+"<--- Input file.~%~@
+Temporary file for parsing XML refs before handling the whole shebang.~%~@
+Use `*xml-input-refs-name*' when ready.~%~@
+:EXAMPLE~%
+ (pathname-directory *xml-input-refs-name-temp*)~%
+ (pathname-name *xml-input-refs-name-temp*)~%
+ (namestring *xml-input-refs-name-temp*)~%~@
+:SEE-ALSO `*xml-output-dir*', `*xml-output-refs-name*', `*xml-output-refs-ext*',
+`*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*'.~%►►►")
+
+
 
 
 ;;; ==============================

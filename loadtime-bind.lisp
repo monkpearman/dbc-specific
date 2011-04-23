@@ -9,15 +9,6 @@
 
 
 ;;; ==============================
-;;; :FILE dbc-uuid/dbc-uuid.lisp
-;;; ==============================
-
-;; (setf *uuid-namespace-dns*  (make-uuid-from-string "6ba7b810-9dad-11d1-80b4-00c04fd430c8"))
-;; (setf *uuid-namespace-url*  (make-uuid-from-string "6ba7b811-9dad-11d1-80b4-00c04fd430c8"))
-;; (setf *uuid-namespace-oid*  (make-uuid-from-string "6ba7b812-9dad-11d1-80b4-00c04fd430c8"))
-;; (setf *uuid-namespace-x500* (make-uuid-from-string "6ba7b814-9dad-11d1-80b4-00c04fd430c8"))
-
-;;; ==============================
 
 ;; `*system-path*'
 (unless (not (null *system-path*))
@@ -131,9 +122,32 @@
        (and chk-sfr-if (setf *xml-input-refs-name* chk-sfr-if))
        (and chk-nts-if (setf *xml-input-refs-name-temp* chk-nts-if))))
 
+
 ;;; ==============================
-;;; :LOADTIME-BIND-DOCUMENTATION
+;; XML Parsing INPUT/OUTUPT paths and paths names
+;; `*system-notes-dir*'
+;; `*xml-output-dir*'              ---> OUTPUT
+;; `*xml-output-refs-name*'        ---> OUTPUT
+;; `*xml-output-refs-ext*'         ---> OUTPUT
+;; `*xml-input-dir*'               <--- INPUT
+;; `*xml-input-refs-name*'         <--- INPUT
+;; `*xml-input-refs-name-temp*'    <--- INPUT
+;;
+;; (system-described *system-tests-dir* t)
+;; (system-described *system-tests-temp-dir* t)
+;; (system-described *system-path* t)
+;; (system-described *system-notes-dir* t)
+;; (system-base-path *system-path*)
+;; (sub-path *system-notes-dir*))
+;; (sub-path *xml-input-dir*)
+;; (system-described *xml-input-dir* nil)
+;; (sub-path *xml-output-dir*)
+;; (system-described *xml-input-dir* nil)
+;; *xml-output-refs-name*
+;; *xml-input-refs-name*
+;; *xml-input-refs-name-temp*
 ;;; ==============================
+
 
 
 ;;; ==============================
