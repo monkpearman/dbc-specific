@@ -32,7 +32,8 @@
 (in-package #:dbc)
 ;; *package
 
-(defun field-str-cons (field-str)
+       
+(defun field-string-cons (field-str)
   (typecase field-str  
     ((or string array)
      (list (length field-str) (type-of field-str) field-str)) 
@@ -42,13 +43,13 @@
      (list (length field-str) (list (type-of field-str)) field-str))
     (t             (list 0 (list (type-of field-str)) field-str))))
 
-(defun field-cln-x  (field-str-cons)
-  (let ((chk (field-str-cons field-str-cons)))
+(defun field-cln-x  (field-string-cons)
+  (let ((chk (field-string-cons field-string-cons)))
     (unless (and (= (car chk) 1)
                  ;; (type-of '"bubba") (aref "bubba" 0) 
                  (eq (caadr chk) 'simple-array)
                  (eq (aref (caddr chk) 0) #\x))
-      field-str-cons)))
+      field-string-cons)))
 
 (defun split-used-fors (used-for-string)
   ;; Is there a reason why we shouldn't be using this instead:
@@ -227,24 +228,53 @@
                 (notany #'alpha-char-p y))
        :collect y)))
 
-(defun field-convert-empty-string-nil (empty-field &key w-no-error)
-  (if (mon:string-null-or-empty-p empty-field)
-      nil
-      (if (stringp empty-field)
-          empty-field
-          (if w-no-error
-              (values empty-field (type-of empty-field))
-              (mon:simple-error-mon :w-sym 'field-convert-empty-string-nil
-                                    :w-type 'function
-                                    :w-spec "Arg EMPTY-FIELD not `cl:stringp'"
-                                    :w-got  empty-field
-                                    :w-type-of t
-                                    :signal-or-only nil)))))
+(defun field-convert-preprocess-field (string-field-maybe)
+  (if (stringp string-field-maybe)
+      (let ((match "match-field"))
+        (string-case:string-case (match :default match)
+          ("bubba" (print "found bubba" *standard-output*))
+          ("match-field" (string-upcase match))))
+
+(defun field-convert-verify-string (string-field-maybe &optional known-field-hashtable)
+  (declare (optimize (speed 3)))
+  (when (null string-field-maybe)
+    (return-from field-convert-verify-string (values nil 'null)))
+  (when (not (stringp string-field-maybe))
+    (return-from field-convert-verify-string (values string-field-maybe (type-of string-field-maybe))))
+  (locally (declare (mon:string-not-null string-field-maybe))
+    (when (mon:string-empty-p string-field-maybe)
+      (return-from field-convert-verify-string (values nil 'mon:string-empty)))
+    (when (mon:string-all-whitespace-p string-field-maybe)
+      (return-from field-convert-verify-string (values nil 'mon:string-all-whitespace)))
+    (when (and known-field-hashtable 
+               (hash-table-p known-field-hashtable)
+               (gethash string-field-maybe known-field-hashtable))
+      (return-from field-convert-verify-string (values nil string-field-maybe)))
+    (values string-field-maybe (type-of string-field-maybe))))
+
+(defun field-convert-1-0-x-empty-known (convert-field known-field-hashtable)
+  (multiple-value-bind (val type) (field-convert-verify-string convert-field known-field-hashtable)
+    (if (null val)
+        (return-from field-convert-1-0-x-empty-known
+          (values nil type (if (string= type convert-field) nil convert-field) (type-of convert-field)))
+        (let* ((val1 type)
+               (rtn (field-convert-1-0-x val))
+               (val2 (type-of rtn)))
+          (values rtn val2 convert-field val1)))))
+
+(defun field-convert-1-0-x-empty (convert-field)
+  (multiple-value-bind (val type) (field-convert-verify-string convert-field)
+    (if (null val)
+        (return-from field-convert-1-0-x-empty 
+          (values nil type convert-field (type-of convert-field)))
+        (let* ((val1 type)
+               (rtn (field-convert-1-0-x val))
+               (val2 (type-of rtn)))
+          (values rtn val2 convert-field val1)))))
 
 (defun field-convert-1-0-x (convert-field)
   ;; (declare (optimize (speed 3) (space 0) (safety 0)))
-  ;; :NOTE Should this call `field-convert-empty-string-nil' at top
-  (setf convert-field
+    (setf convert-field
         (if (and ;; (simple-string-p convert-field)
              (stringp convert-field)
              (eql (length convert-field) 1))
@@ -258,6 +288,20 @@
     (bit (and (eql convert-field 1)))
     (symbol  (if (eql convert-field 'x) nil convert-field))
     (t convert-field)))
+
+(defun field-convert-empty-string-nil (empty-field &key w-no-error)
+  (if (mon:string-null-or-empty-p empty-field)
+      nil
+      (if (stringp empty-field)
+          empty-field
+          (if w-no-error
+              (values empty-field (type-of empty-field))
+              (mon:simple-error-mon :w-sym 'field-convert-empty-string-nil
+                                    :w-type 'function
+                                    :w-spec "Arg EMPTY-FIELD not `cl:stringp'"
+                                    :w-got  empty-field
+                                    :w-type-of t
+                                    :signal-or-only nil)))))
 
 (defun field-name-underscore-to-dash (field-name &optional w-colon)
   (declare (type string field-name))
@@ -274,8 +318,6 @@
   (if (string-equal field-name (mon:string-trim-whitespace field-value))
       nil
       field-value))
-
-
 
 ;;; ==============================
 ;; :TODO
@@ -317,24 +359,24 @@ When optional arg W-COLON is non-nil return prefixed with a colon.
 `dbc:preprocess-leading-trailing-dashes', `mon:string-underscore-to-dash',
 `cl-ppcre:regex-replace-all'.~%►►►")
 
-(fundoc 'field-str-cons
+(fundoc 'field-string-cons
   "Return a three element list according to the `type-of' FIELD-STR.~%~@
 List has the form:~%
  \(<SEQ-LENGTH> \(<TYPE-SPEC>\) FIELD-STR\)~%
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `field-table-parse-out', `field-str-cons', `field-cln-x'.~%►►►")
+:SEE-ALSO `field-table-parse-out', `field-string-cons', `field-cln-x'.~%►►►")
 
 (fundoc 'field-cln-x
-  "Return nil when FIELD-STR-CONS is a string of length 1 with char value #\\x.~%
-Else return value of FIELD-STR-CONS.~%
+        "Return nil when FIELD-STRING-CONS is a string of length 1 with char value #\\x.~%
+Else return value of FIELD-STRING-CONS.~%
 This is a short-circuiting procedure, e.g. it does nothing on success.~%
 :NOTE the \"x\" was used ind dbc sql fields to designate a null value.~%
 :EXAMPLE~%~%\(field-cln-x \"x\"\)~%
-\(field-cln-x 'sym\)~%
-\(field-cln-x #\(x y z\)\)~%
-\(field-cln-x '\(x y z\)\)~%
-:SEE-ALSO `field-table-parse-out', `field-str-cons', `field-cln-x'.~%►►►")
+ \(field-cln-x 'sym\)~%
+ \(field-cln-x #\(x y z\)\)~%
+ \(field-cln-x '\(x y z\)\)~%
+:SEE-ALSO `field-table-parse-out', `field-string-cons', `field-cln-x'.~%►►►")
 
 (fundoc 'split-used-fors
 "Split USED-FOR-STRING on \"|\" barriers stripping leading and trailing whitespace~%~@
@@ -486,29 +528,6 @@ used in a non-delimiting position, e.g. the following string will not parse corr
  \"Havell (Robert, Jr.), Havell (Robert, Sr.), Havell Lithograph, \"~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
 
-(fundoc 'field-convert-1-0-x
-"Attept to CONVERT-FIELD to a boolean.~%~@
-CONVERT-FIELD is a dbc field string value of length one satisfying 
-`mon:simple-string-or-null'.~%~@
-When CONVERT-FIELD is \"1\" return t.
-When CONVERT-FIELD is \"x\" or \"0\" return nil.
-When CONVERT-FIELD is some other character or \(> \(length CONVERT-FIELD\) 1\)
-return CONVERT-FIELD.~%~@
-:EXAMPLE~%
- \(field-convert-1-0-x  \"1\"\)~%
- \(field-convert-1-0-x  \"0\"\)~%
- \(field-convert-1-0-x  \"x\"\)~%
- \(field-convert-1-0-x  \"X\"\)~%
- \(field-convert-1-0-x #\\1\)~%
- \(field-convert-1-0-x #\\0\)~%
- \(field-convert-1-0-x #\\x\)~% 
- \(field-convert-1-0-x #\\X\)~%
- \(field-convert-1-0-x   1\)~%
- \(field-convert-1-0-x   0\)~%
- \(field-convert-1-0-x  #\\*\)
- \(field-convert-1-0-x \"Return Me\"\)~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
-
 (fundoc 'format-entity-role
 "Format dbc entity-roles list for presentation.~%~@
 Arg ENTITY-ROLES is a list of strings with each string designating a role played
@@ -534,6 +553,70 @@ should suffix ENTITY-ROLE-PREFIX.  Default is 14.~%~@
  ;     :ARTIST-ROLE   Designer
  ;     :ARTIST-ROLE   Fashion Illustrator
  ;     :ARTIST-ROLE   Fashion Designer\"~%~@
+:SEE-ALSO `<XREF>'.~%►►►")
+
+(fundoc 'field-convert-verify-string
+"Return STRING-FIELD-MAYBE if it is a string and not null or empty.~%~@
+Return as if by cl:values.~%~@
+When optional arg KNOWN-FIELD-HASHTABLE is non-nil it is a hash-table the keys
+of which are strings identifiying known fields. 
+If a field is found as key in hash-table return nil, STRING-FIELD-MAYBE.~%~@
+:EXAMPLE~%
+ \(field-convert-verify-string nil\)~%
+ \(field-convert-verify-string 8\)~%
+ \(field-convert-verify-string \"\"\)~%
+ \(field-convert-verify-string \"             \"\)~%
+ \(field-convert-verify-string \"mma\"\)~%
+ \(field-convert-verify-string \"ref\" *xml-refs-match-table*\)~%~@
+:SEE-ALSO `field-convert-empty-string-nil'.~%►►►")
+
+(fundoc 'field-convert-1-0-x
+"Attept to CONVERT-FIELD to a boolean.~%~@
+CONVERT-FIELD is a dbc field string value of length one satisfying 
+`mon:simple-string-or-null'.~%~@
+When CONVERT-FIELD is \"1\" return t.
+When CONVERT-FIELD is \"x\" or \"0\" return nil.
+When CONVERT-FIELD is some other character or \(> \(length CONVERT-FIELD\) 1\)
+return CONVERT-FIELD.~%~@
+:EXAMPLE~%
+ \(field-convert-1-0-x  \"1\"\)~%
+ \(field-convert-1-0-x  \"0\"\)~%
+ \(field-convert-1-0-x  \"x\"\)~%
+ \(field-convert-1-0-x  \"X\"\)~%
+ \(field-convert-1-0-x #\\1\)~%
+ \(field-convert-1-0-x #\\0\)~%
+ \(field-convert-1-0-x #\\x\)~% 
+ \(field-convert-1-0-x #\\X\)~%
+ \(field-convert-1-0-x   1\)~%
+ \(field-convert-1-0-x   0\)~%
+ \(field-convert-1-0-x  #\\*\)
+ \(field-convert-1-0-x \"Return Me\"\)~%~@
+:SEE-ALSO `<XREF>'.~%►►►")
+
+(fundoc 'field-convert-1-0-x-empty
+        "Like `field-convert-1-0-x' but return 4 values as if by cl:values.~%~@
+:EXAMPLE~%
+ \(field-convert-1-0-x-empty t\)~%
+ \(field-convert-1-0-x-empty nil\)~%
+ \(field-convert-1-0-x-empty \"x\"\)~%
+ \(field-convert-1-0-x-empty \"1\"\)~%
+ \(field-convert-1-0-x-empty \"0\"\)~%
+ \(field-convert-1-0-x-empty 8\)~%
+ \(field-convert-1-0-x-empty \"\"\)~%
+ \(field-convert-1-0-x-empty \"    \"\)~%~@
+:SEE-ALSO `field-convert-verify-string'.~%►►►")
+
+(fundoc 'field-convert-1-0-x-empty-known
+"Like `field-convert-1-0-x-empty' but also check if CONVERT-FIELD is in
+KNOWN-FIELD-HASHTABLE.~%~@
+:EXAMPLE~%
+ \(field-convert-1-0-x-empty-known \"ref\" *xml-refs-match-table*\)~%
+ \(field-convert-1-0-x-empty-known \"\" *xml-refs-match-table*\)~%
+ \(field-convert-1-0-x-empty-known \"   \" *xml-refs-match-table*\)~%
+ \(field-convert-1-0-x-empty-known 8 *xml-refs-match-table*\)~%
+ \(field-convert-1-0-x-empty-known \"x\" *xml-refs-match-table*\)~%
+ \(field-convert-1-0-x-empty-known \"1\" *xml-refs-match-table*\)~%
+ \(field-convert-1-0-x-empty-known \"0\" *xml-refs-match-table*\)~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
 
 (fundoc 'field-convert-empty-string-nil

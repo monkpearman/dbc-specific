@@ -168,9 +168,9 @@ variable `dbc:*xml-refs-match-table*'.~%~@
 
 (vardoc '*xml-output-dir*
 "System relative directory pathname object for storing dbc-xml-dump files.~%~@
-Evaluated when system is loaded.
+Evaluated when system is loaded.~%
 :EXAMPLE~%
- \(sub-path *xml-output-dir*\)
+ \(sub-path *xml-output-dir*\)~%
  \(system-described *xml-output-dir* nil\)~%~@
 :SEE-ALSO `*xml-output-dir*', `*xml-output-refs-name*', `*xml-output-refs-ext*',
 `*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*'.~%►►►")
@@ -185,10 +185,9 @@ Use when dumping parsed dbc XML files.~%~@
 :SEE-ALSO `*xml-output-dir*', `*xml-output-refs-name*', `*xml-output-refs-ext*',
 `*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*'.~%►►►")
 
-
 (vardoc '*xml-output-refs-ext*
 "---> Output file name with extension and directory components.~%~@
-Use when dumping parsed dbc XML files.
+Use when dumping parsed dbc XML files.~%~@
 :EXAMPLE~%~@
  \(pathname-directory *xml-output-refs-ext*\)~%
  \(pathname-name *xml-output-refs-ext*\)~%
@@ -199,7 +198,7 @@ Use when dumping parsed dbc XML files.
 
 (vardoc '*xml-input-dir*
 "System relative directory pathname object for reading dbc-xml-dump files.~%~@
-Evaluated when system is loaded.
+Evaluated when system is loaded.~%~@
 :EXAMPLE~%
  \(sub-path *xml-input-dir*\)
  \(system-described *xml-input-dir* nil\)~%~@
@@ -222,9 +221,9 @@ Tweaked to remove non-valid portions at head of document.~%~@
 Temporary file for parsing XML refs before handling the whole shebang.~%~@
 Use `*xml-input-refs-name*' when ready.~%~@
 :EXAMPLE~%
- (pathname-directory *xml-input-refs-name-temp*)~%
- (pathname-name *xml-input-refs-name-temp*)~%
- (namestring *xml-input-refs-name-temp*)~%~@
+ \(pathname-directory *xml-input-refs-name-temp*\)~%
+ \(pathname-name *xml-input-refs-name-temp*\)~%
+ \(namestring *xml-input-refs-name-temp*\)~%~@
 :SEE-ALSO `*xml-output-dir*', `*xml-output-refs-name*', `*xml-output-refs-ext*',
 `*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*'.~%►►►")
 

@@ -63,7 +63,7 @@ slots for the class `parsed-ref'.
 ;;; ==============================
 ;; :NOTE Exisiting functions written for cleaning
 ;; `field-name-underscore-to-dash'
-;; `field-str-cons'
+;; `field-string-cons'
 ;; `field-cln-x'
 ;; `split-used-fors'
 ;; `split-appeared-in'
@@ -138,9 +138,9 @@ slots for the class `parsed-ref'.
 ;;  "title"            ;; description-title
 ;;  "desc_fr"          ;; description-french     ;; description-class
 ;;  "desc_en"          ;; description-english    ;; description-class
-;;  "histo_fr"         ;;
-;;  "histo_en"         ;;
-;;  "text_quote"       ;;
+;;  "histo_fr"         ;; ignorable-history-french
+;;  "histo_en"         ;; ignorable-history-english
+;;  "text_quote"       ;; description-quote
 ;;  "translation"      ;; description-translation
 ;;
 ;;  "people"           ;; person-entity-coref
@@ -165,7 +165,6 @@ slots for the class `parsed-ref'.
 ;; It isn't totally clear yet that these are neccesarrily publication related fields:
 ;;  "year"             ;; publication-date        ;; For congruence with birth-date death-date 
 ;;  "year_year"        ;; publication-date-range  ;;
-;;  "date"             ;; ???
 ;;
 ;;  "categ"            ;; category-0
 ;;  "c1"               ;; category-1
@@ -199,22 +198,22 @@ slots for the class `parsed-ref'.
 ;;                     ;; The "-ask" suffix is for congruence with "price-ebay"
 ;;                     ;; :NOTE Need price-paid, price-sold,
 ;;
-;;  "nbre"             ;; number    ;; probably empty
+;;  "nbre"             ;; ignorable-number    ;; probably empty
 ;;
 ;;  "seller"           ;; item-seller
-;;  "bar_code"         ;; 
+;;  "bar_code"         ;; item-bar-code
 ;;  "weight"           ;; unit-weight
 ;;  "user_name"        ;; edit-by       ;; edit-by-creator
 ;;  "done"             ;; job-complete
 ;;  "job_name"         ;; job-id
-;;  "locked"           ;; job-locked
+;;  "locked"           ;; job-locked   ;; IGNORABLE
 ;;  "online"           ;; item-posted
 ;;
 ;;  "uri"              ;; item-uri
 
-;;  "notes"            ;; IGNORABLE
-;;  "keywords_type"    ;; IGNORABLE
-;;  "av_repro"         ;; IGNORABLE 
+;;  "notes"            ;; ignorable-notes
+;;  "keywords_type"    ;; ignorable-keywords-type
+;;  "av_repro"         ;; item-can-repro ;; IGNORABLE
 
 ;;
 ;;  "related_doc"      ;; documentation-related
@@ -228,6 +227,7 @@ slots for the class `parsed-ref'.
 ;;  "description_seo"  ;; description-seo
 ;;  "keywords_seo"     ;; keywords-seo
 ;;
+;;  "date"             ;; edit-date-origin  ;; IGNORABLE assuming date_edit is present and corresponds 
 ;;  "date_edit"        ;; edit-date
 ;;  "edit_history      ;; edit-history
 ;;  ")
@@ -412,12 +412,14 @@ slots for the class `parsed-ref'.
 ;;
 ;; :EXAMPLE-VALUES 
 ;;  "x"
-;;
+;;  histo_fr
 ;; (search-forward-regexp "<field name=\"histo_fr\">[[:graph:]]+<" nil t)
 ;;
 ;; - Strip "x"
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
+
+;; (search-forward-regexp "histo_fr\">[^<0x].*<" nil t)
 
 ;;; ==============================
 ;; :FIELD "histo_en" :TRANSFORM 
@@ -437,7 +439,7 @@ slots for the class `parsed-ref'.
 ;;   Use `field-convert-1-0-x'
 
 ;;; ==============================
-;; :FIELD "text_quote" :TRANSFORM 
+;; :FIELD "text_quote" :TRANSFORM description-quote
 ;;
 ;;         :TYPE "varchar(100)"
 ;;         :NULL-P "NO"
@@ -552,7 +554,7 @@ slots for the class `parsed-ref'.
 ;;
 
 ;;; ==============================
-;; :FIELD "date" :TRANSFORM edit-date-orig
+;; :FIELD "date" :TRANSFORM edit-date-origin
 ;;
 ;;         :TYPE "varchar(100)"
 ;;         :NULL-P "NO"
@@ -564,9 +566,12 @@ slots for the class `parsed-ref'.
 ;;  "date" 
 ;;  "0"
 ;;
-;; - Following appears to be the _original_ edit-date field. with only one such
+;; - Following appears to be the _original_ edit-date field. 
+;;    AFAICT all occurences are circa 2004 e.g.
 ;;   occurence for entire file:
 ;;   "20040811125434" 
+;;
+;; This field is ignorable assuming value of "date_edit" is present and corresponds.
 ;;
 ;; (search-forward-regexp "date\">[^<0].*<" nil t)
 ;; 
@@ -574,7 +579,6 @@ slots for the class `parsed-ref'.
 ;;
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
-
 
 
 ;;; ==============================
@@ -918,6 +922,10 @@ slots for the class `parsed-ref'.
 ;;  "[8+] Professional archival conservation. Very light offsetting. [Typical]."
 ;;  "[8+]  Very light offsetting."
 ;;  "[7 ] Light age toning. Very light offsetting."
+;; "[9]Age toning, Strong plate mark. Please see Zoom In for details."
+;;
+;;
+;;
 ;;
 ;; - Separate out the `[<N>]` values when present.
 ;;
@@ -940,6 +948,8 @@ slots for the class `parsed-ref'.
 ;; - string-left-trim
 ;;
 ;; - remove trailing period 
+;; (string-right-trim "#\." <FIELD>)
+;;
 
 ;;; ==============================
 ;; :FIELD "w" :TRANSFORM unit-width
@@ -1088,6 +1098,9 @@ slots for the class `parsed-ref'.
 ;;    Additionally, the `locked` and `done` fields have the value 127
 ;;
 ;; (search-forward-regexp "<field name=\"categ\"></field>" nil t)
+
+;;    Additionally, the `locked` and `done` fields have the value 127
+
 
 ;;; ==============================
 ;; :FIELD "c1" :TRANSFORM :TRANSFORM category-1
@@ -1422,7 +1435,7 @@ slots for the class `parsed-ref'.
 ;;
 ;; :EXAMPLE-VALUES 
 ;; "keywords_type"
-;;
+;; "4603"
 ;; - May contain "keywords_type", remove/ignore it.
 ;; 
 ;; - Was this actually used? Nope.
@@ -1438,9 +1451,14 @@ slots for the class `parsed-ref'.
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
+;; "Catulle Mendes, Caricature, Top Hats, Overcoats, bugeyes, facial hair, Smile, portrait, Likeness,"
+;; "Hummingbird, twig, branch, tail,yellow, gold, feathers, dove grey, green, throat, beak,"
+;; 
+;; (split-comma-field  (string-right-trim "," <FIELD>))
+;; 
+;; (search-forward-regexp "keywords_seo\">[^<0].*<" nil t)
 ;;
-;;
-
+;; may be empty.                                        
 
 
 ;;; ==============================
@@ -1498,7 +1516,7 @@ slots for the class `parsed-ref'.
 ;;
 
 ;;; ==============================
-;; :FIELD "ebay_id" :TRANSFORM 
+;; :FIELD "ebay_id" :TRANSFORM "id-ebay"
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1507,7 +1525,10 @@ slots for the class `parsed-ref'.
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
+;; "ebay_id"
+;; "140115400523" ;; one occurence
 ;;
+;; (search-backward-regexp "ebay_id\">[^<0].*<" nil t)
 ;;
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
@@ -1529,7 +1550,10 @@ slots for the class `parsed-ref'.
 ;;
 ;; :EXAMPLE-VALUES 
 ;;
+;; (search-forward-regexp "<field name=\"nbre\">\\(^0\\)</field>")
+;;
 ;; - This doesn't appear to ever have been used
+
 
 ;;; ==============================
 ;; :FIELD "online" :TRANSFORM item-posted
@@ -1606,6 +1630,7 @@ slots for the class `parsed-ref'.
 ;; (search-forward-regexp "name=\"done\">127</field>" nil t)
 ;; (search-forward-regexp "name=\"locked\">127</field>" nil t)
 
+
 ;;; ==============================
 ;; :FIELD "job_name" :TRANSFORM job-id
 ;;
@@ -1639,6 +1664,7 @@ slots for the class `parsed-ref'.
 ;; :EXAMPLE-VALUES 
 ;;  "2004-08-11 15:50:25"
 ;;  "0000-00-00 00:00:00"
+;;  "0000-00-00 00:00:00"
 ;;  "2009-01-27 22:00:31"
 ;; 
 ;; - Use local-time
@@ -1646,6 +1672,8 @@ slots for the class `parsed-ref'.
 ;; - Convert "0000-00-00 00:00:00" to nil
 ;;
 ;; - :SEE edit_history below
+;; (string= "0000-00-00 00:00:00")
+
 
 ;;; ==============================
 ;; :FIELD "edit_history" :TRANSFORM edit-history

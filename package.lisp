@@ -167,7 +167,7 @@
              ;;
              ;;
              #:field-name-underscore-to-dash
-	     #:field-str-cons
+	     #:field-string-cons
 	     #:field-cln-x
              #:field-name-convert-field-name
 	     ;;
@@ -190,9 +190,13 @@
 	     ;;
 	     ;; mon:string-null-or-empty-p, mon:string-split-on-chars, mon:string-trim-whitespace
 	     #:split-comma-field
+	     #:split-loc-pre
+             ;;
+             #:field-convert-verify-string
              #:field-convert-empty-string-nil
 	     #:field-convert-1-0-x
-	     #:split-loc-pre
+             #:field-convert-1-0-x-empty
+             #:field-convert-1-0-x-empty-known
              ;;
            ;; dbc-parse/dbc-xml-sql-parse.lisp
 	     ;;

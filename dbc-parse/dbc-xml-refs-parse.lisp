@@ -60,6 +60,31 @@
 ;; (field-parse-attribs *xml-input-refs-name-temp*)
 
 ;;; ==============================
+;; XML Parsing INPUT/OUTUPT paths and paths names
+;; `*system-notes-dir*'
+;; `*xml-output-dir*'              ---> OUTPUT
+;; `*xml-output-refs-name*'        ---> OUTPUT
+;; `*xml-output-refs-ext*'         ---> OUTPUT
+;; `*xml-input-dir*'               <--- INPUT
+;; `*xml-input-refs-name*'         <--- INPUT
+;; `*xml-input-refs-name-temp*'    <--- INPUT
+;;
+;; (system-described *system-tests-dir* t)
+;; (system-described *system-tests-temp-dir* t)
+;; (system-described *system-path* t)
+;; (system-described *system-notes-dir* t)
+;; (system-base-path *system-path*)
+;; (sub-path *system-notes-dir*))
+;; (sub-path *xml-input-dir*)
+;; (system-described *xml-input-dir* nil)
+;; (sub-path *xml-output-dir*)
+;; (system-described *xml-input-dir* nil)
+;; *xml-output-refs-name*
+;; *xml-input-refs-name*
+;; *xml-input-refs-name-temp*
+;;; ==============================
+
+;;; ==============================
 ;;; ==============================
 
 (defun field-attribs-find (src)
