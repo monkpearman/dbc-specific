@@ -99,6 +99,7 @@
              #:base-category-entity
              #:base-theme-entity
              #:base-naf-entity
+             #:base-media-entity
              ;;
            ;; dbc-classes/dbc-class-description.lisp
              ;;

@@ -28,12 +28,74 @@ dbc-classes/dbc-class-uuid.lisp
 
 base-uuid
 
+- base-control-id (base-dbc)
+
+-- control-id-display-name           (base-control-id) ;; String based identity
+-- control-id-display-artist         (control-id-display-name)
+-- control-id-display-brand          (control-id-display-name)
+-- control-id-display-author         (control-id-display-name)
+-- control-id-display-person         (control-id-display-name)
+-- control-id-display-publication    (control-id-display-name)
+
+;; Item refs id-nums should be obfuscated with a UUID and are deprecated!
+;; Entity id-nums may occure congruently and are deprecated!
+;; Documentation id-nums for entities may occure congruently and are deprecated!
+;; The deprecated entity specific slot namespaces should be
+;; transformed to their superclass slot equivalent once parsing is finished.
+;; e.g. "control-id-doc-num-artist"    -> "control-id-doc-uuid"
+;; e.g. "control-id-entity-num-artist" -> "control-id-entity-uuid"
+
+-- control-id-deprecated                 (base-control-id)
+
+--- control-id-item-num                  (control-id-deprecated)
+
+--- control-id-doc-num                   (control-id-deprecated)
+---- control-id-doc-num-artist           (control-id-doc-num)
+---- control-id-doc-num-brand            (control-id-doc-num)
+---- control-id-doc-num-author           (control-id-doc-num)
+---- control-id-doc-num-person           (control-id-doc-num)
+---- control-id-doc-num-publication      (control-id-doc-num)
+---- control-id-display-publication-full (control-id-doc-num)
+
+--- control-id-entity-num                (control-id-deprecated)
+---- control-id-entity-num-artist        (control-id-entity-num)
+---- control-id-entity-num-author        (control-id-entity-num)
+---- control-id-entity-num-brand         (control-id-entity-num)
+---- control-id-entity-num-person        (control-id-entity-num)
+---- control-id-entity-num-publication   (control-id-entity-num)
+
+
+-- control-id-db                     (base-control-id)
+--- control-id-db-loc                (control-id-db) ;; nb2007017414 | n 98028882 | no 99021790
+--- control-id-db-ulan               (control-id-db) ;; 500013504
+--- control-id-db-bnf                (control-id-db) ;; FRBNF40421659
+--- control-id-db-oclc               (control-id-db) ;; 
+
+
 
 dbc-classes/dbc-class-entity.lisp
 
-- base-entity
+- base-entity           (base-dbc)
 -- base-category-entity (base-entity)
 -- base-theme-entity    (base-entity)
+
+-- base-media-entity    (base-entity)
+--- media-entity-technique (base-media-entity)
+--- media-entity-material  (base-media-entity)
+--- media-entity-mount     (base-media-entity)
+
+-- base-location-entity (base-entity)
+;; It isn't clear yet how to organize these but some form of them is necessary.
+--- location-entity-nationality (base-location-entity)
+--- location-entity-birth       (base-location-entity)
+--- location-entity-death       (base-location-entity) 
+--- location-entity-published   (base-location-entity)
+
+-- base-citation-entity (base-entity)
+--- citation-entity-institution (base-citation-entity)
+--- citation-entity-publication (base-citation-entity)
+--- citation-entity-website     (base-citation-entity)
+
 -- base-naf-entity      (base-entity)
     _________________ Below should have their own files
 
@@ -42,10 +104,18 @@ dbc-classes/dbc-class-entity.lisp
 --- naf-entity-author       (base-naf-entity)
 --- naf-entity-brand        (base-naf-entity)
 --- naf-entity-publication  (base-naf-entity)
+---- naf-entity-publication-book       (naf-entity-publication)
+---- naf-entity-publication-subscribed (naf-entity-publication)
+---- naf-entity-publication-atlas      (naf-entity-publication)
+---- naf-entity-publication-periodical (naf-entity-publication)
+---- naf-entity-publication-catalog    (naf-entity-publication)
+---- naf-entity-publication-pamphlet   (naf-entity-publication)
+
     ______________________  These are as yet undecided w/r/t how to handle
---- naf-entity-publisher    (base-naf-entity)
 --- naf-entity-linnaean     (base-naf-entity)
---- naf-entity-location     (base-naf-entity)
+--- naf-entity-publisher    (base-naf-entity)
+--- naf-entity-citation     (base-naf-entity) ;; Or, maybe (base-naf-entity base-citation-entity)
+--- naf-entity-location     (base-naf-entity) ;; Or, maybe (base-naf-entity base-location-entity)
 
 
 dbc-classes/dbc-class-regexps.lisp

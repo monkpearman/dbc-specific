@@ -151,14 +151,14 @@ slots for the class `parsed-ref'.
 ;;  "latin_name"       ;; taxon-entity-coref  ;; linnaean-entity-coref???
 ;;
 ;;
-;;  "book"             ;; publication-entity-coref
-;;  "publisher"        ;; publication-publisher
-;;  "publish_location" ;; publication-location   ;; For congruence with birth-location death-location
-;;  "volume"           ;; publication-volume
-;;  "edition"          ;; publication-edition
-;;  "page"             ;; publication-page
-;;  "Plate_number"     ;; publication-plate
-;;  "issue"            ;; publication-issue
+;;  "book"             ;; "publication-entity-coref"
+;;  "publisher"        ;; "publication-publisher"
+;;  "publish_location" ;; "publication-location"   ;; For congruence with birth-location death-location
+;;  "volume"           ;; "publication-volume"
+;;  "edition"          ;; "publication-edition"
+;;  "page"             ;; "publication-page"
+;;  "Plate_number"     ;; "publication-plate"
+;;  "issue"            ;; "publication-issue"
 ;;
 ;;  :NOTE `parsed-artist' class has "appeared_in" -> "publication-appeared-in"
 ;;
@@ -186,12 +186,11 @@ slots for the class `parsed-ref'.
 ;;
 ;;  "keywords"         ;;
 ;;
-
 ;;  "condition"        ;; description-condition  ;; description-class
-;;  "onlinen"          ;; mount-type
-;;  "technique"        ;; technique-type
-;;  "paper"            ;; paper-type
-;;  "color"            ;; color-type
+;;  "onlinen"          ;; media-mount
+;;  "technique"        ;; media-technique
+;;  "paper"            ;; media-paper
+;;  "color"            ;; media-color
 ;;  "w"                ;; unit-width
 ;;  "h"                ;; unit-height
 ;;  "price"            ;; price-ask
@@ -203,11 +202,11 @@ slots for the class `parsed-ref'.
 ;;  "seller"           ;; item-seller
 ;;  "bar_code"         ;; item-bar-code
 ;;  "weight"           ;; unit-weight
-;;  "user_name"        ;; edit-by       ;; edit-by-creator
+;;  "user_name"        ;; edit-by-creator
 ;;  "done"             ;; job-complete
 ;;  "job_name"         ;; job-id
 ;;  "locked"           ;; job-locked   ;; IGNORABLE
-;;  "online"           ;; item-posted
+;;  "online"           ;; item-active
 ;;
 ;;  "uri"              ;; item-uri
 
@@ -403,7 +402,7 @@ slots for the class `parsed-ref'.
 
 
 ;;; ==============================
-;; :FIELD "histo_fr" :TRANSFORM 
+;; :FIELD "histo_fr" :TRANSFORM ignorable-history-french
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -421,9 +420,11 @@ slots for the class `parsed-ref'.
 
 ;; (search-forward-regexp "histo_fr\">[^<0x].*<" nil t)
 
+;; 90796533
+
 ;;; ==============================
-;; :FIELD "histo_en" :TRANSFORM 
-;;
+;; :FIELD "histo_en" :TRANSFORM ignorable-history-english
+;;                              
 ;;         :TYPE "mediumint(9)"
 ;;         :NULL-P "NO"
 ;;         :KEY ""
@@ -703,8 +704,10 @@ slots for the class `parsed-ref'.
 ;;
 ;; :EXAMPLE-VALUES 
 ;;
+;; <field name="composer" xsi:nil="true" />
 ;;
-
+;; (count-matches "field name=\"composer\" xsi:nil=\"true\"") => 727
+;; 
 ;;; ==============================
 ;; :FIELD "brand" :TRANSFORM brand-entity-coref
 ;;
@@ -846,6 +849,9 @@ slots for the class `parsed-ref'.
 ;; :EXAMPLE-VALUES 
 ;;  "Portraits"
 ;;
+;; <field name="theme2" xsi:nil="true" />
+;; (count-matches "<field name=\"theme2\" xsi:nil=\"true\" />") => 353
+;; 
 ;; - Replace "&amp;" -> "and"
 
 ;;; ==============================
@@ -860,6 +866,9 @@ slots for the class `parsed-ref'.
 ;;  "Walking"
 ;;  "Relations between the sexes"
 ;;
+;; <field name="theme3" xsi:nil="true" />
+;; (count-matches "<field name=\"theme3\" xsi:nil=\"true\" />") => 347
+;;
 ;; - Replace "&amp;" -> "and"
 
 
@@ -868,7 +877,7 @@ slots for the class `parsed-ref'.
 ;;; ==============================
 
 ;;; ==============================
-;; :FIELD "technique" :TRANSFORM technique-type
+;; :FIELD "technique" :TRANSFORM media-technique
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -883,7 +892,7 @@ slots for the class `parsed-ref'.
 ;;
 
 ;;; ==============================
-;; :FIELD "paper" :TRANSFORM paper-type
+;; :FIELD "paper" :TRANSFORM media-paper
 ;;
 ;;         :TYPE "varchar(100)"
 ;;         :NULL-P "NO"
@@ -986,7 +995,7 @@ slots for the class `parsed-ref'.
 ;; - Use `mon:number-to-string' or `parse-integer'
 
 ;;; ==============================
-;; :FIELD "color"  :TRANSFORM "color-type"
+;; :FIELD "color"  :TRANSFORM media-color
 ;;
 ;;         :TYPE "tinyint(3) unsigned"
 ;;         :NULL-P "NO"
@@ -1011,7 +1020,7 @@ slots for the class `parsed-ref'.
 ;;  2 - color 
 
 ;;; ==============================
-;; :FIELD "onlinen" :TRANSFORM mount-type
+;; :FIELD "onlinen" :TRANSFORM media-mount
 ;;
 ;;         :TYPE "tinyint(3) unsigned"
 ;;         :NULL-P "NO"
@@ -1540,7 +1549,7 @@ slots for the class `parsed-ref'.
 
 
 ;;; ==============================
-;; :FIELD "nbre" :TRANSFORM 
+;; :FIELD "nbre" :TRANSFORM ignorable-number
 ;;
 ;;         :TYPE "tinyint(3) unsigned"
 ;;         :NULL-P "NO"
@@ -1556,7 +1565,7 @@ slots for the class `parsed-ref'.
 
 
 ;;; ==============================
-;; :FIELD "online" :TRANSFORM item-posted
+;; :FIELD "online" :TRANSFORM item-active
 ;;
 ;;         :TYPE "tinyint(3) unsigned"
 ;;         :NULL-P "NO"
@@ -1598,7 +1607,7 @@ slots for the class `parsed-ref'.
 
 
 ;;; ==============================
-;; :FIELD "user_name"
+;; :FIELD "user_name" :TRANSFORM edit-by-creator
 ;;
 ;;         :TYPE "varchar(100)"
 ;;         :NULL-P "NO"

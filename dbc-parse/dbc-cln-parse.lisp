@@ -216,11 +216,11 @@
 
 ;; :NOTE Don't for get to use `cl:search', `cl:find', etc.!
 ;;; ==============================
-(defun split-comma-field (seo-desc-str)
-  (unless ;; (mon:simple-string-null-or-empty-p seo-desc-str)
-      (mon:string-null-or-empty-p seo-desc-str)
+(defun split-comma-field (comma-string)
+  (unless ;; (mon:simple-string-null-or-empty-p comma-string)
+      (mon:string-null-or-empty-p comma-string)
     (loop 
-       :with split-comma = (mon:string-split-on-chars (the string seo-desc-str) ",")
+       :with split-comma = (mon:string-split-on-chars (the string comma-string) ",")
        :for x :in split-comma
        :for y = (mon:string-trim-whitespace (the string x))
        :unless (or 
@@ -228,31 +228,37 @@
                 (notany #'alpha-char-p y))
        :collect y)))
 
-(defun field-convert-preprocess-field (string-field-maybe)
-  (if (stringp string-field-maybe)
-      (let ((match "match-field"))
-        (string-case:string-case (match :default match)
-          ("bubba" (print "found bubba" *standard-output*))
-          ("match-field" (string-upcase match))))
+;; (case (known-field-hashtable) 
+;; (field-convert-1-0-x-empty-known field)
+;; (field-convert-1-0-x-empty field))
 
-(defun field-convert-verify-string (string-field-maybe &optional known-field-hashtable)
-  (declare (optimize (speed 3)))
-  (when (null string-field-maybe)
-    (return-from field-convert-verify-string (values nil 'null)))
-  (when (not (stringp string-field-maybe))
-    (return-from field-convert-verify-string (values string-field-maybe (type-of string-field-maybe))))
-  (locally (declare (mon:string-not-null string-field-maybe))
-    (when (mon:string-empty-p string-field-maybe)
-      (return-from field-convert-verify-string (values nil 'mon:string-empty)))
-    (when (mon:string-all-whitespace-p string-field-maybe)
-      (return-from field-convert-verify-string (values nil 'mon:string-all-whitespace)))
-    (when (and known-field-hashtable 
-               (hash-table-p known-field-hashtable)
-               (gethash string-field-maybe known-field-hashtable))
-      (return-from field-convert-verify-string (values nil string-field-maybe)))
-    (values string-field-maybe (type-of string-field-maybe))))
+
+;; (mon:string-null-or-empty-p (field-convert-verify-string ""))
+;; (split-comma-field  "   ")
+;; (field-convert-verify-string "     ")
+;; (field-convert-verify-string 8)
+;; (field-convert-1-0-x-empty "|")
+
+
+(defun split-piped-field-if (piped-string)
+  (multiple-value-bind (v1 t1 v2 t2) (field-convert-1-0-x-empty piped-string)
+    (if (or (null v1) (not (stringp v1)))
+        (return-from split-piped-field-if (values v1 t1 v2 t2))
+        (locally (declare (mon:string-not-null-or-empty v1))
+          (if (position #\| v1)
+              (if (string= v1 "|")
+                  (values nil 'standard-char v2 t2)
+                  (loop 
+                     :with split = (mon:string-split-on-chars piped-string "|")
+                     :for x in split 
+                     :for y = (mon:string-trim-whitespace x)
+                     :unless (eql (length y) 0) 
+                     :collect y :into rtn
+                     :finally (return (values rtn (type-of rtn) v1 t1))))
+              (values v1 t1 v2 t2))))))
 
 (defun field-convert-1-0-x-empty-known (convert-field known-field-hashtable)
+  (declare (hash-table known-field-hashtable))
   (multiple-value-bind (val type) (field-convert-verify-string convert-field known-field-hashtable)
     (if (null val)
         (return-from field-convert-1-0-x-empty-known
@@ -273,14 +279,10 @@
           (values rtn val2 convert-field val1)))))
 
 (defun field-convert-1-0-x (convert-field)
-  ;; (declare (optimize (speed 3) (space 0) (safety 0)))
-    (setf convert-field
-        (if (and ;; (simple-string-p convert-field)
-             (stringp convert-field)
-             (eql (length convert-field) 1))
-            (char convert-field 0)
-            convert-field))
-  (typecase  convert-field
+  (typecase (if (and (stringp convert-field) ;; (simple-string-p convert-field)
+                     (eql (length convert-field) 1))
+                (char convert-field 0)
+                convert-field)
     (standard-char (case convert-field
                      (#\1 t)
                      ((#\0  #\x #\X) nil)
@@ -318,6 +320,99 @@
   (if (string-equal field-name (mon:string-trim-whitespace field-value))
       nil
       field-value))
+
+(defun field-convert-verify-string (string-field-maybe &optional known-field-hashtable)
+  (declare (optimize (speed 3)))
+  (when (null string-field-maybe)
+    (return-from field-convert-verify-string (values nil 'null)))
+  (when (not (stringp string-field-maybe))
+    (return-from field-convert-verify-string (values string-field-maybe (type-of string-field-maybe))))
+  (locally (declare (mon:string-not-null string-field-maybe))
+    (when (mon:string-empty-p string-field-maybe)
+      (return-from field-convert-verify-string (values nil 'mon:string-empty)))
+    (when (mon:string-all-whitespace-p string-field-maybe)
+      (return-from field-convert-verify-string (values nil 'mon:string-all-whitespace)))
+    (when (and known-field-hashtable 
+               (hash-table-p known-field-hashtable)
+               (gethash string-field-maybe known-field-hashtable))
+      (return-from field-convert-verify-string (values nil string-field-maybe)))
+    (values string-field-maybe (type-of string-field-maybe))))
+
+(defun field-convert-preprocess-field (string-field-maybe)
+  (if (stringp string-field-maybe)
+      (let ((match (copy-seq string-field-maybe)))
+        (setf match
+              (string-case:string-case (match :default match)
+                ("bubba"       (print "found bubba" *standard-output*))
+                ("match-field" (string-upcase match))))
+        (values match string-field-maybe (type-of match)))
+      (values string-field-maybe nil (type-of string-field-maybe))))
+
+(fundoc 'field-convert-preprocess-field
+"Preprocess STRING-FIELD-MAYBE if it matches a `string-case:string-case' case form.
+If STRING-FIELD-MAYBE is `cl:stringp' and matches apply the case body form to STRING-FIELD-MAYBE.
+If STRING-FIELD-MAYBE is not `cl:stringp' return it.
+Return three values as if by cl:values. Returned values will have one of the following formats:
+<PROCESSED-STRING>, STRING-FIELD-MAYBE, <TYPE-OF-PROCESSED-STRING>
+STRING-FIELD-MAYBE, NIL, <TYPE-OF-STRING-FIELD-MAYBE>
+If STRING-FIELD-MAYBE is `cl:stringp' nth-value 0 is the p
+:EXAMPLE~%
+ \(field-convert-preprocess-field \"match-field\"\)
+ \(field-convert-preprocess-field \"bubba\"\)
+ \(field-convert-preprocess-field \"\"\)
+ \(field-convert-preprocess-field 8\)
+ \(field-convert-preprocess-field '\(\"\" \"bubba\"\)\)
+:SEE-ALSO `<XREF>'.~%►►►")
+
+
+;; (field-convert-preprocess-field "match-field")
+;; => "MATCH-FIELD", "match-field", (SIMPLE-ARRAY CHARACTER (11))
+
+;; (field-convert-preprocess-field "bubba")
+;; => "found bubba" "found bubba", "bubba", (SIMPLE-ARRAY CHARACTER (11))
+
+;; (field-convert-preprocess-field "")
+;; "", "", (SIMPLE-ARRAY CHARACTER (0))
+
+;; (field-convert-preprocess-field 8)
+;; => 8, NIL, (INTEGER 0 536870911)
+
+;; (field-convert-preprocess-field '("" "bubba"))
+;; => ("" "bubba"), NIL, CONS
+
+;; I'd like the macro form to allow to this:
+;; (tt--field-convert-preprocess-field  "match-field" s
+;;    ("bubba"       (format nil "found ~S" s)) 
+;;    ("match-field" (string-upcase s)))
+
+;; (defmacro tt--field-convert-preprocess-field (string-field-maybe var &rest cases)
+;;   (mon:with-gensyms (match extent-var)
+;;     `(if (stringp ,string-field-maybe)
+;;          (let ((,match (copy-seq ,string-field-maybe))
+;;                (,extent-var ,var))
+;;            (setf ,extent-var ,match)
+;;            (setf ,extent-var
+;;                  (string-case:string-case (,match :default ,match)
+
+
+;;                    `(,@`(mapcar #'macroexpand ,,cases))))
+;;            ;;(values ,match ,string-field-maybe (type-of ,match)))
+;;            (values ,extent-var ,string-field-maybe (type-of ,extent-var)))
+;;          (values ,string-field-maybe nil (type-of ,string-field-maybe)))))
+
+;; (print "found bubba" *standard-output*)) 
+
+;; (tt--field-convert-preprocess-field  "match-field" s
+;;                                      ("bubba"       (format nil "found ~S" s)
+;;                                                     (format nil "still formatting ~" s)) 
+;;                                      ("match-field" (string-upcase s)))
+
+
+;; (tt--field-convert-preprocess-field 8
+;;                                     ("bubba"       (print "found bubba" *standard-output*))
+;;                                     ("match-field" (string-upcase match)))
+
+
 
 ;;; ==============================
 ;; :TODO
@@ -383,8 +478,27 @@ This is a short-circuiting procedure, e.g. it does nothing on success.~%
 Return value is a list of strings.~%~@
 :EXAMPLE~%
  \(split-used-fors \"Poinçon de la Blanchardière, Pierre | La Blanchardiere, Pierre Poin çon de | \"\)~%~@
-:SEE-ALSO `mon:string-split-on-chars', `split-roles',
-`split-appeared-in', `split-loc-pre', `split-lifespan'.~%►►►")
+:SEE-ALSO `split-piped-field-if', `mon:string-split-on-chars', `split-roles',
+`split-appeared-in', `split-loc-pre', `split-lifespan', `split-comma-field'.~%►►►")
+
+(fundoc 'split-piped-field-if
+"Like `split-used-fors' but do not return a list if no #\\| are found.~%~@
+Unlike `split-used-fors' arg PIPED-STRING may be an object of any type not just a `cl:string'.~%~@
+Return 4 values as if by `cl:values' in a like manner as `dbc:field-convert-1-0-x-empty'.~%~@
+:EXAMPLE~%
+ \(split-piped-field-if \" a | b | c | d | e\"\)~%
+ \(split-piped-field-if \" | \"\)~%
+ \(split-piped-field-if \" | \"\)~%
+ \(split-piped-field-if \"\"\)~%
+ \(split-piped-field-if \"|\"\)~%
+ \(split-piped-field-if  8\)~%
+ \(split-piped-field-if \"8\"\)~%
+ \(split-piped-field-if nil\)~%
+ \(split-piped-field-if t\)~%
+ \(split-piped-field-if #b0000\)~%~@
+:SEE-ALSO `split-used-fors', `split-roles', `split-appeared-in',
+`split-loc-pre', `split-lifespan', `split-comma-field',
+`mon:string-split-on-chars'.~%►►►")
 
 (fundoc 'split-appeared-in
 "Split APPEARED-IN-STRING on \"|\" barriers.~%~@
@@ -413,8 +527,8 @@ Signal an error if ROLE-STRING is neither `null' nor `simple-string-p'.~%~@
   \"Artist, Illustrator,  designer, Fashion illustrator, Fashion Designer .\"\)~%
  \(split-roles \"Artist, \"\)~%~@
  \(split-roles nil\)~%~@
-:SEE-ALSO `split-used-fors', `split-appeared-in', `split-loc-pre',
-`split-lifespan'.~%►►►")
+:SEE-ALSO `split-piped-field-if', `split-used-fors', `split-appeared-in',
+`split-loc-pre', `split-lifespan', `split-comma-field'.~%►►►")
 
 (fundoc 'split-loc-pre
 "Trim leading \"n \" prefix from loc-control fields.~%~@
@@ -422,8 +536,8 @@ Signal an error if ROLE-STRING is neither `null' nor `simple-string-p'.~%~@
  \(split-loc-pre \"n 83043434\"\)~%
  \(split-loc-pre \"83043434\"\)~%~@
 :NOTE This is actually a bad idea as the \"n 95121069\" is canonical...~%~@
-:SEE-ALSO `split-roles', `split-used-fors', `split-appeared-in',
-`split-lifespan'.~%►►►")
+:SEE-ALSO `split-roles', `split-used-fors', `split-piped-field-if',
+`split-appeared-in', `split-lifespan'.~%►►►")
 
 (fundoc 'split-lifespan
 "Split LIFESPAN-STR into a consed pair.~%~@
@@ -446,8 +560,8 @@ Return value has the form:~%
  \(split-lifespan \"1848 -- ??\"\)~%
  \(split-lifespan \" 1848-?? \"\)~%~@
 :NOTE Doesn't catch the #\\[ #\\] chars in \"[?]-1900\" or \"1900-[?]\".~%~@
-:SEE-ALSO `split-roles', `split-used-fors', `split-appeared-in',
-`split-loc-pre'.~%►►►")
+:SEE-ALSO `split-roles', `split-used-fors', `split-piped-field-if',
+`split-appeared-in', `split-loc-pre'.~%►►►")
 
 (fundoc 'split-lifespan-string-int-pairs
 "Attempt integer extraction from cons strings returned by `split-lifespan'.~%~@
@@ -519,14 +633,23 @@ we can be reasonably sure that the integer parse is correct.~%~@
 :SEE-ALSO `<XREF>'.~%►►►")
 
 (fundoc 'split-comma-field
-"Split a comma delitied dbc field.~%~@
+"Split a comma delimited string COMMA-STRING.~%~@
 Intended for use with SEO and \"keyword\" like fields in the `refs` table.~%~@
-:EXAMPLE~%~@
- \(split-comma-field  \"air, plane, airplane, Biplane,, aircraft, expo, , dirigible,\"\)~%~@
+:EXAMPLE~%
+ \(split-comma-field \"air, plane, airplane, Biplane,, aircraft, expo, , dirigible,\"\)~%
+ \(split-comma-field \",\"\)~%
+ \(split-comma-field \",,\"\)~%
+ \(split-comma-field \", ,\"\)~% 
+ \(split-comma-field \"\"\)~%
+ \(split-comma-field  \"   \"\)~%
+ \(split-comma-field  nil\)~%
+ \(split-comma-field  \(\)\)~%~@
 :NOTE Do not call unless reasonably sure sure that there are never free commas
 used in a non-delimiting position, e.g. the following string will not parse correctly:~% 
- \"Havell (Robert, Jr.), Havell (Robert, Sr.), Havell Lithograph, \"~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
+ \(split-comma-field  \"Havell \(Robert, Jr.\), Havell \(Robert, Sr.\), Havell Lithograph, \"\)~%~@
+:SEE-ALSO `split-used-fors', `split-piped-field-if', `split-roles',
+`split-appeared-in', `split-loc-pre', `split-lifespan', `split-comma-field',
+`mon:string-split-on-chars'.~%►►►")
 
 (fundoc 'format-entity-role
 "Format dbc entity-roles list for presentation.~%~@

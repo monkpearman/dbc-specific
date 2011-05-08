@@ -72,6 +72,7 @@
 ;; `*xml-output-dir*'
 (and (not (null *system-path*))
      (system-path-xml-dump-dir-ensure)
+     (or (terpri) (terpri) t)
      (setf (system-path-var-binding *xml-output-dir*) '*xml-output-dir*)
      (prog1 t (terpri) (terpri))
      (system-described *xml-output-dir* t))

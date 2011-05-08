@@ -66,6 +66,25 @@ external domain.~%
              :SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp',~%~
              `naf-entity-alt-name-regexp'.~%►►►")))
 
+(defclass base-media-entity (base-entity)
+  ()
+  (:documentation 
+   #.(format nil 
+             "Base class for referencing DBC system media entities.~%~@
+              Media entities include:~% ~
+               - techniques~%   ~
+                 -- engraving, lithograph, photograph, offset, etc.~% ~
+               - materials~%   ~
+                 -- paper, fabric, cardstock, etc.~% ~
+               - mounts~%   ~
+                  -- linen backed, dry mounted, etc.~% ~
+               - color~%   ~
+                 -- black and white, red, white, blue, etc.~%~@
+             :SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp',~%~
+             `naf-entity-alt-name-regexp'.~%►►►")))
+
+;;; ==============================
+
 ;; 
 
 ;; Local Variables:

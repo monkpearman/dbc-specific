@@ -292,7 +292,7 @@
 ;; (defmethod initialize-instance :after ((entity naf-entity-artist-regexp)
 
 ;;; ==============================
-;;; NAF-PERSON
+;;; :NAF-PERSON
 ;;; ==============================
 (defvar *naf-person-entity-regexp-db* nil)
 

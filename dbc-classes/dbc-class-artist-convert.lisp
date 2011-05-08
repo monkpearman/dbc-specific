@@ -2,6 +2,13 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-artist.lisp
 ;;; ==============================
 
+
+;;; ==============================
+;;; Clean these up first with emacs regexp: 
+;;;  (while (search-forward-regexp " xsi:nil=\"true\" />" nil t) (replace-match "></field>"))
+;;;
+;;; ==============================
+
 
 (in-package #:dbc)
 
@@ -28,43 +35,91 @@
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
 
+
 ;;; ==============================
-;; + name="online"
-;;;  Type="tinyint(3) unsigned"
+;; :NOTE All of these initial entity specific slot namespaces should be
+;; transformed to their superclass slot equivalent once parsing is finished. 
+;; e.g. "control-id-doc-num-artist"    -> "control-id-doc-uuid"
+;; e.g. "control-id-entity-num-artist" -> "control-id-entity-uuid"
+;;
+;;
+;; <FIELD>           <TRANSFORM>
+;;
+;; "bio"               ;; "control-id-doc-num-artist"
+;; "id"                ;; "control-id-entity-num-artist"
+;; "display"           ;; "control-id-display-artist"
+;;
+;; "used_for"          ;;
+;; "role"              ;;
+;;
+;; "gender"            ;;
+;; "lifespan"          ;; "lifespan-date"
+;; "date_born"         ;; "birth-date"
+;; "date_died"         ;; "death-date"
+;; "birth_location"    ;; "location-birth"
+;; "death_location"    ;; "location-death"
+;; "nationality"       ;; "location-nationality"
+;;
+;; "LOC_control"       ;; "control-id-1" ;; LOC
+;; "ULAN_control"      ;; "control-id-2" ;; ULAN
+;;
+;; "also_author"       ;; "naf-entity-author-coref"
+;; "also_people"       ;; "naf-entity-person-coref"
+;;
+;;
+;; "appeared_in"       ;; "publication-appearance"
+;; "ads_for"           ;; "brand-appearance"
+;;
+;;
+;; "found_in"          ;; "citation-appearance"
+;; "auction_records"   ;; "sale-appearance"
+;;
+;; "default_pic"       ;; 
+;; "print_default_pic" ;; "item-coref"
+;;
+;;
+;; "online"            ;; "naf-active"
+;; "user_name"         ;; "edit-by"
+;; "naf_creator"       ;; "edit-by-creator"
+;;
+;; "date_edit"         ;; "edit-date-origin"
+;; "date_edt"          ;; "edit-date"
+;;
+;; "cancel_num"        ;; "ignorable-cancel-num"
+;; "special_note"      ;; "ignorable-special-note"
+
+;;; ==============================
+
+;;; ==============================
+;;  :FIELD "bio" :TRANSFORM "control-id-doc-num-artist"
+;;  :TYPE "int(10) unsigned"
 ;;
 ;; :EXAMPLE-VALUES 
-;;   "1" | "0"
+;;  213
+;;  0
 ;;
-;; - Replace the 0 default with T/NIL
-;;   Use `field-convert-1-0-x'
-;; 
+;; - May appear as `0' 
+;; - xrefs to documentation
+;; - ignore `0' values
 
 ;;; ==============================
-;; + name="bio"
-;;   Type="int(10) unsigned"
-;;         213
-;;   - may appear as `0' 
-;;   - xrefs to documentation
-;;   - ignore `0' values
-
-
-;;; ==============================
-;; + name="id"
-;;   Type="int(4) unsigned"
-;;   Key="PRI" 
-;;   Extra="auto_increment"
+;;  :FIELD "id" :TRANSFORM  "control-id-entity-num-artist"
+;;  :TYPE "int(4) unsigned"
+;;  :KEY "PRI" 
+;;  :EXTRA "auto_increment"
 ;;
 ;; :EXAMPLE-VALUES 
-;;  "10"
+;;  10
+;;  1458
 ;;
 ;;   - UUID integer. We need to retain the existing value because it appears in
-;;   - .naf files and potentiall in the db as well, But, we also need to
-;;   - generate a more robust UUID for these as well
+;;    .naf files and potentially in the db as well, But, we also need to
+;;    generate a more robust UUID for these as well
 
 
 ;;; ==============================
-;; + name="name" ;; display
-;;   Type="varchar(255)"
+;;  :FIELD "name" :TRANSFORM "control-id-display-artist"
+;;  :TYPE "varchar(255)"
 ;;
 ;; :EXAMPLE-VALUES 
 ;;  "Benito (Eduardo Garcia)"
@@ -98,8 +153,8 @@
      
 
 ;;; ==============================
-;; + name=used_for 
-;;   Type="text"
+;;  :FIELD "used_for" :TRANSFORM
+;;  :TYPE "text"
 ;;
 ;; :EXAMPLE-VALUES 
 ;;  "Louis Chalon | Chalon, Louis"
@@ -123,29 +178,34 @@
 ;;      ("Apsuedo Name (pseudonym)" ("Apsuedo" "Name" "(pseudonym)")))
 
 ;;; ==============================
-;; + name="gender"
-;;;  Type="varchar(255)"
+;; :FIELD "role" :TRANSFORM
+;; :TYPE "varchar(255)"
+;;
+;; :EXAMPLE-VALUES 
+;;         "Painter, Illustrator."
+;;
+;;   - Split on commas.  Be careful about trailing period `.' 
+;;     Use `split-roles' function is written.
+;;     :SEE-ALSO `split-comma-field'
+;;
+;;  - Normalize known roles.
+;;
+;;  - Ideally we would transform as:
+;;   <field name="role">Designer, Caricaturist, illustrator.</field>
+;;  :ROLE ("Designer" "Caricaturist" "Illustrator")
+
+;;; ==============================
+;;  :FIELD "gender" :TRANSFORM
+;;  :TYPE "varchar(255)"
 ;;
 ;; :EXAMPLE-VALUES 
 ;;  "Male" | "Female" | ?
 ;;
+;; - 
 
 ;;; ==============================
-;; + name="nationality"
-;;   Type="varchar(255)"
-;;
-;; :EXAMPLE-VALUES 
-;;         "French"
-;;
-;;   - Artists Nationality
-;;
-;;   - This should get normalized to an ISO? 
-;;     If so, what to do about case like "Argentinian"?
-
-
-;;; ==============================
-;; + name=lifespan 
-;;   Type="varchar(100)"
+;;  :FIELD "lifespan" :TRANSFORM "lifespan-date"
+;;  :TYPE "varchar(100)"
 ;;
 ;; :EXAMPLE-VALUES 
 ;;
@@ -155,6 +215,7 @@
 ;;         "1848-1934"
 ;;         "-1866"
 ;;         "1866-"
+;;         "Active 1940s-60s"
 ;;
 ;;   - Check for and normalize values of type:
 ;;      NNNN-NNNN 
@@ -173,8 +234,8 @@
 ;;       :Note does not check replace for `#\[' `#\]' for frob strings of type "[?+]".
 
 ;;; ==============================
-;; + name="date_born"
-;;   Type="varchar(255)"
+;;  :FIELD "date_born" :TRANSFORM "birth-date"
+;;  :TYPE "varchar(255)"
 ;;
 ;; :EXAMPLE-VALUES 
 ;;
@@ -184,8 +245,8 @@
 ;;
 
 ;;; ==============================
-;; + name="date_died"
-;;   Type="varchar(255)"
+;;  :FIELD "date_died" :TRANSFORM "death-date"
+;;  :TYPE "varchar(255)"
 ;;
 ;; :EXAMPLE-VALUES 
 ;;
@@ -194,81 +255,110 @@
 ;;   - Try to parse out "<MONTH> <DAY>, <YEAR>"?
 
 ;;; ==============================
-;; + name="birth_location"
-;;   Type="varchar(255)"
+;;  :FIELD "birth_location" :TRANSFORM "location-birth"
+;;  :TYPE "varchar(255)"
 ;;
 ;; :EXAMPLE-VALUES 
-;;        "Prestinone, Val Vigezz - Italy"
+;;   "Prestinone, Val Vigezz - Italy"
+;;   "Reims, France"
 ;;
-;;   - May be empty
+;;  - May be empty
 ;;
-;;   - Try to parse out "<CITY> <STATE> <COUNTRY>"?
-
+;; - Try to parse out "<CITY> <STATE> <COUNTRY>"?
+;;
+;; - Co-refs with `dbc:naf-entity-location'
 
 ;;; ==============================
-;; + name="death_location"
-;;   Type="varchar(255)"
+;;  :FIELD "death_location" :TRANSFORM "location-death"
+;;  :TYPE "varchar(255)"
 ;;
 ;; :EXAMPLE-VALUES 
-;;         "0"
+;;  "0"
 ;;
-;;  - When this is `0' ignore it.
+;; - When this is `0' ignore it.
 ;;
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
+;;
+;; - Co-refs with `dbc:naf-entity-location'
 
 ;;; ==============================
-;; + name="role"
-;;   Type="varchar(255)"
+;;  :FIELD "nationality" :TRANSFORM "location-nationality"
+;;  :TYPE "varchar(255)"
 ;;
 ;; :EXAMPLE-VALUES 
-;;         "Painter, Illustrator."
+;;         "French"
 ;;
-;;   - Split on commas.  Be careful about trailing period `.' 
-;;     Use `split-roles' function is written.
-;;     :SEE-ALSO `split-comma-field'
+;;   - Artists Nationality
 ;;
-;;   - Normalize known roles.
+;;   - This should get normalized to an ISO? 
+;;     If so, what to do about case like "Argentinian"?
 ;;
-;;   - Ideally we would transform as:
-;;   <field name="role">Designer, Caricaturist, illustrator.</field>
-;;  :ROLE ("Designer" "Caricaturist" "Illustrator")
+;;  - co-refs `dbc:naf-entity-location'
+
+
  
 
 ;;; ==============================
-;; + name="LOC_control"
-;;   Type="varchar(15)"
+;;  :FIELD "LOC_control" :TRANSFORM "control-id-loc"
+;; :TYPE "varchar(15)"
 ;;
 ;; :EXAMPLE-VALUES 
-;;         "83227261"
-;;         "2001022515"
-;;         "nb2007017414"
-;;         "n 83043434"
+;;  "83227261"
+;;  "2001022515"
+;;  "nb2007017414"
+;;  "n 83043434"
 ;;
-;;   - May appear as `n 83043434`, `nb2007017414`
+;;  - May appear as `n 83043434`, `nb2007017414`
 ;;
-;;   - Maybe use `split-loc-pre'? 
-;;     It isn't clear if this is desirable b/c "n 83043434" may actually be the
-;;     canonical control number...
+;;  - Maybe use `split-loc-pre'? 
+;;    It isn't clear if this is desirable b/c "n 83043434" may actually be the
+;;    canonical control number...
 ;; 
 
 ;;; ==============================
-;; + name="ULAN_control"
-;;   Type="varchar(15)"
+;; :FIELD "ULAN_control" :TRANSFORM "control-id-ulan"
+;; :TYPE "varchar(15)"
 ;;
 ;; :EXAMPLE-VALUES 
-;;         "500007646"
+;;  500007646
+;;  0
 ;;
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
 ;;
-;; - Should we try to verify the "type" of control number. 
+;; - Should we try to verify the "type" of control number. YES! 2011-05-05
 ;;   If so, this requires identifying a ULAN type control versus some other type
 ;;   of value which may include OCLC, BNF, etc.
 
 ;;; ==============================
-;; + name="appeared_in"
-;;   Type="text"
+;;  :FIELD "also_author"  :TRANSFORM "naf-entity-author-coref"
+;; :TYPE "tinyint(3) unsigned"
+;;
+;; :EXAMPLE-VALUES 
+;;  "0"
+;;
+;; - This is currently either 1/0 these should be converted to t/nil
+;;   Replace the 0 default with T/NIL Use `field-convert-1-0-x'
+;;   
+;; - (search-forward-regexp "also_author">1)
+
+
+;;; ==============================
+;;  :FIELD "also_people"  :TRANSFORM "naf-entity-person-coref"
+;; :TYPE "tinyint(3) unsigned"
+;;
+;; :EXAMPLE-VALUES 
+;;  "0"
+;;
+;; - Replace the 0 default with T/NIL
+;;   Use `field-convert-1-0-x'
+;;
+;; - Co-refs with `dbc:naf-entity-person'
+
+;;; ==============================
+;; :FIELD "appeared_in" :TRANSFORM "publication-appearance"
+;; :TYPE "text"
 ;;
 ;; :EXAMPLE-VALUES 
 ;;
@@ -284,18 +374,23 @@
 ;;
 ;;  - Use `split-appeared-in' or adapted variant.
 ;;   (split-appeared-in (format nil "Le Rire | Le Sourire |~% Femina | La Rampe "))
-
+;;
+;; - Co-refs with `dbc:naf-entity-publication'
 
 ;;; ==============================
-;; + name="ads_for"
-;;   Type="text"
+;; :FIELD "ads_for"  :TRANSFORM "brand-appearance"
+;; :TYPE "text"
 ;;
 ;; :EXAMPLE-VALUES 
+;;  "Panagra, early 1960's"
+;; 
+;; - elts will likely co-ref with `dbc:naf-entity-brand'
 ;;
+;; - Likely xrefs with a subclass of `dbc:base-category-entity'
 
 ;;; ==============================
-;; + name="found_in"
-;;   Type="text"
+;; :FIELD "found_in"  :TRANSFORM "citation-appearance"
+;; :TYPE "text"
 ;;
 ;; :EXAMPLE-VALUES 
 ;;
@@ -310,44 +405,40 @@
 ;; 
 
 ;;; ==============================
-;; + name="auction_records"
+;; :FIELD "auction_records" :TRANSFORM "sale-appearance"
 ;;
 ;; :EXAMPLE-VALUES 
+;;
+;; - Some of these (e.g. Benezit refs) will contain xrefs to a subclass of
+;;   `dbc:base-location-entity'
 ;;
 
 
 ;;; ==============================
-;; + name="also_author"
-;;   Type="tinyint(3) unsigned"
+;;  :FIELD "online"  :TRANSFORM "naf-active"
+;;  :TYPE "tinyint(3) unsigned"
 ;;
 ;; :EXAMPLE-VALUES 
-;;  "0"
+;;  1 | 0
 ;;
-;; - This is currently either 1/0 these should be converted to t/nil
-;;   Replace the 0 default with T/NIL Use `field-convert-1-0-x'
-;;   
-;; - (search-forward-regexp "also_author">1)
-
-
-;;; ==============================
-;; + name="also_people"
-;;   Type="tinyint(3) unsigned"
-;;
-;; :EXAMPLE-VALUES 
-;;  "0"
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
-;;
+;; 
 
 ;;; ==============================
-;; + name="default_pic"
+;;  :FIELD "default_pic" :TRANSFORM
+;; 
+;; :EXAMPLE-VALUES 
 ;;         1.jpg
+;; 
+;; - Also appears in techniques_infos table
 
 ;;; ==============================
-;; + name="print_default_pic"
+;;  :FIELD "print_default_pic" :TRANSFORM "item-coref"
 ;;
 ;; :EXAMPLE-VALUES 
-;;  "2033"
+;;  2033
+;;  4064
 ;;
 ;;   - Should this be normalized to an integer as well?
 ;;     It would certainly make the storage cost lower, but it might also prevent
@@ -358,19 +449,20 @@
 ;;   
 
 ;;; ==============================
-;; + name=date_edt & name=date_edit 
+;;  :FIELD date_edt & name=date_edit 
 ;;
-;; + name="date_edit"
-;;   Type="varchar(255)"
+;; :FIELD "date_edit"  :TRANSFORM edit-date-origin
+;; :TYPE "varchar(255)" 
 ;;
 ;; :EXAMPLE-VALUES 
 ;;  "2008-08-3"
 ;;
-;; + name="date_edt"
-;;   Type="timestamp"
+;; :FIELD "date_edt"  :TRANSFORM edit-date
+;; :TYPE "timestamp"
 ;;
 ;; :EXAMPLE-VALUES 
 ;;  "2008-08-03 04:00:00"
+;;  "0000-00-00 00:00:00"
 ;;
 ;;   - Replace these: "0000-00-00 00:00:00" with nil
 ;;
@@ -381,31 +473,50 @@
 ;;     #{2009-09-17T11:52:42-04:00Z}#{09384}
 
 ;;; ==============================
-;; + name="user_name" xsi:nil="true"
-;;   Type="varchar(32)"
+;;  :FIELD "user_name" :TRANSFORM "edit-by"
+;;  :TYPE "varchar(32)"
 ;;
+;; :EXAMPLE-VALUES
+;;  xsi:nil="true"
+;;
+;; -
 
 ;;; ==============================
-;; + name="naf_creator" xsi:nil="true"
-;;   Type="varchar(32)"
-;;        "constance" | "stan"
+;;  :FIELD "naf_creator" :TRANSFORM "edit-by-creator"
+;;  :TYPE "varchar(32)"
+;;
+;; :EXAMPLE-VALUES
+;;  "constance" | "stan"
+;;  xsi:nil="true"
 ;;
 ;;   - Are these the only possible valuse? 
 ;;     What to do with them?
 
 
 ;;; ==============================
-;; + name="cancel_num"
-;;;  Type="int(10) unsigned"
-;;         0
+;; :FIELD "cancel_num" :TRANSFORM "ignorable-cancel-num"
+;; :TYPE "int(10) unsigned"
 ;;
-;;   - It isn't clear if this was ever used.
+;; :EXAMPLE-VALUES
+;;  0
+;; 92117000
+;;
+;; (search-forward-regexp "cancel_num\">[^<0x].*<" nil t)
+;; (let ((cnt 0)) (while (search-forward-regexp "cancel_num\">[^<0x].*<" nil t) (incf cnt)) cnt) => 3
+;;
+;; - It isn't clear if this was ever used.
+;; - IGNORABLE
 
 ;;; ==============================
-;; + name="special_note"
-;;   Type="text"
+;;  :FIELD "special_note" :TRANSFORM "ignorable-special-note"
+;;  :TYPE "text"
 ;;
-;;   - It isn't clear if this was ever used.
+;; :EXAMPLE-VALUES
+;;
+;; (let ((cnt 0)) (while (search-forward-regexp "name=\"special_note\">[^<]" nil t) (incf cnt)) cnt) => 6
+;;
+;; - It isn't clear if this was ever used.
+;; - IGNORABLE
 
 
 ;;; ==============================

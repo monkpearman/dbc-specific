@@ -1,12 +1,25 @@
 ;;; FILE-CREATED: <Timestamp: #{2009-11-09T01:37:36-05:00Z}#{09461} - by MON>
 ;;; ==============================
 
+(count-matches "xsi:nil=\"true\"") => 1424
+
+(while (search-forward-regexp " xsi:nil=\"true\" />" nil t) (replace-match "></field>"))
+
+(count-matches "xsi:nil=\"true\"") => 0
+
+;; <field name="composer" xsi:nil="true" />
+
+;; (let ((cnt 0)) (while (search-forward-regexp " </field>" nil t) (incf cnt)) cnt) => 107
+;;
+;; (let ((cnt 0)) (while (search-forward-regexp " </field>" nil t) (replace-match "</field>") (incf cnt)) cnt)
+
 ;;; ==============================
 :NOTE Timestamp fields that are empty have the format:
 "0000-00-00 00:00:00"
 
 these appear in tables:
 translations.date
+
 
 
 ;;; ==============================
@@ -22,6 +35,8 @@ Most of the problems have to do with the LOC Marc encodings:
 
 Dēmētrios Emmanouēl Galanēs ;; those aren't `e's
 Galanis, Démétrius Emmanuel ;; those aren't `e's
+
+Dēmētrios Emmanouēl Galanēs
 
 Dēmētrios Emmanouēl Galanēs
 ;; ē -> ē (275, #o423, #x113)
