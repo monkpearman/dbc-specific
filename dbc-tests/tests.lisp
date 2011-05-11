@@ -35,6 +35,79 @@
   (and (typep dbc:*system-tests-temp-dir* 'dbc:system-subdir)
        (fad:directory-exists-p (dbc:sub-path dbc:*system-tests-temp-dir*))))
 
+
+;; 
+(sb-rt:deftest field-convert-1-0-x-TEST
+    (values
+     (dbc:field-convert-1-0-x  "1")
+     (dbc:field-convert-1-0-x #\1)
+     (dbc:field-convert-1-0-x t)
+     (dbc:field-convert-1-0-x   1)
+     (dbc:field-convert-1-0-x  "0")
+     (dbc:field-convert-1-0-x  "x")
+     (dbc:field-convert-1-0-x  "X")
+     (dbc:field-convert-1-0-x #\0)
+     (dbc:field-convert-1-0-x #\x)
+     (dbc:field-convert-1-0-x #\X)
+     (dbc:field-convert-1-0-x   0)
+     (dbc:field-convert-1-0-x  #\*)
+     (dbc:field-convert-1-0-x  #\t)
+     (dbc:field-convert-1-0-x  "t")
+     (dbc:field-convert-1-0-x "Return Me")
+     )
+  T T T T NIL NIL NIL NIL NIL NIL NIL #\* #\t "t" "Return Me")
+;;
+;; (sb-rt:do-test 'field-convert-1-0-x-TEST)
+
+;;; ==============================
+(sb-rt:deftest field-convert-1-0-x-empty-TEST
+    ;; (values-list 
+    ;; (mapcar #'(lambda (apply-form) 
+    ;;             (apply (function (car apply-form)) (cadr apply-form) (cddr apply-form)))
+    (values-list
+     (mapcar #'eval
+            (mapcar #'(lambda (form) 
+                        ;; car caadr cadadr
+                        ;; `(multiple-value-bind ,(car form) (funcall (caadr ,form) (cadadr ,form))))
+                        
+                        `(multiple-value-bind ,(car form) (,(caadr form) ,(cadadr form))
+                           (list ,@(car form))))
+                    '(
+                      ((a b c d)
+                       (dbc:field-convert-1-0-x-empty t))
+                      ((a b c d)
+                       (dbc:field-convert-1-0-x-empty nil))
+                      ((a b c)
+                       (dbc:field-convert-1-0-x-empty "x"))
+                      ((a b c)
+                       (dbc:field-convert-1-0-x-empty "1"))
+                      ((a b c)
+                       (dbc:field-convert-1-0-x-empty "0"))
+                      ;; ::NOTE following has complicated destructoring
+                      ;; ((a c)
+                      ;;  (dbc:field-convert-1-0-x-empty 8))
+                      ;; => (8 (INTEGER 0 536870911) 8 (INTEGER 0 536870911))
+                      ((a)
+                       (dbc:field-convert-1-0-x-empty 8))
+                      ((a b c)
+                       (dbc:field-convert-1-0-x-empty ""))
+                      ((a b c)
+                       (dbc:field-convert-1-0-x-empty "    "))))))
+  (T BOOLEAN T BOOLEAN) (NIL NULL NIL NULL) (NIL NULL "x")
+  (T BOOLEAN "1") (NIL NULL "0") (8) 
+  (NIL MON:STRING-EMPTY "") (NIL MON:STRING-ALL-WHITESPACE "    x"))
+;;
+;; (sb-rt:do-test 'field-convert-1-0-x-empty-TEST)
+
+
+
+
+
+
+
+
+
+;;; ==============================
 
 ;; Local Variables:
 ;; indent-tabs-mode: nil

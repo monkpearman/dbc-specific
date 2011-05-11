@@ -328,12 +328,15 @@
   (multiple-value-bind (val type) (field-convert-verify-string convert-field known-field-hashtable)
     (if (null val)
         (return-from field-convert-1-0-x-empty-known
-          (values nil type (if (string= type convert-field) nil convert-field) (type-of convert-field)))
+          (values nil type (if (string= type convert-field)
+                               nil 
+                               convert-field) (type-of convert-field)))
         (let* ((val1 type)
                (rtn (field-convert-1-0-x val))
                (val2 (type-of rtn)))
           (values rtn val2 convert-field val1)))))
 
+;; :NOTE has regression test `field-convert-1-0-x-empty-TEST'
 (defun field-convert-1-0-x-empty (convert-field)
   (multiple-value-bind (val type) (field-convert-verify-string convert-field)
     (if (null val)
@@ -344,12 +347,7 @@
                (val2 (type-of rtn)))
           (values rtn val2 convert-field val1)))))
 
-;;; ==============================
-;; (field-convert-1-0-x "x")
-;; (field-convert-1-0-x #\x)
-;; (field-convert-1-0-x 'x)
-;; (field-convert-verify-string "x")
-;; (field-convert-1-0-x "|")
+;; :NOTE has regression test `field-convert-1-0-x-TEST'
 (defun field-convert-1-0-x (convert-field)
   (let ((convert (if (and (stringp convert-field)
                           (eql (length convert-field) 1))
@@ -361,7 +359,9 @@
     (typecase convert
       (standard-char (case convert
                        (#\1 t)
-                       ((#\0  #\x #\X) nil)
+                       ((#\0 #\x #\X) nil)
+                       ;; Probably not a good idea:
+                       ;; (#\t t) 
                        (t convert)))
       (bit (and (eql convert 1)))
       (symbol  (if (eql convert 'x) nil convert))
@@ -404,7 +404,8 @@
 ;; (split-piped-field-if (field-convert-1-0-x (field-convert-verify-string #\x)))
 ;; (split-piped-field-if (field-convert-1-0-x-empty "x"))
 (defun field-convert-verify-string (string-field-maybe &optional known-field-hashtable)
-  (declare (optimize (speed 3)))
+  (declare (optimize (speed 3))
+           ((or null hash-table) known-field-hashtable))
   (when (null string-field-maybe)
     (return-from field-convert-verify-string (values nil 'null)))
   (when (not (stringp string-field-maybe))
@@ -877,40 +878,61 @@ When STRING-LIST-MAYBE is not `mon:each-a-string-p' return:~%
 :SEE-ALSO `<XREF>'.~%►►►")
 
 (fundoc 'field-convert-1-0-x
-"Attept to CONVERT-FIELD to a boolean.~%~@
+        "Attept to CONVERT-FIELD to a boolean.~%~@
 CONVERT-FIELD is a dbc field string value of length one satisfying 
 `mon:simple-string-or-null'.~%~@
-When CONVERT-FIELD is \"1\" return t.
-When CONVERT-FIELD is \"x\" or \"0\" return nil.
+When CONVERT-FIELD is any of the following  return T:~%
+ \"1\" #\\1 1 T
+When CONVERT-FIELD is any of the following return NIL:~%
+ \"x\" \"X\" #\x #\X the symbol X \"0\" #\0 0 NIL
 When CONVERT-FIELD is some other character or \(> \(length CONVERT-FIELD\) 1\)
 return CONVERT-FIELD.~%~@
 :EXAMPLE~%
  \(field-convert-1-0-x  \"1\"\)~%
+ \(field-convert-1-0-x #\\1\)~%
+ \(field-convert-1-0-x t\)~%
+ \(field-convert-1-0-x   1\)~%
  \(field-convert-1-0-x  \"0\"\)~%
  \(field-convert-1-0-x  \"x\"\)~%
  \(field-convert-1-0-x  \"X\"\)~%
- \(field-convert-1-0-x #\\1\)~%
  \(field-convert-1-0-x #\\0\)~%
- \(field-convert-1-0-x #\\x\)~% 
+ \(field-convert-1-0-x #\\x\)~%
  \(field-convert-1-0-x #\\X\)~%
- \(field-convert-1-0-x   1\)~%
  \(field-convert-1-0-x   0\)~%
- \(field-convert-1-0-x  #\\*\)
+ \(field-convert-1-0-x  #\\*\)~%
+ \(field-convert-1-0-x  #\\t\)~%
+ \(field-convert-1-0-x  \"t\"\)~%
  \(field-convert-1-0-x \"Return Me\"\)~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
+:NOTE Has regression test `field-convert-1-0-x-TEST'.~%~@
+:SEE-ALSO `dbc:field-convert-1-0-x', `dbc:field-convert-1-0-x-empty',
+`dbc:field-convert-1-0-x-empty-known', `dbc:field-convert-verify-string',
+`dbc:field-convert-empty-string-nil', `dbc:field-cln-x'.~%►►►")
 
 (fundoc 'field-convert-1-0-x-empty
         "Like `field-convert-1-0-x' but return 4 values as if by cl:values.~%~@
 :EXAMPLE~%
- \(field-convert-1-0-x-empty t\)~%
- \(field-convert-1-0-x-empty nil\)~%
- \(field-convert-1-0-x-empty \"x\"\)~%
- \(field-convert-1-0-x-empty \"1\"\)~%
- \(field-convert-1-0-x-empty \"0\"\)~%
- \(field-convert-1-0-x-empty 8\)~%
+ \(field-convert-1-0-x-empty \"    \"\)~%
  \(field-convert-1-0-x-empty \"\"\)~%
- \(field-convert-1-0-x-empty \"    \"\)~%~@
-:SEE-ALSO `field-convert-verify-string'.~%►►►")
+ \(field-convert-1-0-x-empty nil\)~%
+ \(field-convert-1-0-x-empty \"1\"\)~%
+ \(field-convert-1-0-x-empty #\\1\)~%
+ \(field-convert-1-0-x-empty t\)~%
+ \(field-convert-1-0-x-empty 1\)~%
+ \(field-convert-1-0-x-empty \"0\"\)~%
+ \(field-convert-1-0-x-empty \"x\"\)~%
+ \(field-convert-1-0-x-empty \"X\"\)~%
+ \(field-convert-1-0-x-empty #\\0\)~%
+ \(field-convert-1-0-x-empty #\\x\)~%
+ \(field-convert-1-0-x-empty #\\X\)~%
+ \(field-convert-1-0-x-empty 0\)~%
+ \(field-convert-1-0-x-empty #\\*\)~%
+ \(field-convert-1-0-x-empty #\\t\)~%
+ \(field-convert-1-0-x-empty \"t\"\)~%
+ \(field-convert-1-0-x-empty \"Return Me\"\)~%~@
+:NOTE Has regression test `field-convert-1-0-x-empty-TEST'.~%~@
+:SEE-ALSO `dbc:field-convert-1-0-x', `dbc:field-convert-1-0-x-empty',
+`dbc:field-convert-1-0-x-empty-known', `dbc:field-convert-verify-string',
+`dbc:field-convert-empty-string-nil', `dbc:field-cln-x'.~%►►►")
 
 (fundoc 'field-convert-1-0-x-empty-known
 "Like `field-convert-1-0-x-empty' but also check if CONVERT-FIELD is in
@@ -923,7 +945,9 @@ KNOWN-FIELD-HASHTABLE.~%~@
  \(field-convert-1-0-x-empty-known \"x\" *xml-refs-match-table*\)~%
  \(field-convert-1-0-x-empty-known \"1\" *xml-refs-match-table*\)~%
  \(field-convert-1-0-x-empty-known \"0\" *xml-refs-match-table*\)~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
+:SEE-ALSO `dbc:field-convert-1-0-x', `dbc:field-convert-1-0-x-empty',
+`dbc:field-convert-1-0-x-empty-known', `dbc:field-convert-verify-string',
+`dbc:field-convert-empty-string-nil', `dbc:field-cln-x'.~%►►►")
 
 (fundoc 'field-convert-empty-string-nil
 "If EMPTY-FIELD is null or `mon:string-empty-p' return nil.~%~@
@@ -937,7 +961,9 @@ as if by `cl:values' first value is EMPTY-FIELD second is its `cl:type-of'.~%~@
  (field-convert-empty-string-nil t)~%
  (field-convert-empty-string-nil t :w-no-error t)~%
  (field-convert-empty-string-nil t :w-no-error t)~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
+:SEE-ALSO `dbc:field-convert-1-0-x', `dbc:field-convert-1-0-x-empty',
+`dbc:field-convert-1-0-x-empty-known', `dbc:field-convert-verify-string',
+`dbc:field-convert-empty-string-nil', `dbc:field-cln-x'.~%►►►")
 
 (fundoc 'field-name-convert-field-name
 "If FIELD-VALUE is null or `cl:string-equal' FIELD-NAME return nil, else FIELD-VALUE.~%~@
