@@ -193,7 +193,12 @@
 	     #:split-comma-field
 	     #:split-loc-pre
              ;;
+
+             #:split-field-on-char-if
+             #:split-comma-field-if
+             #:split-piped-field-if
              #:field-convert-verify-string
+             #:field-convert-remove-duplicates
              #:field-convert-empty-string-nil
 	     #:field-convert-1-0-x
              #:field-convert-1-0-x-empty

@@ -54,40 +54,37 @@
 (defun split-used-fors (used-for-string)
   ;; Is there a reason why we shouldn't be using this instead:
   ;; (declare (type (or null simple-string) used-for-string)) 
-  (declare (type string used-for-string))
+  ;; (declare (type string used-for-string))
+  (declare (type mon:string-or-null used-for-string))
+  (when (or (mon:string-null-or-empty-p used-for-string)
+            (mon:string-all-whitespace-p used-for-string))
+    (return-from split-used-fors (values nil used-for-string)))
   (loop 
      :with split = (mon:string-split-on-chars used-for-string "|")
      :for x in split 
      :for y = (string-trim " " x)
-     :unless (eql (length y) 0) 
-     :collect y     
+     :unless (or (null y) (eql (length y) 0)) 
      ;; Do we need to check for #\Newline #\Return? 
      ;; If so maybe use `mon:string-trim-whitespace' here as well.
      ;; :collect (mon:string-trim-whitespace y)
-     ;;
-     ))
+     :collect (mon:string-trim-whitespace y) into rtn
+     :finally (return (values rtn used-for-string))))
+
 ;;mon:string-
 ;; :NOTE This can be adapted if/when we ever split the found_in field to work on
 ;; the for "^Appeared-in:" fields there as well.
 (defun split-appeared-in (appeared-in-string)
   (declare (type mon:string-or-null appeared-in-string))
-  (unless (null appeared-in-string)
-    (loop 
-       :with split = (mon:string-split-on-chars appeared-in-string "|")
-       :for x in split 
-       :for y = (string-trim " " x)
-       :unless (or (null y) (eql (length y) 0)) 
-       :collect (mon:string-trim-whitespace y))))
-
-(defun split-roles (role-string)
-  (declare (type mon:string-or-null role-string))
-  (unless (null role-string)
-    (loop 
-       :with split = (mon:string-split-on-chars role-string ",")
-       :for x in split 
-       :for y = (string-left-trim " " (string-right-trim  " ." x))
-       :unless (eql (length y) 0)
-       :collect (string-capitalize y))))
+  (when (or (mon:string-null-or-empty-p appeared-in-string)
+            (mon:string-all-whitespace-p appeared-in-string))
+    (return-from split-appeared-in (values nil appeared-in-string)))
+  (loop 
+     :with split = (mon:string-split-on-chars appeared-in-string "|")
+     :for x in split 
+     :for y = (string-trim " " x)
+     :unless (or (null y) (eql (length y) 0)) 
+     :collect (mon:string-trim-whitespace y) into rtn
+     :finally (return (values rtn appeared-in-string))))
 
 (defun format-entity-role (entity-roles
                                &key 
@@ -103,9 +100,120 @@
 
 ;; :NOTE This is actually a bad idea as the "n 95121069" is canonical...
 (defun split-loc-pre (loc-string)
-  (declare (type (or null simple-string) loc-string))
-  (string-left-trim "n " (string-right-trim  " " loc-string)))
+  (declare (mon:string-or-null loc-string))
+  (when (or (mon:string-null-or-empty-p loc-string)
+            (mon:string-all-whitespace-p loc-string))
+    (return-from split-loc-pre (values nil loc-string)))
+  (values 
+   (string-left-trim "n " (string-right-trim  " " loc-string))
+   loc-string))
 
+
+;; :NOTE Don't for get to use `cl:search', `cl:find', etc.!
+;;; ==============================
+(defun split-comma-field-if (comma-string &key keep-duplicates keep-first)
+  (split-field-on-char-if comma-string #\, :keep-duplicates keep-duplicates :keep-first keep-first))
+
+;; (split-comma-field-if "air, plane, airplane, Biplane,, aircraft, expo, , dirigible,")
+;; (split-comma-field-if nil)
+
+(defun split-comma-field (comma-string)
+  ;;(split-comma-field-if comma-string)
+  (unless ;; (mon:simple-string-null-or-empty-p comma-string)
+      (mon:string-null-or-empty-p comma-string)
+    (loop 
+       :with split-comma = (mon:string-split-on-chars (the string comma-string) ",")
+       :for x :in split-comma
+       :for y = (mon:string-trim-whitespace (the string x))
+       :unless (or 
+                (eql (length y) 0) 
+                (notany #'alpha-char-p y))
+       :collect y)))
+
+(defun split-roles (role-string)
+  (declare (type mon:string-or-null role-string))
+  (when (or (mon:string-null-or-empty-p role-string)
+            (mon:string-all-whitespace-p role-string))
+    (return-from split-roles (values nil role-string)))
+  (loop 
+     :with split = (mon:string-split-on-chars role-string ",")
+     :for x in split 
+     :for y = (string-left-trim " " (string-right-trim  " ." x))
+     :unless (eql (length y) 0)
+     :collect (string-capitalize y) into rtn
+     :finally (return (values rtn role-string))))
+
+;; (case (known-field-hashtable) 
+;; (field-convert-1-0-x-empty-known field)
+;; (field-convert-1-0-x-empty field))
+
+;; (mon:string-null-or-empty-p (field-convert-verify-string ""))
+;; (split-comma-field  "   ")
+;; (field-convert-verify-string "     ")
+;; (field-convert-verify-string 8)
+;; (field-convert-1-0-x-empty "|")
+(defun split-field-on-char-if (split-string char &key keep-duplicates
+                                                      keep-first)
+  (declare (character char)
+           (optimize (speed 3)))
+  (multiple-value-bind (v1 t1 v2 t2) (field-convert-1-0-x-empty split-string)
+    (if (or 
+         (null v1) 
+         (not (stringp v1))
+         (notany #'(lambda (x) (char= char x )) v1))
+        (return-from split-field-on-char-if (values v1 t1 v2 t2))
+        (locally (declare (mon:string-not-null-or-empty v1))
+          (if (position char v1)
+              (if (string= v1 (make-string 1 :initial-element char))
+                  (if keep-first 
+                      (values v1 (type-of v1) v2 t2)
+                      (values nil 'standard-char v2 t2))
+                  (if (and keep-first
+                           (every #'(lambda (c) (declare (character c))
+                                            (or (mon:whitespace-char-p  c)
+                                                (char= c char)))
+                                  (the string v1)))
+                      (values (setf v1 (mon:string-trim-whitespace v1))
+                              (type-of v1) v2 t2)
+                      (loop 
+                         :with split = (mon:string-split-on-chars split-string (make-string 1 :initial-element char))
+                         :for x in split 
+                         :for y = (mon:string-trim-whitespace (the string x))
+                         :unless (eql (length (the string y)) 0) 
+                         :collect y :into rtn
+                         :finally (if keep-duplicates
+                                      (return (values rtn (type-of rtn) v1 t1))
+                                      (progn 
+                                        (setf rtn (field-convert-remove-duplicates rtn))
+                                        (return (values rtn (type-of rtn) v1 t1))))))))))))
+
+(defun split-piped-field-if (piped-string &key keep-duplicates)
+  (declare (optimize (speed 3)))
+  ;; :WAS 
+  ;; (multiple-value-bind (v1 t1 v2 t2) (field-convert-1-0-x-empty piped-string)
+  ;;   (if (or 
+  ;;        (null v1) 
+  ;;        (not (stringp v1))
+  ;;        (notany #'(lambda (x) (char= #\| x )) v1))
+  ;;       (return-from split-piped-field-if (values v1 t1 v2 t2))
+  ;;       (locally (declare (mon:string-not-null-or-empty v1))
+  ;;         (if (position #\| v1)
+  ;;             (if (string= v1 (make-string 1 :initial-element #\|))
+  ;;                 (values nil 'standard-char v2 t2)
+  ;;                 (loop 
+  ;;                    :with split = (mon:string-split-on-chars piped-string (make-string 1 :initial-element #\|))
+  ;;                    :for x in split 
+  ;;                    :for y = (mon:string-trim-whitespace (the string x))
+  ;;                    :unless (eql (length (the string y)) 0) 
+  ;;                    :collect y :into rtn
+  ;;                    :finally (if keep-duplicates
+  ;;                                 (return (values rtn (type-of rtn) v1 t1))
+  ;;                                 (progn 
+  ;;                                   (setf rtn (field-convert-remove-duplicates rtn))
+  ;;                                   (return (values rtn (type-of rtn) v1 t1))))))))))
+  (split-field-on-char-if piped-string #\| :keep-duplicates keep-duplicates))
+
+;;; ==============================
 (defun split-lifespan (lifespan-str)
   (declare (type mon:string-or-null lifespan-str))
   (or (and (or (null lifespan-str)
@@ -214,49 +322,7 @@
 	)
     (setf cons-str (list cons-str chk-digit))))
 
-;; :NOTE Don't for get to use `cl:search', `cl:find', etc.!
 ;;; ==============================
-(defun split-comma-field (comma-string)
-  (unless ;; (mon:simple-string-null-or-empty-p comma-string)
-      (mon:string-null-or-empty-p comma-string)
-    (loop 
-       :with split-comma = (mon:string-split-on-chars (the string comma-string) ",")
-       :for x :in split-comma
-       :for y = (mon:string-trim-whitespace (the string x))
-       :unless (or 
-                (eql (length y) 0) 
-                (notany #'alpha-char-p y))
-       :collect y)))
-
-;; (case (known-field-hashtable) 
-;; (field-convert-1-0-x-empty-known field)
-;; (field-convert-1-0-x-empty field))
-
-
-;; (mon:string-null-or-empty-p (field-convert-verify-string ""))
-;; (split-comma-field  "   ")
-;; (field-convert-verify-string "     ")
-;; (field-convert-verify-string 8)
-;; (field-convert-1-0-x-empty "|")
-
-
-(defun split-piped-field-if (piped-string)
-  (multiple-value-bind (v1 t1 v2 t2) (field-convert-1-0-x-empty piped-string)
-    (if (or (null v1) (not (stringp v1)))
-        (return-from split-piped-field-if (values v1 t1 v2 t2))
-        (locally (declare (mon:string-not-null-or-empty v1))
-          (if (position #\| v1)
-              (if (string= v1 "|")
-                  (values nil 'standard-char v2 t2)
-                  (loop 
-                     :with split = (mon:string-split-on-chars piped-string "|")
-                     :for x in split 
-                     :for y = (mon:string-trim-whitespace x)
-                     :unless (eql (length y) 0) 
-                     :collect y :into rtn
-                     :finally (return (values rtn (type-of rtn) v1 t1))))
-              (values v1 t1 v2 t2))))))
-
 (defun field-convert-1-0-x-empty-known (convert-field known-field-hashtable)
   (declare (hash-table known-field-hashtable))
   (multiple-value-bind (val type) (field-convert-verify-string convert-field known-field-hashtable)
@@ -278,19 +344,30 @@
                (val2 (type-of rtn)))
           (values rtn val2 convert-field val1)))))
 
+;;; ==============================
+;; (field-convert-1-0-x "x")
+;; (field-convert-1-0-x #\x)
+;; (field-convert-1-0-x 'x)
+;; (field-convert-verify-string "x")
+;; (field-convert-1-0-x "|")
 (defun field-convert-1-0-x (convert-field)
-  (typecase (if (and (stringp convert-field) ;; (simple-string-p convert-field)
-                     (eql (length convert-field) 1))
-                (char convert-field 0)
-                convert-field)
-    (standard-char (case convert-field
-                     (#\1 t)
-                     ((#\0  #\x #\X) nil)
-                     (t convert-field)))
-    (bit (and (eql convert-field 1)))
-    (symbol  (if (eql convert-field 'x) nil convert-field))
-    (t convert-field)))
+  (let ((convert (if (and (stringp convert-field)
+                          (eql (length convert-field) 1))
+                     (case (char convert-field 0)
+                       (#\1 t)
+                       ((#\0  #\x #\X) nil)
+                       (t convert-field))
+                     convert-field)))
+    (typecase convert
+      (standard-char (case convert
+                       (#\1 t)
+                       ((#\0  #\x #\X) nil)
+                       (t convert)))
+      (bit (and (eql convert 1)))
+      (symbol  (if (eql convert 'x) nil convert))
+      (t convert))))
 
+;; :NOTE use `field-convert-verify-string' instead.
 (defun field-convert-empty-string-nil (empty-field &key w-no-error)
   (if (mon:string-null-or-empty-p empty-field)
       nil
@@ -321,22 +398,53 @@
       nil
       field-value))
 
+;; (split-piped-field-if (field-convert-1-0-x (field-convert-verify-string nil)))
+;; (split-piped-field-if (field-convert-1-0-x (field-convert-verify-string #\1)))
+;; (split-piped-field-if (field-convert-1-0-x (field-convert-verify-string "1")))
+;; (split-piped-field-if (field-convert-1-0-x (field-convert-verify-string #\x)))
+;; (split-piped-field-if (field-convert-1-0-x-empty "x"))
 (defun field-convert-verify-string (string-field-maybe &optional known-field-hashtable)
   (declare (optimize (speed 3)))
   (when (null string-field-maybe)
     (return-from field-convert-verify-string (values nil 'null)))
   (when (not (stringp string-field-maybe))
-    (return-from field-convert-verify-string (values string-field-maybe (type-of string-field-maybe))))
+    (return-from field-convert-verify-string 
+      (values string-field-maybe (type-of string-field-maybe))))
   (locally (declare (mon:string-not-null string-field-maybe))
     (when (mon:string-empty-p string-field-maybe)
-      (return-from field-convert-verify-string (values nil 'mon:string-empty)))
+      (return-from field-convert-verify-string 
+        (values nil 'mon:string-empty)))
     (when (mon:string-all-whitespace-p string-field-maybe)
-      (return-from field-convert-verify-string (values nil 'mon:string-all-whitespace)))
+      (return-from field-convert-verify-string 
+        (values nil 'mon:string-all-whitespace)))
     (when (and known-field-hashtable 
                (hash-table-p known-field-hashtable)
                (gethash string-field-maybe known-field-hashtable))
-      (return-from field-convert-verify-string (values nil string-field-maybe)))
+      (return-from field-convert-verify-string 
+        (values nil string-field-maybe)))
     (values string-field-maybe (type-of string-field-maybe))))
+
+(defun field-convert-remove-duplicates (string-list-maybe)
+  (declare (optimize (speed 3)))
+  (when (null string-list-maybe)
+    (return-from field-convert-remove-duplicates
+      (values nil 'null)))
+  (unless (listp string-list-maybe)
+    (return-from field-convert-remove-duplicates
+      (values string-list-maybe (type-of string-list-maybe))))
+  (unless (mon:each-a-string-or-null-p string-list-maybe)
+    (return-from field-convert-remove-duplicates
+      (values string-list-maybe (type-of string-list-maybe))))
+  (let ((str-lst-trans 
+         (remove-if #'mon:string-null-empty-or-all-whitespace-p string-list-maybe)))
+    (when (null str-lst-trans)
+      (return-from field-convert-remove-duplicates 
+        (values nil string-list-maybe)))
+    (locally (declare (mon:each-a-string str-lst-trans))
+      (values 
+       (delete-duplicates str-lst-trans :test #'string= :from-end t) 
+       ;; (remove-duplicates str-lst-trans :test #'string=) 
+       string-list-maybe))))
 
 (defun field-convert-preprocess-field (string-field-maybe)
   (if (stringp string-field-maybe)
@@ -475,24 +583,68 @@ This is a short-circuiting procedure, e.g. it does nothing on success.~%
 
 (fundoc 'split-used-fors
 "Split USED-FOR-STRING on \"|\" barriers stripping leading and trailing whitespace~%~@
-Return value is a list of strings.~%~@
+Return as if by cl:values:
+ \(\"SPLIT\" \"USED\" \"FORS\" \"STRINGS\"\),USED-FOR-STRING.~%~@
+When USED-FOR-STRING is either `mon:string-null-or-empty-p' or
+`mon:string-all-whitespace-p' return as if by `cl:values':~%
+ nil,USED-FOR-STRING~%~@
 :EXAMPLE~%
- \(split-used-fors \"Poinçon de la Blanchardière, Pierre | La Blanchardiere, Pierre Poin çon de | \"\)~%~@
+ \(split-used-fors \"Poinçon de la Blanchardière, Pierre | La Blanchardiere, Pierre Poin çon de | \"\)~%
+ \(split-used-fors \" | \"\)~%
+ \(split-used-fors \"     \"\)~%
+ \(split-used-fors \"\"\)~%
+ \(split-used-fors nil\)~%~@
 :SEE-ALSO `split-piped-field-if', `mon:string-split-on-chars', `split-roles',
 `split-appeared-in', `split-loc-pre', `split-lifespan', `split-comma-field'.~%►►►")
 
+(fundoc 'split-field-on-char-if
+"SPLIT-STRING on CHAR returning a list of strings.~%~@
+Do not return a list if no occurences of CHAR are found.~%~@
+SPLIT-STRING may be an object of any type not just a `cl:string'.~%~@
+Return 4 values as if by `cl:values' in a like manner as `dbc:field-convert-1-0-x-empty'.~%~@
+When keyword KEEP-DUPLICATES is non-nil do not remove as if by the duplicate
+elements from first value ruturned.  Default is to process nth-value 0 with
+`field-convert-remove-duplicates' prior to returning.~%~@
+When keyword KEEP-FIRST is non-nil do not return nil for nth-value 0 if string
+is contained of only `mon:whitespace-char-p' and CHAR.~%~@
+:EXAMPLE~%
+ \(split-field-on-char-if \" a | b | c | d | e\" #\\|\)~%
+ \(split-field-on-char-if \" a | b | c | d | e | e | d | c | b | a | \" #\\|\)~%
+ \(split-field-on-char-if \" a | b | c | d | e | e | d | c | b | a | \" #\\| :keep-duplicates t\)~%
+ \(split-field-on-char-if \" , \" #\\,\)~%
+ \(split-field-on-char-if \" , \" #\\, :keep-first t\)~%
+ \(split-field-on-char-if \", \" #\\,  :keep-first t\)~%
+ \(split-field-on-char-if \" ,\" #\\,  :keep-first t\)~%
+ \(split-field-on-char-if \" ,   \" #\\,\)~%
+ \(split-field-on-char-if \" ,      \" #\\, :keep-first t\)~%
+ \(split-field-on-char-if \"8 ba \" #\\ \)~%
+ \(split-field-on-char-if \"8 ba ba\" #\\  :keep-duplicates t\)~%
+ \(split-field-on-char-if 8 #\\8\)~%
+ \(split-field-on-char-if nil #\\8\)~%
+ \(split-field-on-char-if t #\\8\)~%
+ \(split-field-on-char-if #b0000 #\\8\)~%
+:NOTE Corner case where `field-convert-1-0-x-empty' wins:~%~@
+ \(split-field-on-char-if \"   \" #\\space :keep-first t\)~%~@
+:SEE-ALSO `split-piped-field-if'.~%►►►")
+
 (fundoc 'split-piped-field-if
-"Like `split-used-fors' but do not return a list if no #\\| are found.~%~@
+        "Like `split-used-fors' but do not return a list if no #\\| are found.~%~@
 Unlike `split-used-fors' arg PIPED-STRING may be an object of any type not just a `cl:string'.~%~@
 Return 4 values as if by `cl:values' in a like manner as `dbc:field-convert-1-0-x-empty'.~%~@
+When keyword KEEP-DUPLICATES is non-nil do not remove as if by the duplicate
+elements from first value ruturned.  Default is to process nth-value 0 with
+`field-convert-remove-duplicates' prior to returning.~%~@
 :EXAMPLE~%
  \(split-piped-field-if \" a | b | c | d | e\"\)~%
+ \(split-piped-field-if \" a | b | c | d | e | e | d | c | b | a | \"\)~%
+ \(split-piped-field-if \" a | b | c | d | e | e | d | c | b | a | \" :keep-duplicates t\)~%
  \(split-piped-field-if \" | \"\)~%
  \(split-piped-field-if \" | \"\)~%
  \(split-piped-field-if \"\"\)~%
  \(split-piped-field-if \"|\"\)~%
  \(split-piped-field-if  8\)~%
  \(split-piped-field-if \"8\"\)~%
+ \(split-piped-field-if \"8 ba \"\)~%
  \(split-piped-field-if nil\)~%
  \(split-piped-field-if t\)~%
  \(split-piped-field-if #b0000\)~%~@
@@ -505,36 +657,52 @@ Return 4 values as if by `cl:values' in a like manner as `dbc:field-convert-1-0-
 Return value is a list of strings.~%~@
 Like `split-used-fors', but strip leading and trailing occurences of
 `mon:*whitespace-chars*', e.g. #\\Newline #\\Return et al.~%~@
-Signal an error if APPEARED-IN-STRING is neither `null' nor `simple-string-p'.~%~@
+When APPEARED-IN-STRING is either `mon:string-null-or-empty-p' or
+`mon:string-all-whitespace-p' return as if by `cl:values':~%
+ nil,APPEARED-IN-STRING~%~@
 :EXAMPLE~%
  \(split-appeared-in \"Le Rire | Le Sourire | Femina | Printed Salesmanship |\"\)~%
  \(split-appeared-in \"    Le Rire | Le Sourire |~% Femina | La Rampe \"\)~%
  \(split-appeared-in \"\"\)~%
- \(split-appeared-in nil\)~%~@
+ \(split-appeared-in nil\)~%
+ \(split-appeared-in \"\"\)~%
+ \(split-appeared-in \"     \"\)~%~@
 :SEE-ALSO `split-roles', `split-used-fors', `split-loc-pre',
 `split-lifespan'`mon:string-split-on-chars', `mon:string-trim-whitespace',
 `mon:*whitespace-chars*'.~%►►►")
  
 (fundoc 'split-roles
-"Split ROLE-STRING on \",\" barriers.~%~@
+        "Split ROLE-STRING on \",\" barriers.~%~@
 Strip leading/trailing whitespace and \".\". Capitalize all roles.~%~@
 Return value is a list of strings.~%~@
-Signal an error if ROLE-STRING is neither `null' nor `simple-string-p'.~%~@
+When ROLE-STRING is either `mon:string-null-or-empty-p' or
+`mon:string-all-whitespace-p' return as if by `cl:values':~%
+ nil,ROLE-STRING~%~@
 :EXAMPLE~%
  \(split-roles
   \"Artist, Illustrator,  Designer, Fashion Illustrator, Fashion Designer.\"\)~%
  \(split-roles
   \"Artist, Illustrator,  designer, Fashion illustrator, Fashion Designer .\"\)~%
- \(split-roles \"Artist, \"\)~%~@
- \(split-roles nil\)~%~@
+ \(split-roles \"Artist, \"\)~%
+ \(split-roles nil\)~%
+ \(split-roles \"\"\)~%
+ \(split-roles \"       \"\)~%~@
 :SEE-ALSO `split-piped-field-if', `split-used-fors', `split-appeared-in',
 `split-loc-pre', `split-lifespan', `split-comma-field'.~%►►►")
 
 (fundoc 'split-loc-pre
-"Trim leading \"n \" prefix from loc-control fields.~%~@
+        "Trim leading \"n \" prefix from loc-control fields.~%~@
+Return as if by cl:values:~%~@
+ <TRANSOFRMED-LOC-STRING>, LOC-STRING
+When LOC-STRING is either `mon:string-null-or-empty-p' or
+`mon:string-all-whitespace-p' return as if by `cl:values':~%
+ nil,LOC-STRING~%~@
 :EXAMPLE~%
  \(split-loc-pre \"n 83043434\"\)~%
- \(split-loc-pre \"83043434\"\)~%~@
+ \(split-loc-pre \"83043434\"\)~%
+ \(split-loc-pre \"\"\)~%
+ \(split-loc-pre \"     \"\)~%
+ \(split-loc-pre nil\)~%~@
 :NOTE This is actually a bad idea as the \"n 95121069\" is canonical...~%~@
 :SEE-ALSO `split-roles', `split-used-fors', `split-piped-field-if',
 `split-appeared-in', `split-lifespan'.~%►►►")
@@ -692,6 +860,21 @@ If a field is found as key in hash-table return nil, STRING-FIELD-MAYBE.~%~@
  \(field-convert-verify-string \"mma\"\)~%
  \(field-convert-verify-string \"ref\" *xml-refs-match-table*\)~%~@
 :SEE-ALSO `field-convert-empty-string-nil'.~%►►►")
+
+(fundoc 'field-convert-remove-duplicates
+"Remove duplicate string= elements from STRING-LIST-MAYBE.~%~@
+Return as if by cl:values:~%
+ <TRANSFORMED-STRING-LIST-MAYBE>, STRING-LIST-MAYBE.~%~@
+When STRING-LIST-MAYBE is not `mon:each-a-string-p' return:~%
+ NIL, STRING-LIST-MAYBE~%~@
+:EXAMPLE~%
+ \(field-convert-remove-duplicates 
+  \(split-appeared-in \"Le Rire | Le Sourire | Le Rire | Femina | ARTworld | Femina | femina | \"\)\)~%
+ \(field-convert-remove-duplicates '\(\"   \" \"   \" \" a \" \" a \"\)\)~%
+ \(field-convert-remove-duplicates \" \"\)~%
+ \(field-convert-remove-duplicates  \(split-used-fors nil\)\)~%
+ \(field-convert-remove-duplicates 42\)~%~%~@
+:SEE-ALSO `<XREF>'.~%►►►")
 
 (fundoc 'field-convert-1-0-x
 "Attept to CONVERT-FIELD to a boolean.~%~@

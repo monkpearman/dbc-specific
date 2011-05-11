@@ -52,7 +52,7 @@
 ;; "volumes"              ;; "publication-volumes"
 ;; "pages"                ;; "publication-pages"
 ;; "illustrations"        ;; "publication-illustrations"
-;; "subjects"             ;; 
+;; "subjects"             ;; "publication-subjects"
 ;;
 ;; "lc_class"             ;; "control-id-1" ;; LOC
 ;; "ULAN_control"         ;; "control-id-2" ;; ULAN
@@ -160,10 +160,13 @@
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
-;;
+;; "Roberts (David) |
+;; Brockedon (William)"
 ;;
 ;; -
-;;
+;; (split-piped-field-if (field-convert-1-0-x (field-convert-verify-string 8)))
+;; (split-piped-field-if (field-convert-1-0-x (field-convert-verify-string nil)))
+;; (split-piped-field-if (field-convert-1-0-x (field-convert-verify-string "x")))
 
 ;;; ==============================
 ;; :FIELD "date_pub" :TRANSFORM "publication-date"
@@ -262,7 +265,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "subjects" :TRANSFORM
+;; :FIELD "subjects" :TRANSFORM "publication-subjects"
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -272,10 +275,13 @@
 ;; :EXAMPLE-VALUES 
 ;;
 ;;
-;; -
+;; -appears unuses 
 ;;
-
-
+;; (search-forward-regexp "field name=\"subjects\">\\(^</field>\\)" nil t)
+;; (search-forward-regexp "name=\"subjects\">[^<]")
+;; (search-forward-regexp "name=\"subjects\">")
+;; (search-forward-regexp "name=\"pages\">[^<0x].*<" nil t)
+;; (search-forward-regexp "name=\"pages\">[^<].*</field" nil t)
 
 ;;; ==============================
 ;; :FIELD "ULAN_control" :TRANSFORM "control-id-2"
@@ -319,8 +325,8 @@
 ;;  "French Periodical | Weekly French Serial Publications"
 ;;  "Fashion | Fashion Design | Fashion Illustrations | Sewing Patterns | Fashion Photography | Couture | Clothing Designers"
 ;;
-;; -
-;;
+;; - (split-piped-field-if (field-convert-1-0-x-empty "x")))
+;; 
 
 ;;; ==============================
 ;; :FIELD "notes" :TRANSFORM
@@ -359,10 +365,10 @@
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
-;;
+;; <field name="user_name">stan</field>
 ;;
 ;; -
-;;
+;; (search-forward-regexp " name=\"user_name\"\>[^<]" nil t)
 
 ;;; ==============================
 ;; :FIELD "naf_creator" :TRANSFORM
