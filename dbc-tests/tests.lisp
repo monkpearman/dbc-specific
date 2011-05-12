@@ -135,6 +135,185 @@
 ;;
 ;; (sb-rt:do-test 'field-convert-1-0-x-empty-TEST.1)
 
+
+;; :TESTING `split-field-on-char-if'
+(sb-rt:deftest split-field-on-char-if-TEST.0
+    (values-list
+     (mapcar #'eval
+             (mapcar #'(lambda (form) 
+                      `(multiple-value-bind ,(car form) ,@(cdr form)
+                         (list ,@(car form))))
+  '(
+    ((a b c)
+     (dbc:split-field-on-char-if " a | b | c | d | e" #\VERTICAL_LINE))
+    ((a b c)
+     (dbc:split-field-on-char-if " a | b | c | d | e | e | d | c | b | a | " #\VERTICAL_LINE))
+    ((a b c)
+     (dbc:split-field-on-char-if " , " #\COMMA))
+    ((a b c)
+     (dbc:split-field-on-char-if " ,   " #\COMMA))
+    ((a b c)
+     (dbc:split-field-on-char-if "8 ba " #\SPACE ))
+    ((a b c)
+     (dbc:split-field-on-char-if "8 ba ba" #\SPACE))
+    ((a)
+     (dbc:split-field-on-char-if 8 #\DIGIT_EIGHT))
+    ((a b c d)
+     (dbc:split-field-on-char-if nil #\DIGIT_EIGHT))
+    ((a b c d)
+     (dbc:split-field-on-char-if t #\DIGIT_EIGHT))
+    ((a b c d)
+     (dbc:split-field-on-char-if #b0000 #\DIGIT_EIGHT))
+    ((a b c d)
+     (dbc:split-field-on-char-if #\DIGIT_ONE #\DIGIT_ONE))
+    ((a b c)
+     (dbc:split-field-on-char-if "1" #\DIGIT_ONE))
+    ((a b c)
+     (dbc:split-field-on-char-if "" #\DIGIT_ONE))))))
+  (("a" "b" "c" "d" "e") CONS " a | b | c | d | e")
+  (("a" "b" "c" "d" "e") CONS " a | b | c | d | e | e | d | c | b | a | ")
+  (NIL NULL " , ")
+  (NIL NULL " ,   ")
+  (("8" "ba") CONS "8 ba ")
+  (("8" "ba") CONS "8 ba ba")
+  (8)
+  (NIL NULL NIL NULL)
+  (T BOOLEAN T BOOLEAN)
+  (NIL NULL 0 BIT)
+  (T BOOLEAN #\DIGIT_ONE STANDARD-CHAR)
+  (T BOOLEAN "1")
+  ;; :FAIL (NIL MON:STRING-EMPTY "but not really")
+  (NIL MON:STRING-EMPTY ""))
+;;
+;; (sb-rt:do-test 'split-field-on-char-if-TEST.0)
+
+;; :TESTING `dbc:split-field-on-char-if' with :keep-first 
+(sb-rt:deftest split-field-on-char-if-TEST.1
+    (values-list
+     (mapcar #'eval
+             (mapcar #'(lambda (form) 
+                         `(multiple-value-bind ,(car form) ,(cadr form)
+                            (list ,@(car form))))
+      '(((a b c)
+         (dbc:split-field-on-char-if " , " #\COMMA :keep-first nil))
+        ((a) 
+         (dbc:split-field-on-char-if " , " #\COMMA :keep-first t))
+
+        ((a b c)
+         (dbc:split-field-on-char-if ", " #\COMMA  :keep-first nil))
+        ((a)
+         (dbc:split-field-on-char-if ", " #\COMMA  :keep-first t))
+     
+        ((a b c)
+         (dbc:split-field-on-char-if " ," #\COMMA  :keep-first nil))
+        ((a)
+         (dbc:split-field-on-char-if " ," #\COMMA  :keep-first t))
+        ;; ((a b c) 
+        ;;   (dbc:split-field-on-char-if `(,@(coerce '(#\  #\, #\  #\RETURN #\  #\NEWLINE  #\  #\TAB  #\ ) 'string))
+        ;;    #\COMMA :keep-first nil))
+        ;; ((a)
+        ;;  (dbc:split-field-on-char-if `(,@(coerce '(#\  #\, #\  #\RETURN #\  #\NEWLINE  #\  #\TAB  #\ ) 'string))
+        ;;   #\COMMA :keep-first t))
+        ((a b c)
+         (dbc:split-field-on-char-if " ,      " #\COMMA :keep-first nil))         
+        ((a)
+         (dbc:split-field-on-char-if " ,      " #\COMMA :keep-first t))
+        ;; :NOTE Corner case where `field-convert-1-0-x-empty' wins:
+        ((a b c)
+         (dbc:split-field-on-char-if "   " #\SPACE :keep-first nil))
+        ((a b c)
+         (dbc:split-field-on-char-if "   " #\SPACE :keep-first t))
+        ))))
+  (NIL NULL " , ")
+  (",")
+  (NIL NULL ", ")
+  (",")
+  (NIL NULL " ,")
+  (",")
+  (NIL NULL " ,      ")
+  (",")
+  (NIL MON:STRING-ALL-WHITESPACE "   ")
+  (NIL MON:STRING-ALL-WHITESPACE "   "))
+;;
+;; (sb-rt:do-test 'split-field-on-char-if-TEST.1)
+
+;; :TESTING `dbc:split-field-on-char-if' with :keep-duplicates
+(sb-rt:deftest split-field-on-char-if-TEST.2
+    (values-list
+     (mapcar #'eval
+             (mapcar #'(lambda (form) 
+                         `(multiple-value-bind ,(car form) ,(cadr form)
+                            (list ,@(car form))))
+     '(((a b c)
+        (dbc:split-field-on-char-if " a | b | c | d | e | e | d | c | b | a | " #\VERTICAL_LINE :keep-duplicates nil))
+       ((a b c)
+        (dbc:split-field-on-char-if " a | b | c | d | e | e | d | c | b | a | " #\VERTICAL_LINE :keep-duplicates t))
+       ((a b c)
+        (dbc:split-field-on-char-if "8 ba ba" #\SPACE  :keep-duplicates nil))
+       ((a b c)
+        (dbc:split-field-on-char-if "8 ba ba" #\SPACE  :keep-duplicates t))))))
+  (("a" "b" "c" "d" "e") CONS " a | b | c | d | e | e | d | c | b | a | ")
+  (("a" "b" "c" "d" "e" "e" "d" "c" "b" "a") CONS " a | b | c | d | e | e | d | c | b | a | ")
+  (("8" "ba") CONS "8 ba ba")
+  ;; :FAIL (("8" "ba" "ba") CONS "8 ba ba black-sheep"))
+  (("8" "ba" "ba") CONS "8 ba ba"))
+;;
+;; (sb-rt:do-test 'split-field-on-char-if-TEST.2)
+
+
+;; :TESTING dbc:split-field-on-char-if with :known-field-hashtable
+(sb-rt:deftest split-field-on-char-if-TEST.3
+    (values-list
+     (mapcar #'eval
+             (mapcar #'(lambda (form) 
+                         `(multiple-value-bind ,(car form) ,(cadr form)
+                            (list ,@(car form))))
+     '(((a b c)
+        (dbc:split-field-on-char-if "ref" #\DIGIT_ONE :known-field-hashtable dbc:*xml-refs-match-table*))
+       ((a b c)
+        (dbc:split-field-on-char-if "x" #\DIGIT_ONE :known-field-hashtable 'dbc:*xml-refs-match-table*))
+       ((a b c)
+        (dbc:split-field-on-char-if "1" #\DIGIT_ONE :known-field-hashtable dbc:*xml-refs-match-table*))
+       ((a b c)
+        (dbc:split-field-on-char-if "0," #\COMMA :known-field-hashtable 'dbc:*xml-refs-match-table*))
+       ((a b c)
+        (dbc:split-field-on-char-if " ," #\COMMA :known-field-hashtable dbc:*xml-refs-match-table*))
+       ((a b c)
+        (dbc:split-field-on-char-if " , " #\COMMA :known-field-hashtable 'dbc:*xml-refs-match-table*))
+       ((a)
+        (dbc:split-field-on-char-if " , " #\COMMA :keep-first t :known-field-hashtable dbc:*xml-refs-match-table*))
+       ((a b c)
+        (dbc:split-field-on-char-if "ref , " #\COMMA :known-field-hashtable 'dbc:*xml-refs-match-table*))
+       ((a b c)
+        (dbc:split-field-on-char-if "ref , ref" #\COMMA :known-field-hashtable 'dbc:*xml-refs-match-table*))
+       ((a b c)
+        (dbc:split-field-on-char-if "ref , ref" #\COMMA :keep-duplicates  t :known-field-hashtable 'dbc:*xml-refs-match-table*))))))
+  (NIL NULL "ref")
+  (NIL NULL "x")
+  (T BOOLEAN "1")
+  (("0") CONS "0,")
+  (NIL NULL " ,")
+  (NIL NULL " , ")
+  (",")
+  (("ref") CONS "ref , ")
+  (("ref") CONS "ref , ref")
+  ;; :FAIL (("ref" "ref") CONS "ref , should not be here")
+  (("ref" "ref") CONS "ref , ref"))
+;;
+;; (sb-rt:do-test 'split-field-on-char-if-TEST.3)
+
+
+;; (let ((frm '((a b c)
+;;             (dbc:split-field-on-char-if "" #\DIGIT_ONE))))
+;;   (mapcar #'eval
+;;           (mapcar #'(lambda (form) 
+;;                `(multiple-value-bind ,(car form) ,@(cdr form)
+;;                   (list ,@(car form))))
+;;            frm))
+
+  
+
+
 ;;; ==============================
 
 ;; Local Variables:

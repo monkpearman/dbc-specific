@@ -151,51 +151,12 @@
                           :keep-duplicates keep-duplicates 
                           :known-field-hashtable known-field-hashtable))
 
-;; (mon:string-null-or-empty-p (field-convert-verify-string ""))
-;; (split-comma-field  "   ")
-;; (field-convert-verify-string "     ")
-;; (field-convert-verify-string 8)
-;;
-;; `split-field-on-char-if'
-;;  `-> `field-convert-1-0-x-empty'
-;;     `-> `field-convert-verify-string'
-(defun split-field-on-char-if (split-string char &key keep-duplicates
-                                                      keep-first
-                                                      known-field-hashtable)
-  (declare (character char)
-           (mon:hash-table-or-symbol known-field-hashtable)
-           (optimize (speed 3)))
-  (multiple-value-bind (v1 t1 v2 t2) (field-convert-1-0-x-empty split-string 
-                                                                :known-field-hashtable known-field-hashtable)
-    (if (or 
-         (null v1) 
-         (not (stringp v1))
-         (notany #'(lambda (x) (char= char x )) v1))
-        (return-from split-field-on-char-if (values v1 t1 v2 t2))
-        (locally (declare (mon:string-not-null-or-empty v1))
-          (if (position char v1)
-              (if (string= v1 (make-string 1 :initial-element char))
-                  (if keep-first 
-                      (values v1 (type-of v1) v2 t2)
-                      (values nil 'standard-char v2 t2))
-                  (if (and keep-first
-                           (every #'(lambda (c) (declare (character c))
-                                            (or (mon:whitespace-char-p  c)
-                                                (char= c char)))
-                                  (the string v1)))
-                      (values (setf v1 (mon:string-trim-whitespace v1))
-                              (type-of v1) v2 t2)
-                      (loop 
-                         :with split = (mon:string-split-on-chars split-string (make-string 1 :initial-element char))
-                         :for x in split 
-                         :for y = (mon:string-trim-whitespace (the string x))
-                         :unless (eql (length (the string y)) 0) 
-                         :collect y :into rtn
-                         :finally (if keep-duplicates
-                                      (return (values rtn (type-of rtn) v1 t1))
-                                      (progn 
-                                        (setf rtn (field-convert-remove-duplicates rtn))
-                                        (return (values rtn (type-of rtn) v1 t1))))))))))))
+;; (split-piped-field-if "ref" :known-field-hashtable *xml-refs-match-table*)
+;; (split-piped-field-if "ref" :known-field-hashtable *xml-refs-match-table*)
+;; => NIL, NULL, "ref", (SIMPLE-ARRAY CHARACTER (3))
+;; (split-piped-field-if "ref")
+;; => "ref", (SIMPLE-ARRAY CHARACTER (3)), "ref", (SIMPLE-ARRAY CHARACTER (3))
+
 
 ;; :NOTE has regression test `field-convert-1-0-x-TEST'
 ;; :NOTE Prefer `field-convert-1-0-x-empty' over `field-convert-1-0-x' which is
@@ -254,6 +215,7 @@
 
 ;; :NOTE Has regression tests: 
 ;; field-convert-1-0-x-empty-TEST.0 field-convert-1-0-x-empty-TEST.0
+(declaim (inline field-convert-1-0-x-empty))
 (defun field-convert-1-0-x-empty (convert-field &key known-field-hashtable)
   (declare 
    (mon:hash-table-or-symbol known-field-hashtable)
@@ -273,13 +235,6 @@
                (val2 (type-of rtn)))
           (values rtn val2 convert-field val1)))))
 
-;; (split-piped-field-if (field-convert-1-0-x (field-convert-verify-string nil)))
-;; (split-piped-field-if (field-convert-1-0-x (field-convert-verify-string #\1)))
-;; (split-piped-field-if (field-convert-1-0-x (field-convert-verify-string "1")))
-;; (split-piped-field-if (field-convert-1-0-x (field-convert-verify-string #\x)))
-;; (split-piped-field-if (field-convert-1-0-x-empty "x"));; 
-;; (gethash "ref" (mon:hash-or-symbol-p '*xml-refs-match-table*))
-;; (typep nil 'mon:hash-table-or-symbol)
 (defun field-convert-verify-string (string-field-maybe &optional known-field-hashtable)
   (declare (mon:hash-table-or-symbol known-field-hashtable)
            (optimize (speed 3)))
@@ -299,11 +254,12 @@
       (let ((ht (mon:hash-or-symbol-p known-field-hashtable :w-no-error t)))
         (and ht (gethash string-field-maybe ht)
              ;; :NOTE It would be nice to indicate that nil was returned
-             ;; because it was in the hash-table
+             ;; b/c it was in the the hash-table known-field-hashtable
              (return-from field-convert-verify-string 
                (values nil string-field-maybe)))))
     (values string-field-maybe (type-of string-field-maybe))))
 
+(declaim (inline field-convert-remove-duplicates))
 (defun field-convert-remove-duplicates (string-list-maybe)
   (declare (optimize (speed 3)))
   (when (null string-list-maybe)
@@ -325,6 +281,72 @@
        (delete-duplicates str-lst-trans :test #'string= :from-end t) 
        ;; (remove-duplicates str-lst-trans :test #'string=) 
        string-list-maybe))))
+
+;;; ==============================
+;;
+;; `split-field-on-char-if'
+;;  `-> `field-convert-1-0-x-empty'
+;;     `-> `field-convert-verify-string'
+;; (split-field-on-char-if #\1 #\1)
+;; (split-field-on-char-if "1" #\1)
+;; (split-field-on-char-if "" #\1)
+;; (split-field-on-char-if "ref" #\1 :known-field-hashtable *xml-refs-match-table*)
+;; (split-field-on-char-if "x" #\1 :known-field-hashtable *xml-refs-match-table*)
+;; (split-field-on-char-if "1" #\1 :known-field-hashtable *xml-refs-match-table*)
+;; (split-field-on-char-if "0," #\, :known-field-hashtable *xml-refs-match-table*)
+;; (split-field-on-char-if " ," #\, :known-field-hashtable *xml-refs-match-table*)
+;; (split-field-on-char-if " , " #\, :known-field-hashtable *xml-refs-match-table*)
+;; (split-field-on-char-if " , " #\, :keep-first t :known-field-hashtable *xml-refs-match-table*)
+;; (split-field-on-char-if "ref , " #\, :known-field-hashtable *xml-refs-match-table*)
+;; (split-piped-field-if (field-convert-1-0-x-empty "1"))
+;; (split-piped-field-if (field-convert-1-0-x-empty (field-convert-verify-string #\x)))
+;; (split-piped-field-if (field-convert-1-0-x-empty "x"));; 
+;; 
+(defun split-field-on-char-if (split-string char &key keep-duplicates
+                               keep-first
+                               known-field-hashtable)
+  (declare (character char)
+           (mon:hash-table-or-symbol known-field-hashtable)
+           (inline mon:whitespace-char-p 
+                   field-convert-1-0-x-empty)
+           (optimize (speed 3)))
+  (multiple-value-bind (v1 t1 v2 t2) (field-convert-1-0-x-empty split-string 
+                                                                :known-field-hashtable known-field-hashtable)
+    (if (or 
+         (null v1) 
+         (not (stringp v1))
+         (notany #'(lambda (x) (char= char x )) v1))
+        (return-from split-field-on-char-if (values v1 t1 v2 t2))
+        (let ((simple (copy-seq (the mon:string-not-null-or-empty v1))))
+          (declare (simple-string simple))
+          (if (position char simple)
+              (if (string= simple (make-string 1 :initial-element char))
+                  (if keep-first 
+                      (values simple (type-of v1) v2 t2)
+                      (values nil 'standard-char v2 t2))
+                  (if (and keep-first
+                           (every #'(lambda (c) 
+                                      (declare (character c))
+                                      (or (mon:whitespace-char-p  c)
+                                          (char= c char)))
+                                  simple))
+                      (values 
+                       (setf simple (mon:string-trim-whitespace simple))
+                       (type-of simple)
+                       v2 
+                       t2)
+                      (loop 
+                         :with split = (mon:string-split-on-chars simple (make-string 1 :initial-element char))
+                         :for x simple-string in split ;; each elt of mon:string-split-on-chars is from a copy-seq.
+                         :for y simple-string = (mon:string-trim-whitespace x) ;; (mon:string-trim-whitespace (the simple-string x)))
+                         ;; :unless (eql (the mon:array-length (length (the simple-string y))) 0)
+                         :unless (zerop (the mon:array-length (length y)))
+                         :collect y :into rtn
+                         :finally (if keep-duplicates
+                                      (return (values rtn (type-of rtn) v1 t1)) ;; v1 t1))
+                                      (progn 
+                                        (setf rtn (field-convert-remove-duplicates rtn))
+                                        (return (values rtn (type-of rtn) v1 t1))))))))))))
 
 (defun field-name-underscore-to-dash (field-name &optional w-colon)
   (declare (type string field-name))
@@ -630,6 +652,10 @@ elements from first value ruturned.  Default is to process nth-value 0 with
 `field-convert-remove-duplicates' prior to returning.~%~@
 When keyword KEEP-FIRST is non-nil do not return nil for nth-value 0 if string
 is contained of only `mon:whitespace-char-p' and CHAR.~%~@
+:NOTE The call chain is as follows:~%~@
+ `split-field-on-char-if' :keep-first { T | NIL } :keep-duplicates { T | NIL }
+  `- `field-convert-1-0-x-empty'
+       `- `field-convert-verify-string' <SPLIT-STRING> :known-field-hashtable <KNOWN-FIELD-HASHTABLE>~%~@
 :EXAMPLE~%
  \(split-field-on-char-if \" a | b | c | d | e\" #\\|\)~%
  \(split-field-on-char-if \" a | b | c | d | e | e | d | c | b | a | \" #\\|\)~%
@@ -646,6 +672,17 @@ is contained of only `mon:whitespace-char-p' and CHAR.~%~@
  \(split-field-on-char-if nil #\\8\)~%
  \(split-field-on-char-if t #\\8\)~%
  \(split-field-on-char-if #b0000 #\\8\)~%
+ \(split-field-on-char-if #\\1 #\\1\)~%
+ \(split-field-on-char-if \"1\" #\\1\)~%
+ \(split-field-on-char-if \"\" #\\1\)~%
+ \(split-field-on-char-if \"ref\" #\\1 :known-field-hashtable *xml-refs-match-table*\)~%
+ \(split-field-on-char-if \"x\" #\\1 :known-field-hashtable *xml-refs-match-table*\)~%
+ \(split-field-on-char-if \"1\" #\\1 :known-field-hashtable *xml-refs-match-table*\)~%
+ \(split-field-on-char-if \"0,\" #\\, :known-field-hashtable *xml-refs-match-table*\)~%
+ \(split-field-on-char-if \" ,\" #\\, :known-field-hashtable *xml-refs-match-table*\)~%
+ \(split-field-on-char-if \" , \" #\\, :known-field-hashtable *xml-refs-match-table*\)~%
+ \(split-field-on-char-if \" , \" #\\, :keep-first t :known-field-hashtable *xml-refs-match-table*\)~%
+ \(split-field-on-char-if \"ref , \" #\\, :known-field-hashtable *xml-refs-match-table*\)~%~@
 :NOTE Corner case where `field-convert-1-0-x-empty' wins:~%~@
  \(split-field-on-char-if \"   \" #\\space :keep-first t\)~%~@
 :SEE-ALSO `split-piped-field-if'.~%►►►")
@@ -670,11 +707,19 @@ elements from first value ruturned.  Default is to process nth-value 0 with
  \(split-piped-field-if \"8 ba \"\)~%
  \(split-piped-field-if nil\)~%
  \(split-piped-field-if t\)~%
- \(split-piped-field-if #b0000\)~%~@
+ \(split-piped-field-if #b0000\)~%
+ \(split-piped-field-if \"ref\" :known-field-hashtable *xml-refs-match-table*\)~%
+ \(split-piped-field-if \"ref\"\)~%
+ \(funcall \(complement #'equalp\)
+          \(multiple-value-list 
+           \(split-piped-field-if \"ref\"\)\) 
+          \(multiple-value-list 
+           \(split-piped-field-if \"ref\" 
+                                 :known-field-hashtable *xml-refs-match-table*\)\)\)~%~@
 :SEE-ALSO `split-used-fors', `split-roles', `split-appeared-in',
 `split-loc-pre', `split-lifespan', `split-comma-field',
 `mon:string-split-on-chars'.~%►►►")
-
+ 
 (fundoc 'split-appeared-in
 "Split APPEARED-IN-STRING on \"|\" barriers.~%~@
 Return value is a list of strings.~%~@
