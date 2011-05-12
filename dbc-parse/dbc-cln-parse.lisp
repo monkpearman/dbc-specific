@@ -143,20 +143,30 @@
      :collect (string-capitalize y) into rtn
      :finally (return (values rtn role-string))))
 
-;; (case (known-field-hashtable) 
-;; (field-convert-1-0-x-empty-known field)
-;; (field-convert-1-0-x-empty field))
+(defun split-piped-field-if (piped-string &key keep-duplicates
+                                               known-field-hashtable)
+  (declare (mon:hash-table-or-symbol known-field-hashtable)
+           (optimize (speed 3)))
+  (split-field-on-char-if piped-string #\| 
+                          :keep-duplicates keep-duplicates 
+                          :known-field-hashtable known-field-hashtable))
 
 ;; (mon:string-null-or-empty-p (field-convert-verify-string ""))
 ;; (split-comma-field  "   ")
 ;; (field-convert-verify-string "     ")
 ;; (field-convert-verify-string 8)
-;; (field-convert-1-0-x-empty "|")
+;;
+;; `split-field-on-char-if'
+;;  `-> `field-convert-1-0-x-empty'
+;;     `-> `field-convert-verify-string'
 (defun split-field-on-char-if (split-string char &key keep-duplicates
-                                                      keep-first)
+                                                      keep-first
+                                                      known-field-hashtable)
   (declare (character char)
+           (mon:hash-table-or-symbol known-field-hashtable)
            (optimize (speed 3)))
-  (multiple-value-bind (v1 t1 v2 t2) (field-convert-1-0-x-empty split-string)
+  (multiple-value-bind (v1 t1 v2 t2) (field-convert-1-0-x-empty split-string 
+                                                                :known-field-hashtable known-field-hashtable)
     (if (or 
          (null v1) 
          (not (stringp v1))
@@ -187,33 +197,169 @@
                                         (setf rtn (field-convert-remove-duplicates rtn))
                                         (return (values rtn (type-of rtn) v1 t1))))))))))))
 
-(defun split-piped-field-if (piped-string &key keep-duplicates)
+;; :NOTE has regression test `field-convert-1-0-x-TEST'
+;; :NOTE Prefer `field-convert-1-0-x-empty' over `field-convert-1-0-x' which is
+;; essentially a helper function.
+(declaim (inline field-convert-1-0-x))
+(defun field-convert-1-0-x (convert-field)
   (declare (optimize (speed 3)))
-  ;; :WAS 
-  ;; (multiple-value-bind (v1 t1 v2 t2) (field-convert-1-0-x-empty piped-string)
-  ;;   (if (or 
-  ;;        (null v1) 
-  ;;        (not (stringp v1))
-  ;;        (notany #'(lambda (x) (char= #\| x )) v1))
-  ;;       (return-from split-piped-field-if (values v1 t1 v2 t2))
-  ;;       (locally (declare (mon:string-not-null-or-empty v1))
-  ;;         (if (position #\| v1)
-  ;;             (if (string= v1 (make-string 1 :initial-element #\|))
-  ;;                 (values nil 'standard-char v2 t2)
-  ;;                 (loop 
-  ;;                    :with split = (mon:string-split-on-chars piped-string (make-string 1 :initial-element #\|))
-  ;;                    :for x in split 
-  ;;                    :for y = (mon:string-trim-whitespace (the string x))
-  ;;                    :unless (eql (length (the string y)) 0) 
-  ;;                    :collect y :into rtn
-  ;;                    :finally (if keep-duplicates
-  ;;                                 (return (values rtn (type-of rtn) v1 t1))
-  ;;                                 (progn 
-  ;;                                   (setf rtn (field-convert-remove-duplicates rtn))
-  ;;                                   (return (values rtn (type-of rtn) v1 t1))))))))))
-  (split-field-on-char-if piped-string #\| :keep-duplicates keep-duplicates))
+  (unless (typecase convert-field
+            (string t)
+            (standard-char t)
+            (bit t)
+            (symbol t))
+    (return-from field-convert-1-0-x convert-field))
+  (when (typep convert-field 'mon:string-null-empty-or-all-whitespace)
+    (return-from field-convert-1-0-x nil))
+  (let ((convert (if (and (stringp convert-field)
+                          (eql (the mon:array-length (length convert-field)) 1))
+                     (case (char (the (array character (1)) convert-field) 0)
+                       (#\1 t)
+                       ((#\0  #\x #\X) nil)
+                       (t convert-field))
+                     convert-field)))
+    (typecase convert
+      (standard-char (case convert
+                       (#\1 t)
+                       ((#\0 #\x #\X) nil)
+                       ;; Probably not a good idea:
+                       ;; (#\t t) 
+                       (t convert)))
+      (bit (and (eql convert 1)))
+      (symbol  (if (eql convert 'x) nil convert))
+      (t convert))))
+
+(declaim (inline field-convert-1-0-x-empty-known))
+(defun field-convert-1-0-x-empty-known (convert-field known-field-hashtable)
+  (declare (hash-table known-field-hashtable)
+           (optimize (speed 3)))
+  (multiple-value-bind (val type) (field-convert-verify-string convert-field known-field-hashtable)
+    ;;(list val type)))
+    (if (null val)
+        ;;(return-from field-convert-1-0-x-empty-known 
+        (values nil 
+                ;; type 
+                (if (and (stringp type) (string= type convert-field))
+                    ;; (if (string= type convert-field)
+                    'null               ;nil 
+                    ;; convert-field)
+                    type)
+                ;; type
+                convert-field
+                (type-of convert-field))
+        (let* ((val1 type)
+               (rtn (field-convert-1-0-x val))
+               (val2 (type-of rtn)))
+          (values rtn val2 convert-field val1)))))
+
+;; :NOTE Has regression tests: 
+;; field-convert-1-0-x-empty-TEST.0 field-convert-1-0-x-empty-TEST.0
+(defun field-convert-1-0-x-empty (convert-field &key known-field-hashtable)
+  (declare 
+   (mon:hash-table-or-symbol known-field-hashtable)
+   (inline field-convert-1-0-x field-convert-1-0-x-empty-known)
+   (optimize (speed 3)))
+  (when known-field-hashtable
+    (let ((ht (mon:hash-or-symbol-p known-field-hashtable :w-no-error t)))
+      (and ht 
+           (return-from field-convert-1-0-x-empty
+             (field-convert-1-0-x-empty-known convert-field (the hash-table ht))))))
+  (multiple-value-bind (val type) (field-convert-verify-string convert-field)
+    (if (null val)
+        (return-from field-convert-1-0-x-empty 
+          (values nil type convert-field (type-of convert-field)))
+        (let* ((val1 type)
+               (rtn  (field-convert-1-0-x val))
+               (val2 (type-of rtn)))
+          (values rtn val2 convert-field val1)))))
+
+;; (split-piped-field-if (field-convert-1-0-x (field-convert-verify-string nil)))
+;; (split-piped-field-if (field-convert-1-0-x (field-convert-verify-string #\1)))
+;; (split-piped-field-if (field-convert-1-0-x (field-convert-verify-string "1")))
+;; (split-piped-field-if (field-convert-1-0-x (field-convert-verify-string #\x)))
+;; (split-piped-field-if (field-convert-1-0-x-empty "x"));; 
+;; (gethash "ref" (mon:hash-or-symbol-p '*xml-refs-match-table*))
+;; (typep nil 'mon:hash-table-or-symbol)
+(defun field-convert-verify-string (string-field-maybe &optional known-field-hashtable)
+  (declare (mon:hash-table-or-symbol known-field-hashtable)
+           (optimize (speed 3)))
+  (when (null string-field-maybe)
+    (return-from field-convert-verify-string (values nil 'null)))
+  (when (not (stringp string-field-maybe))
+    (return-from field-convert-verify-string 
+      (values string-field-maybe (type-of string-field-maybe))))
+  (locally (declare (mon:string-not-null string-field-maybe))
+    (when (mon:string-empty-p string-field-maybe)
+      (return-from field-convert-verify-string 
+        (values nil 'mon:string-empty)))
+    (when (mon:string-all-whitespace-p string-field-maybe)
+      (return-from field-convert-verify-string 
+        (values nil 'mon:string-all-whitespace)))
+    (when known-field-hashtable
+      (let ((ht (mon:hash-or-symbol-p known-field-hashtable :w-no-error t)))
+        (and ht (gethash string-field-maybe ht)
+             ;; :NOTE It would be nice to indicate that nil was returned
+             ;; because it was in the hash-table
+             (return-from field-convert-verify-string 
+               (values nil string-field-maybe)))))
+    (values string-field-maybe (type-of string-field-maybe))))
+
+(defun field-convert-remove-duplicates (string-list-maybe)
+  (declare (optimize (speed 3)))
+  (when (null string-list-maybe)
+    (return-from field-convert-remove-duplicates
+      (values nil 'null)))
+  (unless (listp string-list-maybe)
+    (return-from field-convert-remove-duplicates
+      (values string-list-maybe (type-of string-list-maybe))))
+  (unless (mon:each-a-string-or-null-p string-list-maybe)
+    (return-from field-convert-remove-duplicates
+      (values string-list-maybe (type-of string-list-maybe))))
+  (let ((str-lst-trans 
+         (remove-if #'mon:string-null-empty-or-all-whitespace-p string-list-maybe)))
+    (when (null str-lst-trans)
+      (return-from field-convert-remove-duplicates 
+        (values nil string-list-maybe)))
+    (locally (declare (mon:each-a-string str-lst-trans))
+      (values 
+       (delete-duplicates str-lst-trans :test #'string= :from-end t) 
+       ;; (remove-duplicates str-lst-trans :test #'string=) 
+       string-list-maybe))))
+
+(defun field-name-underscore-to-dash (field-name &optional w-colon)
+  (declare (type string field-name))
+  (let ((no-under (substitute #\- #\_ (string-upcase field-name))))
+    (or (and w-colon (concatenate 'string ":" no-under))
+        no-under)))
+
+(defun field-name-convert-field-name (field-name field-value)
+  (declare (string field-name))
+  (when (mon:string-null-or-empty-p field-value) 
+    (return-from field-name-convert-field-name))
+  (when (not (stringp field-value)) 
+    (return-from field-name-convert-field-name field-value))
+  (if (string-equal field-name (mon:string-trim-whitespace field-value))
+      nil
+      field-value))
+
+;; :NOTE use `field-convert-verify-string' instead.
+(defun field-convert-empty-string-nil (empty-field &key w-no-error)
+  (if (mon:string-null-or-empty-p empty-field)
+      nil
+      (if (stringp empty-field)
+          empty-field
+          (if w-no-error
+              (values empty-field (type-of empty-field))
+              (mon:simple-error-mon :w-sym 'field-convert-empty-string-nil
+                                    :w-type 'function
+                                    :w-spec "Arg EMPTY-FIELD not `cl:stringp'"
+                                    :w-got  empty-field
+                                    :w-type-of t
+                                    :signal-or-only nil)))))
 
 ;;; ==============================
+;; artist lifespan-date
+;; 
 (defun split-lifespan (lifespan-str)
   (declare (type mon:string-or-null lifespan-str))
   (or (and (or (null lifespan-str)
@@ -323,130 +469,6 @@
     (setf cons-str (list cons-str chk-digit))))
 
 ;;; ==============================
-(defun field-convert-1-0-x-empty-known (convert-field known-field-hashtable)
-  (declare (hash-table known-field-hashtable))
-  (multiple-value-bind (val type) (field-convert-verify-string convert-field known-field-hashtable)
-    (if (null val)
-        (return-from field-convert-1-0-x-empty-known
-          (values nil type (if (string= type convert-field)
-                               nil 
-                               convert-field) (type-of convert-field)))
-        (let* ((val1 type)
-               (rtn (field-convert-1-0-x val))
-               (val2 (type-of rtn)))
-          (values rtn val2 convert-field val1)))))
-
-;; :NOTE has regression test `field-convert-1-0-x-empty-TEST'
-(defun field-convert-1-0-x-empty (convert-field)
-  (multiple-value-bind (val type) (field-convert-verify-string convert-field)
-    (if (null val)
-        (return-from field-convert-1-0-x-empty 
-          (values nil type convert-field (type-of convert-field)))
-        (let* ((val1 type)
-               (rtn (field-convert-1-0-x val))
-               (val2 (type-of rtn)))
-          (values rtn val2 convert-field val1)))))
-
-;; :NOTE has regression test `field-convert-1-0-x-TEST'
-(defun field-convert-1-0-x (convert-field)
-  (let ((convert (if (and (stringp convert-field)
-                          (eql (length convert-field) 1))
-                     (case (char convert-field 0)
-                       (#\1 t)
-                       ((#\0  #\x #\X) nil)
-                       (t convert-field))
-                     convert-field)))
-    (typecase convert
-      (standard-char (case convert
-                       (#\1 t)
-                       ((#\0 #\x #\X) nil)
-                       ;; Probably not a good idea:
-                       ;; (#\t t) 
-                       (t convert)))
-      (bit (and (eql convert 1)))
-      (symbol  (if (eql convert 'x) nil convert))
-      (t convert))))
-
-;; :NOTE use `field-convert-verify-string' instead.
-(defun field-convert-empty-string-nil (empty-field &key w-no-error)
-  (if (mon:string-null-or-empty-p empty-field)
-      nil
-      (if (stringp empty-field)
-          empty-field
-          (if w-no-error
-              (values empty-field (type-of empty-field))
-              (mon:simple-error-mon :w-sym 'field-convert-empty-string-nil
-                                    :w-type 'function
-                                    :w-spec "Arg EMPTY-FIELD not `cl:stringp'"
-                                    :w-got  empty-field
-                                    :w-type-of t
-                                    :signal-or-only nil)))))
-
-(defun field-name-underscore-to-dash (field-name &optional w-colon)
-  (declare (type string field-name))
-  (let ((no-under (substitute #\- #\_ (string-upcase field-name))))
-    (or (and w-colon (concatenate 'string ":" no-under))
-        no-under)))
-
-(defun field-name-convert-field-name (field-name field-value)
-  (declare (string field-name))
-  (when (mon:string-null-or-empty-p field-value) 
-    (return-from field-name-convert-field-name))
-  (when (not (stringp field-value)) 
-    (return-from field-name-convert-field-name field-value))
-  (if (string-equal field-name (mon:string-trim-whitespace field-value))
-      nil
-      field-value))
-
-;; (split-piped-field-if (field-convert-1-0-x (field-convert-verify-string nil)))
-;; (split-piped-field-if (field-convert-1-0-x (field-convert-verify-string #\1)))
-;; (split-piped-field-if (field-convert-1-0-x (field-convert-verify-string "1")))
-;; (split-piped-field-if (field-convert-1-0-x (field-convert-verify-string #\x)))
-;; (split-piped-field-if (field-convert-1-0-x-empty "x"))
-(defun field-convert-verify-string (string-field-maybe &optional known-field-hashtable)
-  (declare (optimize (speed 3))
-           ((or null hash-table) known-field-hashtable))
-  (when (null string-field-maybe)
-    (return-from field-convert-verify-string (values nil 'null)))
-  (when (not (stringp string-field-maybe))
-    (return-from field-convert-verify-string 
-      (values string-field-maybe (type-of string-field-maybe))))
-  (locally (declare (mon:string-not-null string-field-maybe))
-    (when (mon:string-empty-p string-field-maybe)
-      (return-from field-convert-verify-string 
-        (values nil 'mon:string-empty)))
-    (when (mon:string-all-whitespace-p string-field-maybe)
-      (return-from field-convert-verify-string 
-        (values nil 'mon:string-all-whitespace)))
-    (when (and known-field-hashtable 
-               (hash-table-p known-field-hashtable)
-               (gethash string-field-maybe known-field-hashtable))
-      (return-from field-convert-verify-string 
-        (values nil string-field-maybe)))
-    (values string-field-maybe (type-of string-field-maybe))))
-
-(defun field-convert-remove-duplicates (string-list-maybe)
-  (declare (optimize (speed 3)))
-  (when (null string-list-maybe)
-    (return-from field-convert-remove-duplicates
-      (values nil 'null)))
-  (unless (listp string-list-maybe)
-    (return-from field-convert-remove-duplicates
-      (values string-list-maybe (type-of string-list-maybe))))
-  (unless (mon:each-a-string-or-null-p string-list-maybe)
-    (return-from field-convert-remove-duplicates
-      (values string-list-maybe (type-of string-list-maybe))))
-  (let ((str-lst-trans 
-         (remove-if #'mon:string-null-empty-or-all-whitespace-p string-list-maybe)))
-    (when (null str-lst-trans)
-      (return-from field-convert-remove-duplicates 
-        (values nil string-list-maybe)))
-    (locally (declare (mon:each-a-string str-lst-trans))
-      (values 
-       (delete-duplicates str-lst-trans :test #'string= :from-end t) 
-       ;; (remove-duplicates str-lst-trans :test #'string=) 
-       string-list-maybe))))
-
 (defun field-convert-preprocess-field (string-field-maybe)
   (if (stringp string-field-maybe)
       (let ((match (copy-seq string-field-maybe)))
@@ -726,8 +748,13 @@ Return value has the form:~%
  \(split-lifespan \"-1848-?\"\)~%
  \(split-lifespan \"-1848?\"\)~%
  \(split-lifespan \"-1848?\"\)~%
+ \(split-lifespan \"1848 - 1942\"\)
+ \(split-lifespan \" 1848 - 1942 \"\)
  \(split-lifespan \"1848 -- ??\"\)~%
  \(split-lifespan \" 1848-?? \"\)~%~@
+;; Pathological:~%
+ \(split-lifespan \"1940s-60s\"\)~%
+ \(split-lifespan \"Active 1940s-60s\"\)~%~@
 :NOTE Doesn't catch the #\\[ #\\] chars in \"[?]-1900\" or \"1900-[?]\".~%~@
 :SEE-ALSO `split-roles', `split-used-fors', `split-piped-field-if',
 `split-appeared-in', `split-loc-pre'.~%►►►")
@@ -859,7 +886,14 @@ If a field is found as key in hash-table return nil, STRING-FIELD-MAYBE.~%~@
  \(field-convert-verify-string \"\"\)~%
  \(field-convert-verify-string \"             \"\)~%
  \(field-convert-verify-string \"mma\"\)~%
- \(field-convert-verify-string \"ref\" *xml-refs-match-table*\)~%~@
+ \(field-convert-verify-string \"ref\" *xml-refs-match-table*\)~%
+ \(field-convert-verify-string \"ref\" *xml-refs-match-table*\)~%
+ \(field-convert-verify-string \"ref\" '*xml-refs-match-table*\)~%
+ \(field-convert-verify-string \"not-there\" *xml-refs-match-table*\)~%
+ \(field-convert-verify-string \"not-there\" 'xml-refs-match-table*\)~%
+ \(field-convert-verify-string \"ref\" '*not-xml-refs-match-table*\)~%
+ \(field-convert-verify-string \"ref\" nil\)~%
+ \(field-convert-verify-string \"ref\" t\)~%~@
 :SEE-ALSO `field-convert-empty-string-nil'.~%►►►")
 
 (fundoc 'field-convert-remove-duplicates
@@ -928,8 +962,19 @@ return CONVERT-FIELD.~%~@
  \(field-convert-1-0-x-empty #\\*\)~%
  \(field-convert-1-0-x-empty #\\t\)~%
  \(field-convert-1-0-x-empty \"t\"\)~%
- \(field-convert-1-0-x-empty \"Return Me\"\)~%~@
-:NOTE Has regression test `field-convert-1-0-x-empty-TEST'.~%~@
+ \(field-convert-1-0-x-empty \"Return Me\"\)~%
+ \(field-convert-1-0-x-empty \"ref\" :known-field-hashtable *xml-refs-match-table*\)~%
+ \(field-convert-1-0-x-empty \"ref\" :known-field-hashtable '*xml-refs-match-table*\)~%
+ \(field-convert-1-0-x-empty \"not-there\" :known-field-hashtable 'not-a-valid-hashtable\)~%
+ \(field-convert-1-0-x-empty \"not-there\" :known-field-hashtable '*xml-refs-match-table*\)~%
+ \(field-convert-1-0-x-empty \"\" :known-field-hashtable *xml-refs-match-table*\)~%
+ \(field-convert-1-0-x-empty \"   \" :known-field-hashtable *xml-refs-match-table*\)~%
+ \(field-convert-1-0-x-empty  8 :known-field-hashtable *xml-refs-match-table*\)~%
+ \(field-convert-1-0-x-empty \"x\" :known-field-hashtable *xml-refs-match-table*\)~%
+ \(field-convert-1-0-x-empty \"1\" :known-field-hashtable *xml-refs-match-table*\)~%
+ \(field-convert-1-0-x-empty \"0\" :known-field-hashtable *xml-refs-match-table*\)~%~@
+:NOTE Has regression tests:~%
+ `field-convert-1-0-x-empty-TEST.0' `field-convert-1-0-x-empty-TEST.0'~%~@
 :SEE-ALSO `dbc:field-convert-1-0-x', `dbc:field-convert-1-0-x-empty',
 `dbc:field-convert-1-0-x-empty-known', `dbc:field-convert-verify-string',
 `dbc:field-convert-empty-string-nil', `dbc:field-cln-x'.~%►►►")

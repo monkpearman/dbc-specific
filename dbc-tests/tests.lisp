@@ -35,8 +35,7 @@
   (and (typep dbc:*system-tests-temp-dir* 'dbc:system-subdir)
        (fad:directory-exists-p (dbc:sub-path dbc:*system-tests-temp-dir*))))
 
-
-;; 
+;; :TEST `dbc:field-convert-1-0-x'
 (sb-rt:deftest field-convert-1-0-x-TEST
     (values
      (dbc:field-convert-1-0-x  "1")
@@ -53,59 +52,88 @@
      (dbc:field-convert-1-0-x  #\*)
      (dbc:field-convert-1-0-x  #\t)
      (dbc:field-convert-1-0-x  "t")
-     (dbc:field-convert-1-0-x "Return Me")
-     )
+     (dbc:field-convert-1-0-x "Return Me"))
   T T T T NIL NIL NIL NIL NIL NIL NIL #\* #\t "t" "Return Me")
 ;;
 ;; (sb-rt:do-test 'field-convert-1-0-x-TEST)
 
-;;; ==============================
-(sb-rt:deftest field-convert-1-0-x-empty-TEST
-    ;; (values-list 
-    ;; (mapcar #'(lambda (apply-form) 
-    ;;             (apply (function (car apply-form)) (cadr apply-form) (cddr apply-form)))
+;; :TEST `dbc:field-convert-1-0-x-empty'
+(sb-rt:deftest field-convert-1-0-x-empty-TEST.0
     (values-list
      (mapcar #'eval
-            (mapcar #'(lambda (form) 
-                        ;; car caadr cadadr
-                        ;; `(multiple-value-bind ,(car form) (funcall (caadr ,form) (cadadr ,form))))
-                        
-                        `(multiple-value-bind ,(car form) (,(caadr form) ,(cadadr form))
-                           (list ,@(car form))))
-                    '(
-                      ((a b c d)
-                       (dbc:field-convert-1-0-x-empty t))
-                      ((a b c d)
-                       (dbc:field-convert-1-0-x-empty nil))
-                      ((a b c)
-                       (dbc:field-convert-1-0-x-empty "x"))
-                      ((a b c)
-                       (dbc:field-convert-1-0-x-empty "1"))
-                      ((a b c)
-                       (dbc:field-convert-1-0-x-empty "0"))
-                      ;; ::NOTE following has complicated destructoring
-                      ;; ((a c)
-                      ;;  (dbc:field-convert-1-0-x-empty 8))
-                      ;; => (8 (INTEGER 0 536870911) 8 (INTEGER 0 536870911))
-                      ((a)
-                       (dbc:field-convert-1-0-x-empty 8))
-                      ((a b c)
-                       (dbc:field-convert-1-0-x-empty ""))
-                      ((a b c)
-                       (dbc:field-convert-1-0-x-empty "    "))))))
+             (mapcar #'(lambda (form) 
+                         `(multiple-value-bind ,(car form) (,(caadr form) ,(cadadr form))
+                            (list ,@(car form))))
+                     '(((a b c d)
+                        (dbc:field-convert-1-0-x-empty t))
+                       ((a b c d)
+                        (dbc:field-convert-1-0-x-empty nil))
+                       ((a b c)
+                        (dbc:field-convert-1-0-x-empty "x"))
+                       ((a b c)
+                        (dbc:field-convert-1-0-x-empty "1"))
+                       ((a b c)
+                        (dbc:field-convert-1-0-x-empty "0"))
+                       ;; ::NOTE following has complicated destructoring
+                       ;; ((a c)
+                       ;;  (dbc:field-convert-1-0-x-empty 8))
+                       ;; => (8 (INTEGER 0 536870911) 8 (INTEGER 0 536870911))
+                       ((a)
+                        (dbc:field-convert-1-0-x-empty 8))
+                       ((a b c)
+                        (dbc:field-convert-1-0-x-empty ""))
+                       ((a b c)
+                        (dbc:field-convert-1-0-x-empty "    "))))))
+
   (T BOOLEAN T BOOLEAN) (NIL NULL NIL NULL) (NIL NULL "x")
   (T BOOLEAN "1") (NIL NULL "0") (8) 
-  (NIL MON:STRING-EMPTY "") (NIL MON:STRING-ALL-WHITESPACE "    x"))
+  (NIL MON:STRING-EMPTY "") (NIL MON:STRING-ALL-WHITESPACE "    "))
+
 ;;
-;; (sb-rt:do-test 'field-convert-1-0-x-empty-TEST)
+;; (sb-rt:do-test 'field-convert-1-0-x-empty-TEST.0)
 
-
-
-
-
-
-
-
+;; :TESTING `field-convert-1-0-x-empty' with keyword KNOWN-FIELD-HASHTABLE
+(sb-rt:deftest field-convert-1-0-x-empty-TEST.1
+    (values-list
+     (mapcar #'eval
+             (mapcar #'(lambda (form) 
+                         `(multiple-value-bind ,(car form) ,(cadr form)
+                            (list ,@(car form))))
+                     '(((a b c)
+                        (dbc:field-convert-1-0-x-empty "ref" :known-field-hashtable 'dbc:*xml-refs-match-table*))
+                       ((a b c)
+                        (dbc:field-convert-1-0-x-empty "ref" :known-field-hashtable dbc:*xml-refs-match-table*))
+                       ((a)
+                        (dbc:field-convert-1-0-x-empty "ref" :known-field-hashtable nil))
+                       ((a)
+                        (dbc:field-convert-1-0-x-empty "not-there" :known-field-hashtable 'not-a-valid-hashtable))
+                       ((a)
+                        (dbc:field-convert-1-0-x-empty "not-there" :known-field-hashtable '*xml-refs-match-table*))
+                       ((a b c)
+                        (dbc:field-convert-1-0-x-empty "" :known-field-hashtable 'dbc:*xml-refs-match-table*))
+                       ((a b c)
+                        (dbc:field-convert-1-0-x-empty "   " :known-field-hashtable 'dbc:*xml-refs-match-table*))
+                       ((a)
+                        (dbc:field-convert-1-0-x-empty  8 :known-field-hashtable 'dbc:*xml-refs-match-table*))
+                       ((a b c)
+                        (dbc:field-convert-1-0-x-empty "x" :known-field-hashtable 'dbc:*xml-refs-match-table*))
+                       ((a b c)
+                        (dbc:field-convert-1-0-x-empty "1" :known-field-hashtable 'dbc:*xml-refs-match-table*))
+                       ((a b c)
+                        (dbc:field-convert-1-0-x-empty "0" :known-field-hashtable 'dbc:*xml-refs-match-table*))))))
+   (NIL NULL "ref")
+   (NIL NULL "ref")
+   ("ref")
+   ("not-there")
+   ("not-there")
+   (NIL MON:STRING-EMPTY "")
+   (NIL MON:STRING-ALL-WHITESPACE "   ")
+   (8)
+   (NIL NULL "x")
+   (T BOOLEAN "1")
+   (NIL NULL "0"))
+;;
+;; (sb-rt:do-test 'field-convert-1-0-x-empty-TEST.1)
 
 ;;; ==============================
 
