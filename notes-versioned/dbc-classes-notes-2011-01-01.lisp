@@ -1,6 +1,7 @@
 ;;; :FILE-CREATED <Timestamp: #{2010-03-18T13:13:57-04:00Z}#{10114} - by MON>
-;;; :FILE /home/sp/stan-workspace/HG-Repos/mon-notes-HG/CL-repo-HG/CL-MON-CODE/dbc-specific/cl-dbc-classes-2010-03-18.lisp
+;;; :FILE dbc-specific/notes-versioned/dbc-classes-notes-2011-01-01.lisp
 ;;; ==============================
+
 
 ;;; ==============================
 ;; :NOTE Stas Boukarev's `tracking` and `storage` projects.
@@ -75,21 +76,18 @@
 ;;; ==============================
 ;; :SKETCH-LIST-OF-CLASSES-TO-CREATE
 
-;;; :NOTE Class UID's are best generated with a timestamp using CL's UTC with
-;;; the appropriate granularity. :SEE `internal-time-units-per-second'
-
 ;;; ==============================
 ;; dbc-item (dbc-class)
 
 ;; :DBC-ITEM-INHERITORS
 ;;      doc-item  (dbc-doc)
-;;      img-item  (dbc-img)
-;;              thb-item  (img-thb)
-;;              big-item  (img-big)
-;;              zm-item   (img-zm)
-;;              hdr-item  (img-hdr)
-;;              flsh-item (img-flsh)
-;;              frm-item  (img-frm)
+;;      image-item  (dbc-image)
+;;              thumb-item  (image-thumb)
+;;              big-item    (image-big)
+;;              zoom-item   (image-zoom)
+;;              header-item (image-header)
+;;              flash-item  (image-flash)
+;;              frm-item    (image-frame)
 
 ;;     item-ebay
 
@@ -114,10 +112,10 @@
 
 ;;; ==============================
 ;; dbc-naf (dbc-class)
-;;        img-naf (dbc-img)
-;;               thb-naf    (img-thb)
-;;               big-naf    (img-big)
-;;               header-naf (img-hdr)  ;; :NOTE This is new.
+;;        image-naf (dbc-image)
+;;               thumb-naf    (image-thumb)
+;;               big-naf    (image-big)
+;;               header-naf (image-header)  ;; :NOTE This is new.
 ;;
 ;;    doc-naf (doc-dbc)
 
@@ -158,9 +156,9 @@
 ;;  :SEE :FILE dbc-specific/dbc-classes/mon-tgm.lisp
 ;;  
 
-;;        img-theme
-;;                 thb-theme (img-thb)
-;;                 hdr-theme (img-hdr)
+;;        image-theme
+;;                 thumb-theme (image-thumb)
+;;                 header-theme (image-header)
 ;;
 ;;        doc-theme (dbc-doc)
 
@@ -169,13 +167,13 @@
 ;; dbc-category (dbc-class)
 ;;         doc-category
 ;;         naf-category
-;;         img-category
-;;                     thb-category  (img-thb)
-;;                     hdr-category  (img-hdr)
-;;                     flsh-categoyr (img-flsh)
+;;         image-category
+;;                     thumb-category  (image-thumb)
+;;                     header-category  (image-header)
+;;                     flash-categoyr (image-flash)
 ;;         
 ;;
-;; :NOTE Decide on img-magick from Franz or Edi's cl-gd. 
+;; :NOTE Decide on image-magick from Franz or Edi's cl-gd. 
 ;;       Also, remember Zach's VECTO and and SKIPPY, etc.
 ;;
 ;;; item-category 
@@ -194,77 +192,82 @@
 
 
 ;;; ==============================
-;; dbc-img (dbc-class)
-;;
-;; :DBC-IMG-SLOTS
-;; img-type-path ;; i.e. naf images go to /some/path/naf/<some-naf-instance>/some.jpg
-;; img-dir       ;; i.e. <IMG-TYPE-PATH>/<SOME-INSTANCE>/
-;; img-frmt      {jpg|png|gif|tiff|bmp|nef}
-;; img-rot8      ;; {BOOLEAN [:horizontal|:vertical]} ;; :NOTE img-dim-x & img-dim-y should be conditional on img-rot8.
-;; img-dim-x     {:type postive-integer}
-;; img-dim-y     {:type postive-integer}
-;; img-size      {:type integer :display [:MB|:KB]}
-;; img-wmrk      ;; i.e. image should/not be contextually watermarked. pdf reformatting, big nafs, etc.
-;; img-tstmp     {:type timestamp}
-
-;; :NOTE following are mixins
-;;      img-thb  (dbc-img)
-;;      img-big  (dbc-img)
-;;      img-hdr  (dbc-img)
-;;      img-flsh (dbc-img)
-;;      img-zm   (dbc-img)
-;;      img-frm  (dbc-img)
-;;      img-exif (dbc-img) ;; :NOTE Can inherit or used this to deterime slot values above. 
-;;                         ;; :NOTE Also, that exif date/time stamps are mutable whereas a img-tstmp isn't
-;;      img-gif  (dbc-img)
-;;      img-ico  (dbc-img)
-;;      img-site (dbc-img)
-;;              site-gif (img-gif)
-;;              site-ico (img-ico)
-;;              site-thb (img-thb)
-;;
-;;      img-item (dbc-img)
-;;              thb-item  (img-thb)
-;;              big-item  (img-big)
-;;              zm-item   (img-zm)
-;;              hdr-item  (img-hdr)
-;;              flsh-item (img-flsh)
-;;              frm-item  (img-frm)
-;;
-;; img-naf (dbc-img)
-;;        thb-naf (img-thb)
-;;        big-naf (img-big)
-;;        hdr-naf (img-hdr) ;; :NOTE This is new.
-;;
-;; img-category
-;;             thb-category (img-thb)
-;;             hdr-category (img-hdr)
-;;             flsh-category (img-flsh)
-;;
-;; img-theme
-;;            thb-theme  (img-thb)
-;;            hdr-theme  (img-hdr)
-;;            flsh-theme (img-flsh)
+;; :NOTE The image related notes below were moved to
+;; :FILE dbc-specific/dbc-classes/dbc-class-image.lisp and are no longer canonical.
+;; ,----
+;; |  dbc-image (dbc-class)
+;; | 
+;; |  :DBC-IMAGE-SLOTS
+;; |  image-type-path     ;; i.e. naf images go to /some/path/naf/<some-naf-instance>/some.jpg
+;; |  image-dir           ;; i.e. <IMAGE-TYPE-PATH>/<SOME-INSTANCE>/
+;; |  image-type          {jpg | png | gif | tiff | bmp | nef }
+;; |  image-rotation      ;; {BOOLEAN [:horizontal|:vertical]} ;; :NOTE image-dim-x & image-dimension-y should be conditional on image-rotation.
+;; |  image-dimension-x   {:type postive-integer}
+;; |  image-dimension-y   {:type postive-integer}
+;; |  image-size          {:type integer :display [:MB|:KB]}
+;; |  image-watermark      ;; i.e. image should/not be contextually watermarked. pdf reformatting, big nafs, etc.
+;; |  image-timestamp     {:type timestamp}
+;; |  image-uuid
+;; | 
+;; |  :NOTE following are mixins
+;; |       image-thumb  (dbc-image)
+;; |       image-big    (dbc-image)
+;; |       image-header (dbc-image)
+;; |       image-flash  (dbc-image)
+;; |       image-zoom   (dbc-image)
+;; |       image-frame  (dbc-image)
+;; |       image-exif   (dbc-image) ;; :NOTE Can inherit or used this to deterime slot values above. 
+;; |                          ;; :NOTE Also, that exif date/time stamps are mutable whereas a image-timestamp isn't
+;; |       image-gif  (dbc-image)
+;; |       image-ico  (dbc-image)
+;; |       image-site (dbc-image)
+;; |               site-gif (image-gif)
+;; |               site-ico (image-ico)
+;; |               site-thumb (image-thumb)
+;; | 
+;; |       image-item (dbc-image)
+;; |               thumb-item  (image-thumb)
+;; |               big-item    (image-big)
+;; |               zoom-item   (image-zoom)
+;; |               header-item (image-header)
+;; |               flash-item  (image-flash)
+;; |               frame-item  (image-frame)
+;; | 
+;; |  image-naf (dbc-image)
+;; |         thumb-naf (image-thumb)
+;; |         big-naf (image-big)
+;; |         header-naf (image-header) ;; :NOTE This is new.
+;; | 
+;; |  image-category
+;; |              thumb-category (image-thumb)
+;; |              header-category (image-header)
+;; |              flash-category (image-flash)
+;; | 
+;; |  image-theme
+;; |             thumb-theme  (image-thumb)
+;; |             header-theme (image-header)
+;; |             flash-theme  (image-flash)
+;; `----
 
 ;;; ==============================
 ;;; :METHODS-TO-IMPLEMENT
 
 ;; :SLOT-XREFS
 
-dbc-xref-rmv-in-slot
+dbc-xref-remove-in-slot
 dbc-xref-add-to-slot
 ;; according to the slot xrefing scheme we need to have methods to add/rmv/verify xrefs
 
 ;; :IMAGES
-dbc-img-rsz {img-thb img-big img-hdr img-flsh img-zm img-frm}
+dbc-image-resize {image-thumb image-big image-header image-flash image-zoom image-frame}
 
-dbc-img-verify-rotation
+dbc-image-verify-rotation
 
-dbc-img-watermark
+dbc-image-watermark
 
-dbc-img-rmv-metadata ;; exif metadata removal
-dbc-img-get-metadata ;; exif metadata getter
-dbc-img-put-metadata ;; exif metadata setter
+dbc-image-remove-metadata ;; exif metadata removal
+dbc-image-get-metadata ;; exif metadata getter
+dbc-image-put-metadata ;; exif metadata setter
 
 
 ;;; ==============================
@@ -391,6 +394,11 @@ dbc-img-put-metadata ;; exif metadata setter
 
 
 ;;; ==============================
+
+;; :SOURCE bbdb.el
+;; bbdb-lastname-prefixes
+;;  '("von" "de" "di")
+
 ;; CLOCC-cllib/card.lisp
 
 ;; :ECCLESIASTICAL-TITLES
@@ -424,6 +432,9 @@ dbc-img-put-metadata ;; exif metadata setter
 e.g. titles prefexing a name")
 
 ;; SUFFIX
+
+;; :SOURCE bbdb.el `bbdb-lastname-suffixes'
+;;  '("Jr" "Sr" "II" "III")
 
 (defcustom *name-apellations-suffix* list
   '("Jr." "Junior" 

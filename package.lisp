@@ -82,6 +82,9 @@
              #:make-parsed-class-slot-init-accessor-name
              ;;
              ;;
+           ;; dbc-classes/dbc-class-image.lisp
+             #:base-image
+             ;;
            ;; dbc-classes/dbc-class-edit.lisp
              ;;
               #:base-edit
@@ -106,7 +109,7 @@
              #:base-description
              ;;
            ;; dbc-classes/dbc-class-documentation.lisp
-             #:base-documenation
+             #:base-documentation
              ;;
            ;; dbc-classes/dbc-class-regexps.lisp
              ;;
@@ -160,6 +163,10 @@
              #:make-ref-maker-sym-name 
              #:make-ref-maker-symbol
              #:make-ref-lookup-table
+             ;;
+           ;; dbc-classes/dbc-specific/dbc-class-techniques-convert.lisp
+             ;; #:media-technique-entity
+             ;;
              ;;
            ;; :MODULE dbc-parse
              ;;

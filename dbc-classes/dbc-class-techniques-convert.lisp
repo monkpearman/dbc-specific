@@ -15,7 +15,11 @@
 (in-package #:dbc)
 ;; *package*
 
-
+;; (defclass media-technique-entity (base-media-entity)
+;;   ())
+;;
+;; (defclass technique-parse (parsed-class)
+;;   ())
 
 #|
 
@@ -32,7 +36,7 @@
  "technique_family"
  "variation_of"
  "notes"
- "default_pic"
+ "default_pic"       ;; "image-default-id"
  "online"            ;; item-posted       ;; IGNORABLE always 0
  "date_edt"          ;; edit-date
  "date_edit"         ;; edit-date-origin  ;; IGNORABLE assuming date_edt is present and corresponds
@@ -156,7 +160,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "default_pic" :TRANSFORM
+;; :FIELD "default_pic" :TRANSFORM image-default-id
 ;;
 ;;         :TYPE "varchar(45)"
 ;;         :NULL-P "NO"
@@ -167,8 +171,9 @@
 ;; :EXAMPLE-VALUES 
 ;;  1.jpg
 ;;
+;; - may appear as empty field
 ;; - Picture identifying the characteristics of the technique.
-;; 
+;; - Also, appears in artis-infos table
 ;;
 
 ;;; ==============================

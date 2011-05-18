@@ -2,11 +2,9 @@
 ;;; :FILE ../dbc-classes/dbc-class-refs-convert.lisp
 ;;; ==============================
 
-
 
 (in-package #:dbc)
 ;; *package*
-
 
 (defparameter *parsed-ref-field-name-slot-transform* (make-hash-table :test 'equal))
 

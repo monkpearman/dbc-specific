@@ -35,6 +35,8 @@
   (and (typep dbc:*system-tests-temp-dir* 'dbc:system-subdir)
        (fad:directory-exists-p (dbc:sub-path dbc:*system-tests-temp-dir*))))
 
+
+;;; ==============================
 ;; :TEST `dbc:field-convert-1-0-x'
 (sb-rt:deftest field-convert-1-0-x-TEST
     (values
@@ -57,6 +59,8 @@
 ;;
 ;; (sb-rt:do-test 'field-convert-1-0-x-TEST)
 
+
+;;; ==============================
 ;; :TEST `dbc:field-convert-1-0-x-empty'
 (sb-rt:deftest field-convert-1-0-x-empty-TEST.0
     (values-list
@@ -74,7 +78,7 @@
                         (dbc:field-convert-1-0-x-empty "1"))
                        ((a b c)
                         (dbc:field-convert-1-0-x-empty "0"))
-                       ;; ::NOTE following has complicated destructoring
+                       ;; ::NOTE following has complicated destructoring:
                        ;; ((a c)
                        ;;  (dbc:field-convert-1-0-x-empty 8))
                        ;; => (8 (INTEGER 0 536870911) 8 (INTEGER 0 536870911))
@@ -88,7 +92,6 @@
   (T BOOLEAN T BOOLEAN) (NIL NULL NIL NULL) (NIL NULL "x")
   (T BOOLEAN "1") (NIL NULL "0") (8) 
   (NIL MON:STRING-EMPTY "") (NIL MON:STRING-ALL-WHITESPACE "    "))
-
 ;;
 ;; (sb-rt:do-test 'field-convert-1-0-x-empty-TEST.0)
 
@@ -135,8 +138,9 @@
 ;;
 ;; (sb-rt:do-test 'field-convert-1-0-x-empty-TEST.1)
 
-
-;; :TESTING `split-field-on-char-if'
+
+;;; ==============================
+;; :TESTING `split-field-on-char-if' withot keywords
 (sb-rt:deftest split-field-on-char-if-TEST.0
     (values-list
      (mapcar #'eval
@@ -187,7 +191,9 @@
 ;;
 ;; (sb-rt:do-test 'split-field-on-char-if-TEST.0)
 
-;; :TESTING `dbc:split-field-on-char-if' with :keep-first 
+
+;;; ==============================
+;; :TESTING `dbc:split-field-on-char-if' with keyword KEEP-FIRST 
 (sb-rt:deftest split-field-on-char-if-TEST.1
     (values-list
      (mapcar #'eval
@@ -237,7 +243,7 @@
 ;;
 ;; (sb-rt:do-test 'split-field-on-char-if-TEST.1)
 
-;; :TESTING `dbc:split-field-on-char-if' with :keep-duplicates
+;; :TESTING `dbc:split-field-on-char-if' with keyword KEEP-DUPLICATES
 (sb-rt:deftest split-field-on-char-if-TEST.2
     (values-list
      (mapcar #'eval
@@ -260,8 +266,7 @@
 ;;
 ;; (sb-rt:do-test 'split-field-on-char-if-TEST.2)
 
-
-;; :TESTING dbc:split-field-on-char-if with :known-field-hashtable
+;; :TESTING `dbc:split-field-on-char-if' with keyword KNOWN-FIELD-HASHTABLE
 (sb-rt:deftest split-field-on-char-if-TEST.3
     (values-list
      (mapcar #'eval
@@ -301,18 +306,6 @@
   (("ref" "ref") CONS "ref , ref"))
 ;;
 ;; (sb-rt:do-test 'split-field-on-char-if-TEST.3)
-
-
-;; (let ((frm '((a b c)
-;;             (dbc:split-field-on-char-if "" #\DIGIT_ONE))))
-;;   (mapcar #'eval
-;;           (mapcar #'(lambda (form) 
-;;                `(multiple-value-bind ,(car form) ,@(cdr form)
-;;                   (list ,@(car form))))
-;;            frm))
-
-  
-
 
 ;;; ==============================
 

@@ -4,7 +4,15 @@
 
 ;;; ==============================
 ;;; :NOTE
-;;;
+;;;  documents objects should have:
+;;;  - uuids
+;;;  - indexed terms
+;;;  - 
+#("Definitions for: buffer
+
+" 0 16 (face gg-def-base) 17 23 (face gg-def-defined))
+object xrefs, e.g. the principal
+
 ;;; ==============================
 
 
@@ -12,10 +20,10 @@
 
 ;; *package*
 
-(defclass base-documenation (base-dbc)
+(defclass base-documentation (base-dbc)
   ()
- (:documentation 
-  #.(format nil "Base class for referencing documents in the dbc-system.")))
+  (:documentation 
+   #.(format nil "Base class for referencing documents in the dbc-system.")))
 
 ;;; ==============================
 

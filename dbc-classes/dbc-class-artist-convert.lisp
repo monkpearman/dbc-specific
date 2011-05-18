@@ -74,8 +74,8 @@
 ;; "found_in"          ;; "citation-appearance"
 ;; "auction_records"   ;; "sale-appearance"
 ;;
-;; "default_pic"       ;; 
-;; "print_default_pic" ;; "item-coref"
+;; "default_pic"       ;; "image-default-id"
+;; "print_default_pic" ;; "image-default-xref"
 ;;
 ;;
 ;; "online"            ;; "naf-active"
@@ -426,15 +426,26 @@
 ;; 
 
 ;;; ==============================
-;;  :FIELD "default_pic" :TRANSFORM
+;;  :FIELD "default_pic" :TRANSFORM "image-default-id"
 ;; 
 ;; :EXAMPLE-VALUES 
 ;;         1.jpg
-;; 
-;; - Also appears in techniques_infos table
+;;   <field name="default_pic">1.jpg</field>
+;; - May appear as empty field
+;; - :SEE the image-xref class slots:
+;;    image-path-for-instance-type,  image-path-for-type, image-type
+;;   :FILE dbc-classes/dbc-class-image.lisp
+;;
+;; - Also, appears in techniques_infos table
+;;
+;; (pathname-type "name.jpg")
+;; (pathname-type "name.jpg")
+;; (pathname-name "name.jpg")
+;; (pathname-directory "name.jpg")
+;; (pathnamep (namestring #P"name.jpg")
 
 ;;; ==============================
-;;  :FIELD "print_default_pic" :TRANSFORM "item-coref"
+;;  :FIELD "print_default_pic" :TRANSFORM "image-default-xref"
 ;;
 ;; :EXAMPLE-VALUES 
 ;;  2033
@@ -443,10 +454,11 @@
 ;;   - Should this be normalized to an integer as well?
 ;;     It would certainly make the storage cost lower, but it might also prevent
 ;;     hinder indexed queries by item-ref/image objects identity.
-;;     
 ;;
 ;;   - This should eventually get xref'd with a grapher (i.e. epigraph)
-;;   
+;;     according to UUID relations
+;;
+;;   - :SEE the image-xref class notes in :FILE dbc-classes/dbc-class-image.lisp
 
 ;;; ==============================
 ;;  :FIELD date_edt & name=date_edit 

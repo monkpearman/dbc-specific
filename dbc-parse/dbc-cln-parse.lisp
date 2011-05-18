@@ -281,7 +281,7 @@
        (delete-duplicates str-lst-trans :test #'string= :from-end t) 
        ;; (remove-duplicates str-lst-trans :test #'string=) 
        string-list-maybe))))
-
+ 
 ;;; ==============================
 ;;
 ;; `split-field-on-char-if'
@@ -302,6 +302,9 @@
 ;; (split-piped-field-if (field-convert-1-0-x-empty (field-convert-verify-string #\x)))
 ;; (split-piped-field-if (field-convert-1-0-x-empty "x"));; 
 ;; 
+;; :NOTE has regression tests:
+;; split-field-on-char-if-TEST.0 split-field-on-char-if-TEST.1
+;; split-field-on-char-if-TEST.2 split-field-on-char-if-TEST.3
 (defun split-field-on-char-if (split-string char &key keep-duplicates
                                keep-first
                                known-field-hashtable)
@@ -315,14 +318,19 @@
     (if (or 
          (null v1) 
          (not (stringp v1))
-         (notany #'(lambda (x) (char= char x )) v1))
+         (notany #'(lambda (x) (char= char x)) (the string v1)))
         (return-from split-field-on-char-if (values v1 t1 v2 t2))
+        ;; :NOTE The local var SIMPLE is only b/c its type can be declared simple-string
         (let ((simple (copy-seq (the mon:string-not-null-or-empty v1))))
           (declare (simple-string simple))
           (if (position char simple)
               (if (string= simple (make-string 1 :initial-element char))
                   (if keep-first 
-                      (values simple (type-of v1) v2 t2)
+                      ;; :NOTE We don't return this: 
+                      ;;  (values simple (type-of simple) v2 t2)
+                      ;; b/c we haven't modified simple yet, nothing has changed
+                      ;; so v1 and t1 are still valid.
+                      (values v1 t1 v2 t2)
                       (values nil 'standard-char v2 t2))
                   (if (and keep-first
                            (every #'(lambda (c) 
@@ -333,12 +341,12 @@
                       (values 
                        (setf simple (mon:string-trim-whitespace simple))
                        (type-of simple)
-                       v2 
+                       v2
                        t2)
                       (loop 
                          :with split = (mon:string-split-on-chars simple (make-string 1 :initial-element char))
                          :for x simple-string in split ;; each elt of mon:string-split-on-chars is from a copy-seq.
-                         :for y simple-string = (mon:string-trim-whitespace x) ;; (mon:string-trim-whitespace (the simple-string x)))
+                         :for y simple-string = (mon:string-trim-whitespace x)
                          ;; :unless (eql (the mon:array-length (length (the simple-string y))) 0)
                          :unless (zerop (the mon:array-length (length y)))
                          :collect y :into rtn
@@ -378,6 +386,8 @@
                                     :w-got  empty-field
                                     :w-type-of t
                                     :signal-or-only nil)))))
+
+;; (field-convert-image-name-and-type ;; jpg | png | gif | tiff | bmp | nef
 
 ;;; ==============================
 ;; artist lifespan-date
@@ -685,6 +695,9 @@ is contained of only `mon:whitespace-char-p' and CHAR.~%~@
  \(split-field-on-char-if \"ref , \" #\\, :known-field-hashtable *xml-refs-match-table*\)~%~@
 :NOTE Corner case where `field-convert-1-0-x-empty' wins:~%~@
  \(split-field-on-char-if \"   \" #\\space :keep-first t\)~%~@
+:NOTE Has regression tests:
+ `split-field-on-char-if-TEST.0' `split-field-on-char-if-TEST.1'
+ `split-field-on-char-if-TEST.2' `split-field-on-char-if-TEST.3'
 :SEE-ALSO `split-piped-field-if'.~%►►►")
 
 (fundoc 'split-piped-field-if
