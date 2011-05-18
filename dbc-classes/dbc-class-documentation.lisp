@@ -8,11 +8,6 @@
 ;;;  - uuids
 ;;;  - indexed terms
 ;;;  - 
-#("Definitions for: buffer
-
-" 0 16 (face gg-def-base) 17 23 (face gg-def-defined))
-object xrefs, e.g. the principal
-
 ;;; ==============================
 
 

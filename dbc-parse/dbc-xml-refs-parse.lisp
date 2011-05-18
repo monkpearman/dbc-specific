@@ -86,6 +86,87 @@
 
 ;;; ==============================
 ;;; ==============================
+(defun start-element-and-attribute-present-p (source &key (element-local "field")
+                                              (attrib-local "name")
+                                              attrib-expect )
+  ;; Whether current klacks event has an attribute with value matching ATTRIB-EXPECT.
+  ;; Return ATTRIB-EXPECT when following constraints are met:
+  ;; current event is :start-element 
+  ;; the value of its klacks:current-lname matches ELEMENT-LOCAL
+  ;; The value of klacks:get-attribute for ATTRIB-LOCAL is `cl:string=' ATTRIB-EXPECT.
+  ;; SOURCE is the current cxml-source being parsed. 
+  ;; It is an object suitable for use an argument to klacks:peek.
+  ;; Keyword ELEMENT-LOCAL default is a string naming an elmenets lname. default is "field"
+  ;; Keyword ATTRIB-LOCAL is a string naming an attribute of element.  default is "name"
+  ;; Keyword ATTRIB-EXPECT is a string naming an attribute value expected.
+  ;; :EXAMPLE
+  ;; (klacks:with-open-source (s (cxml:make-source "<field name=\"ref\">2766</field>"))
+  ;;   (klacks:find-event s :start-element)
+  ;;   (start-element-and-attribute-present-p s
+  ;;                                          :element-local "field" 
+  ;;                                          :attrib-local "name"
+  ;;                                          :attrib-expect "ref"))
+  ;; (klacks:with-open-source (s (cxml:make-source "<field name=\"ref\">2766</field>"))
+  ;;   (start-element-and-attribute-present-p s
+  ;;                                          :element-local "field" 
+  ;;                                          :attrib-local "name"
+  ;;                                          :attrib-expect "ref"))
+  (declare (string element-local attrib-local attrib-expect))
+  (multiple-value-bind (key nm-space local qualified) (klacks:peek *tt-source*)
+    (declare (ignore nm-space qualified))
+    ;;(list key nm-space local qualified))
+    (let ((attrib-if (and (and key (eql key :start-element))
+                          (and local (string= element-local local))
+                          (klacks:get-attribute source attrib-local))))
+      (and attrib-if (string= attrib-if attrib-expect) attrib-expect))))
+
+(defun end-document-find-and-close (source)
+  ;; Find SOURCE's :end-document event (if any) with klacks:find-event.  consume
+  ;; it with `klacks:consume' then evaluate `klacks:close-source' making sure that
+  ;; source is close. Return value is as if by (values) e.g. => ; No value when
+  ;; source is closed.
+  ;;
+  ;; (typep *tt-source* 'cxml::cxml-source)
+  ;; (RUNES:XSTREAM-P *tt-source*)
+  ;;(or (not (typep source 'RUNES:XSTREAM ))
+  ;; (runes:xstream-encoding (cxml::source-xstream  *tt-source*))
+  ;; (runes:xstream-p (cxml::source-xstream  *tt-source*))
+  ;; (cxml::source-stream-name *tt-source*)
+  ;; (and (slot-exists-p source 'cxml::current-key)
+  ;;      (slot-boundp source 'cxml::current-key)
+  ;;      (slot-value source 'cxml::temporary-streams)
+  ;; (not (typep *tt-source* 'CXML::CXML-SOURCE))
+  ;; (eql (klacks:peek *tt-source*)
+  ;; (eql (KLACKS:FIND-EVENT *tt-source* :end-document) :end-document)
+  ;; (when (or (not (typep source 'CXML::CXML-SOURCE))
+  ;;           (not (typep source 'KLACKS:TAPPING-SOURCE))
+  ;;           (not (typep source 'KLACKS:SOURCE)))
+  ;; (return-from end-document-find-and-close 
+  ;; (values nil (type-of source)))) 
+  ;;    "not type"))
+  (typecase source 
+    (CXML::CXML-SOURCE t)
+    ;; (return-from end-document-find-and-close  "CXML::CXML-SOURCE"))
+    (KLACKS:TAPPING-SOURCE  t)
+    ;; (return-from end-document-find-and-close  "KLACKS:TAPPING-SOURCE"))
+    (KLACKS:SOURCE  t)
+    ;; (return-from end-document-find-and-close  "KLACKS:SOURCE"))
+    (t (return-from end-document-find-and-close  "not-type")))
+  (when (eql (KLACKS:PEEK source) :bogus) ;; :SEE cxml::fill-source 
+    (return-from end-document-find-and-close 
+      (values (KLACKS:PEEK source) source)))
+  (unwind-protect
+       (if (KLACKS:FIND-EVENT source :end-document)
+           (do ((i (KLACKS:CONSUME source) 
+                   (KLACKS:CONSUME source)))
+               ((null i) 
+                (KLACKS:CLOSE-SOURCE source)))
+           (do ((i (KLACKS:CONSUME source) 
+                   (KLACKS:CONSUME source)))
+               ((null i) 
+                (KLACKS:CLOSE-SOURCE source))))
+    (KLACKS:CLOSE-SOURCE source))
+  (values (null (multiple-value-list (KLACKS:PEEK-VALUE source))) source))
 
 (defun field-attribs-find (src)
   ;; Return => ":YEAR"
@@ -104,7 +185,6 @@
     (and attrib-val 
          ;; :WAS (setf attrib-val (substitute #\- #\_ (format nil ":~:@(~A~)" attrib-val))) ))) 
          (setf attrib-val (field-name-underscore-to-dash attrib-val t)) )))
-
 
 (defun field-attribs-consume-if (src)
   ;; Return => (":YEAR" . "August, 10, 1895") 

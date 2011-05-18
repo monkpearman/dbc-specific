@@ -227,6 +227,8 @@
              ;;
            ;; dbc-parse/dbc-xml-refs-parse.lisp
              ;;
+             #:start-element-and-attribute-present-p
+             #:end-document-find-and-close
              #:field-attribs-find
              #:field-attribs-consume-if
              #:field-parse-refs
