@@ -89,12 +89,37 @@
              ;;
               #:base-edit
              ;;
-           ;; dbc-classes/dbc-class-uuid.lisp
-             #:base-uuid
+
+           ;; dbc-classes/dbc-class-description.lisp
+             ;;
+             #:base-description
+             ;;
+           ;; dbc-classes/dbc-class-documentation.lisp
+             #:base-documentation
              ;;
            ;; dbc-classes/dbc-class-users.lisp
              ;;
              #:base-user
+             ;;
+             ;;
+           ;; dbc-classes/dbc-class-uuid.lisp
+             ;;
+             #:base-uuid
+             ;;
+           ;; dbc-classes/dbc-class-uuid-namespace-for-control-id.lisp
+             ;;
+             ;; #:uuid-namespace-control-id                       CLASS
+             ;; #:uuid-namespace-for-control-id-class             GENERIC/SLOT
+             ;; #:uuid-namespace-byte-array-for-control-id-class  GENERIC/SLOT
+             ;; #:uuid-namespace-bit-vector-for-control-id-class  GENERIC/SLOT
+             ;; #:uuid-namespace-version-for-control-id-class     GENERIC/SLOT
+             ;; #:uuid-namespace-for-control-id-class-description
+             ;;
+           ;; dbc-specific/dbc-classes/dbc-class-control-id.lisp
+             ;;
+             #:base-control-id
+             #:control-id-display-name
+             #:control-id-display-name-for-entity-type  ;; :SLOTS display-name-for-entity display-name-for-entity-of-type
              ;;
              ;;
            ;; dbc-classes/dbc-class-entity.lisp
@@ -103,16 +128,22 @@
              #:base-theme-entity
              #:base-naf-entity
              #:base-media-entity
+             #:base-location-entity
              ;;
-           ;; dbc-classes/dbc-class-description.lisp
+
+           ;; dbc-classes/dbc-specific/dbc-class-techniques-convert.lisp
+             #:media-technique-entity
              ;;
-             #:base-description
+             ;; 
+           ;; dbc-classes/dbc-class-entity-location.lisp
+             ;; #:location-entity              ;; :SLOTS appellations-modern appellations-historic
+             ;; #:location-entity-verified
+             ;; #:location-entity-imagined
+             ;; #:location-entity-unverified
              ;;
-           ;; dbc-classes/dbc-class-documentation.lisp
-             #:base-documentation
              ;;
+
            ;; dbc-classes/dbc-class-regexps.lisp
-             ;;
              ;;
              ;; :GENERIC-FUNCTIONS
              #:regexp-match-entity-class
@@ -163,10 +194,6 @@
              #:make-ref-maker-sym-name 
              #:make-ref-maker-symbol
              #:make-ref-lookup-table
-             ;;
-           ;; dbc-classes/dbc-specific/dbc-class-techniques-convert.lisp
-             ;; #:media-technique-entity
-             ;;
              ;;
            ;; :MODULE dbc-parse
              ;;
@@ -224,13 +251,14 @@
 	     ;;
 	     ;; cxml::cxml-source klacks:peek klacks:map-attributes
 	     #:field-parse-attribs	     
-             ;;
-           ;; dbc-parse/dbc-xml-refs-parse.lisp
-             ;;
+             #:field-attribs-consume-if             
              #:start-element-and-attribute-present-p
              #:end-document-find-and-close
              #:field-attribs-find
-             #:field-attribs-consume-if
+             #:field-attribs-find-normalize-names
+             ;;
+           ;; dbc-parse/dbc-xml-refs-parse.lisp
+             ;;
              #:field-parse-refs
              ;;
 	     ;; dbc-parse/psa-parse-table.lisp

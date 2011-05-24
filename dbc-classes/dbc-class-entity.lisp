@@ -20,18 +20,23 @@
 ;;;
 ;;; --- naf-entity-publisher ???
 ;;; --- naf-entity-linnaean  ???
-;;; --- naf-entity-location  ???
+;;;
+;;; -- base-location-entity
+;;; --- location-entity
+;;; ---- location-entity-verified
+;;; ---- location-entity-unverified
+;;; ---- location-entity-imagined
 ;;;
 ;;; ==============================
 
 
 
 (in-package #:dbc)
-
 ;; *package*
 
 (defclass base-entity (base-dbc)
-  ()
+  ;; :NOTE this is prob. the best place to provide a UUID for entities.
+  () 
   (:documentation 
    #.(format nil 
              "Base class for referencing DBC system entities.~%~@
@@ -42,6 +47,8 @@ context of the DBC system.~%~@
 For an object to be characterized as of this type it should be a known~%~
 referenceable in common nomenclature or the nomenclature of its primary
 external domain.~%
+:EXAMPLE~% ~
+ \(mon:class-subclasses \(find-class 'base-entity\)\)~%~@
 :SEE-ALSO .~%►►►")))
 
 (defclass base-theme-entity (base-entity)
@@ -49,6 +56,8 @@ external domain.~%
   (:documentation 
    #.(format nil 
              "Base class for referencing DBC system theme entities.~%~@
+             :EXAMPLE~% ~
+             \(mon:class-subclasses \(find-class 'base-theme-entity\)\)~%~@
              :SEE-ALSO `theme-entity-regexp'.~%►►►")))
 
 (defclass base-category-entity (base-entity)
@@ -56,13 +65,17 @@ external domain.~%
   (:documentation 
    #.(format nil 
              "Base class for referencing DBC system category entities.~%~@
-:SEE-ALSO `category-entity-regexp'.~%►►►")))
+             :EXAMPLE~% ~
+              \(mon:class-subclasses \(find-class 'base-category-entity\)\)
+             :SEE-ALSO `category-entity-regexp'.~%►►►")))
 
 (defclass base-naf-entity (base-entity)
   ()
   (:documentation 
    #.(format nil 
              "Base class for referencing DBC system NAF entities.~%~@
+              :EXAMPLE~% ~
+               \(mon:class-subclasses \(find-class 'base-naf-entity\)\)
              :SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp',~%~
              `naf-entity-alt-name-regexp'.~%►►►")))
 
@@ -80,8 +93,31 @@ external domain.~%
                   -- linen backed, dry mounted, etc.~% ~
                - color~%   ~
                  -- black and white, red, white, blue, etc.~%~@
+             :EXAMPLE~% ~
+              \(mon:class-subclasses \(find-class 'base-media-entity\)\)
              :SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp',~%~
              `naf-entity-alt-name-regexp'.~%►►►")))
+
+(defclass base-location-entity (base-entity)
+   ()
+  (:documentation 
+   #.(format nil 
+             "Base class for referencing DBC system location entities.~%~@
+              Location entities correspond with physical places.~%~@
+A physical place may be \"real\", \"imagined\", \"unverified\".~%~@
+Distinctions around whether a place is real, imagined, or unverified are broadly
+understood as follows:~% ~%
+ - A real place is one that is i.e. it is known to have existed in a given
+   temporaral context.~% ~
+ - An imagined place is one that is believed to never have existed in the known
+   temporaral contexts of the DBC system.~% ~
+ - An unverified place is one that is believed to have existed in some
+   temporaral context (known or as yet undefined) but which can not be verified
+   or corroborated as such.~%~@
+:EXAMPLE~% ~
+ \(mon:class-subclasses \(find-class 'base-location-entity\)\)
+:SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp',~%~
+`naf-entity-alt-name-regexp'.~%►►►")))
 
 ;;; ==============================
 

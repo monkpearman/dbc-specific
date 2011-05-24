@@ -342,6 +342,14 @@
   (:documentation #.(classdoc 'naf-entity-publication-alt-regexp :class-doc)))
 
 
+;; naf-entity-location
+;; base-location-entity
+
+;; base-media-entity
+;; media-technique-entity
+
+
+
 
 ;;; ==============================
 ;;; :FUNCTIONS

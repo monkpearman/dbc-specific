@@ -28,14 +28,33 @@ dbc-classes/dbc-class-uuid.lisp
 
 base-uuid
 
-- base-control-id (base-dbc)
+
+dbc-classes/dbc-class-control-id.lisp
 
--- control-id-display-name           (base-control-id) ;; String based identity
--- control-id-display-artist         (control-id-display-name)
--- control-id-display-brand          (control-id-display-name)
--- control-id-display-author         (control-id-display-name)
--- control-id-display-person         (control-id-display-name)
--- control-id-display-publication    (control-id-display-name)
+
+;; The class `base-control-id' is implemented to distringuish different
+;; types of controlled identities in classes with slots whose values specify
+;; some form of value used for identification puroposes.
+;; :NOTE subclasses of `base-control-id' are distinct from those of the class
+;; `base-uuid' which defines _canonical_ identities for dbc system objects (as
+;;   distinct from the values they are contained of).
+;;
+;; :NOTE The class `control-id-display-name' does not duplicate functionality of
+;; `control-id-display-name-for-entity-type' but some of its subclasses will likely
+;;  involve complex interactions in the C-P-L around the
+;;  `display-name-for-entity' and `display-name-for-entity-of-type' slot-values.
+
+
+- base-control-id (base-dbc)
+-- control-id-display-name                  (base-control-id) ;; String based identity
+--- control-id-display-name-for-entity-type (control-id-display-name)
+---- control-id-display-artist              (control-id-display-name-for-entity-type)
+---- control-id-display-brand               (control-id-display-name-for-entity-type)
+---- control-id-display-author              (control-id-display-name-for-entity-type)
+---- control-id-display-person              (control-id-display-name-for-entity-type)
+---- control-id-display-publication         (control-id-display-name-for-entity-type)
+---- control-id-display-location            (control-id-display-name-for-entity-type)
+---- control-id-display-technique           (control-id-display-name-for-entity-type)
 
 ;; Item refs id-nums should be obfuscated with a UUID and are deprecated!
 ;; Entity id-nums may occure congruently and are deprecated!
@@ -74,7 +93,6 @@ base-uuid
 
 
 dbc-classes/dbc-class-entity.lisp
-
 - base-entity           (base-dbc)
 -- base-category-entity (base-entity)
 -- base-theme-entity    (base-entity)
@@ -85,11 +103,17 @@ dbc-classes/dbc-class-entity.lisp
 --- media-entity-mount     (base-media-entity)
 
 -- base-location-entity (base-entity)
+--- location-entity
+---- location-entity-verified
+---- location-entity-unverified
+---- location-entity-imagined
+;;
 ;; It isn't clear yet how to organize these but some form of them is necessary.
---- location-entity-nationality (base-location-entity)
---- location-entity-birth       (base-location-entity)
---- location-entity-death       (base-location-entity) 
---- location-entity-published   (base-location-entity)
+--- location-entity-nationality (location-entity-????)
+--- location-entity-birth       (location-entity-????)
+--- location-entity-death       (location-entity-????) 
+--- location-entity-published   (location-entity-????)
+
 
 -- base-citation-entity (base-entity)
 --- citation-entity-institution (base-citation-entity)
@@ -114,7 +138,11 @@ dbc-classes/dbc-class-entity.lisp
     ______________________  These are as yet undecided w/r/t how to handle
 --- naf-entity-linnaean     (base-naf-entity)
 --- naf-entity-publisher    (base-naf-entity)
+--- naf-entity-publication  (base-naf-entity)
+--- naf-entity-institution  (base-naf-entity)
 --- naf-entity-citation     (base-naf-entity) ;; Or, maybe (base-naf-entity base-citation-entity)
+
+;; This one is settled - we don't use it. Use base-location-entity instead.
 --- naf-entity-location     (base-naf-entity) ;; Or, maybe (base-naf-entity base-location-entity)
 
 

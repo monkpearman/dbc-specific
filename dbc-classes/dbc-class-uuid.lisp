@@ -23,11 +23,13 @@
 
 ;; *package*
 
+;; (class-name (find-class 'base-uuid))
 
 (defclass base-uuid (base-dbc)
   ()
   (:documentation 
    #.(format nil "Base class for referencing dbc system objects by UUID.")))
+
 
 ;;; ==============================
 ;;

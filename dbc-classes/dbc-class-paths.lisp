@@ -126,7 +126,7 @@ subclassed instances. It is not intendend that this slot be directly setfable!~%
 
 (defmethod (setf system-base-path) (path (system system-path))
   (setf (slot-value system 'system-path) path))
-
+;; method-combination
 (defmethod system-path ((system system-path))
   (system-base-path system))
 

@@ -356,11 +356,47 @@
                                         (setf rtn (field-convert-remove-duplicates rtn))
                                         (return (values rtn (type-of rtn) v1 t1))))))))))))
 
+(declaim (inline %field-name-underscore-to-dash-if))
+(defun %field-name-underscore-to-dash-if (field-name)
+  (declare ((or null string) field-name)
+           (optimize (speed 3)))
+  (when (or (mon:string-null-empty-or-all-whitespace-p field-name)
+            (and (= (length field-name) 1)
+                 (char= (char field-name 0) #\_))) 
+    (return-from %field-name-underscore-to-dash-if (values nil field-name)))
+  (locally (declare (mon:string-not-null-or-empty field-name))
+    (let ((trim-field (the simple-string (mon:string-trim-whitespace (copy-seq field-name)))))
+      (declare (simple-string trim-field))
+      (when (and (= (length trim-field) 1)
+                 (char= (schar trim-field 0) #\_))
+        (return-from %field-name-underscore-to-dash-if (values nil field-name)))
+      (locally 
+          (declare (mon:simple-string-not-empty trim-field))
+        (setf trim-field (string-trim 
+                          (the (simple-vector 1)  #(#\-))
+                          (the simple-string (nsubstitute #\- #\_ (string-upcase trim-field)))))
+        (values trim-field field-name)))))
+
+;; (%field-name-underscore-to-dash-if "_bubba_bobby__")
+;; (type-of  #(#\_)) '(simple-array character ))
+
 (defun field-name-underscore-to-dash (field-name &optional w-colon)
-  (declare (type string field-name))
-  (let ((no-under (substitute #\- #\_ (string-upcase field-name))))
-    (or (and w-colon (concatenate 'string ":" no-under))
-        no-under)))
+  (declare (string field-name)
+           (boolean w-colon)
+           (inline %field-name-underscore-to-dash-if)
+           (optimize (speed 3)))
+  (let ((no-under (%field-name-underscore-to-dash-if field-name)))
+    (declare ((or null simple-string) no-under))
+    (when (or (null no-under)
+              (mon:string-empty-p no-under))
+      (return-from field-name-underscore-to-dash (values nil no-under field-name)))
+    (locally (declare (mon:simple-string-not-empty no-under))
+      (or (and w-colon 
+               (concatenate 'string (make-string 1 :initial-element #\:) no-under))
+          no-under))))
+;; 
+;; (field-name-underscore-to-dash "_")
+;; (%field-name-underscore-to-dash-if "__")
 
 (defun field-name-convert-field-name (field-name field-value)
   (declare (string field-name))
@@ -609,7 +645,9 @@ If STRING-FIELD-MAYBE is `cl:stringp' nth-value 0 is the p
 
 (fundoc 'field-name-underscore-to-dash
  "Convert string FIELD-NAME with `cl:string-upcase'd removing any #\\_.~%~@
-When optional arg W-COLON is non-nil return prefixed with a colon.
+Return as if by `cl:values'.~%~@
+FIELD-NAME is a string and should not be prefixed or suffixed by whitespace or #\\_.~%~@
+When optional arg W-COLON is non-nil return prefixed with a colon.~%~@
 :EXAMPLE~%
  \(field-name-underscore-to-dash \"keyword_seo\"\)~%
  \(field-name-underscore-to-dash \"keyword_seo\" t\)~%
