@@ -1,0 +1,9 @@
+*~
+*#
+*.fasl
+TAGS
+.bzrignore
+.bzr/*
+docs/*
+notes-versioned/*
+xml-class-dump-dir/*
