@@ -561,7 +561,7 @@ If STRING-FIELD-MAYBE is `cl:stringp' nth-value 0 is the p
  \(field-convert-preprocess-field \"\"\)
  \(field-convert-preprocess-field 8\)
  \(field-convert-preprocess-field '\(\"\" \"bubba\"\)\)
-:SEE-ALSO `<XREF>'.~%►►►")
+:SEE-ALSO `<XREF>'.~%▶▶▶")
 
 
 ;; (field-convert-preprocess-field "match-field")
@@ -653,7 +653,7 @@ When optional arg W-COLON is non-nil return prefixed with a colon.~%~@
  \(field-name-underscore-to-dash \"keyword_seo\" t\)~%
 :SEE-ALSO `preprocess-underscore-to-dash',
 `dbc:preprocess-leading-trailing-dashes', `mon:string-underscore-to-dash',
-`cl-ppcre:regex-replace-all'.~%►►►")
+`cl-ppcre:regex-replace-all'.~%▶▶▶")
 
 (fundoc 'field-string-cons
   "Return a three element list according to the `type-of' FIELD-STR.~%~@
@@ -661,7 +661,7 @@ List has the form:~%
  \(<SEQ-LENGTH> \(<TYPE-SPEC>\) FIELD-STR\)~%
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `field-table-parse-out', `field-string-cons', `field-cln-x'.~%►►►")
+:SEE-ALSO `field-table-parse-out', `field-string-cons', `field-cln-x'.~%▶▶▶")
 
 (fundoc 'field-cln-x
         "Return nil when FIELD-STRING-CONS is a string of length 1 with char value #\\x.~%
@@ -672,7 +672,7 @@ This is a short-circuiting procedure, e.g. it does nothing on success.~%
  \(field-cln-x 'sym\)~%
  \(field-cln-x #\(x y z\)\)~%
  \(field-cln-x '\(x y z\)\)~%
-:SEE-ALSO `field-table-parse-out', `field-string-cons', `field-cln-x'.~%►►►")
+:SEE-ALSO `field-table-parse-out', `field-string-cons', `field-cln-x'.~%▶▶▶")
 
 (fundoc 'split-used-fors
 "Split USED-FOR-STRING on \"|\" barriers stripping leading and trailing whitespace~%~@
@@ -688,7 +688,7 @@ When USED-FOR-STRING is either `mon:string-null-or-empty-p' or
  \(split-used-fors \"\"\)~%
  \(split-used-fors nil\)~%~@
 :SEE-ALSO `split-piped-field-if', `mon:string-split-on-chars', `split-roles',
-`split-appeared-in', `split-loc-pre', `split-lifespan', `split-comma-field'.~%►►►")
+`split-appeared-in', `split-loc-pre', `split-lifespan', `split-comma-field'.~%▶▶▶")
 
 (fundoc 'split-field-on-char-if
 "SPLIT-STRING on CHAR returning a list of strings.~%~@
@@ -736,7 +736,7 @@ is contained of only `mon:whitespace-char-p' and CHAR.~%~@
 :NOTE Has regression tests:
  `split-field-on-char-if-TEST.0' `split-field-on-char-if-TEST.1'
  `split-field-on-char-if-TEST.2' `split-field-on-char-if-TEST.3'
-:SEE-ALSO `split-piped-field-if'.~%►►►")
+:SEE-ALSO `split-piped-field-if'.~%▶▶▶")
 
 (fundoc 'split-piped-field-if
         "Like `split-used-fors' but do not return a list if no #\\| are found.~%~@
@@ -769,7 +769,7 @@ elements from first value ruturned.  Default is to process nth-value 0 with
                                  :known-field-hashtable *xml-refs-match-table*\)\)\)~%~@
 :SEE-ALSO `split-used-fors', `split-roles', `split-appeared-in',
 `split-loc-pre', `split-lifespan', `split-comma-field',
-`mon:string-split-on-chars'.~%►►►")
+`mon:string-split-on-chars'.~%▶▶▶")
  
 (fundoc 'split-appeared-in
 "Split APPEARED-IN-STRING on \"|\" barriers.~%~@
@@ -788,7 +788,7 @@ When APPEARED-IN-STRING is either `mon:string-null-or-empty-p' or
  \(split-appeared-in \"     \"\)~%~@
 :SEE-ALSO `split-roles', `split-used-fors', `split-loc-pre',
 `split-lifespan'`mon:string-split-on-chars', `mon:string-trim-whitespace',
-`mon:*whitespace-chars*'.~%►►►")
+`mon:*whitespace-chars*'.~%▶▶▶")
  
 (fundoc 'split-roles
         "Split ROLE-STRING on \",\" barriers.~%~@
@@ -807,7 +807,7 @@ When ROLE-STRING is either `mon:string-null-or-empty-p' or
  \(split-roles \"\"\)~%
  \(split-roles \"       \"\)~%~@
 :SEE-ALSO `split-piped-field-if', `split-used-fors', `split-appeared-in',
-`split-loc-pre', `split-lifespan', `split-comma-field'.~%►►►")
+`split-loc-pre', `split-lifespan', `split-comma-field'.~%▶▶▶")
 
 (fundoc 'split-loc-pre
         "Trim leading \"n \" prefix from loc-control fields.~%~@
@@ -824,7 +824,7 @@ When LOC-STRING is either `mon:string-null-or-empty-p' or
  \(split-loc-pre nil\)~%~@
 :NOTE This is actually a bad idea as the \"n 95121069\" is canonical...~%~@
 :SEE-ALSO `split-roles', `split-used-fors', `split-piped-field-if',
-`split-appeared-in', `split-lifespan'.~%►►►")
+`split-appeared-in', `split-lifespan'.~%▶▶▶")
 
 (fundoc 'split-lifespan
 "Split LIFESPAN-STR into a consed pair.~%~@
@@ -853,7 +853,7 @@ Return value has the form:~%
  \(split-lifespan \"Active 1940s-60s\"\)~%~@
 :NOTE Doesn't catch the #\\[ #\\] chars in \"[?]-1900\" or \"1900-[?]\".~%~@
 :SEE-ALSO `split-roles', `split-used-fors', `split-piped-field-if',
-`split-appeared-in', `split-loc-pre'.~%►►►")
+`split-appeared-in', `split-loc-pre'.~%▶▶▶")
 
 (fundoc 'split-lifespan-string-int-pairs
 "Attempt integer extraction from cons strings returned by `split-lifespan'.~%~@
@@ -922,7 +922,7 @@ to return a value that is `plusp'. For example:~%
 	\(eql \(signum \(- tl-ls hd-ls\)\) -1\)\)\)~%~@
 When coupled with the string values in the cons at the first elt in return value
 we can be reasonably sure that the integer parse is correct.~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
+:SEE-ALSO `<XREF>'.~%▶▶▶")
 
 (fundoc 'split-comma-field
 "Split a comma delimited string COMMA-STRING.~%~@
@@ -941,7 +941,7 @@ used in a non-delimiting position, e.g. the following string will not parse corr
  \(split-comma-field  \"Havell \(Robert, Jr.\), Havell \(Robert, Sr.\), Havell Lithograph, \"\)~%~@
 :SEE-ALSO `split-used-fors', `split-piped-field-if', `split-roles',
 `split-appeared-in', `split-loc-pre', `split-lifespan', `split-comma-field',
-`mon:string-split-on-chars'.~%►►►")
+`mon:string-split-on-chars'.~%▶▶▶")
 
 (fundoc 'format-entity-role
 "Format dbc entity-roles list for presentation.~%~@
@@ -968,7 +968,7 @@ should suffix ENTITY-ROLE-PREFIX.  Default is 14.~%~@
  ;     :ARTIST-ROLE   Designer
  ;     :ARTIST-ROLE   Fashion Illustrator
  ;     :ARTIST-ROLE   Fashion Designer\"~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
+:SEE-ALSO `<XREF>'.~%▶▶▶")
 
 (fundoc 'field-convert-verify-string
 "Return STRING-FIELD-MAYBE if it is a string and not null or empty.~%~@
@@ -990,7 +990,7 @@ If a field is found as key in hash-table return nil, STRING-FIELD-MAYBE.~%~@
  \(field-convert-verify-string \"ref\" '*not-xml-refs-match-table*\)~%
  \(field-convert-verify-string \"ref\" nil\)~%
  \(field-convert-verify-string \"ref\" t\)~%~@
-:SEE-ALSO `field-convert-empty-string-nil'.~%►►►")
+:SEE-ALSO `field-convert-empty-string-nil'.~%▶▶▶")
 
 (fundoc 'field-convert-remove-duplicates
 "Remove duplicate string= elements from STRING-LIST-MAYBE.~%~@
@@ -1005,7 +1005,7 @@ When STRING-LIST-MAYBE is not `mon:each-a-string-p' return:~%
  \(field-convert-remove-duplicates \" \"\)~%
  \(field-convert-remove-duplicates  \(split-used-fors nil\)\)~%
  \(field-convert-remove-duplicates 42\)~%~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
+:SEE-ALSO `<XREF>'.~%▶▶▶")
 
 (fundoc 'field-convert-1-0-x
         "Attept to CONVERT-FIELD to a boolean.~%~@
@@ -1036,7 +1036,7 @@ return CONVERT-FIELD.~%~@
 :NOTE Has regression test `field-convert-1-0-x-TEST'.~%~@
 :SEE-ALSO `dbc:field-convert-1-0-x', `dbc:field-convert-1-0-x-empty',
 `dbc:field-convert-1-0-x-empty-known', `dbc:field-convert-verify-string',
-`dbc:field-convert-empty-string-nil', `dbc:field-cln-x'.~%►►►")
+`dbc:field-convert-empty-string-nil', `dbc:field-cln-x'.~%▶▶▶")
 
 (fundoc 'field-convert-1-0-x-empty
         "Like `field-convert-1-0-x' but return 4 values as if by cl:values.~%~@
@@ -1073,7 +1073,7 @@ return CONVERT-FIELD.~%~@
  `field-convert-1-0-x-empty-TEST.0' `field-convert-1-0-x-empty-TEST.0'~%~@
 :SEE-ALSO `dbc:field-convert-1-0-x', `dbc:field-convert-1-0-x-empty',
 `dbc:field-convert-1-0-x-empty-known', `dbc:field-convert-verify-string',
-`dbc:field-convert-empty-string-nil', `dbc:field-cln-x'.~%►►►")
+`dbc:field-convert-empty-string-nil', `dbc:field-cln-x'.~%▶▶▶")
 
 (fundoc 'field-convert-1-0-x-empty-known
 "Like `field-convert-1-0-x-empty' but also check if CONVERT-FIELD is in
@@ -1088,7 +1088,7 @@ KNOWN-FIELD-HASHTABLE.~%~@
  \(field-convert-1-0-x-empty-known \"0\" *xml-refs-match-table*\)~%~@
 :SEE-ALSO `dbc:field-convert-1-0-x', `dbc:field-convert-1-0-x-empty',
 `dbc:field-convert-1-0-x-empty-known', `dbc:field-convert-verify-string',
-`dbc:field-convert-empty-string-nil', `dbc:field-cln-x'.~%►►►")
+`dbc:field-convert-empty-string-nil', `dbc:field-cln-x'.~%▶▶▶")
 
 (fundoc 'field-convert-empty-string-nil
 "If EMPTY-FIELD is null or `mon:string-empty-p' return nil.~%~@
@@ -1104,7 +1104,7 @@ as if by `cl:values' first value is EMPTY-FIELD second is its `cl:type-of'.~%~@
  (field-convert-empty-string-nil t :w-no-error t)~%~@
 :SEE-ALSO `dbc:field-convert-1-0-x', `dbc:field-convert-1-0-x-empty',
 `dbc:field-convert-1-0-x-empty-known', `dbc:field-convert-verify-string',
-`dbc:field-convert-empty-string-nil', `dbc:field-cln-x'.~%►►►")
+`dbc:field-convert-empty-string-nil', `dbc:field-cln-x'.~%▶▶▶")
 
 (fundoc 'field-name-convert-field-name
 "If FIELD-VALUE is null or `cl:string-equal' FIELD-NAME return nil, else FIELD-VALUE.~%~@
@@ -1118,7 +1118,7 @@ FIELD-VALUE is some sort of object.
  \(field-name-convert-field-name \"field_name\" \"   fieLd_Name\"\)~%
  \(field-name-convert-field-name \"field_name\" nil\)~%
  \(field-name-convert-field-name \"field_name\" 8\)~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
+:SEE-ALSO `<XREF>'.~%▶▶▶")
 
 ;;; ==============================
 

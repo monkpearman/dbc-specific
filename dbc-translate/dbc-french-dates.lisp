@@ -23,14 +23,14 @@
 :EXAMPLE~%
  \(type-of *french-weekday-names*\)~%
  \(svref *french-weekday-names* 6\)~%~@
-:SEE-ALSO `*french-month-names*'.~%►►►")
+:SEE-ALSO `*french-month-names*'.~%▶▶▶")
 
 (vardoc '*french-month-names*
 "Type of: \(simple-vector 12\)~%~@
 :EXAMPLE~%
  \(type-of *french-month-names*\)~%
  \(svref *french-month-names* 11\)~%~@
-:SEE-ALSO `*french-weekday-names*'.~%►►►")
+:SEE-ALSO `*french-weekday-names*'.~%▶▶▶")
 
 
 

@@ -42,7 +42,7 @@
 :SEE-ALSO `entity-regexp-subclass-allocation', `entity-regexp',
 `regexp-match-entity-class', `regexp-match-entity-db',
 `regexp-match-matcher-db', `regexp-match-container-type',
-`regexp-match-container-uuid', `regexp-matcher'.~%►►►~%")))
+`regexp-match-container-uuid', `regexp-matcher'.~%▶▶▶~%")))
 
 (defgeneric regexp-match-entity-db (obj &key)
   (:documentation 
@@ -51,7 +51,7 @@
 :SEE-ALSO `entity-regexp-subclass-allocation', `entity-regexp',
 `regexp-match-entity-class', `regexp-match-entity-db',
 `regexp-match-matcher-db', `regexp-match-container-type',
-`regexp-match-container-uuid', `regexp-matcher'.~%►►►~%")))
+`regexp-match-container-uuid', `regexp-matcher'.~%▶▶▶~%")))
 
 (defgeneric regexp-match-matcher-db (obj &key)
   (:documentation 
@@ -60,7 +60,7 @@
 :SEE-ALSO `entity-regexp-subclass-allocation', `entity-regexp', 
 `regexp-match-entity-class', `regexp-match-entity-db',
 `regexp-match-matcher-db', `regexp-match-container-type',
-`regexp-match-container-uuid', `regexp-matcher'.~%►►►~%")))
+`regexp-match-container-uuid', `regexp-matcher'.~%▶▶▶~%")))
 
 (defgeneric regexp-match-container-type (obj &key)
   (:documentation 
@@ -69,7 +69,7 @@
 :SEE-ALSO `entity-regexp', `regexp-match-entity-class',
 `regexp-match-entity-db', `regexp-match-matcher-db',
 `regexp-match-container-type', `regexp-match-container-uuid',
-`regexp-matcher'.~%►►►~%")))
+`regexp-matcher'.~%▶▶▶~%")))
 
 (defgeneric (setf regexp-match-container-type) (container-type obj &key)
   (:documentation 
@@ -78,7 +78,7 @@
 :SEE-ALSO `entity-regexp', `regexp-match-entity-class',
 `regexp-match-entity-db', `regexp-match-matcher-db',
 `regexp-match-container-type', `regexp-match-container-uuid',
-`regexp-matcher'.~%►►►~%")))
+`regexp-matcher'.~%▶▶▶~%")))
 
 (defgeneric regexp-match-container-uuid (obj &key)
   (:documentation
@@ -87,7 +87,7 @@
 :SEE-ALSO `entity-regexp', `regexp-match-entity-class',
 `regexp-match-entity-db', `regexp-match-matcher-db',
 `regexp-match-container-type', `regexp-match-container-uuid',
-`regexp-matcher'.~%►►►~%")))
+`regexp-matcher'.~%▶▶▶~%")))
 
 ;; :NOTE This one probably needs additional options e.g. method-combination, etc.
 ;; It will almost certainly need an pre-emptive around method to prevent
@@ -104,7 +104,7 @@
 :SEE-ALSO `entity-regexp', `regexp-match-entity-class',
 `regexp-match-entity-db', `regexp-match-matcher-db',
 `regexp-match-container-type', `regexp-match-container-uuid',
-`regexp-matcher'.~%►►►~%")))
+`regexp-matcher'.~%▶▶▶~%")))
 
 (defgeneric regexp-matcher (obj &key)
   (:documentation 
@@ -113,7 +113,7 @@
 :SEE-ALSO `entity-regexp', `regexp-match-entity-class',
 `regexp-match-entity-db', `regexp-match-matcher-db',
 `regexp-match-container-type', `regexp-match-container-uuid',
-`regexp-matcher'.~%►►►~%")))
+`regexp-matcher'.~%▶▶▶~%")))
 
 (defgeneric (setf regexp-matcher) (matcher obj &key)
   (:documentation 
@@ -124,7 +124,7 @@
 :SEE-ALSO `entity-regexp', `regexp-match-entity-class',
 `regexp-match-entity-db', `regexp-match-matcher-db',
 `regexp-match-container-type', `regexp-match-container-uuid',
-`regexp-matcher'.~%►►►~%")))
+`regexp-matcher'.~%▶▶▶~%")))
 
 
 ;;; ==============================
@@ -521,7 +521,7 @@ argument to `cl:find-class'.~%~@
 Args MATCH-ENTITY-DB and MATCH-MATCHER-DB must each satisfy `cl:hash-table-p'.~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
+:SEE-ALSO `<XREF>'.~%▶▶▶")
 
 (fundoc 'make-entity-regexp-subclass-allocation
 "Instantiate an instance of the ENTITY-REGEXP-SUBCLASS-ALLOCATION class.~%
@@ -535,7 +535,7 @@ which is a table mapping  key/value pairs of the form:~%
  match-container-uuid match-entity-matcher~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
+:SEE-ALSO `<XREF>'.~%▶▶▶")
 
 ;;; ==============================
 

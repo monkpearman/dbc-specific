@@ -3,6 +3,11 @@
 
 ;;; ==============================
 ;;
+;; :DBC-CONDITION-HEIRARCHY
+;; dbc-error                              (mon:error-mon)
+;; system-path-error                      (dbc-error)
+;;
+;;
 ;; cxml:xml-parse-error
 ;;; ==============================
 

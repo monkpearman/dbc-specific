@@ -11,7 +11,7 @@
 ;;   (:documentation "Base class for DBC to XML dump files directories.
 ;; Subclasses inherit their base pathname from this guy.
 ;; :SEE-ALSO `dbc:*dbc-xml-dump-dir*', `*dbc-xml-dump-dir-name*'
-;; `dbc:ensure-dbc-xml-dump-dir-exists'.►►►"))
+;; `dbc:ensure-dbc-xml-dump-dir-exists'.▶▶▶"))
 
 ;;; ==============================
 

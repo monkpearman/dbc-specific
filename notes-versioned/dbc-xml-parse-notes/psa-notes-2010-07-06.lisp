@@ -1,7 +1,7 @@
-;;-*- Mode: LISP; Syntax: COMMON-LISP; Package: MON-SYS; Encoding: utf-8; Base: 10 -*-
+;;-*- Mode: LISP; Syntax: COMMON-LISP; Package: MON; Encoding: utf-8; Base: 10 -*-
 ;;;; psa-notes-2010-07-06.lisp
 
-(in-package #:mon-sys)
+(in-package #:mon)
 
 ;;; ==============================
 ;; (setf *psa-fl*  #P"/home/sp/HG-Repos/sportscards-HG/sportscards-PSA-related-2010-04-09/quick.xml")

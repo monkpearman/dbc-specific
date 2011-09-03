@@ -173,7 +173,7 @@
 :SEE-ALSO `mon:*whitespace-chars*', `make-parsed-name-preprocess',
 `preprocess-whitespace', `preprocess-leading-trailing-dashes',
 `preprocess-underscore-to-dash', `preprocess-string-case',
-`*regexp-whitespace-chars*'.~%►►►")
+`*regexp-whitespace-chars*'.~%▶▶▶")
 
 (fundoc 'preprocess-string-case
         "Convert FIELD-NAME to an upper-case string.~%~@
@@ -181,7 +181,7 @@
   \(preprocess-string-case \"LoTS-OF-undeRSCOrES\"\)~%~@
 :SEE-ALSO `make-parsed-name-preprocess', `preprocess-whitespace',
 `preprocess-leading-trailing-dashes', `preprocess-underscore-to-dash',
-`preprocess-string-case', `*regexp-whitespace-chars*'.~%►►►")
+`preprocess-string-case', `*regexp-whitespace-chars*'.~%▶▶▶")
 
 (fundoc 'preprocess-whitespace
 "Remove whitepspace characters occuring anywhere in FIELD-NAME.~%~@
@@ -191,7 +191,7 @@ FIELD-NAME is an object of type `cl:simple-string'.~%
   \(string= \(preprocess-whitespace \" -LoTS_OF_ undeRSCOrES_ \"\) \"-LoTS_OF_undeRSCOrES_\"\)~%~@
 :SEE-ALSO `make-parsed-name-preprocess', `preprocess-whitespace',
 `preprocess-leading-trailing-dashes', `preprocess-underscore-to-dash',
-`preprocess-string-case', `*regexp-whitespace-chars*'.~%►►►")
+`preprocess-string-case', `*regexp-whitespace-chars*'.~%▶▶▶")
 
 (fundoc 'preprocess-leading-trailing-dashes
         "Remove leading and trailing underscore and dash characters #\\_ #\\-.~%~@
@@ -200,7 +200,7 @@ FIELD-NAME is an object of type `cl:simple-string'.~%~@
  \(preprocess-leading-trailing-dashes \"-LoTS_OF_undeRSCOrES_\"\)
 :SEE-ALSO `make-parsed-name-preprocess', `preprocess-whitespace',
 `preprocess-leading-trailing-dashes', `preprocess-underscore-to-dash',
-`preprocess-string-case', `*regexp-whitespace-chars*'.~%►►►")
+`preprocess-string-case', `*regexp-whitespace-chars*'.~%▶▶▶")
 
 (fundoc 'preprocess-underscore-to-dash
 "Convert internal occurences of underscore character #\\_ to dash character #\\-.~%~@
@@ -213,7 +213,7 @@ call after a `cl:copy-seq' of string.
 :SEE-ALSO `mon:string-underscore-to-dash', `dbc:field-name-underscore-to-dash',
 `make-parsed-name-preprocess', `preprocess-whitespace',
 `preprocess-leading-trailing-dashes', `preprocess-underscore-to-dash',
-`preprocess-string-case', `*regexp-whitespace-chars*'.~%►►►")
+`preprocess-string-case', `*regexp-whitespace-chars*'.~%▶▶▶")
 
 (fundoc 'make-parsed-name-preprocess
         "Preprocess FIELD-NAME for generation of slot-name and/or :initarg :reader :writer :accessor.
@@ -230,7 +230,7 @@ KEYWORD SUFFIX-W is a string to suffix FIELD-NAME with.~%~@
                                :suffix-w \"    or-suffixed-with-whitespace      \"\)~%~@
 :SEE-ALSO `make-parsed-name-preprocess', `preprocess-whitespace',
 `preprocess-leading-trailing-dashes', `preprocess-underscore-to-dash',
-`preprocess-string-case', `*regexp-whitespace-chars*'.~%►►►")
+`preprocess-string-case', `*regexp-whitespace-chars*'.~%▶▶▶")
 
 (fundoc 'preprocess-slot-transform
         "Find FIELD-NAME in FIELD-NAME-TRANSFORM-TABLE and preprocess it with `make-parsed-name-preprocess'.~%~@
@@ -247,7 +247,7 @@ Keywords PREFIX-W and SUFFIX-W are as per `make-parsed-name-preprocess'.~%~@
  \(preprocess-slot-transform \"field-name2\" *parsed-ref-field-name-slot-transform* :suffix-w \"suffix\"\)~%
  \(remhash \"field-name\" *parsed-ref-field-name-slot-transform*\)~%
  \(remhash \"field-name2\" *parsed-ref-field-name-slot-transform*\)~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
+:SEE-ALSO `<XREF>'.~%▶▶▶")
 
 (fundoc 'make-parsed-class-slot-init-accessor-name
  "Return 3 elt list strings suitable for interning as slot, initarg, and accessor.~%~@
@@ -264,7 +264,7 @@ Return value has the form:~%
  \(make-parsed-class-slot-init-accessor-name \"parsed-ref\" \"ref\"\)~%
  \(make-parsed-class-slot-init-accessor-name \"parsed-ref\" \"year_year\"\)~%
  \(make-parsed-class-slot-init-accessor-name \"parsed-ref\" \"ref\" \"init\"\)~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
+:SEE-ALSO `<XREF>'.~%▶▶▶")
 
 ;;; ==============================
 

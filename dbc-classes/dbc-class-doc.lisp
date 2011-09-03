@@ -19,7 +19,7 @@
 (make-documented-class 'system-base
 :class-doc
 #.(format nil 
-"Toplevel class for dbc system and system path related objects.~%►►►~%"))
+"Toplevel class for dbc system and system path related objects.~%▶▶▶~%"))
 
 ;;; ==============================
 ;;; system-path
@@ -32,7 +32,7 @@ inherit its value.~%~@
 This slot value is set automatically at loadtime and should not be rebound.~%~@
 User code should not attempt setf the value of this slot!~%")
 :class-doc
-#.(format nil "Base class for storing dbc system paths.~%►►►~%"))
+#.(format nil "Base class for storing dbc system paths.~%▶▶▶~%"))
 
 ;;; ==============================
 ;; system-subdir
@@ -55,7 +55,7 @@ Complex binding behaviour at loadtime.~%")
 "Slot values of this class access metatda related to subdir/subcomponents
 relative to the systems system-path.~%~@
 Instances of this class should be instantiated at loadtime enabling subsequent
-system introspection of the system at runtime.~%►►►~%"))
+system introspection of the system at runtime.~%▶▶▶~%"))
 
 ;;; ==============================
 ;; base-regexp
@@ -63,7 +63,7 @@ system introspection of the system at runtime.~%►►►~%"))
 :class-doc
 #.(format nil
 "Base class for matching control names of DBC entity instances.~%~@
-:SEE-ALSO .~%►►►~%"))
+:SEE-ALSO .~%▶▶▶~%"))
 
 ;;; ==============================
 ;; entity-regexp-subclass-allocation
@@ -215,7 +215,7 @@ Subclasses should access slot-value with a method specialized on.~%~
 #.(format nil
 "Class implementing the core slots for implementatin of subtyped entity matchers.~%~@
 Don't instantiate directly from this class.~%~@
-:SEE-ALSO ~%►►►~%"))
+:SEE-ALSO ~%▶▶▶~%"))
 
 ;;; ==============================
 ;; parsed-field-name-regexp
@@ -223,7 +223,7 @@ Don't instantiate directly from this class.~%~@
 :class-doc
  #.(format nil
 "An `entity-regexp' subclass for matching XML-refs parsed field-names.~%~
-:SEE-ALSO .~%►►►~%"))
+:SEE-ALSO .~%▶▶▶~%"))
 
 ;;; ==============================
 ;; theme-entity-regexp
@@ -231,7 +231,7 @@ Don't instantiate directly from this class.~%~@
 :class-doc
  #.(format nil
 "An `entity-regexp' sub-class for themes.~%~@
-:SEE-ALSO `base-theme-entity'.~%►►►"))
+:SEE-ALSO `base-theme-entity'.~%▶▶▶"))
 
 ;;; ==============================
 ;; category-entity-regexp
@@ -239,7 +239,7 @@ Don't instantiate directly from this class.~%~@
 :class-doc
  #.(format nil
 "An `entity-regexp' sub-class for DBC categories.~%~
-:SEE-ALSO `base-category-entity'.~%►►►"))
+:SEE-ALSO `base-category-entity'.~%▶▶▶"))
 
 ;;; ==============================
 ;; naf-entity-type-regexp
@@ -250,7 +250,7 @@ Don't instantiate directly from this class.~%~@
 Instances subclassed from `base-naf-entity' with should instantiate instances of~%~
 both `naf-entity-control-name-regexp', `naf-entity-alt-name-regexp' to enable~%~
 system wide xrefing/indexing of entity name-form occurences.~%~@
-:SEE-ALSO .~%►►►"))
+:SEE-ALSO .~%▶▶▶"))
 
 ;;; ==============================
 ;; naf-entity-control-name-regexp
@@ -262,7 +262,7 @@ Naf control-names are considered canonical and are _rarely_ mutated.~%~@
 The matchers named by instances of this class should run _before_ other regexps.~%~@
 The MATCH-ENTITY-CONTAINER-TYPE slot of this class is defaulted to 'closure with~@
 the intent that the MATCH-ENTITY-MATCHER will be implemented as a CL-PPCRE closure.~%~@
-:SEE-ALSO `base-naf-entity', `naf-entity-alt-name-regexp'.~%►►►"))
+:SEE-ALSO `base-naf-entity', `naf-entity-alt-name-regexp'.~%▶▶▶"))
 
 ;;; ==============================
 ;; naf-entity-alt-name-regexp
@@ -277,7 +277,7 @@ control name matchers have had a chance to run and should _never_ destructively~
 modify the things they match.~%~@
 This constraint is intented to prevent corruption of control-names which should~
 always have precedence of an alternative name form.~%~@
-:SEE-ALSO `base-naf-entity', `naf-entity-control-name-regexp'.~%►►►~%"))
+:SEE-ALSO `base-naf-entity', `naf-entity-control-name-regexp'.~%▶▶▶~%"))
 
 ;;; ==============================
 ;; naf-entity-artist-control-regexp
@@ -285,7 +285,7 @@ always have precedence of an alternative name form.~%~@
  :class-doc
  #.(format nil
 "A `naf-entity-control-name-regexp' subclass for DBC NAF artist entities.~%~@
-:SEE-ALSO .~%►►►~%"))
+:SEE-ALSO .~%▶▶▶~%"))
 
 ;;; ==============================
 ;; naf-entity-artist-alt-regexp
@@ -293,7 +293,7 @@ always have precedence of an alternative name form.~%~@
  :class-doc
  #.(format nil
 "A `naf-entity-alt-name-regexp' subclass for DBC NAF artist entities.~%~@
-:SEE-ALSO .~%►►►~%"))
+:SEE-ALSO .~%▶▶▶~%"))
 
 ;;; ==============================
 ;; naf-entity-person-control-regexp
@@ -301,7 +301,7 @@ always have precedence of an alternative name form.~%~@
 :class-doc
  #.(format nil
 "A `naf-entity-control-name-regexp' subclass for DBC NAF person entities.~%~@
-:SEE-ALSO .~%►►►~%"))
+:SEE-ALSO .~%▶▶▶~%"))
 
 ;;; ==============================
 ;; naf-entity-person-alt-regexp
@@ -309,7 +309,7 @@ always have precedence of an alternative name form.~%~@
  :class-doc
  #.(format nil
 "A `naf-entity-control-name-regexp' subclass for DBC NAF person entities.~%~@
-:SEE-ALSO .~%►►►~%"))
+:SEE-ALSO .~%▶▶▶~%"))
 
 ;;; ==============================
 ;;naf-entity-author-control-regexp
@@ -317,7 +317,7 @@ always have precedence of an alternative name form.~%~@
  :class-doc
  #.(format nil
    "A `naf-entity-control-name-regexp' subclass for DBC NAF author entities.~%~@
-:SEE-ALSO .~%►►►~%"))
+:SEE-ALSO .~%▶▶▶~%"))
 
 ;;; ==============================
 ;; naf-entity-author-alt-regexp
@@ -325,7 +325,7 @@ always have precedence of an alternative name form.~%~@
  :class-doc
  #.(format nil
            "A `naf-entity-alt-name-regexp' subclass for DBC NAF author entities.~%~@
-:SEE-ALSO .~%►►►~%"))
+:SEE-ALSO .~%▶▶▶~%"))
 
 
 ;;; ==============================
@@ -334,7 +334,7 @@ always have precedence of an alternative name form.~%~@
  :class-doc
  #.(format nil
 "A `naf-entity-control-name-regexp' subclass for DBC NAF brand entities.~%~@
-:SEE-ALSO .~%►►►~%"))
+:SEE-ALSO .~%▶▶▶~%"))
 
 ;;; ==============================
 ;;naf-entity-brand-alt-regexp
@@ -342,7 +342,7 @@ always have precedence of an alternative name form.~%~@
  :class-doc
  #.(format nil
 "A `naf-entity-alt-name-regexp' subclass for DBC NAF brand entities.~%~@
-:SEE-ALSO .~%►►►~%"))
+:SEE-ALSO .~%▶▶▶~%"))
 
 ;;; ==============================
 ;; naf-entity-publication-control-regexp
@@ -350,7 +350,7 @@ always have precedence of an alternative name form.~%~@
  :class-doc
  #.(format nil
            "A `naf-entity-control-name-regexp' subclass for DBC NAF publication entities.~%~@
-:SEE-ALSO `naf-entity-publication'.~%►►►~%"))
+:SEE-ALSO `naf-entity-publication'.~%▶▶▶~%"))
 
 ;;; ==============================
 ;; naf-entity-publication-alt-regexp
@@ -360,7 +360,7 @@ always have precedence of an alternative name form.~%~@
 "A `naf-entity-alt-name-regexp' subclass for DBC NAF publication entities.~%~@
 :NOTE When intantiating objects this class should be careful to discriminate
 among like named or similiarly prefixed publication names.~%~@
-:SEE-ALSO `naf-entity-publication'.~%►►►~%"))
+:SEE-ALSO `naf-entity-publication'.~%▶▶▶~%"))
 
 ) ;; :CLOSE EVAL-WHEN
 

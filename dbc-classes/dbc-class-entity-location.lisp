@@ -93,7 +93,7 @@ When non-nil slot-value is a [ <STRING> | <LIST-OF-STRINGS> ].~%~@
   :documentation 
   #.(format nil
             "Top-level from which location-entity~%~@
-:SEE-ALSO `<XREF>'.~%►►►"))
+:SEE-ALSO `<XREF>'.~%▶▶▶"))
   )
 
 
@@ -103,7 +103,7 @@ When non-nil slot-value is a [ <STRING> | <LIST-OF-STRINGS> ].~%~@
   (:documentation 
    #.(format nil 
              "
-:SEE-ALSO `<XREF>'.~%►►►"
+:SEE-ALSO `<XREF>'.~%▶▶▶"
              )))
 
 (defclass location-entity-imagined (location-entity)
@@ -112,7 +112,7 @@ When non-nil slot-value is a [ <STRING> | <LIST-OF-STRINGS> ].~%~@
    #.(format nil 
              "
 e.g. \"Here there be dragons.\"
-:SEE-ALSO `<XREF>'.~%►►►"
+:SEE-ALSO `<XREF>'.~%▶▶▶"
              )))
 
 (defclass location-entity-unverified (location-entity)
@@ -120,7 +120,7 @@ e.g. \"Here there be dragons.\"
   (:documentation 
    #.(format nil 
              "
-:SEE-ALSO `<XREF>'.~%►►►"
+:SEE-ALSO `<XREF>'.~%▶▶▶"
              )))
 
 

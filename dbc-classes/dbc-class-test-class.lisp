@@ -27,7 +27,7 @@
   (:documentation 
    #.(format nil
              "An `entity-regexp' sub-class for themes.~%~@
-:SEE-ALSO `base-theme-entity'.~%►►►")))
+:SEE-ALSO `base-theme-entity'.~%▶▶▶")))
 
 (defparameter *base-test-entity-regexp-instance* nil)
 

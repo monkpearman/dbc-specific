@@ -5,6 +5,157 @@
 (in-package #:dbc)
 ;; *package*
 
+
+;;; ==============================
+;; :SOURCE cl-ace-6_5/util.lisp
+(defmacro with-namespaces (bindings &body body)
+  "Evalute BODY form with the namespace BINDINGS provided.~%~@
+convenience macro to reduce nesting of CXML:WITH-NAMESPACE forms.~%~@
+:SYNTAX~%
+ with-namespaces \({\(<PREFIX> <URI>\)}*\) <FORM>* => <RESULT>~%
+ - <PREFIX> -- a namespace prefix \(a string\)
+ - <URI>    -- a string denoting a URI
+ - <FORM>   -- a form \(evaluated at runtime\)
+ - <RESULT> -- the result of evaluating forms"
+  (if (endp bindings) `(progn ,@body)
+    (destructuring-bind ((prefix uri) &rest bindings) bindings
+      (if (endp bindings)
+        `(cxml:with-namespace (,prefix ,uri)
+           ,@body)
+        `(cxml:with-namespace (,prefix ,uri)
+           (with-namespaces ,bindings
+             ,@body))))))
+
+;; :NOTE This kept here for example purposes:
+;; :SOURCE cl-ace-6_5/util.lisp
+(defmacro with-soap-envelope ((prefix &rest bindings) &body body)
+  "Evalute BODY forms within the wrapped context of `cxml:with-xml-output' with XML SOAP namespaces bindings active.
+PREFIX is bound to the SOAP envelope prefix i.e.:~%
+ \"http://schemas.xmlsoap.org/soap/envelope/\"~%~@
+Any other namespace BINDINGS provided are also in effect.~%~@
+BODY forms are evaluated within two `cxml:with-element's wrapping forms, these are:~%
+ - SOAP \"Envelope\"
+ - SOAP \"Body\"~%~@
+Return valuu is a `cxml:rod' \(probably a string\).~%~@
+:SYNTAX~%~@
+ with-soap-envelope (<SOAP-PREFIX> {(<PREFIX> <URI>)}*) <BODY>* => <ENVELOPE>
+ - <SOAP-PREFIX>, <prefix> -- namespace abbreviations/prefixes
+ - <URI> --- string denoting a URI
+ - <BODY> --- body forms
+ - <ENVELOPE> --- a CXML:ROD \(probably a string\)~%~@
+:EXAMPLE
+ (with-soap-envelope
+     (\"env\" (\"foo\" \"http://foo.example.org\")
+            (\"bar\" \"http://bar.example.org\"))
+   (cxml:with-element* (\"foo\" \"a\")
+     (cxml:with-element* (\"bar\" \"b\")
+       (cxml:text \"Text Content\"))))
+ => 
+ \"<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+  <env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\"
+                xmlns:foo=\"http://foo.example.org\"
+                xmlns:bar=\"http://bar.example.org\">
+    <env:Body>
+      <foo:a>
+        <bar:b>Text Content</bar:b>
+      </foo:a>
+    </env:Body>
+  </env:Envelope>\"
+"
+  (let ((pre (gensym (string '#:prefix-))))
+    `(let ((,pre ,prefix))
+       (cxml:with-xml-output (cxml:make-rod-sink)
+         (cxml:with-namespace (,pre "http://schemas.xmlsoap.org/soap/envelope/")
+           (with-namespaces ,bindings 
+             (cxml:with-element* (,pre "Envelope")
+               (cxml:with-element* (,pre "Body")
+                 ,@body))))))))
+
+;; :SOURCE cl-rdfxml-20110418-svn/rdfxml.lisp
+(defun peek-skipping-comments (source)
+  ;; thanks to Red Daly, reddaly@gmail.com
+  (loop
+     while (eq :comment (klacks:peek source))
+     do (klacks:consume source)
+     finally (return (klacks:peek source))))
+
+(defun xml-whitespace-p (string)
+  (and (stringp string)
+       (mon:string-all-whitespace-p  string)))
+
+;; :NOTE In an ideal world we would also check for presence of xml:space
+;; attribute and _not_ consume when it is PRESERVE.  However, as this attribute
+;; is applicable to child descendants (unless overridden) keeping track of when
+;; the preserve attribute is in effect is a PITA...
+;;
+;;
+;; ,----
+;; | For some applications, the values of the three data points matter more than the
+;; | pretty-printing. For document-oriented XML applications, white space
+;; | preservation can be critical.
+;; | 
+;; | Document authors can use the xml:space attribute to identify portions of
+;; | documents where white space is considered important. Style sheets can also use
+;; | the xml:space attribute as a hook to preserve white space in
+;; | presentation. However, because many XML applications do not understand the
+;; | xml:space attribute, its use is considered advisory.
+;; | 
+;; | The xml:space attribute accepts two values:
+;; | 
+;; |  - default  -- This value allows the application to handle white space as
+;; |                necessary. Not including an xml:space attribute produces the same
+;; |                result as using the default value.
+;; |  - preserve -- This value instructs the application to maintain white space as
+;; |                is, suggesting that it might have meaning.
+;; | 
+;; | The values of xml:space attributes apply to all descendants of the element
+;; | containing the attribute unless overridden by one of the child elements.
+;; |
+;; | <poem xml:space="default">
+;; |   <author>
+;; |     <givenName>Alix</givenName>
+;; |     <familyName>Krakowski</familyName>
+;; |   </author>
+;; |   <verse xml:space="preserve">
+;; |     <line>Roses   are  red,</line>
+;; |     <line>Violets  are  blue.</line>
+;; |     <signature xml:space="default">-Alix</signature>
+;; |   </verse>
+;; | </poem>
+;; |
+;; `----  :SOURCE (URL `http://msdn.microsoft.com/en-us/library/ms256097.aspx')
+;;
+(defun consume-whitespace (source &key (consume-comment t)
+                                       (consume-dtd t) 
+                                       (consume-start-document t))
+  (declare (optimize (speed 3))
+           (boolean consume-dtd consume-start-document consume-comment))
+  (let ((last-consumed '()))
+    (labels ((register-consumed ()
+               (push (klacks:consume source) last-consumed))
+             (consume-if () 
+               (let ((event (klacks:peek source)))
+                 (or (and (eq :characters event)
+                          (xml-whitespace-p (klacks:peek-value source))
+                          (register-consumed))
+                     (and consume-comment
+                          (eq :comment event)
+                          (register-consumed))
+                     (and consume-dtd 
+                          (eq :dtd event)
+                          (register-consumed))
+                     (and consume-start-document 
+                          (eq :start-document event)
+                          (register-consumed))))))
+      (loop 
+         for x  = (consume-if)
+         while x
+         do    (consume-if)
+         finally (return (if last-consumed 
+                             (values t (nreverse last-consumed))
+                             (values nil nil)))))))
+
+
 ;;; ==============================
 ;;; :REQUIRES klacks:peek klacks:with-open-source
 ;;;           klacks:get-attribute klacks:current-lname
@@ -33,7 +184,6 @@
 ;; 						    :type "out"))
 ;;    s))
 ;;
-
 
 (defun field-parse-attribs (curr-src)
   ;; :NOTE This declaration was moved higher up the class hierarchy b/c we
@@ -89,7 +239,7 @@ ELEMENT-EXPECT is a string. Default is \"row\".~%~@
 :EXAMPLE~%
  \(end-element-and-local-present-p <SOURCE>\)
  \(end-element-and-local-present-p *tt-source* :element-expect \"field\"\)
-:SEE-ALSO `<XREF>'.~%►►►")
+:SEE-ALSO `<XREF>'.~%▶▶▶")
 
 ;; (klacks:with-open-source (s (cxml:make-source "<row name=\"row\">row data</row>"))
 ;;   (let ((gthr '()))
@@ -280,6 +430,40 @@ ELEMENT-EXPECT is a string. Default is \"row\".~%~@
 ;;; :DBC-XML-SQL-PARSE-DOCUMENTATION
 ;;; ==============================
 
+(peek-skipping-comments
+ "Like `klacks:peek' except that if next event from source is :COMMENTS, the event is consumed.~%~@
+The `cl:values' of the first non-comment event are returned \(un-consumed\).~%~@
+SOURCE is a `cxml:source'.~%
+:SEE-ALSO `consume-whitespace'.~%▶▶▶")
+
+(fundoc 'xml-whitespace-p
+  "Return a boolean, true if string satisfies `mon:string-null-empty-or-all-whitespace-p'.~%~@
+STRING is a string-designator.
+Helper function for `consume-whitespace'.
+:SEE-ALSO `<XREF>'.~%▶▶▶")
+
+(fundoc 'consume-whitespace
+  "Consume :CHARACTERS events of SOURCE if associated string satisfies `xml-whitespace-p'.~%~@
+Return as if by `cl:values':
+ - nth-value 0 is a boolean indicating whether `klacks:consume' was invoked with SOURCE
+ - nth-value 1 is a list of the event types consumed \(if any\)~%~@
+SOURCE is a cxml source.~%~@
+Keywords :COMMENT :DTD :START-DOCUMENT are booleans.~%~@
+When true \(the default\) these indicate that their corresponding XML event
+types should be consumed of as well.~%
+:EXAMPLE
+ \(klacks:with-open-source \(s \(cxml:make-source 
+                              \"<row name=\\\"row\\\"><!-- bubba  --> <!-- bubba2  --></row>\"\)\)
+   \(list 
+    :peek \(multiple-value-list \(klacks:peek s\)\)
+    :consume-whitespace \(consume-whitespace s\)
+    :consume \(multiple-value-list \(klacks:consume s\)\)
+    :peek-next \(multiple-value-list \(klacks:peek-next s\)\)
+    :consume-whitespace \(multiple-value-list \(consume-whitespace s\)\)
+    :peek \(multiple-value-list \(klacks:peek s\)\)
+    :consume-whitespace \(multiple-value-list \(consume-whitespace s\)\)
+    \)\)
+:SEE-ALSO `peek-skipping-comments'.~%▶▶▶")
 
 (fundoc  'field-table-parse-out
   "Return parsed results for MySQL xml dump file SQL-XML-DMP.~%
@@ -291,7 +475,7 @@ For each XML `<row>` element event convert each `<field>` event with attribute
  <field name=\"`attribute_name`\">`field-value`</field>~%
 return:~%
  :FIELD-NAME field-value~%
-:SEE-ALSO `field-table-parse-out', `field-str-cons', `field-cln-x'.~%►►►")
+:SEE-ALSO `field-table-parse-out', `field-str-cons', `field-cln-x'.~%▶▶▶")
 
 (fundoc 'field-parse-attribs
 "Map the attributes of the current klacks event.~%~@
@@ -316,7 +500,7 @@ If so retrun value is a list of elements each the form:~%
    \(klacks:list-attributes s\)\)~%~@
 :NOTE Like `klacks:list-attributes' but does not returns a list of conses
 instead of structure object.~%~@
-:SEE-ALSO `klacks:map-attributes'.~%►►►")
+:SEE-ALSO `klacks:map-attributes'.~%▶▶▶")
 
 (fundoc 'field-attribs-find-normalize-names
 "Convert ENUMERATED-ATTRIB-NAMES to a list of strings.~%~@
@@ -336,7 +520,7 @@ When elts of ENUMERATED-ATTRIB-NAMES do not satisfy
  \(field-attribs-find-normalize-names  '\(\"ref\" nil \"price\" 8 \"year\" \"\" \"artist\" \"condition\"\)\)~%
  \(field-attribs-find-normalize-names  #\(\"ref\" \"price\" \"year\" \"artist\" \"condition\"\)\)~%
  \(field-attribs-find-normalize-names  #\(\"ref\" nil \"price\" 8 \"year\" \"\" \"artist\" \"condition\"\)\)~%
-:SEE-ALSO `mon:hash-get-keys'.~%►►►")
+:SEE-ALSO `mon:hash-get-keys'.~%▶▶▶")
 
 (fundoc 'start-element-and-attribute-present-p
 "Whether current klacks event has an attribute with value matching ATTRIB-EXPECT.~%~@
@@ -363,7 +547,7 @@ Keyword ATTRIB-EXPECT is a string naming an attribute value expected.~%~@
                                           :element-local \"field\" 
                                           :attrib-local \"name\"
                                           :attrib-expect \"ref\"\)\)~%~@
-:SEE-ALSO `start-element-and-attribute-value-present-p'.~%►►►")
+:SEE-ALSO `start-element-and-attribute-value-present-p'.~%▶▶▶")
 
 ;;; 
 ;; (fundoc 'start-element-and-attribute-value-present-p
@@ -385,7 +569,7 @@ Keyword ATTRIB-EXPECT is a string naming an attribute value expected.~%~@
 ;;                                           :element-local \"field\" 
 ;;                                           :attrib-local \"name\"
 ;;                                           :attrib-expect \"not-ref\"\)\)~%
-;; :SEE-ALSO `<XREF>'.~%►►►")
+;; :SEE-ALSO `<XREF>'.~%▶▶▶")
 
 
 
@@ -397,7 +581,7 @@ Return value when source is closed. is as if by the form: (values) e.g.:~%
  => ; No value 
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
+:SEE-ALSO `<XREF>'.~%▶▶▶")
 
 ;;; ==============================
 

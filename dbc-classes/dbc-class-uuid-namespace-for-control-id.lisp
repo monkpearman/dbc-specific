@@ -71,6 +71,30 @@ integer in the range [1,5]"))
              "Instances of this class hold namespace metadata for classes whose instances~%~@
               share a common UUID namespace."))) 
 
+(defun make-uuid-namespace-control-id (&key base-namespace control-id)
+  (declare (unicly:unique-universal-identifier base-namespace)
+           ((or mon:string-not-null-empty-or-all-whitespace mon:symbol-not-null)
+            control-id))
+           ;; (or unicly:uuid-string-36 unicly:unique-universal-identifier)
+           ;; control-id))
+  ;; #-sbcl
+  ;; (unless (or (unicly:uuid-string-36-p base-namespace)
+  ;;             (unicly:unique-universal-identifier-p base-namespace))
+  ;; (error ":FUNCTION `make-uuid-namespace-control-id' --~%~@
+  ;;         arg NAMESPACE not of type `unicly:uuid-string-36-p'~%~@
+  ;;         nor of type `unicly:unique-universal-identifier-p'~%~@
+  ;;         got: ~S type-of: ~S" base-namespace (type-of base-namespace))
+  (let ((new-obj
+         (make-instance 'uuid-namespace-control-id))
+        (new-nmspc (unicly:make-v5-uuid base-namespace 
+                                        (or (and (symbolp control-id) 
+                                                 (string control-id))
+                                            control-id))))
+    (setf (uuid-namespace-for-control-id-class new-obj)
+          new-nmspc)
+    new-obj))
+    
+;; (make-uuid-namespace-control-id :namespace *uuid-namespace-control-id-base-namespace*
 
 ;;;; UUID-NAMESPACE-FOR-CONTROL-ID-CLASS METHODS
 
@@ -145,13 +169,13 @@ integer in the range [1,5]"))
   (when (slot-boundp object 'uuid-namespace-bit-vector-for-control-id-class)
     (slot-value object 'uuid-namespace-bit-vector-for-control-id-class)))
 
-(defmethod (setf uuid-namespace-bit-vector-for-control-id-class) ((uuid-bit-vector bit-vector) 
+(defmethod (setf uuid-namespace-bit-vector-for-control-id-class) ((uuid-bit-vector bit-vector) ;; simple-bit-vector
                                                                   (object uuid-namespace-control-id))
   (declare (unicly:uuid-bit-vector-128 uuid-bit-vector))
   (setf (slot-value object 'uuid-namespace-bit-vector-for-control-id-class)
         uuid-bit-vector))
 
-(defmethod (setf uuid-namespace-bit-vector-for-control-id-class) :after ((uuid-bit-vector bit-vector)
+(defmethod (setf uuid-namespace-bit-vector-for-control-id-class) :after ((uuid-bit-vector bit-vector) ;; simple-bit-vector
                                                                          (object uuid-namespace-control-id))
   (declare (unicly:uuid-bit-vector-128 uuid-bit-vector))
   (let ((slot-value-if (uuid-namespace-version-for-control-id-class object))

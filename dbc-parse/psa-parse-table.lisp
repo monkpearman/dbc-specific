@@ -241,20 +241,20 @@
       #.(format nil
   "A file namestring.~%
 :EXAMPLE~%~% { ... <EXAMPLE> ... } ~%
-:SEE-ALSO `*tr-gthr*', `*curr-src*'.~%►►►"))
+:SEE-ALSO `*tr-gthr*', `*curr-src*'.~%▶▶▶"))
 
 (setf (documentation '*tr-gthr* 'variable)
       #.(format nil
 "Temporary holder for `sax-extract-tr'.~%
 :EXAMPLE~%~% { ... <EXAMPLE> ... } ~%
-:SEE-ALSO `*psa-fl*', `*curr-src*'.~%►►►"))
+:SEE-ALSO `*psa-fl*', `*curr-src*'.~%▶▶▶"))
 
 (setf (documentation '*curr-src* 'variable)
       #.(format nil
 "The current source-being parsed.~%
 Declared special when evaluated in inside `sax-extract-tr'. ~%
 :EXAMPLE~%~% { ... <EXAMPLE> ... } ~%
-:SEE-ALSO `*tr-gthr*', `*psa-fl*'.~%►►►"))
+:SEE-ALSO `*tr-gthr*', `*psa-fl*'.~%▶▶▶"))
 
 
 (setf (documentation 'html2xhtml 'function)
@@ -262,7 +262,7 @@ Declared special when evaluated in inside `sax-extract-tr'. ~%
 "Parse an HTML file and serialize it to XHTML cleaning it on the way.~%
 :NOTE From the chtml tutorial.~%
 :EXAMPLE~%~% { ... <EXAMPLE> ... } ~%
-:SEE-ALSO `<XREF>'.~%►►►"))
+:SEE-ALSO `<XREF>'.~%▶▶▶"))
 
 
 (setf (documentation 'p/sax-integer-string 'function)
@@ -271,7 +271,7 @@ Declared special when evaluated in inside `sax-extract-tr'. ~%
 :EXAMPLE~%~%\(p/sax-integer-string \"3.3\"\) => 3~%
 \(p/sax-integer-string \"03\"\) => 3~%
 :SEE-ALSO `p/sax-float-string', `mon:string-to-number', `arnesi:parse-float',
-`parse-integer'.~%►►►"))
+`parse-integer'.~%▶▶▶"))
 
 (setf (documentation 'p/sax-float-string 'function)
       #.(format nil
@@ -279,7 +279,7 @@ Declared special when evaluated in inside `sax-extract-tr'. ~%
 :EXAMPLE~%~%\(p/sax-integer-string \"3.3\"\)~%
 \(p/sax-integer-string 3.3\)~%
 \(p/sax-integer-string \"03\"\)~%
-:SEE-ALSO `p/sax-integer-string', `mon:string-to-number', `arnesi:parse-float'.~%►►►"))
+:SEE-ALSO `p/sax-integer-string', `mon:string-to-number', `arnesi:parse-float'.~%▶▶▶"))
 
 (setf (documentation 'p/totals-strip-commas 'function)
       #.(format nil 
@@ -289,14 +289,14 @@ Unconditionally returns MAYBE-STR regardless of MAYBE-STR's type and/or whether
 :EXAMPLE~%~%\(p/totals-strip-commas \"3,34\"\)~%
 \(p/totals-strip-commas '\(334\)\)~%
 \(p/sax-integer-string \(p/totals-strip-commas \"3,34\"\)\)~%
-:SEE-ALSO `p/sax-integer-string'.~%►►►"))
+:SEE-ALSO `p/sax-integer-string'.~%▶▶▶"))
 
 (setf (documentation 'p/sax-extract-tr 'function)
       #.(format nil
  "Extract the \"tr\" elements in PARSE-SRC as if by `cxml:parse'.~%
 Dynamically binds parse-src to special variable `*curr-src*'.~%
 :EXAMPLE~%~% { ... <EXAMPLE> ... } ~%
-:SEE-ALSO `<XREF>'.~%►►►"))
+:SEE-ALSO `<XREF>'.~%▶▶▶"))
 
 
 ;;; ==============================

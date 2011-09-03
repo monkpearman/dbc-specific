@@ -115,7 +115,7 @@ values used for identification puroposes.~%~@
 distinct from the values they are contained of\).
 :EXAMPLE~% ~
  \(mon:class-subclasses \(find-class 'base-control-id\)\)~%~@
-:SEE-ALSO .~%►►►")))
+:SEE-ALSO .~%▶▶▶")))
 
 ;;
 (defclass control-id-display-name (base-control-id)
@@ -127,7 +127,7 @@ which record displayable control-ids which identify a nameable thing.~%~@
 :NOTE A nameable thing is not necessarily an entity.~%~@
 :EXAMPLE~%~@
  \(mon:class-subclasses \(find-class 'base-control-id-dis\)\)~%~@
-:SEE-ALSO `<XREF>'.~%►►►")))
+:SEE-ALSO `<XREF>'.~%▶▶▶")))
 
 ;; 
 (defclass control-id-display-name-for-entity-type (control-id-display-name)
@@ -158,7 +158,7 @@ Likewise, such co-references may occur in both the same class and/or an entirely
  \(mon:class-subclasses \(find-class 'control-id-display-name-for-entity-type\)\)~%~@
 :NOTE Instances which subclassed from the class `dbc:base-entity' _must_ have a display-name.~%~@
 instantiated to an instance of the class `dbc:display-name-for-entity'.~%~@
-:SEE-ALSO `<XREF>'.~%►►►"))
+:SEE-ALSO `<XREF>'.~%▶▶▶"))
 
 ;; control-id-display-artist-namespace
 

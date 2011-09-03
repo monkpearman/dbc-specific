@@ -114,7 +114,8 @@
              ;; #:uuid-namespace-bit-vector-for-control-id-class  GENERIC/SLOT
              ;; #:uuid-namespace-version-for-control-id-class     GENERIC/SLOT
              ;; #:uuid-namespace-for-control-id-class-description
-             ;;
+             ;; #:make-uuid-namespace-control-id
+             ;; 
            ;; dbc-specific/dbc-classes/dbc-class-control-id.lisp
              ;;
              #:base-control-id
@@ -247,13 +248,24 @@
 	     ;; klacks:current-lname klacks:current-characters
 	     ;; klacks:consume klacks:peek
 	     ;; mon:string-trim-whitespace
+             ;;
+             #:with-namespaces ;; <MACRO>
+             ;; #:with-soap-envelope ;; <MACRO>
+             ;; 
+             #:peek-skipping-comments
+             #:xml-whitespace-p
+             #:consume-whitespace
+             #:start-element-p
+             #:end-element-p
+             #:end-element-and-local-present-p
+             #:start-element-and-attribute-present-p
+             #:end-document-find-and-close
+             ;;
 	     #:field-table-parse-out 
 	     ;;
 	     ;; cxml::cxml-source klacks:peek klacks:map-attributes
 	     #:field-parse-attribs	     
              #:field-attribs-consume-if             
-             #:start-element-and-attribute-present-p
-             #:end-document-find-and-close
              #:field-attribs-find
              #:field-attribs-find-normalize-names
              ;;

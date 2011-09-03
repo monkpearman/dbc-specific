@@ -14,7 +14,7 @@ To be populated with `dbc:preprocess-slot-transform' prior to constructing the
 slots for the class `parsed-ref'.
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
+:SEE-ALSO `<XREF>'.~%▶▶▶")
 
 ;;; ==============================
 (defun make-ref-maker-sym-name (ref-parse-field)

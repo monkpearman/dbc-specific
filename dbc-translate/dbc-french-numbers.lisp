@@ -216,7 +216,7 @@
 :SEE-ALSO `number-to-french-ten', `*number-to-french-below-20*',
 `*number-to-french-tens*', `*number-to-french-thousands*',
 `*number-to-french-big-prefix*' `*number-to-french-bof*',
-`*number-to-french-denominators*'.~%►►►")
+`*number-to-french-denominators*'.~%▶▶▶")
 
 (vardoc '*number-to-french-tens*
 "Of type: \(simple-vector 10\)~%~@
@@ -226,7 +226,7 @@
 :SEE-ALSO `number-to-french-ten', `number-to-french-hundred',
 `*number-to-french-below-20*', `*number-to-french-tens*',
 `*number-to-french-thousands*', `*number-to-french-big-prefix*'
-`*number-to-french-bof*', `*number-to-french-denominators*'.~%►►►")
+`*number-to-french-bof*', `*number-to-french-denominators*'.~%▶▶▶")
 
 (vardoc '*number-to-french-thousands*
 "Of type: \(simple-vector 9\)~%~@
@@ -237,7 +237,7 @@
 `number-to-french-thousand', `*number-to-french-below-20*',
 `*number-to-french-tens*', `*number-to-french-thousands*',
 `*number-to-french-big-prefix*', `*number-to-french-bof*',
-`*number-to-french-denominators*'.~%►►►")
+`*number-to-french-denominators*'.~%▶▶▶")
 
 (vardoc '*number-to-french-big-prefix*
 "Of type: \(simple-vector 10\)~%~@
@@ -247,7 +247,7 @@
 :SEE-ALSO `number-to-french-big', `number-to-french-big-designation',
 `*number-to-french-below-20*', `*number-to-french-tens*',
 `*number-to-french-thousands*', `*number-to-french-big-prefix*',
-`*number-to-french-bof*', `*number-to-french-denominators*'.~%►►►")
+`*number-to-french-bof*', `*number-to-french-denominators*'.~%▶▶▶")
 
 (vardoc '*number-to-french-bof*
 "Of type: \(simple-vector 9\)~%~@
@@ -256,7 +256,7 @@
  \(svref *number-to-french-bof* 8\)~%~@
 :SEE-ALSO `*number-to-french-below-20*', `*number-to-french-tens*',
 `*number-to-french-thousands*', `*number-to-french-big-prefix*',
-`*number-to-french-bof*', `*number-to-french-denominators*'.~%►►►")
+`*number-to-french-bof*', `*number-to-french-denominators*'.~%▶▶▶")
 
 (vardoc '*number-to-french-denominators*
 "Of type: \(simple-vector 3\)~%~@
@@ -265,7 +265,7 @@
  \(svref *number-to-french-denominators* 2\)~%~@
 :SEE-ALSO `*number-to-french-below-20*', `*number-to-french-tens*',
 `*number-to-french-thousands*', `*number-to-french-big-prefix*'
-`*number-to-french-bof*', `*number-to-french-denominators*'.~%►►►")
+`*number-to-french-bof*', `*number-to-french-denominators*'.~%▶▶▶")
 
 
 ;;; ==============================
@@ -278,7 +278,7 @@
  \(number-to-french -132894362727827234/19837298127\)~%
 :SEE-ALSO `number-to-french', `number-to-french-ten',
 `number-to-french-hundred', `number-to-french-thousand', `number-to-french-big',
-`number-to-french-big-designation', `number-to-french-ordinal'.~%►►►")
+`number-to-french-big-designation', `number-to-french-ordinal'.~%▶▶▶")
 
 (fundoc 'number-to-french-ten
 " <DOCSTR> ~%~@
@@ -287,7 +287,7 @@
 :SEE-ALSO `number-to-french', `number-to-french-ten',
 `number-to-french-hundred', `number-to-french-thousand', `number-to-french-big',
 `number-to-french-big-designation', `number-to-french-ordinal',
-`*number-to-french-below-20*', `*number-to-french-tens*'.~%►►►")
+`*number-to-french-below-20*', `*number-to-french-tens*'.~%▶▶▶")
 
 (fundoc 'number-to-french-hundred
 " <DOCSTR> ~%~@
@@ -296,7 +296,7 @@
 :SEE-ALSO `number-to-french', `number-to-french-ten',
 `number-to-french-hundred', `number-to-french-thousand', `number-to-french-big',
 `number-to-french-big-designation', `number-to-french-ordinal',
-`*number-to-french-denominators*'.~%►►►")
+`*number-to-french-denominators*'.~%▶▶▶")
 
 (fundoc 'number-to-french-thousand
 " <DOCSTR> ~%~@
@@ -305,7 +305,7 @@
 :SEE-ALSO `number-to-french', `number-to-french-ten',
 `number-to-french-hundred', `number-to-french-thousand', `number-to-french-big',
 `number-to-french-big-designation', `number-to-french-ordinal',
-`*number-to-french-thousands*'.~%►►►")
+`*number-to-french-thousands*'.~%▶▶▶")
 
 (fundoc 'number-to-french-big
 " <DOCSTR> ~%~@
@@ -314,7 +314,7 @@
 :SEE-ALSO `number-to-french', `number-to-french-ten',
 `number-to-french-hundred', `number-to-french-thousand', `number-to-french-big',
 `number-to-french-big-designation', `number-to-french-ordinal',
-`*number-to-french-big-prefix*'.~%►►►")
+`*number-to-french-big-prefix*'.~%▶▶▶")
 
 (fundoc 'number-to-french-big-designation
 " <DOCSTR> ~%~@
@@ -323,7 +323,7 @@
 :SEE-ALSO `number-to-french', `number-to-french-ten',
 `number-to-french-hundred', `number-to-french-thousand', `number-to-french-big',
 `number-to-french-big-designation', `number-to-french-ordinal',
-`*number-to-french-big-prefix*'.~%►►►")
+`*number-to-french-big-prefix*'.~%▶▶▶")
 
 (fundoc 'number-to-french-ordinal
 " <DOCSTR> ~%~@
@@ -331,7 +331,7 @@
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `number-to-french', `number-to-french-ten',
 `number-to-french-hundred', `number-to-french-thousand', `number-to-french-big',
-`number-to-french-big-designation', `number-to-french-ordinal'.~%►►►")
+`number-to-french-big-designation', `number-to-french-ordinal'.~%▶▶▶")
 
 ;;; ==============================
 

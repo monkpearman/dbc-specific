@@ -49,7 +49,7 @@ referenceable in common nomenclature or the nomenclature of its primary
 external domain.~%
 :EXAMPLE~% ~
  \(mon:class-subclasses \(find-class 'base-entity\)\)~%~@
-:SEE-ALSO .~%►►►")))
+:SEE-ALSO .~%▶▶▶")))
 
 (defclass base-theme-entity (base-entity)
   ()
@@ -58,7 +58,7 @@ external domain.~%
              "Base class for referencing DBC system theme entities.~%~@
              :EXAMPLE~% ~
              \(mon:class-subclasses \(find-class 'base-theme-entity\)\)~%~@
-             :SEE-ALSO `theme-entity-regexp'.~%►►►")))
+             :SEE-ALSO `theme-entity-regexp'.~%▶▶▶")))
 
 (defclass base-category-entity (base-entity)
   ()
@@ -67,7 +67,7 @@ external domain.~%
              "Base class for referencing DBC system category entities.~%~@
              :EXAMPLE~% ~
               \(mon:class-subclasses \(find-class 'base-category-entity\)\)
-             :SEE-ALSO `category-entity-regexp'.~%►►►")))
+             :SEE-ALSO `category-entity-regexp'.~%▶▶▶")))
 
 (defclass base-naf-entity (base-entity)
   ()
@@ -77,7 +77,7 @@ external domain.~%
               :EXAMPLE~% ~
                \(mon:class-subclasses \(find-class 'base-naf-entity\)\)
              :SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp',~%~
-             `naf-entity-alt-name-regexp'.~%►►►")))
+             `naf-entity-alt-name-regexp'.~%▶▶▶")))
 
 (defclass base-media-entity (base-entity)
   ()
@@ -96,7 +96,7 @@ external domain.~%
              :EXAMPLE~% ~
               \(mon:class-subclasses \(find-class 'base-media-entity\)\)
              :SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp',~%~
-             `naf-entity-alt-name-regexp'.~%►►►")))
+             `naf-entity-alt-name-regexp'.~%▶▶▶")))
 
 (defclass base-location-entity (base-entity)
    ()
@@ -117,7 +117,7 @@ understood as follows:~% ~%
 :EXAMPLE~% ~
  \(mon:class-subclasses \(find-class 'base-location-entity\)\)
 :SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp',~%~
-`naf-entity-alt-name-regexp'.~%►►►")))
+`naf-entity-alt-name-regexp'.~%▶▶▶")))
 
 ;;; ==============================
 

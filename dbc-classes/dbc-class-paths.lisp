@@ -18,7 +18,7 @@
 "Access the class allocated slot value `system-path' of DBC-SYSTEM.~%~@
 The value of the `system-path' slot affects _all_ instances of `system-path' and~@
 subclassed instances.
-User code should not specialize methods on this function use system-path instead.~%►►►~%")))
+User code should not specialize methods on this function use system-path instead.~%▶▶▶~%")))
 
 (defgeneric (setf system-base-path) (path dbc-system)
   (:documentation 
@@ -27,7 +27,7 @@ User code should not specialize methods on this function use system-path instead
 Setting the `system-path' slot affects _all_ instances of `system-path' class and
 subclassing instances.~%~@
 The intent is that this slot be bound _once_ at system loadtime.
-IOW not intendend for user code method specializers!~%►►►~%")))
+IOW not intendend for user code method specializers!~%▶▶▶~%")))
 
 (defgeneric system-path (dbc-system)
   (:documentation 
@@ -35,7 +35,7 @@ IOW not intendend for user code method specializers!~%►►►~%")))
 "Access the class allocated slot value `system-path' of DBC-SYSTEM.~%~@
 The value of the the `system-path' slot affects _all_ instances of `system-path' and~@
 subclassed instances. It is not intendend that this slot be setfable.
-User code should specialize methods on this function.~%►►►~%")))
+User code should specialize methods on this function.~%▶▶▶~%")))
 
 ;; :SEE (URL `http://paste.lisp.org/+2L12/1')
 (defgeneric (setf system-path) (var dbc-system)
@@ -43,31 +43,31 @@ User code should specialize methods on this function.~%►►►~%")))
    #.(format nil
 "A no-op when attempting to set class allocated slot value `system-path' of DBC-SYSTEM.~%~@
 The value of the the `system-path' slot affects _all_ instances of `system-path' and~@
-subclassed instances. It is not intendend that this slot be directly setfable!~%►►►~%")))
+subclassed instances. It is not intendend that this slot be directly setfable!~%▶▶▶~%")))
 
 ;; :NOTE What about specializing on the GF `cl:describe' instead??
 (defgeneric system-described  (obj stream)
   (:documentation
-   #.(format nil "Describer for instances of subclasses of `system-base'.~%►►►~%" )))
+   #.(format nil "Describer for instances of subclasses of `system-base'.~%▶▶▶~%" )))
 
 (defgeneric system-path-var-binding (obj)
   (:documentation
-   #.(format nil "Names a variable bound to an object instance.~%►►►~%")))
+   #.(format nil "Names a variable bound to an object instance.~%▶▶▶~%")))
 
 (defgeneric (setf system-path-var-binding) (var obj)
   (:documentation
-   #.(format nil "Set the name of  a variable bound to an object instance.~%►►►~%")))
+   #.(format nil "Set the name of  a variable bound to an object instance.~%▶▶▶~%")))
 
 (defgeneric system-path-if (object)
   (:documentation
-   #.(format nil"Set the path for OBJECT if other slots are available and directory exists.~%►►►~%")))
+   #.(format nil"Set the path for OBJECT if other slots are available and directory exists.~%▶▶▶~%")))
 
 ;; (defgeneric (setf system-path-if) (object)
 ;;   (:documentation "Set the path for OBJECT if other slots are available and directory exists."))
 
 (defgeneric system-parent-path-ensure (object &key)
   (:documentation
-   #.(format nil "Ensure the specified parent path for object exists.~%►►►~%")))
+   #.(format nil "Ensure the specified parent path for object exists.~%▶▶▶~%")))
 
 
 ;;; ==============================
@@ -322,14 +322,14 @@ Binds value of `dbc:*xml-output-dir*' according to `dbc:*dbc-xml-dump-dir-name*'
 Return non-nil on success.~%~@
 :EXAMPLE~%
  \(ensure-dbc-xml-dump-dir\)~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
+:SEE-ALSO `<XREF>'.~%▶▶▶")
 
 (fundoc 'find-system-path
 "Return the pathname-directory of the system.~%~@
 Signal an error if system can not be found or its directory does not exist.~%~@
 :EXAMPLE~%
  \(find-system-path\)~%~@
-:SEE-ALSO `dbc:system-path-if'.~%►►►")
+:SEE-ALSO `dbc:system-path-if'.~%▶▶▶")
 
 (fundoc 'system-subdir-init-w-var
  "Make W-VAR an instance of class SYSTEM-SUBDIR.~%~@
@@ -340,7 +340,7 @@ When W-VAR is already an instance of class SYSTEM-SUBDIR signal an error.~%~@
 :EXAMPLE~%
  \(system-subdir-init-w-var '*dbc-notes-dir*
                      :parent-path \(system-base-path *system-path*\)\)~%~@
-:SEE-ALSO `system-path-if'.~%►►►")
+:SEE-ALSO `system-path-if'.~%▶▶▶")
 
 ;;; ==============================
 
