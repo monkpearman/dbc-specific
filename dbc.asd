@@ -122,15 +122,16 @@
             ((:file "dbc-french-numbers")
              (:file "dbc-french-dates")
              ))
+   (:file "dbc-docs")
    ))
 
 (defmethod asdf:perform :after ((op asdf:load-op) (system (eql (asdf:find-system :dbc))))
   (pushnew :dbc cl:*features*)
   (let ((chk-if 
-         #-is-mon(fad:file-exists-p 
-                  (merge-pathnames (make-pathname :name "loadtime-bind" :type "lisp")
-                                   (mon:pathname-directory-system :dbc)))
-         #+is-mon (probe-file (translate-logical-pathname "MON:DBC-SPECIFIC;loadtime-bind.lisp"))))
+         #-:is-mon (fad:file-exists-p 
+                    (merge-pathnames (make-pathname :name "loadtime-bind" :type "lisp")
+                                     (mon:pathname-directory-system :dbc)))
+         #+:is-mon (probe-file (translate-logical-pathname "MON:DBC-SPECIFIC;loadtime-bind.lisp"))))
     (and chk-if (load  chk-if)))
   (asdf:operate 'asdf:load-op 'dbc-test))
 

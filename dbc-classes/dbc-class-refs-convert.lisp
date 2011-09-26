@@ -1,5 +1,5 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-01-06T13:37:33-05:00Z}#{11014} - by MON>
-;;; :FILE ../dbc-classes/dbc-class-refs-convert.lisp
+;;; :FILE dbc-classes/dbc-class-refs-convert.lisp
 ;;; ==============================
 
 
@@ -98,12 +98,12 @@ slots for the class `parsed-ref'.
 
 ;;; ==============================
 ;; :TODO `make-parsed-class-slot-init-accessor-name'
-;;  - Separete the slot init-arg frobbing into a dedicated function
-;;  - change optional arg PREFIX-INITARG-W should be a keyword PREFIX-INIT- W
-;;  - add additional keyword SFX-INIT-W
-;;  - add additional keyword TRANSFORM (or NORMALIZE ???) when non-nil should
+;;  - Separate the slot init-arg frobbing into a dedicated function
+;;  - Change optional arg PREFIX-INITARG-W should be a keyword PREFIX-INIT-W
+;;  - Add additional keyword SUFFFIX-INIT-W
+;;  - Add additional keyword TRANSFORM (or NORMALIZE ???) when non-nil should
 ;;    rename from PARSED-FIELD to TRANSFORM
-;; - Return value should have teh format:
+;; - Return value should have the format:
 ;;    <SLOT>  <TRANSFORM>  |  (<INIT> {INIT-PFX | INIT-SFX} )  <ACCESSOR>
 ;;
 ;; :SEE make-parsed-class-slot-accessor-name etc.
@@ -493,7 +493,9 @@ slots for the class `parsed-ref'.
 ;;   Use `field-convert-1-0-x'
 ;; :NOTE stripping X may not be possible if this is "PLATE X" the Roman numeral!
 ;;
+;; :NOTE Why is this the only field containing a capitalized name, e.g. "Plate" in "Plate_number"?
 ;; - `mon:string-trim-whitespace'
+
 
 ;;; ==============================
 ;; :FIELD "volume" :TRANSFORM publication-volume

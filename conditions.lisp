@@ -102,7 +102,7 @@
                             :w-system-path \(parent-path object\)
                             :w-system-aux-msg \"Danger, Will Robinson\"\)\)\)
        \(error cnd\)\)~%~%~
-   :SEE-ALSO `dbc:dbc-error', `mon:format-error-symbol-type'.~%►►►")))
+   :SEE-ALSO `dbc:dbc-error', `mon:format-error-symbol-type'.~%▶▶▶")))
 
 ;;
 ;; :NOTE 'mon:slot-non-existent-error doesn't report when :w-system-slot is non-existent.

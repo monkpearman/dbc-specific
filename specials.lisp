@@ -63,7 +63,7 @@
 
 ;; (defparameter *tt--rmt* (make-ref-lookup-table *xml-refs-match-list*))
 
-(defparameter *xml-refs-match-list* 
+(defparameter *xml-refs-match-list*
   ;; before adding the hashtable pre NEW YORK.
   (list "ref" "price" "year" ;; "year_year"
         "artist" "condition"))
@@ -79,155 +79,6 @@
 ;;  "edit_history")
 
 ;; (substitute #\- #\_ (format nil "~:@(~A~)" "keywords_seo"))
-
-
-;;; ==============================
-;;; :SPECIALS-DOCUMENTATION
-;;; ==============================
-
-(vardoc '*system-path*
-"The base dbc-sytsem path.~%~@
-An instance of the system-path class holds the class allocated slot system-path
-:EXAMPLE~%
- \(and \(eql \(mon:class-name-of *system-path*\) 
-          \(class-name \(find-class 'system-path\)\)\)
-     \(system-base-path *system-path*\)\)~%~@
-:SEE-ALSO `dbc:system-path'.~%►►►")
-
-;;; ==============================
-;;; :SPECIALS-DBC-TEST-PATHS-DOCUMENTATION
-;;; ==============================
-
-(vardoc '*system-tests-dir*
-"Initially set to the string \"dbc-tests\".~%~@
-The dbc package defines this parameter and `dbc:*system-tests-temp-dir*' in
-:FILE dbc-specific/specials.lisp~%~@
-Its value is set at loadtime from :FILE dbc-specific/loadtime-bind.lisp~%~@
-Once set the parameter is an instance of `dbc:system-subdir' with a parent-path
-as if by the return value of `dbc:find-system-path', e.g.:~%
- \(equal \(dbc:parent-path dbc:*system-tests-dir*\)
-        \(dbc:find-system-path\)\)~%~@
-Its pathname is accessible with the `dbc:sub-path' accessor.~%~@
-:EXAMPLE~%
-  \(dbc:sub-path dbc:*system-tests-dir*\)~%
-  \(pathname-directory \(dbc:sub-path dbc:*system-tests-dir*\)\)~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
-
-(vardoc '*system-tests-temp-dir*
-"Initially set to the string \"tests\".
-The dbc package defines this parameter and `dbc:*system-tests-temp-dir*' in
-:FILE dbc-specific/specials.lisp~%~@
-Its value is set at loadtime from :FILE dbc-specific/loadtime-bind.lisp~%~@
-Once set the parameter is an instance of `dbc:system-subdir' with a parent-path
-relative to `dbc:*system-tests-dir*' which has a parent-path relative to return
-value of `dbc:find-system-path', e.g.:~%
- \(equal \(find-system-path\)
-   \(and \(equal 
-         \(dbc:parent-path dbc::*system-tests-temp-dir*\)
-         \(dbc:sub-path dbc::*system-tests-dir*\)\)
-        \(slot-value dbc::*system-tests-temp-dir* 'system-path\)\)\)~%~@
-Its pathname is accessible with the `dbc:sub-path' accessor.~%~@
-:EXAMPLE~%
-  \(dbc:sub-path dbc::*system-tests-temp-dir*\)~%
-  \(pathname-directory \(dbc:sub-path dbc::*system-tests-temp-dir*\)\)~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
-
-;;; ==============================
-
-(vardoc '*parsed-ref-class-name*
-"String naming the class \"PARSED-REF\"
-:EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
-
-
-;;; ==============================
-;;; :XML-MATCH-TABLES
-;;; ==============================
-
-(vardoc '*xml-refs-match-table*
-        "A hash-table mapping field name to parsing-function for use when parsing dbc-xml-refs.~%~@
-Bound with `dbc:make-ref-lookup-table' to values of variable `dbc:*xml-refs-match-list*'.~%~@
-:EXAMPLE~%
- \(gethash \"ref\" *xml-refs-match-table*\)~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
-
-(vardoc '*xml-refs-match-list*
-"List of fields needed when parsing dbc-xml-refs.~%~@
-Bound at loadtime with `dbc:make-ref-lookup-table' as key values in hasthable of
-variable `dbc:*xml-refs-match-table*'.~%~@
-:EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%►►►")
-
-
-;;; ==============================
-;;; :SPECIALS-XML-PATHS-DOCUMENTATION
-;;; ==============================
-
-
-(vardoc '*xml-output-dir*
-"System relative directory pathname object for storing dbc-xml-dump files.~%~@
-Evaluated when system is loaded.~%
-:EXAMPLE~%
- \(sub-path *xml-output-dir*\)~%
- \(system-described *xml-output-dir* nil\)~%~@
-:SEE-ALSO `*xml-output-dir*', `*xml-output-refs-name*', `*xml-output-refs-ext*',
-`*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*'.~%►►►")
-
-(vardoc '*xml-output-refs-name*
-"---> Output file name with directory components.~%~@
-Use when dumping parsed dbc XML files.~%~@
-:EXAMPLE~%
- \(pathname-directory *xml-output-refs-name*\)~%
- \(pathname-name *xml-output-refs-name*\)~%
- \(namestring *xml-output-refs-name*\)~%~@
-:SEE-ALSO `*xml-output-dir*', `*xml-output-refs-name*', `*xml-output-refs-ext*',
-`*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*'.~%►►►")
-
-(vardoc '*xml-output-refs-ext*
-"---> Output file name with extension and directory components.~%~@
-Use when dumping parsed dbc XML files.~%~@
-:EXAMPLE~%~@
- \(pathname-directory *xml-output-refs-ext*\)~%
- \(pathname-name *xml-output-refs-ext*\)~%
- \(pathname-type *xml-output-refs-ext*\)~%
- \(namestring *xml-output-refs-ext*\)~%~@
-:SEE-ALSO `*xml-output-dir*', `*xml-output-refs-name*', `*xml-output-refs-ext*',
-`*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*'.~%►►►")
-
-(vardoc '*xml-input-dir*
-"System relative directory pathname object for reading dbc-xml-dump files.~%~@
-Evaluated when system is loaded.~%~@
-:EXAMPLE~%
- \(sub-path *xml-input-dir*\)
- \(system-described *xml-input-dir* nil\)~%~@
-:SEE-ALSO `*xml-output-dir*', `*xml-output-refs-name*', `*xml-output-refs-ext*',
-`*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*'.~%►►►")
-
-(vardoc '*xml-input-refs-name*
-"<--- Input file.~%~@
-Use when parsing XML full dbc refs table.~%~@
-Tweaked to remove non-valid portions at head of document.~%~@
-:EXAMPLE~%
- \(pathname-directory *xml-input-refs-name*\)~%
- \(pathname-name *xml-input-refs-name*\)~%
- \(namestring *xml-input-refs-name*\)~%~@
-:SEE-ALSO `*xml-output-dir*', `*xml-output-refs-name*', `*xml-output-refs-ext*',
-`*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*'.~%►►►")
-
-(vardoc '*xml-input-refs-name-temp*
-"<--- Input file.~%~@
-Temporary file for parsing XML refs before handling the whole shebang.~%~@
-Use `*xml-input-refs-name*' when ready.~%~@
-:EXAMPLE~%
- \(pathname-directory *xml-input-refs-name-temp*\)~%
- \(pathname-name *xml-input-refs-name-temp*\)~%
- \(namestring *xml-input-refs-name-temp*\)~%~@
-:SEE-ALSO `*xml-output-dir*', `*xml-output-refs-name*', `*xml-output-refs-ext*',
-`*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*'.~%►►►")
-
-
 
 
 ;;; ==============================
