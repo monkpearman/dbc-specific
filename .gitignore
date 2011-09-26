@@ -7,3 +7,4 @@ TAGS
 docs/*
 notes-versioned/*
 xml-class-dump-dir/*
+dbc-tests/tests/*
