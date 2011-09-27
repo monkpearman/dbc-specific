@@ -8,12 +8,12 @@
 ;;; Copyright © 2010 MON KEY 
 ;;; ==============================
 ;;; CODE:
-(in-package #:cl-user)
+(in-package #:dbc)
 
-(defpackage #:mon-tgm
-  (:use #:cl #:cl-ppcre))
+;; (defpackage #:mon-tgm
+;;   (:use #:cl #:cl-ppcre))
 
-(in-package #:mon-tgm)
+;; (in-package #:mon-tgm)
 
 ;;; *package*
 
