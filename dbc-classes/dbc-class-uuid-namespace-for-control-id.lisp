@@ -94,7 +94,15 @@ integer in the range [1,5]"))
           new-nmspc)
     new-obj))
     
-;; (make-uuid-namespace-control-id :namespace *uuid-namespace-control-id-base-namespace*
+;; uuid-namespace-for-control-id-class
+
+;; (defparameter *tt--name-control*
+;;   (make-uuid-namespace-control-id :base-namespace unicly:*uuid-namespace-dns*
+;;                                   :control-id "bubba"))
+;;
+;; (uuid-namespace-for-control-id-class *tt--name-control*)
+;; (uuid-namespace-for-control-id-class *tt--name-control*)
+
 
 ;;;; UUID-NAMESPACE-FOR-CONTROL-ID-CLASS METHODS
 
@@ -110,7 +118,7 @@ integer in the range [1,5]"))
   ;; (error "Arg UUID-STRING did not satisfy `unicly:uuid-hex-string-36-p'.~%~
   ;;    Declining to set slot UUID-NAMESPACE-FOR-CONTROL-ID-CLASS.~%~
   ;;    got: ~S" uuid-string)
-  (declare (unicly:uuid-hex-string-36 uuid-string))
+  (declare (unicly::uuid-hex-string-36 uuid-string))
   (let ((uuid-from-string (unicly:make-uuid-from-string uuid-string)))
     (declare (unicly:unique-universal-identifier uuid-from-string))
     (setf (slot-value object 'uuid-namespace-for-control-id-class)
@@ -129,7 +137,7 @@ integer in the range [1,5]"))
   ;; :NOTE `unicly:make-uuid-from-string' already coerces a uuid object with
   ;; `unicly:uuid-copy-uuid' we keep the method dispatch b/c we can check string
   ;; validity earlier.
-  (declare (unicly:uuid-byte-array-16 uuid-byte-array))
+  (declare (unicly::uuid-byte-array-16 uuid-byte-array))
   (let ((uuid-from-byte-array (uuid-from-byte-array uuid-byte-array)))
     (declare (unicly:unique-universal-identifier uuid-from-byte-array))
     (setf (slot-value object 'uuid-namespace-for-control-id-class)
@@ -141,9 +149,9 @@ integer in the range [1,5]"))
   (let* ((uuid-bytes (unicly:uuid-get-namespace-bytes 
                       (uuid-namespace-for-control-id-class object)))
          ;; (uuid-bv (unicly:uuid-to-bit-vector (uuid-namespace-for-control-id-class object)))
-         (uuid-bv   (uuid-byte-array-to-bit-vector (the unicly:uuid-byte-array-16 uuid-bytes))))
-    (declare (unicly:uuid-byte-array-16 uuid-bytes)
-             (unicly:uuid-bit-vector-128 uuid-bv))
+         (uuid-bv   (uuid-byte-array-to-bit-vector (the unicly::uuid-byte-array-16 uuid-bytes))))
+    (declare (unicly::uuid-byte-array-16 uuid-bytes)
+             (unicly::uuid-bit-vector-128 uuid-bv))
     (setf (uuid-namespace-byte-array-for-control-id-class object)
           uuid-bytes)
     (setf (uuid-namespace-bit-vector-for-control-id-class object)
@@ -158,7 +166,7 @@ integer in the range [1,5]"))
 
 (defmethod (setf uuid-namespace-byte-array-for-control-id-class) ((byte-array array) 
                                                                  (object uuid-namespace-control-id))
-  (declare (unicly:uuid-byte-array-16 byte-array))
+  (declare (unicly::uuid-byte-array-16 byte-array))
   (setf (slot-value  object 'uuid-namespace-byte-array-for-control-id-class)
         byte-array))
 
@@ -171,15 +179,15 @@ integer in the range [1,5]"))
 
 (defmethod (setf uuid-namespace-bit-vector-for-control-id-class) ((uuid-bit-vector bit-vector) ;; simple-bit-vector
                                                                   (object uuid-namespace-control-id))
-  (declare (unicly:uuid-bit-vector-128 uuid-bit-vector))
+  (declare (unicly::uuid-bit-vector-128 uuid-bit-vector))
   (setf (slot-value object 'uuid-namespace-bit-vector-for-control-id-class)
         uuid-bit-vector))
 
 (defmethod (setf uuid-namespace-bit-vector-for-control-id-class) :after ((uuid-bit-vector bit-vector) ;; simple-bit-vector
                                                                          (object uuid-namespace-control-id))
-  (declare (unicly:uuid-bit-vector-128 uuid-bit-vector))
+  (declare (unicly::uuid-bit-vector-128 uuid-bit-vector))
   (let ((slot-value-if (uuid-namespace-version-for-control-id-class object))
-        (version-if    (unicly:uuid-bit-vector-version uuid-bit-vector)))
+        (version-if    (unicly::uuid-version-bit-vector uuid-bit-vector)))
     (declare ((mod 6) version-if))
     (when (zerop version-if)
       (error "Declining to set value for slot UUID-NAMESPACE-VERSION-FOR-CONTROL-ID-CLASS ~
@@ -190,6 +198,11 @@ integer in the range [1,5]"))
     (if (and slot-value-if (eql slot-value-if version-if))
         version-if
         (setf (uuid-namespace-version-for-control-id-class object) version-if))))
+
+;; (setf (uuid-namespace-version-for-control-id-class *tt--name-control*)
+;;       (unicly::uuid-version-bit-vector (uuid-namespace-bit-vector-for-control-id-class *tt--name-control*)))
+
+
 
 ;;;; UUID-NAMESPACE-VERSION-FOR-CONTROL-ID-CLASS METHODS
 
@@ -206,16 +219,29 @@ integer in the range [1,5]"))
   (setf (slot-value object 'uuid-namespace-version-for-control-id-class)
         integer))
 
+;; (uuid-namespace-version-for-control-id-class *tt--name-control*)
+;; (setf *tt--name-control* 
+;;       (uuid-namespace-bit-vector-for-control-id-class *tt--name-control*)
+;;       )
+
+;; (unicly:uuid-from-byte-array (uuid-namespace-byte-array-for-control-id-class *tt--name-control*))
+;; => eea1105e-3681-5117-99b6-7b2b5fe1f3c7
+
+;; (uuid-namespace-for-control-id-class *tt--name-control*)
+;; => eea1105e-3681-5117-99b6-7b2b5fe1f3c7
+
+;; (uuid-namespace-for-control-id-class-description *tt--name-control* nil)
+
 (defmethod (setf uuid-namespace-version-for-control-id-class) ((uuid-bit-vector bit-vector) 
                                                                (object uuid-namespace-control-id))
-  (declare (unicly:uuid-bit-vector-128 uuid-bit-vector))
-  (let ((bv-version (unicly:uuid-bit-vector-version  uuid-bit-vector)))
+  (declare (unicly::uuid-bit-vector-128 uuid-bit-vector))
+  (let ((bv-version (unicly::uuid-version-bit-vector  uuid-bit-vector)))
     (declare ((mod 6) bv-version))
     (when (zerop bv-version)
       (error "Declining to set value for slot UUID-NAMESPACE-VERSION-FOR-CONTROL-ID-CLASS~
             to non-valid uuid version. Likely the source UUID is corrupted!"))
     (setf (slot-value object 'uuid-namespace-version-for-control-id-class)
-          (unicly:uuid-bit-vector-version  uuid-bit-vector))))
+          (unicly::uuid-version-bit-vector  uuid-bit-vector))))
 
 (defmethod uuid-namespace-for-control-id-class-description ((object uuid-namespace-control-id) stream)
   (let* ((unbound "#<UNBOUND>")
