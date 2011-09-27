@@ -115,6 +115,7 @@
 	    ((:file "dbc-cln-parse")
              (:file "dbc-xml-sql-parse")
              (:file "dbc-xml-refs-parse")
+             (:file "dbc-xml-parse-sax")
 	    ;; (:file "psa-parse-table.lisp")
 	    ))
    (:module "dbc-translate"
