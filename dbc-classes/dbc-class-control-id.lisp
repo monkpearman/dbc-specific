@@ -4,8 +4,8 @@
 
 #|
 
-;; The class `base-control-id' is implemented to distringuish different
-;; types of controlled identities in classes with slots whose specify
+;; The class `base-control-id' is implemented to distinguish different
+;; types of controlled identities in classes with slots having 
 ;; values used for identification puroposes.
 ;;
 ;; :NOTE subclasses of `base-control-id' are distinct from those of the class

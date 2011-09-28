@@ -107,8 +107,10 @@
              (:file "dbc-class-documentation")
              (:file "dbc-class-refs-convert")
              (:file "dbc-class-parse-convert")
-             ;; (:file "dbc-class-artist-convert.lisp")
-             ;; (:file "dbc-tgm.lisp")))
+             ;; (:file "dbc-class-uuid-namespace-for-control-id")
+             ;; (:file "dbc-class-artist-convert")
+             ;; (:file "dbc-class-themes-convert")
+             ;; (:file "dbc-tgm")))
              ))
    (:module "dbc-parse"
 	    :components
