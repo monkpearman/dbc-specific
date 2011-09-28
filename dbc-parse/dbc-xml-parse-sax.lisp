@@ -14,16 +14,29 @@
 (defparameter *ref-current-row* '()
   "Holds an instance of class `dbc-sax-parsing-class' while parsing an XML row field.")
 
-(defparameter *refs-output-source* 
-  (merge-pathnames (make-pathname :directory `(:relative ,*xml-output-dir*)
-                                  :name (concatenate 'string "sax-refs-test-" (mon:time-string-yyyy-mm-dd))
-                                  :type "lisp")
-                   (system-base-path *system-path*)))
+(defparameter *refs-output-source* nil)
+
 ;; *xml-input-refs-name*
 
 (defparameter *parsed-data-output-stream* nil
   "Output stream current while parsing the XML data of *refs-output-source*
 Opend on entry to `tt--parse-xml-refs' and closed on exit.")
+
+
+;; After we finish parsing an XML <row> element the FIELD-DATA slot will hold all fields parsed.
+;; While parsing individual XML <field> elements we pushe them onto the slot CURRENT-ELT. 
+;; When we are finished with the field we push the slot-value onto the FIELD-DATA stack.
+(defclass dbc-sax-parsing-class ()
+  ((field-data
+    ;; :initform '() ;; 
+    :initform (make-array 36 :fill-pointer 0)
+    :accessor field-data)
+   (current-elt 
+    :initform '()
+    :accessor current-elt)
+   (current-chars
+    :initform (make-string-output-stream))
+   ))
 
 (defgeneric dbc-sax-current-chars-clear (object)
   ;; (find-method #'dbc-sax-current-chars-clear nil '(dbc-sax-parsing-class))
@@ -57,20 +70,7 @@ Opend on entry to `tt--parse-xml-refs' and closed on exit.")
     (write-string data (slot-value self 'current-chars))
     data))
 
-;; After we finish parsing an XML <row> element the FIELD-DATA slot will hold all fields parsed.
-;; While parsing individual XML <field> elements we pushe them onto the slot CURRENT-ELT. 
-;; When we are finished with the field we push the slot-value onto the FIELD-DATA stack.
-(defclass dbc-sax-parsing-class ()
-  ((field-data
-    ;; :initform '() ;; 
-    :initform (make-array 36 :fill-pointer 0)
-    :accessor field-data)
-   (current-elt 
-    :initform '()
-    :accessor current-elt)
-   (current-chars
-    :initform (make-string-output-stream))
-   ))
+
 
 
 ;; Stub class to specialize sax methods on. 
@@ -217,7 +217,11 @@ Opend on entry to `tt--parse-xml-refs' and closed on exit.")
 ;;                                :name (concatenate 'string "sax-themes-test-" (mon:time-string-yyyy-mm-dd))
 ;;                                :type "lisp")
 ;;                 (system-path *system-path*)))
-(defun write-sax-parsed-xml-refs-file (&key (input-file *xml-input-refs-name*) (output-file *refs-output-source*))
+(defun write-sax-parsed-xml-refs-file (&key input-file  output-file)
+  (unless input-file 
+    (setf input-file *xml-input-refs-name*))
+  (unless output-file
+    (setf output-file *refs-output-source*))
   (unwind-protect
        (progn
          (setf *parsed-data-output-stream* (open output-file

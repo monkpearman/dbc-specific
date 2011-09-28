@@ -11,8 +11,6 @@
   (unicly:make-v5-uuid unicly:*UUID-NAMESPACE-OID*
                        (string '*uuid-namespace-control-id-base-namespace*)))
 
-;; (mon:where-is "uuid-to-bit-vector")
-;;
 ;; (simple-bit-vector-p 
 ;; (let ((bv (unicly:uuid-to-bit-vector *uuid-namespace-control-id-base-namespace*)))
 ;; (upgraded-array-element-type (type-of (make-array 128 :element-type 'bit :initial-element 0)))

@@ -123,6 +123,32 @@ slots for the class `parsed-ref'.
 ;;  => ("KEYWORDS-TYPE" "KEYWORDS-TYPE" "PARSED-REF-KEYWORDS-TYPE")
 ;;  
 ;;
+
+
+;;; ==============================
+;;
+;; :PASTE-NUMBER 124918
+;; :PASTE-TITLE "generate code"
+;; :PASTE-AUTHOR flip214
+;; :PASTE-DATE   2011-09-28
+;; :PASTE-URL (URL `http://paste.lisp.org/display/124918')
+
+;; (defparameter *fields-and-convs*
+;;   '((uuid       'parse-integer)
+;;     (ts         'parse-integer)
+;;     (ts-string  'identity)
+;;     (vers-md5   'identity)
+;;     (kern_id    'parse-integer)
+;;     (kernel     'identity)
+;;     (distro     'identity)
+;;     (version    'identity)))
+;;
+;;  #.(list* 'defstruct 'node
+;;           (mapcar #'car *fields-and-convs*))
+;;
+;;; ==============================
+
+
 
 ;;; ==============================
 ;;

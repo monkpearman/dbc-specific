@@ -108,8 +108,8 @@ It is used when generating v5 UUIDs assocated with a control-id."))
   (:documentation
   #.(format nil
             "The class `base-control-id' is implemented to distinguish different~%~@
-types of controlled identities in classes with slots whose specify~%~@
-values used for identification puroposes.~%~@
+types of controlled identities in classes with slots specifying~%~@
+persitable values used for identification puroposes.~%~@
 :NOTE subclasses of `base-control-id' are distinct from those of the class
 `base-uuid' which defines _canonical_ identities for dbc system objects \(as
 distinct from the values they are contained of\).
