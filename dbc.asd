@@ -95,8 +95,9 @@
    (:file "conditions")
    (:module "dbc-classes"
             :components                 
-            ((:file "dbc-class-doc")
+            ((:file "dbc-docstrings-for-class")
              (:file "dbc-class")
+             ;; (:file "dbc-class-uuid-namespace-for-control-id")
              (:file "dbc-class-edit")
              (:file "dbc-class-entity")
              (:file "dbc-class-uuid")             
@@ -107,7 +108,6 @@
              (:file "dbc-class-documentation")
              (:file "dbc-class-refs-convert")
              (:file "dbc-class-parse-convert")
-             ;; (:file "dbc-class-uuid-namespace-for-control-id")
              ;; (:file "dbc-class-artist-convert")
              ;; (:file "dbc-class-themes-convert")
              ;; (:file "dbc-tgm")))
