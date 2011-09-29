@@ -1,5 +1,5 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-05-23T20:18:33-04:00Z}#{11211} - by MON>
-;;; :FILE dbc-specific/dbc-classes/dbc-class-uuid-namespace-for-control-id.lisp
+;;; :FILE dbc-specific/dbc-classes/dbc-class-system-object-uuid.lisp
 ;;; ==============================
 
 ;;; ==============================
@@ -130,7 +130,7 @@
    (system-identity-uuid-bit-vector
     :documentation  
     #.(format nil
-              "An object of type `unicly:uuid-byte-array-128'.~%~@
+              "An object of type `unicly::bit-vector-128'.~%~@
                Value of this slot is the bit-vector representation of the object in slot~%~@
                system-identity-uuid."))
    (system-identity-uuid-integer
@@ -205,7 +205,7 @@ BYTE-ARRAY is an sys-object of type `unicly:uuid-byte-array-16'."))
   (:method ((sys-object system-object-uuid))
     (when (slot-boundp sys-object 'system-identity-uuid-bit-vector)
       (slot-value sys-object 'system-identity-uuid-bit-vector)))
- (:documentation "Accessor for SYSTEM-OBJECTs uuid namespace bit-vector representation."))
+ (:documentation "Accessor for SYSTEM-OBJECTs uuid namespace representation as an object of type `unicly::uuid-bit-vector-128'."))
 
 (defgeneric (setf system-identity-uuid-bit-vector) (bv sys-object)
 
@@ -237,7 +237,8 @@ BV is an sys-object of type `unicly:uuid-bit-vector-128'."))
   (:method  ((sys-object system-object-uuid))
     (when (slot-boundp sys-object 'system-identity-uuid-integer)
       (slot-value sys-object 'system-identity-uuid-integer)))
-  (:documentation "Accessor for SYS-OBJECT's system-identity-uuid-integer slot-value."))
+  (:documentation "Accessor for SYS-OBJECT's system-identity-uuid-integer slot-value. 
+When `cl:slot-boundp' return value is an object of type `unicly::uuid-integer-128', else nil."))
 
 (defgeneric (setf system-identity-uuid-integer) (uuid-integer-128 sys-object)
   (:method  ((uuid-integer-128 bignum) (sys-object system-object-uuid))
@@ -250,7 +251,8 @@ BV is an sys-object of type `unicly:uuid-bit-vector-128'."))
   (:method  ((sys-object system-object-uuid))
     (when (slot-boundp sys-object 'system-identity-uuid-string-36)
     (slot-value sys-object 'system-identity-uuid-string-36)))
-  (:documentation "Accessor for SYS-OBJECT's system-identity-uuid-string-36 slot-value."))
+  (:documentation "Accessor for SYS-OBJECT's system-identity-uuid-string-36 slot-value.
+When `cl:slot-boundp' return value is an object of type `unicly::uuid-hex-string-36', else nil."))
 
 (defgeneric (setf system-identity-uuid-string-36) (uuid-hex-string-36 sys-object)
   (:method ((uuid-hex-string-36 string) (sys-object system-object-uuid))
@@ -263,35 +265,40 @@ BV is an sys-object of type `unicly:uuid-bit-vector-128'."))
   (:method  ((sys-object system-object-uuid))
     (when (slot-boundp sys-object 'system-identity-uuid-version)
       (slot-value sys-object 'system-identity-uuid-version)))
-  (:documentation "Accessor for SYS-OBJECT's system-identity-uuid-version slot-value."))
+  (:documentation "Accessor for SYS-OBJECT's system-identity-uuid-version slot-value.
+When `cl:slot-boundp' return value is an object of type `unicly::uuid-version-int', else nil."))
 
 (defgeneric system-object-uuid-description (sys-object &key stream verbose)
   (:documentation "Print slot-values of SYS-OBJECT to STREAM."))
 
-(defgeneric (setf system-identity-uuid-version) (bv-or-string sys-object)
+(defgeneric (setf system-identity-uuid-version) (bit-vector-or-version-integer sys-object)
 
   ;; (:method  ((integer integer) (sys-object system-object-uuid))
-  (:method  ((fixnum fixnum) (sys-object system-object-uuid))
-    (declare ((mod 6) fixnum))
-    (when (zerop fixnum)
-      (error "Declining to set value for slot SYSTEM-IDENTITY-UUID-VERSION ~
-            to non-valid uuid version. Likely the source UUID is corrupted!"))
-    (setf (slot-value sys-object 'system-identity-uuid-version)
-          fixnum))
-
+  (:method  ((version-integer fixnum) (sys-object system-object-uuid))
+    (declare (type unicly::uuid-version-int version-integer))
+    ;; :NOTE Specializing on fixnum should prevent us from ever seeing the null-uuid here.
+    ;; Also, we don't allow v1 or v2 UUID's here either.
+    (unless (typep version-integer 'unicly::uuid-v3-4-or-5-int)
+      (error "Declining to set value for slot SYSTEM-IDENTITY-UUID-VERSION.~%~
+                Version is non-valid for class `system-object-uuid'~% ~got: ~A~%"
+             version-integer)
+      (setf (slot-value sys-object 'system-identity-uuid-version)
+            version-integer)))
+  
   (:method  ((uuid-bit-vector bit-vector) (sys-object system-object-uuid))
     (declare (unicly::uuid-bit-vector-128 uuid-bit-vector))
     (let ((bv-version (unicly::uuid-version-bit-vector  uuid-bit-vector)))
-      (declare ((mod 6) bv-version))
-      (when (zerop bv-version)
-        (error "Declining to set value for slot SYSTEM-IDENTITY-UUID-VERSION~
-            to non-valid uuid version. Likely the source UUID is corrupted!"))
+      (declare (type (or unicly::uuid-version-int null)) bv-version)
+      ;; :NOTE  We don't allow null-uuid, v1, or v2 UUID's.
+      (unless (typep bv-version 'unicly::uuid-v3-4-or-5-int)
+        (error "Declining to set value for slot SYSTEM-IDENTITY-UUID-VERSION.~%~
+                Version is non-valid for class `system-object-uuid'~% ~got: ~A~%"
+               bv-version))
       (setf (slot-value sys-object 'system-identity-uuid-version)
             (unicly::uuid-version-bit-vector  uuid-bit-vector))))
 
   (:documentation "Set SYS-OBJECT's uuid version with BV-OR-STRING.
-BV-OR-STRING is either an sys-object of type `unicly:uuid-bit-vector-128' or an
-integer in the range [1,5]"))
+BV-OR-STRING is either a object of type `unicly:uuid-bit-vector-128' or an integer of type `unicly::uuid-version-int'."))
 
 (defgeneric system-identity (sys-object)
   (:method((sys-object system-object-uuid))
@@ -505,9 +512,8 @@ integer in the range [1,5]"))
               (unless (unicly::uuid-bit-vector-eql
                        (system-identity-uuid-bit-vector sys-object)
                        (uuid-to-bit-vector
-                        (make-v5-uuid
-                         (system-identity-parent-uuid sys-object)
-                         (string (system-identity sys-object)))))
+                        (make-v5-uuid (system-identity-parent-uuid sys-object)
+                                      (string (system-identity sys-object)))))
                 (slot-makunbound sys-object 'system-identity)
                 (slot-makunbound sys-object 'system-identity-parent-uuid))
               (slot-makunbound sys-object 'system-identity))
