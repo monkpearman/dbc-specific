@@ -3,11 +3,6 @@
 ;;; ==============================
 
 ;; :NOTE Everything in this file works as of 2011-09-26
-;; :TODO 
-;;  - factor out for better symbol/variable names.
-;;  - incorporate field parsing routines from:
-;;    - dbc-classes/dbc-class-parse-convert.lisp
-;;    - dbc-classes/dbc-class-refs-convert.lisp
 
 (in-package #:dbc)
 
@@ -20,8 +15,7 @@
 
 (defparameter *parsed-data-output-stream* nil
   "Output stream current while parsing the XML data of *parsed-data-output-path*
-Opend on entry to `tt--parse-xml-refs' and closed on exit.")
-
+Opend on entry to `write-sax-parsed-xml-to-file' and closed on exit.")
 
 ;; After we finish parsing an XML <row> element the FIELD-DATA slot will hold all fields parsed.
 ;; While parsing individual XML <field> elements we pushe them onto the slot CURRENT-ELT. 
@@ -71,8 +65,6 @@ Opend on entry to `tt--parse-xml-refs' and closed on exit.")
     data))
 
 
-
-
 ;; Stub class to specialize sax methods on. 
 ;; We could probably use `dbc-sax-parsing-class' just as well.
 (defclass dbc-sax-handler (sax:default-handler)
@@ -120,7 +112,7 @@ Opend on entry to `tt--parse-xml-refs' and closed on exit.")
 ;;     (setf (current-elt *parsed-data-current-row*) nil))
 ;;   (when (string-equal local-name "row")
 ;;     ;; (print (field-data *parsed-data-current-row*))
-;;     (write-sax-parsed-row-to-file :output-stream *parsed-data-output-stream*)
+;;     (write-sax-parsed-xml-row-to-file :output-stream *parsed-data-output-stream*)
 ;;     (and (current-elt *parsed-data-current-row*)
 ;;          (setf (current-elt *parsed-data-current-row*) nil))))
 ;;
@@ -183,7 +175,7 @@ Opend on entry to `tt--parse-xml-refs' and closed on exit.")
     (dbc-sax-current-chars-reset *parsed-data-current-row*))
   (when (string-equal local-name "row")
     ;; (print (field-data *parsed-data-current-row*))
-    (write-sax-parsed-row-to-file :output-stream *parsed-data-output-stream*)
+    (write-sax-parsed-xml-row-to-file :output-stream *parsed-data-output-stream*)
     (when (current-elt *parsed-data-current-row*)
       (dbc-sax-current-chars-clear *parsed-data-current-row*)
       (setf (current-elt *parsed-data-current-row*) nil))))
@@ -199,17 +191,19 @@ Opend on entry to `tt--parse-xml-refs' and closed on exit.")
 
 ;; Write all rows of slot-value FIELD-DATA for current instance of class `dbc-sax-parsing-class' to OUTPUT-STREAM.
 ;; Current instance is held by varialbe `*parsed-data-current-row*'.
-(defun write-sax-parsed-row-to-file (&key output-stream)
+(defun write-sax-parsed-xml-row-to-file (&key output-stream)
   (write-sax-parsed-delimiter :output-stream output-stream)
   (write (coerce (field-data *parsed-data-current-row*) 'list) :stream output-stream))
 
+;; write-sax-parsed-xml-table-to-file -> write-sax-parsed-xml-to-file
+
 ;; Parse the dbc XML refs in INPUT-FILE and write thier lispy counterparts to OUTPUT-FILE.
 ;; For duration of body the variable `*parsed-data-output-stream*' is bound to an open output-stream.
-;; INPUT-FILE defaults to `*xml-input-refs-name*'
-;; OUTPUT-FILE defaults to `*parsed-data-output-path*'
+;; INPUT-FILE defaults to `*xml-input-refs-name*'.~%~@
+;; OUTPUT-FILE defaults to `*parsed-data-output-path*'.~%~@
 ;; :EXAMPLE
-;; (write-sax-parsed-xml-refs-file)
-;; (write-sax-parsed-xml-refs-file
+;; (write-sax-parsed-xml-to-file)
+;; (write-sax-parsed-xml-to-file
 ;;   :input-file  (merge-pathnames (make-pathname :name "dump-themes-DUMPING")
 ;;                                 (sub-path *xml-input-dir*))
 ;;   :output-file (merge-pathnames 
@@ -219,7 +213,7 @@ Opend on entry to `tt--parse-xml-refs' and closed on exit.")
 ;;                 (system-path *system-path*)))
 ;; The parsed file can be loaded into a hash-table with 
 ;; `load-sax-parsed-xml-file-to-parsed-class-hash'
-(defun write-sax-parsed-xml-refs-file (&key input-file  output-file)
+(defun write-sax-parsed-xml-to-file (&key input-file  output-file)
   (unless input-file 
     (setf input-file *xml-input-refs-name*))
   (unless output-file
@@ -234,7 +228,9 @@ Opend on entry to `tt--parse-xml-refs' and closed on exit.")
                                                  :if-does-not-exist :create))
          ;;(klacks:with-open-source (refs-in input-file)
          (cxml:parse input-file (make-instance 'dbc-sax-handler))) ;)
-    (close *parsed-data-output-stream*)))
+    (progn
+      (close *parsed-data-output-stream*)
+      (setf *parsed-data-output-stream* nil))))
 
 
 ;;; ==============================
