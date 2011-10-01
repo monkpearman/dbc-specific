@@ -3,23 +3,17 @@
 ;;; ==============================
 
 ;; :NOTE Everything in this file works as of 2011-09-26
+;; :TODO
+;;   - See comments for method specialized on `sax:start-element'
 
 (in-package #:dbc)
 
 (defparameter *parsed-data-current-row* '()
-  "Holds an instance of class `dbc-sax-parsing-class' while parsing an XML row field.")
 
 (defparameter *parsed-data-output-path* nil)
 
-;; *xml-input-refs-name*
+(defparameter *parsed-data-output-stream* nil)
 
-(defparameter *parsed-data-output-stream* nil
-  "Output stream current while parsing the XML data of *parsed-data-output-path*
-Opend on entry to `write-sax-parsed-xml-to-file' and closed on exit.")
-
-;; After we finish parsing an XML <row> element the FIELD-DATA slot will hold all fields parsed.
-;; While parsing individual XML <field> elements we pushe them onto the slot CURRENT-ELT. 
-;; When we are finished with the field we push the slot-value onto the FIELD-DATA stack.
 (defclass dbc-sax-parsing-class ()
   ((field-data
     ;; :initform '() ;; 
@@ -30,7 +24,18 @@ Opend on entry to `write-sax-parsed-xml-to-file' and closed on exit.")
     :accessor current-elt)
    (current-chars
     :initform (make-string-output-stream))
-   ))
+   )
+  (:documentation
+   #.(format nil
+             "A class for use with class `dbc-sax-handler' when parsing XML files using CXML's SAX interface.~%~@
+After we finish parsing an XML <row> element the FIELD-DATA slot will hold all fields parsed.~%~@
+While parsing individual XML <field> elements we push them onto the slot CURRENT-ELT.~%~@
+When we are finished with the field we push the slot-value onto the FIELD-DATA stack.~%~@
+:SEE-ALSO `dbc-sax-current-chars-clear', `dbc-sax-current-chars-reset',
+`dbc-sax-current-chars', `dbc-sax-handler', `write-sax-parsed-delimiter',
+`write-sax-parsed-xml-row-to-file', `load-sax-parsed-xml-file-to-parsed-class-hash',
+`*parsed-data-current-row*', `*parsed-data-output-path*',
+`*parsed-data-output-stream*', `*xml-input-dir*', `*xml-output-dir*'.~%▶▶▶"))
 
 (defgeneric dbc-sax-current-chars-clear (object)
   ;; (find-method #'dbc-sax-current-chars-clear nil '(dbc-sax-parsing-class))
@@ -184,35 +189,15 @@ Opend on entry to `write-sax-parsed-xml-to-file' and closed on exit.")
   (when *parsed-data-current-row*
     (setf *parsed-data-current-row* nil)))
 
-;; Write a commented delimiter line to OUTPUT-STREAM. 
 (defun write-sax-parsed-delimiter (&key output-stream)
+  ;; :NOTE consider using `cl:write-line' instead.
   (let ((delim (make-string 68 :initial-element #\;)))
     (format output-stream "~&~%~A~%" delim)))
 
-;; Write all rows of slot-value FIELD-DATA for current instance of class `dbc-sax-parsing-class' to OUTPUT-STREAM.
-;; Current instance is held by varialbe `*parsed-data-current-row*'.
 (defun write-sax-parsed-xml-row-to-file (&key output-stream)
   (write-sax-parsed-delimiter :output-stream output-stream)
   (write (coerce (field-data *parsed-data-current-row*) 'list) :stream output-stream))
 
-;; write-sax-parsed-xml-table-to-file -> write-sax-parsed-xml-to-file
-
-;; Parse the dbc XML refs in INPUT-FILE and write thier lispy counterparts to OUTPUT-FILE.
-;; For duration of body the variable `*parsed-data-output-stream*' is bound to an open output-stream.
-;; INPUT-FILE defaults to `*xml-input-refs-name*'.~%~@
-;; OUTPUT-FILE defaults to `*parsed-data-output-path*'.~%~@
-;; :EXAMPLE
-;; (write-sax-parsed-xml-to-file)
-;; (write-sax-parsed-xml-to-file
-;;   :input-file  (merge-pathnames (make-pathname :name "dump-themes-DUMPING")
-;;                                 (sub-path *xml-input-dir*))
-;;   :output-file (merge-pathnames 
-;;                 (make-pathname :directory `(:relative ,*xml-output-dir*)
-;;                                :name (concatenate 'string "sax-themes-test-" (mon:time-string-yyyy-mm-dd))
-;;                                :type "lisp")
-;;                 (system-path *system-path*)))
-;; The parsed file can be loaded into a hash-table with 
-;; `load-sax-parsed-xml-file-to-parsed-class-hash'
 (defun write-sax-parsed-xml-to-file (&key input-file  output-file)
   (unless input-file 
     (setf input-file *xml-input-refs-name*))
@@ -232,6 +217,65 @@ Opend on entry to `write-sax-parsed-xml-to-file' and closed on exit.")
       (close *parsed-data-output-stream*)
       (setf *parsed-data-output-stream* nil))))
 
+
+;;; ==============================
+;;; :DOCUMENTATION
+;;; ==============================
+
+(vardoc '*parsed-data-current-row*
+  "Holds an instance of class `dbc-sax-parsing-class' while parsing an XML row field.~%~@
+:SEE-ALSO `*parsed-data-current-row*', `*parsed-data-output-path*',
+`*parsed-data-output-stream*', `*xml-input-dir*', `*xml-output-dir*'.~%▶▶▶")
+
+(vardoc '*parsed-data-output-stream*
+  "Output stream current while parsing the XML data of *parsed-data-output-path*
+Opend on entry to `write-sax-parsed-xml-to-file' and closed on exit.
+:SEE-ALSO `*parsed-data-current-row*', `*parsed-data-output-path*',
+`*parsed-data-output-stream*', `*xml-input-dir*', `*xml-output-dir*'.~%▶▶▶")
+
+(fundoc 'write-sax-parsed-delimiter 
+"Write a commented delimiter line to OUTPUT-STREAM.
+Commented delimiter is written as a `cl:fresh-line' followed by a string of
+68 #\\; characters followed by a newline.
+:SEE-ALSO `dbc-sax-current-chars-clear', `dbc-sax-current-chars-reset',
+`dbc-sax-current-chars', `dbc-sax-handler', `write-sax-parsed-delimiter',
+`write-sax-parsed-xml-row-to-file', `load-sax-parsed-xml-file-to-parsed-class-hash',
+`*parsed-data-current-row*', `*parsed-data-output-path*',
+`*parsed-data-output-stream*', `*xml-input-dir*', `*xml-output-dir*'.~%▶▶▶")
+
+(fundoc 'write-sax-parsed-xml-to-file
+        "Parse the dbc XML refs in INPUT-FILE and write thier lispy counterparts to OUTPUT-FILE.~%~@
+For duration of body the variable `*parsed-data-output-stream*' is bound to an open output-stream.~%~@
+INPUT-FILE defaults to `*xml-input-refs-name*'.~%~@
+OUTPUT-FILE defaults to `*parsed-data-output-path*'.~%~@
+:EXAMPLE~%
+ \(write-sax-parsed-xml-to-file\)~%
+ \(write-sax-parsed-xml-to-file
+  :input-file  \(merge-pathnames \(make-pathname :name \"dump-themes-DUMPING\"\)
+                                \(sub-path *xml-input-dir*\)\)
+  :output-file \(merge-pathnames 
+                \(make-pathname :directory `\(:relative ,*xml-output-dir*\)
+                               :name \(concatenate 'string \"sax-themes-test-\" \(mon:time-string-yyyy-mm-dd\)\)
+                               :type \"lisp\"\)
+                \(system-path *system-path*\)\)\)~%~@
+The parsed file can be loaded into a hash-table with `load-sax-parsed-xml-file-to-parsed-class-hash'.")
+
+(fundoc 'write-sax-parsed-xml-row-to-file
+        "Write current XML row data of slot-value FIELD-DATA of class `dbc-sax-parsing-class' to OUTPUT-STREAM.~%~@
+Current XML row data is comprised of all the <field> elements data encounered
+inside an XML <row> element where a <row> has the form:~%~
+ <row>
+ <field name=\"<NAME>\"><FIELD-VALUE></field>
+  ... 
+ <field name=\"<NAME>\"><FIELD-VALUE></field>
+ </row>~%~@
+While parsing the current instance of class `dbc-sax-parsing-class' is held by
+variable `*parsed-data-current-row*'.
+:SEE-ALSO `dbc-sax-current-chars-clear', `dbc-sax-current-chars-reset',
+`dbc-sax-current-chars', `dbc-sax-handler', `write-sax-parsed-delimiter',
+`write-sax-parsed-xml-row-to-file', `load-sax-parsed-xml-file-to-parsed-class-hash',
+`*parsed-data-current-row*', `*parsed-data-output-path*',
+`*parsed-data-output-stream*', `*xml-input-dir*', `*xml-output-dir*'.~%▶▶▶")
 
 ;;; ==============================
 
