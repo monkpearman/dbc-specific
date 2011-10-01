@@ -123,7 +123,7 @@
        (and chk-sfr-if (setf *xml-input-refs-name* chk-sfr-if))
        (and chk-nts-if (setf *xml-input-refs-name-temp* chk-nts-if))))
 
-(setf *refs-output-source*
+(setf *parsed-data-output-path*
       (merge-pathnames (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*))
                                       :name (concatenate 'string "sax-refs-test-" (mon:time-string-yyyy-mm-dd))
                                       :type "lisp")

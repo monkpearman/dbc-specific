@@ -11,15 +11,15 @@
 
 (in-package #:dbc)
 
-(defparameter *ref-current-row* '()
+(defparameter *parsed-data-current-row* '()
   "Holds an instance of class `dbc-sax-parsing-class' while parsing an XML row field.")
 
-(defparameter *refs-output-source* nil)
+(defparameter *parsed-data-output-path* nil)
 
 ;; *xml-input-refs-name*
 
 (defparameter *parsed-data-output-stream* nil
-  "Output stream current while parsing the XML data of *refs-output-source*
+  "Output stream current while parsing the XML data of *parsed-data-output-path*
 Opend on entry to `tt--parse-xml-refs' and closed on exit.")
 
 
@@ -82,13 +82,13 @@ Opend on entry to `tt--parse-xml-refs' and closed on exit.")
   ())
 
 ;; (defmethod sax:start-document  ((handler dbc-sax-handler))
-;;   (when *ref-current-row*
-;;     (setf *ref-current-row* nil)))
+;;   (when *parsed-data-current-row*
+;;     (setf *parsed-data-current-row* nil)))
 ;;
 ;; (defmethod sax:start-element ((handler dbc-sax-handler)
 ;;                               uri local-name qname attributes)
 ;;   (when (string-equal local-name "row")
-;;     (setf *ref-current-row* (make-instance 'dbc-sax-parsing-class))
+;;     (setf *parsed-data-current-row* (make-instance 'dbc-sax-parsing-class))
 ;;     (return-from sax:start-element))
 ;;   (flet ((collect (elt attrib)
 ;;            (when (string-equal elt local-name)
@@ -97,53 +97,53 @@ Opend on entry to `tt--parse-xml-refs' and closed on exit.")
 ;;                           :key #'sax:attribute-local-name
 ;;                           :test #'string-equal)))
 ;;                (if attrib 
-;;                    (setf (current-elt *ref-current-row*) (sax:attribute-value attrib))
-;;                    (setf (current-elt *ref-current-row*) nil))))))
+;;                    (setf (current-elt *parsed-data-current-row*) (sax:attribute-value attrib))
+;;                    (setf (current-elt *parsed-data-current-row*) nil))))))
 ;;     ;;       <ELT> <ATTRIB>
 ;;     ;; <a href= | img src=
 ;;     (collect  "field"   "name")))
 ;;
 ;; (defmethod sax:characters  ((handler dbc-sax-handler) data)
-;;   (when (and *ref-current-row* 
-;;              (current-elt *ref-current-row*))
-;;     (vector-push-extend (list (current-elt *ref-current-row*)
+;;   (when (and *parsed-data-current-row* 
+;;              (current-elt *parsed-data-current-row*))
+;;     (vector-push-extend (list (current-elt *parsed-data-current-row*)
 ;;                               data)
-;;                         (field-data *ref-current-row*))
-;;     (setf (current-elt *ref-current-row*) nil)))
+;;                         (field-data *parsed-data-current-row*))
+;;     (setf (current-elt *parsed-data-current-row*) nil)))
 ;;
 ;; (defmethod sax:end-element  ((handler dbc-sax-handler)
 ;;                              uri local-name qname)
-;;   (when (and *ref-current-row* 
-;;              (current-elt *ref-current-row*))
-;;     (vector-push-extend (list (current-elt *ref-current-row*))
-;;                         (field-data *ref-current-row*))
-;;     (setf (current-elt *ref-current-row*) nil))
+;;   (when (and *parsed-data-current-row* 
+;;              (current-elt *parsed-data-current-row*))
+;;     (vector-push-extend (list (current-elt *parsed-data-current-row*))
+;;                         (field-data *parsed-data-current-row*))
+;;     (setf (current-elt *parsed-data-current-row*) nil))
 ;;   (when (string-equal local-name "row")
-;;     ;; (print (field-data *ref-current-row*))
+;;     ;; (print (field-data *parsed-data-current-row*))
 ;;     (write-sax-parsed-row-to-file :output-stream *parsed-data-output-stream*)
-;;     (and (current-elt *ref-current-row*)
-;;          (setf (current-elt *ref-current-row*) nil))))
+;;     (and (current-elt *parsed-data-current-row*)
+;;          (setf (current-elt *parsed-data-current-row*) nil))))
 ;;
 ;; (defmethod sax:end-document  ((handler dbc-sax-handler))
-;;   (when *ref-current-row*
-;;     (setf *ref-current-row* nil)))
+;;   (when *parsed-data-current-row*
+;;     (setf *parsed-data-current-row* nil)))
 
 (defmethod sax:start-document  ((handler dbc-sax-handler))
-  (when *ref-current-row*
-    (when (typep *ref-current-row* 'dbc-sax-parsing-class)
-      (dbc-sax-current-chars-clear *ref-current-row*))
-    (setf *ref-current-row* nil)
-    ;; (setf *ref-current-row* (make-instance 'dbc-sax-parsing-class))
+  (when *parsed-data-current-row*
+    (when (typep *parsed-data-current-row* 'dbc-sax-parsing-class)
+      (dbc-sax-current-chars-clear *parsed-data-current-row*))
+    (setf *parsed-data-current-row* nil)
+    ;; (setf *parsed-data-current-row* (make-instance 'dbc-sax-parsing-class))
     ))
 
 (defmethod sax:start-element ((handler dbc-sax-handler)
                               uri local-name qname attributes)
   ;; :TODO we _really_ need to be checking against a list of known field-names instead of against "row"
   (when (string-equal local-name "row")
-    (setf *ref-current-row* (make-instance 'dbc-sax-parsing-class))
+    (setf *parsed-data-current-row* (make-instance 'dbc-sax-parsing-class))
     (return-from sax:start-element))
-  ;; (unless (typep *ref-current-row* 'dbc-sax-parsing-class)
-  ;;   (setf *ref-current-row* (make-instance 'dbc-sax-parsing-class)))
+  ;; (unless (typep *parsed-data-current-row* 'dbc-sax-parsing-class)
+  ;;   (setf *parsed-data-current-row* (make-instance 'dbc-sax-parsing-class)))
   (flet ((collect (elt attrib)
            (when (string-equal elt local-name)
              (let ((attrib
@@ -151,46 +151,46 @@ Opend on entry to `tt--parse-xml-refs' and closed on exit.")
                           :key #'sax:attribute-local-name
                           :test #'string-equal)))
                (if attrib 
-                   (setf (current-elt *ref-current-row*) (sax:attribute-value attrib))
+                   (setf (current-elt *parsed-data-current-row*) (sax:attribute-value attrib))
                    (progn
-                     (dbc-sax-current-chars-reset *ref-current-row*)
-                     (setf (current-elt *ref-current-row*) nil)
+                     (dbc-sax-current-chars-reset *parsed-data-current-row*)
+                     (setf (current-elt *parsed-data-current-row*) nil)
                        ))))))
     ;;       <ELT> <ATTRIB>
     ;; <a href= | img src=
     (collect  "field"   "name")))
 
 (defmethod sax:characters  ((handler dbc-sax-handler) data)
-  (when (typep *ref-current-row* 'dbc-sax-parsing-class)
-    (if (current-elt *ref-current-row*)
-        (setf (dbc-sax-current-chars *ref-current-row*) data)
+  (when (typep *parsed-data-current-row* 'dbc-sax-parsing-class)
+    (if (current-elt *parsed-data-current-row*)
+        (setf (dbc-sax-current-chars *parsed-data-current-row*) data)
         (progn
-          (dbc-sax-current-chars-reset *ref-current-row*)
-          (setf (current-elt *ref-current-row*) nil)))))
+          (dbc-sax-current-chars-reset *parsed-data-current-row*)
+          (setf (current-elt *parsed-data-current-row*) nil)))))
 
 (defmethod sax:end-element  ((handler dbc-sax-handler)
                              uri local-name qname)
-  (when (and (typep *ref-current-row* 'dbc-sax-parsing-class)
-             (current-elt *ref-current-row*))
-    (let ((chk-chars (dbc-sax-current-chars *ref-current-row*)))
+  (when (and (typep *parsed-data-current-row* 'dbc-sax-parsing-class)
+             (current-elt *parsed-data-current-row*))
+    (let ((chk-chars (dbc-sax-current-chars *parsed-data-current-row*)))
       (if (mon:string-null-empty-or-all-whitespace-p chk-chars)
-          (vector-push-extend (list (current-elt *ref-current-row*))
-                              (field-data *ref-current-row*))
-          (vector-push-extend (cons (current-elt *ref-current-row*)
+          (vector-push-extend (list (current-elt *parsed-data-current-row*))
+                              (field-data *parsed-data-current-row*))
+          (vector-push-extend (cons (current-elt *parsed-data-current-row*)
                                     chk-chars)
-                              (field-data *ref-current-row*))))
-    (setf (current-elt *ref-current-row*) nil)
-    (dbc-sax-current-chars-reset *ref-current-row*))
+                              (field-data *parsed-data-current-row*))))
+    (setf (current-elt *parsed-data-current-row*) nil)
+    (dbc-sax-current-chars-reset *parsed-data-current-row*))
   (when (string-equal local-name "row")
-    ;; (print (field-data *ref-current-row*))
+    ;; (print (field-data *parsed-data-current-row*))
     (write-sax-parsed-row-to-file :output-stream *parsed-data-output-stream*)
-    (when (current-elt *ref-current-row*)
-      (dbc-sax-current-chars-clear *ref-current-row*)
-      (setf (current-elt *ref-current-row*) nil))))
+    (when (current-elt *parsed-data-current-row*)
+      (dbc-sax-current-chars-clear *parsed-data-current-row*)
+      (setf (current-elt *parsed-data-current-row*) nil))))
 
 (defmethod sax:end-document  ((handler dbc-sax-handler))
-  (when *ref-current-row*
-    (setf *ref-current-row* nil)))
+  (when *parsed-data-current-row*
+    (setf *parsed-data-current-row* nil)))
 
 ;; Write a commented delimiter line to OUTPUT-STREAM. 
 (defun write-sax-parsed-delimiter (&key output-stream)
@@ -198,15 +198,15 @@ Opend on entry to `tt--parse-xml-refs' and closed on exit.")
     (format output-stream "~&~%~A~%" delim)))
 
 ;; Write all rows of slot-value FIELD-DATA for current instance of class `dbc-sax-parsing-class' to OUTPUT-STREAM.
-;; Current instance is held by varialbe `*ref-current-row*'.
+;; Current instance is held by varialbe `*parsed-data-current-row*'.
 (defun write-sax-parsed-row-to-file (&key output-stream)
   (write-sax-parsed-delimiter :output-stream output-stream)
-  (write (coerce (field-data *ref-current-row*) 'list) :stream output-stream))
+  (write (coerce (field-data *parsed-data-current-row*) 'list) :stream output-stream))
 
 ;; Parse the dbc XML refs in INPUT-FILE and write thier lispy counterparts to OUTPUT-FILE.
 ;; For duration of body the variable `*parsed-data-output-stream*' is bound to an open output-stream.
 ;; INPUT-FILE defaults to `*xml-input-refs-name*'
-;; OUTPUT-FILE defaults to `*refs-output-source*'
+;; OUTPUT-FILE defaults to `*parsed-data-output-path*'
 ;; :EXAMPLE
 ;; (write-sax-parsed-xml-refs-file)
 ;; (write-sax-parsed-xml-refs-file
@@ -217,11 +217,13 @@ Opend on entry to `tt--parse-xml-refs' and closed on exit.")
 ;;                                :name (concatenate 'string "sax-themes-test-" (mon:time-string-yyyy-mm-dd))
 ;;                                :type "lisp")
 ;;                 (system-path *system-path*)))
+;; The parsed file can be loaded into a hash-table with 
+;; `load-sax-parsed-xml-file-to-parsed-class-hash'
 (defun write-sax-parsed-xml-refs-file (&key input-file  output-file)
   (unless input-file 
     (setf input-file *xml-input-refs-name*))
   (unless output-file
-    (setf output-file *refs-output-source*))
+    (setf output-file *parsed-data-output-path*))
   (unwind-protect
        (progn
          (setf *parsed-data-output-stream* (open output-file
