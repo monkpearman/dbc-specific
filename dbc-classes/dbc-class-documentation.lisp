@@ -20,6 +20,27 @@
   (:documentation 
    #.(format nil "Base class for referencing documents in the dbc-system.")))
 
+
+#|
+
+(defclass doc-dbc (base-dbc)
+  (doc-uuid 
+   ;; :initform (generate-dbc-uuid) 
+   :accessor doc-uuid)
+  (doc-title
+   :initform nil
+   :initarg :doc-title
+   :accessor doc-title)
+  (doc-subtitle
+   :initform nil
+   :initarg :doc-title
+   :accessor doc-title)
+  (doc-xrefs 
+   :initform nil
+   :initarg :doc-xrefs
+   :accessor doc-xrefs))
+|#
+
 ;;; ==============================
 
 

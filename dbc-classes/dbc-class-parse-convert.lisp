@@ -117,6 +117,7 @@
          (access   (format nil "~A-~A" (string-upcase named-class) slot)))
     (list slot init access)))
 
+;; (make-parsed-class-slot-init-accessor-name "parsed-class" "ref" )
 
 ;; (               <TRANSFORM> 
 ;; ( <FIELD-NAME>  <RENAME-TO>  (<INITP> <INIT-PFX>) )

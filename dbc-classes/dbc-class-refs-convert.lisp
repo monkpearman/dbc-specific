@@ -44,13 +44,488 @@ slots for the class `parsed-ref'.
                    :do (setf (gethash key ref-hash) val)))
     ref-hash))
 
+(defun load-parse-refs-to-table (parsed-class input-file hash-table key-accessor) 
+  ;; :NOTE Arg KEY-ACCESSOR was PRIMARY-KEY-FUN #'(lambda (x) (cdr (assoc "ref" x :test 'string=))))
+  ;;
+  ;; PARSED-CLASS a symbol designating the class we are parsing.
+  ;; INPUT-FILE the file containing field/value consed pairs.
+  ;; HASH-TABLE the hash-table to insert the class object to. 
+  ;; Its hash-table-test should be cl:equal
+  ;; key-accessor names an accessor function which returns the primary key for the parsed table
+  ;; it return value will becomes a hash-table KEY associating PARSED-CLASS in HASH-TABLE.
+  ;; As such, it should return always return a non-null value. If not the results are undefined.
+  ;; :EXAMPLE
+  ;; (defparameter *tt--parse-table* (make-hash-table :test 'equal))
+  ;; (clrhash *tt--parse-table*)
+  ;; (load-parse-refs-to-table 'parsed-ref 
+  ;;                        #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/xml-class-dump-dir/test-seq-2011-09-30"
+  ;;                        *tt--parse-table*
+  ;;                        #'item-number)
+  ;; (hash-table-count *tt--parse-table*)
+  ;; => 1
+  (with-open-file (fl input-file
+                      :direction :input 
+                      :element-type 'character
+                      :external-format :UTF-8)
+    (loop
+       for x = (read fl nil 'EOF)
+       until (eql x 'EOF)
+       do (loop 
+             with obj = (make-instance parsed-class) ;; (make-instance 'parsed-ref)
+             for (field . val) in x
+             ;; for ref = (funcall primary-key-fun x) ;; (cdr (assoc "ref" x :test 'string=))
+             ;; do (set-parse-ref-slot-value field val obj)
+             ;; finally (setf (gethash ref hash-table) obj)))       
+             do (set-parse-ref-slot-value field val obj)
+             finally (setf (gethash (funcall key-accessor obj) hash-table) obj))
+       finally (return hash-table))))
+
+;; (make-instance 'parsed-ref)
 
 ;;; ==============================
 (defclass parsed-ref (parsed-class)
-  ()
-  (:documentation "Class for parsed dbc xml refs."))
+  ((item-number
+    ;; :initarg :item-number
+    :accessor item-number
+    :documentation "ref")
+   (description-title
+    ;; :initarg :description-title
+    :accessor description-title
+    :documentation  "title")
 
-;; :initform *parsed-ref-class-name* :allocation 
+   (description-french ;; description-class
+    ;; :initarg :description-french
+    :accessor description-french
+    :documentation "desc_fr")
+
+   (description-english ;; description-class
+    ;; :initarg :description-english
+    :accessor description-english
+    :documentation "desc_en")
+
+   (ignorable-history-french
+    ;; :initarg :ignorable-history-french
+    :accessor ignorable-history-french
+    :documentation "histo_fr")
+
+   (ignorable-history-english
+    ;; :initarg  :ignorable-history-english
+    :accessor ignorable-history-english
+    :documentation "histo_en")
+
+   (description-quote
+    ;; :initarg :description-quote
+    :accessor description-quote
+    :documentation "text_quote")
+
+   (description-translation
+    ;; :initarg  :description-translation
+    :accessor description-translation
+    :documentation "translation")
+
+   (person-entity-coref
+    ;; :initarg :person-entity-coref 
+    :accessor person-entity-coref
+    :documentation "people")
+
+   (brand-entity-coref
+    ;; :initarg :brand-entity-coref
+    :accessor brand-entity-coref
+    :documentation "brand")
+
+   (composer-entity-coref
+    ;; :initarg :composer-entity-coref
+    :accessor composer-entity-coref
+    :documentation "composer")
+
+   (artist-entity-coref
+    ;; :initarg :artist-entity-coref
+    :accessor artist-entity-coref
+    :documentation "artist")
+
+   (author-entity-coref
+    ;; :initarg :author-entity-coref
+    :accessor author-entity-coref
+    :documentation "author")
+
+   (taxon-entity-coref ;; linnaean-entity-coref???
+    ;; :initarg :taxon-entity-coref
+    :accessor taxon-entity-coref
+    :documentation "latin_name")
+
+   (publication-entity-coref  
+    ;; :initarg :publication-entity-coref  
+    :accessor publication-entity-coref  
+    :documentation "book")
+
+   (publication-publisher
+    ;; :initarg :publication-publisher
+    :accessor publication-publisher
+    :documentation "publisher")
+
+   (publication-location ;; For congruence with birth-location death-location
+    ;; :initarg :publication-location
+    :accessor publication-location
+    :documentation "publish_location")
+
+   (publication-volume   
+    ;; :initarg :publication-volume
+    :accessor publication-volume
+    :documentation "volume")
+
+   (publication-edition
+    ;; :initarg :publication-edition 
+    :accessor publication-edition
+    :documentation "edition")
+
+   (publication-page
+    ;; :initarg :publication-page
+    :accessor publication-page
+    :documentation "page")
+
+   (publication-plate ;; :NOTE this is the only field which has its first character capitalized
+    ;; :initarg :publication-plate
+    :accessor publication-plate
+    :documentation    "Plate_number")
+
+   (publication-issue
+    ;; :initarg :publication-issue
+    :accessor publication-issue
+    :documentation "issue")
+
+   ;; It isn't totally clear yet if this is neccesarrily a publication related fields
+   (publication-date ;; For congruence with birth-date death-date 
+    ;; :initarg :publication-date
+    :accessor publication-date  
+    :documentation "year")
+   ;; It isn't totally clear yet if this is neccesarrily a publication related fields
+   (publication-date-range
+    ;; :initarg :publication-date-range
+    :accessor publication-date-range
+    :documentation "year_year") 
+
+   (category-0
+    ;; :initarg :category-0
+    :accessor category-0
+    :documentation "categ")
+
+   (category-1
+    ;; :initarg :category-1
+    :accessor category-1
+    :documentation "c1")
+
+   (category-2
+    ;; :initarg :category-2
+    :accessor category-2
+    :documentation "c2")
+
+   (category-3
+    ;; :initarg :category-3
+    :accessor category-3
+    :documentation "c3")
+
+   (category-4
+    ;; :initarg :category-4
+    :accessor category-4
+    :documentation "c4")
+
+   (category-5
+    ;; :initarg :category-5
+    :accessor category-5
+    :documentation "c5")
+
+   (category-6
+    ;; :initarg :category-6
+    :accessor category-6
+    :documentation "c6")
+
+   (category-precedence-list
+    ;; :initarg :category-precedence-list
+    :accessor category-precedence-list
+    :documentation "bct")
+
+   (documentation-category-0 
+    ;; :initarg :documentation-category-0 
+    :accessor documentation-category-0 
+    :documentation "categ_doc")
+
+   (documentation-category-1
+    ;; :initarg :documentation-category-1
+    :accessor documentation-category-1
+    :documentation "c1_doc")
+
+   (documentation-category-2
+    ;; :initarg :documentation-category-2
+    :accessor documentation-category-2
+    :documentation "c2_doc")
+
+   (documentation-category-3
+    ;; :initarg :documentation-category-3
+    :accessor documentation-category-3
+    :documentation "c3_doc")
+
+   (theme-0
+    ;; :initarg :theme-0
+    :accessor theme-0
+    :documentation "theme")
+
+   (theme-1
+    ;; :initarg :theme-1
+    :accessor theme-1
+    :documentation "theme2")
+
+   (theme-2 
+    ;; :initarg :theme-2 
+    :accessor theme-2 
+    :documentation "theme3")
+ 
+   (price-ask ;; The "-ask" suffix is for congruence with "price-ebay" :NOTE Need price-paid, price-sold,
+    ;; :initarg :price-ask
+    :accessor price-ask
+    :documentation "price")
+
+   (keywords-sequence
+    ;; :initarg :keywords-sequence
+    :accessor keywords-sequence
+    :documentation "keywords")
+
+   (description-condition ;; description-class
+    ;; :initarg :description-condition
+    :accessor description-condition
+    :documentation "condition")
+
+   (media-mount
+    ;; :initarg :media-mount
+    :accessor media-mount
+    :documentation "onlinen")
+
+   (media-technique
+    ;; :initarg :media-technique
+    :accessor media-technique
+    :documentation "technique")
+
+   (media-paper
+    ;; :initarg :media-paper
+    :accessor media-paper
+    :documentation "paper")
+
+   (media-color
+    ;; :initarg :media-color
+    :accessor media-color
+    :documentation "color")
+
+   (unit-width
+    ;; :initarg :unit-width
+    :accessor unit-width
+    :documentation "w")
+
+   (unit-height
+    ;; :initarg :unit-height
+    :accessor unit-height
+    :documentation "h")
+
+   (ignorable-number ;; probably empty  
+    ;; :initarg :ignorable-number
+    :accessor ignorable-number
+    :documentation "nbre")
+
+   (item-seller
+    ;; :initarg :item-seller
+    :accessor item-seller
+    :documentation "seller")
+
+   (item-bar-code
+    ;; :initarg :item-bar-code
+    :accessor item-bar-code
+    :documentation "bar_code")
+
+   (unit-weight
+    ;; :initarg :unit-weight
+    :accessor unit-weight
+    :documentation "weight")
+
+   (edit-by-creator 
+    ;; :initarg :edit-by-creator 
+    :accessor edit-by-creator 
+    :documentation "user_name")
+
+   (job-complete
+    ;; :initarg :job-complete
+    :accessor job-complete
+    :documentation "done")
+
+   (job-id
+    ;; :initarg :job-id
+    :accessor job-id
+    :documentation "job_name")
+
+   (job-locked ;; IGNORABLE  
+    ;; :initarg :job-locked
+    :accessor job-locked
+    :documentation "locked")
+
+   (item-active
+    ;; :initarg :item-active
+    :accessor item-active
+    :documentation "online")
+
+   (item-uri
+    ;; :initarg :item-uri
+    :accessor item-uri
+    :documentation "uri")
+
+   (ignorable-notes
+    ;; :initarg :ignorable-notes
+    :accessor ignorable-notes
+    :documentation "notes")
+
+   (ignorable-keywords-type  
+    ;; :initarg :ignorable-keywords-type  
+    :accessor ignorable-keywords-type  
+    :documentation "keywords_type")
+
+   (item-can-repro ;; IGNORABLE  
+    ;; :initarg :item-can-repro
+    :accessor item-can-repro
+    :documentation "av_repro")
+
+   (documentation-related
+    ;; :initarg :documentation-related
+    :accessor documentation-related
+    :documentation "related_doc")
+
+   (price-sold-ebay
+    ;; :initarg :price-sold-ebay
+    :accessor price-sold-ebay
+    :documentation "ebay_final")
+
+   (price-ask-ebay
+    ;; :initarg :price-ask-ebay
+    :accessor price-ask-ebay
+    :documentation "ebay_price")
+
+   (title-ebay
+    ;; :initarg :title-ebay
+    :accessor title-ebay
+    :documentation "ebay_title")
+
+   (control-id-ebay
+    ;; :initarg :control-id-ebay
+    :accessor control-id-ebay
+    :documentation "ebay_id")
+
+   (title-seo
+    ;; :initarg :title-seo
+    :accessor title-seo
+    :documentation "seo_title")
+
+   (description-seo
+    ;; :initarg :description-seo
+    :accessor description-seo
+    :documentation "description_seo")
+
+   (keywords-seo
+    ;; :initarg :keywords-seo
+    :accessor keywords-seo
+    :documentation "keywords_seo")
+
+   (edit-date-origin ;; IGNORABLE assuming date_edit is present and corresponds.
+    ;; :initarg :edit-date-origin
+    :accessor edit-date-origin
+    :documentation "date")
+
+   (edit-date
+    ;; :initarg :edit-date
+    :accessor edit-date
+    :documentation "date_edit")
+
+   (edit-history
+    ;; :initarg :edit-history
+    :accessor edit-history
+    :documentation "edit_history"))
+  (:documentation 
+   #.(format nil
+             "Class for parsed dbc xml `refs` table.~%~@
+:EXAMPLE ~%
+ \(mon:class-slot-list  'parsed-ref\)~%~@
+:SEE-ALSO `<XREF>'.~%▶▶▶")))
+
+
+(defun set-parse-ref-slot-value (field-string field-value object)
+  (string-case:string-case (field-string)
+    ("ref" (setf (item-number object) field-value))
+    ("title" (setf (description-title object) field-value))
+    ("desc_fr" (setf (description-french object) field-value))
+    ("desc_en" (setf (description-english object) field-value))
+    ("histo_fr" (setf (ignorable-history-french object) field-value))
+    ("histo_en" (setf (ignorable-history-english object) field-value))
+    ("text_quote" (setf (description-quote object) field-value))
+    ("translation" (setf (description-translation object) field-value))
+    ("people" (setf (person-entity-coref object) field-value))
+    ("brand" (setf (brand-entity-coref object) field-value))
+    ("composer" (setf (composer-entity-coref object) field-value))
+    ("artist" (setf (artist-entity-coref object) field-value))
+    ("author" (setf (author-entity-coref object) field-value))
+    ("latin_name" (setf (taxon-entity-coref object) field-value))
+    ("book" (setf (publication-entity-coref object) field-value))
+    ("publisher" (setf (publication-publisher object) field-value))
+    ("publish_location" (setf (publication-location object) field-value))
+    ("volume" (setf (publication-volume object) field-value))
+    ("edition" (setf (publication-edition object) field-value))
+    ("page" (setf (publication-page object) field-value))
+    ("Plate_number" (setf (publication-plate object) field-value))
+    ("issue" (setf (publication-issue object) field-value))
+    ("year" (setf (publication-date object) field-value))
+    ("year_year" (setf (publication-date-range object) field-value))
+    ("categ" (setf (category-0 object) field-value)) 
+    ("c1" (setf (category-1 object) field-value))
+    ("c2" (setf (category-2 object) field-value))
+    ("c3" (setf (category-3 object) field-value))
+    ("c4" (setf (category-4 object) field-value))
+    ("c5" (setf (category-5 object) field-value))
+    ("c6" (setf (category-6 object) field-value))
+    ("bct" (setf (category-precedence-list object) field-value))
+    ("categ_doc" (setf (documentation-category-0 object) field-value))
+    ("c1_doc" (setf (documentation-category-1 object) field-value))
+    ("c2_doc" (setf (documentation-category-2 object) field-value))
+    ("c3_doc" (setf (documentation-category-3 object) field-value))
+    ("theme" (setf (theme-0 object) field-value))
+    ("theme2" (setf (theme-1 object) field-value))
+    ("theme3" (setf (theme-2 object) field-value))
+    ("price" (setf (price-ask object) field-value))
+    ("keywords" (setf (keywords-sequence object) field-value))
+    ("condition" (setf (description-condition object) field-value))
+    ("onlinen" (setf (media-mount object) field-value))
+    ("technique" (setf (media-technique object) field-value))
+    ("paper" (setf (media-paper object) field-value))
+    ("color" (setf (media-color object) field-value))
+    ("w" (setf (unit-width object) field-value))
+    ("h" (setf (unit-height object) field-value))
+    ("nbre" (setf (ignorable-number object) field-value))
+    ("seller" (setf (item-seller object) field-value))
+    ("bar_code" (setf (item-bar-code object) field-value))
+    ("weight" (setf (unit-weight object) field-value))
+    ("user_name" (setf (edit-by-creator object) field-value))
+    ("done" (setf (job-complete object) field-value))
+    ("job_name" (setf (job-id object) field-value))
+    ("locked" (setf (job-locked object) field-value))
+    ("online" (setf (item-active object) field-value))
+    ("uri" (setf (item-uri object) field-value))
+    ("notes" (setf (ignorable-notes object) field-value))
+    ("keywords_type" (setf (ignorable-keywords-type object) field-value))
+    ("av_repro" (setf (item-can-repro object) field-value))
+    ("related_doc" (setf (documentation-related object) field-value))
+    ("ebay_final" (setf (price-sold-ebay object) field-value))
+    ("ebay_price" (setf (price-ask-ebay object) field-value))
+    ("ebay_title" (setf (title-ebay object) field-value))
+    ("ebay_id" (setf (control-id-ebay object) field-value))
+    ("seo_title" (setf (title-seo object) field-value))
+    ("description_seo" (setf (description-seo object) field-value))
+    ("keywords_seo" (setf (keywords-seo object) field-value))
+    ("date" (setf (edit-date-origin object) field-value))
+    ("date_edit" (setf (edit-date object) field-value))
+    ("edit_history" (setf (edit-history object) field-value))))
+
 
 ;; (mon:find-class-name-as-string 'parsed-ref "DBC")
 ;; "PARSED-REF", PARSED-REF, PARSED-REF, :EXTERNAL
@@ -74,6 +549,7 @@ slots for the class `parsed-ref'.
 ;; `format-entity-role'
 ;; `field-convert-empty-string-nil'
 ;;; ==============================
+
 
 
 ;;; ==============================
@@ -208,7 +684,7 @@ slots for the class `parsed-ref'.
 ;;  "theme2"           ;; theme-1
 ;;  "theme3"           ;; theme-2
 ;;
-;;  "keywords"         ;;
+;;  "keywords"         ;; keywords-sequence
 ;;
 ;;  "condition"        ;; description-condition  ;; description-class
 ;;  "onlinen"          ;; media-mount
@@ -351,7 +827,7 @@ slots for the class `parsed-ref'.
 ;; 
 
 ;;; ==============================
-;; :FIELD "desc_fr" :TRANSFORM description-english  :CLASS description-class
+;; :FIELD "desc_fr" :TRANSFORM description-french  :CLASS description-class
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -366,7 +842,7 @@ slots for the class `parsed-ref'.
 ;;   Use `field-convert-1-0-x'
 
 ;;; ==============================
-;; :FIELD "desc_en" :TRANSFORM description-french  :CLASS description-class
+;; :FIELD "desc_en" :TRANSFORM description-english  :CLASS description-class
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -1386,7 +1862,7 @@ slots for the class `parsed-ref'.
 
 
 ;;; ==============================
-;; :FIELD "keywords" :TRANSFORM 
+;; :FIELD "keywords" :TRANSFORM keywords-sequence
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"

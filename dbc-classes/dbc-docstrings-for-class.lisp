@@ -28,7 +28,7 @@
 #.(format nil 
 "Slot holding the base or topmost paths for dbc system.~%~@
 This slot is class allocated and all sub-systems in the dbc-system automatically
-inherit its value.~%~@
+inherit it's value.~%~@
 This slot value is set automatically at loadtime and should not be rebound.~%~@
 User code should not attempt setf the value of this slot!~%")
 :class-doc
@@ -109,7 +109,7 @@ not expose via direct :reader :write :accesor methods.~%"))
 (make-documented-class 'entity-regexp
 :match-entity-class
 #.(format nil
-"The class of entity regexp subclasses match.~%~@
+"The class of entity regexp subclasses matched by an instance of this class.~%~@
 For example, regexp instances of a subclass which match artist NAFs by their
 control name would share the same MATCH-ENTITY-CLASS.~%~@
 Likewise, regexp instances of a subclass which match artist NAFs by their
@@ -162,8 +162,8 @@ This likely names a special variable and is probably of type `cl:hash-table'.~%~
 For each regexp subclass there is a corresponding MATCH-MATCHER-DB regardless of~@
 whether that subclass might share a MATCH-ENTITY-CLASS with other subclasses.~@
 The keys into the MATCH-MATCHER-DB are shared with the keys of the MATCH-ENTITY-DB.~@
-However, where the latter maps to the UUID of a class instance, the values of in a~@
-MATCH-MATCHER-DB pointo to a matcher which is held in a datastructure specified by~@
+However, where the latter maps to the UUID of a class instance, the values of a~@
+MATCH-MATCHER-DB point to to a matcher which is held in a datastructure specified by~@
 MATCH-CONTAINER-TYPE.~%~@
 This slot is global per subclass.~%
 Subclasses should instantiate this slot with :allocation class.~%~@
@@ -203,7 +203,7 @@ UUID's run :after initialize-instance and/or when an instance is obsoleted with
 #.(format nil 
 "A matcher object for matching an entity.~%~@
 Its type should should be as specified by MATCH-CONTAINER-TYPE.~%~@
-Its values is accessed by association with the MATCH-CONTAINER-UUID in the~@
+It's value is accessed by association with the MATCH-CONTAINER-UUID in the~@
 applicable MATCH-MATCHER-DB.~%~@
 It should match an entity with a UUID value in the applicable MATCH-ENTITY-DB
 for the instances MATCH-ENTITY-CLASS.~%~@
@@ -213,7 +213,7 @@ Subclasses should access slot-value with a method specialized on.~%~
 
 :class-doc
 #.(format nil
-"Class implementing the core slots for implementatin of subtyped entity matchers.~%~@
+"Class implementing the core slots for implementation of subtyped entity matchers.~%~@
 Don't instantiate directly from this class.~%~@
 :SEE-ALSO ~%▶▶▶~%"))
 
@@ -247,7 +247,7 @@ Don't instantiate directly from this class.~%~@
 :class-doc
 #.(format nil
 "An `entity-regexp' sub-class for DBC NAF entities.~%~@
-Instances subclassed from `base-naf-entity' with should instantiate instances of~%~
+Instances subclassed from `base-naf-entity' should instantiate instances of~%~
 both `naf-entity-control-name-regexp', `naf-entity-alt-name-regexp' to enable~%~
 system wide xrefing/indexing of entity name-form occurences.~%~@
 :SEE-ALSO .~%▶▶▶"))
@@ -258,7 +258,7 @@ system wide xrefing/indexing of entity name-form occurences.~%~@
 :class-doc
 #.(format nil 
 "A `naf-entity-type-regexp' subclass for matching primary NAF control-names.~%~@
-Naf control-names are considered canonical and are _rarely_ mutated.~%~@
+NAF control-names are considered canonical and are _rarely_ mutated.~%~@
 The matchers named by instances of this class should run _before_ other regexps.~%~@
 The MATCH-ENTITY-CONTAINER-TYPE slot of this class is defaulted to 'closure with~@
 the intent that the MATCH-ENTITY-MATCHER will be implemented as a CL-PPCRE closure.~%~@
@@ -358,7 +358,7 @@ always have precedence of an alternative name form.~%~@
  :class-doc
  #.(format nil
 "A `naf-entity-alt-name-regexp' subclass for DBC NAF publication entities.~%~@
-:NOTE When intantiating objects this class should be careful to discriminate
+:NOTE When instantiating objects of this class be careful to discriminate
 among like named or similiarly prefixed publication names.~%~@
 :SEE-ALSO `naf-entity-publication'.~%▶▶▶~%"))
 

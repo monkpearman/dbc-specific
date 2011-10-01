@@ -56,7 +56,7 @@
   ((display-name
     :initarg :display-name 
     ;; :initform 
-    ;; (make-instance 'base-display-name-for-entity-type  
+    ;; (make-instance 'base-display-name-for-entity-type
     ;;                :display-name-for-entity <DISPLAY-NAME>
     ;;                :display-name-for-entity-type '<location-entity-???>)
     ;; 
@@ -93,18 +93,17 @@ When non-nil slot-value is a [ <STRING> | <LIST-OF-STRINGS> ].~%~@
   :documentation 
   #.(format nil
             "Top-level from which location-entity~%~@
-:SEE-ALSO `<XREF>'.~%▶▶▶"))
-  )
-
+:SEE-ALSO `<XREF>'.~%▶▶▶")))
 
 ;; 
+;; (mon:class-subclasses (find-class 'location-entity-verified))
+
 (defclass location-entity-verified (location-entity)
   ()
   (:documentation 
    #.(format nil 
              "
-:SEE-ALSO `<XREF>'.~%▶▶▶"
-             )))
+:SEE-ALSO `<XREF>'.~%▶▶▶")))
 
 (defclass location-entity-imagined (location-entity)
   ()
@@ -120,8 +119,7 @@ e.g. \"Here there be dragons.\"
   (:documentation 
    #.(format nil 
              "
-:SEE-ALSO `<XREF>'.~%▶▶▶"
-             )))
+:SEE-ALSO `<XREF>'.~%▶▶▶")))
 
 
 ;;; ==============================

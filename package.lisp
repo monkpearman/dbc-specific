@@ -5,7 +5,7 @@
 	    ;; (:nicknames #:dbc-sys)
 	    ;;
 	    ;; Import relevant stuff from :mon
-	    (:import-from #:mon #:fundoc #:vardoc #:typedoc #:classdoc #:make-documented-class #:defconst*)
+	    (:import-from #:mon #:method-doc #:generic-doc #:fundoc #:vardoc #:typedoc #:classdoc #:make-documented-class #:defconst*)
 	    ;; 
 	    (:export
 	     ;;

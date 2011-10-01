@@ -2,7 +2,120 @@
 ;;; :FILE dbc-classes/dbc-class-hierarchy
 ;;; ==============================
 
+Given enough indirections a UUID can resolve _any_ ojbect (and the values contained therein).
 
+This being the case, we can store all UUID/object key/value pairs in a _single_ global hash-table. 
+
+It doesn't matter what class or type the UUID dereferences, so long as the
+dereferenced object (the value) is itself identified by a UUID we can simply
+chase pointers until we find the thing we are looking for.
+
+If we store all objects in the DBC sytem in a single global hash-table and
+provide a set of interface methods for accessing, setting, and updating these
+objects allows us the following benfits:
+
+ - We can limit the number of locks we must acquire and hold when mutating the system
+
+ - We may be able to find a way to keep track of expired objects by specifing
+   weakness rules for the hash-table.
+   e.g. If both the UUID key and Object it dereferences are expired then the
+   pair will not remain accessible in the global hash-table and therefor we will
+   pre-empt chasing of pointers for non-existing objects.
+
+In order for the approach outlined above to work we need to require and maintain
+consistency w/r/t the following:
+
+ - all objects in the dbc-system must have a UUID
+
+ - The UUID -> object mapping for persistent objects can not change!
+
+ - all active objects in the dbc-system must have a UUID present as a key in the global hash-table
+
+ - all active objects must be reachable by a look-up on their UUID in the global hash-table
+
+ - the primary means of referencing an object in the dbc-system is through the object's UUID
+
+The last requirement; that our primary means of referencing an object vias it's
+UUID is prone to creation of tedious code.
+
+Our main obstacle will be to provide a clean interface of specializing methods
+which paper over this tedium while ensuring that the system doesn't become
+corrupted or inconsistent. This obstacle is likeley to be further complicated by
+the interaction with whatever persistence backend we choose esp. if that backend
+is implemented with MOP magic.
+
+In order for this to work we need to maintain very tight control on the core set
+of objects that we persist and define the necessary auxiliary methods to ensure
+that the slot-values of our persistent classes don't change out from under
+us... This is ___especially__ important when a slot-value is an instance of a
+class!!!
+
+Following provides an example of the basic idioms we imagine.
+
+ *dbc-global-hash-table*
+   key        value
+  --------------------
+  UUID-J ---> OBJECT-L   
+  UUID-K ---> OBJECT-M
+  UUUD-Q ---> OBJECT-N
+  UUUD-Y ---> OBJECT-O
+  UUUD-Z ---> OBJECT-P
+
+UUID-J dereferences OBJECT-L
+ OBJECT-L is an instance of an entity class
+ OBJECT-L contains slot hash-for-entity-foo. 
+ It's slot-value is consed pair:
+ ( UUID-K . UUID-Y )
+
+UUID-K dereferences OBJECT-M 
+OBJECT-M contains a slot psuedonym-hash with slot-value #<HASH-TABLE ... >
+
+UUID-Y dereferences OBJECT-O
+OBJECT-O contains a slot pseudonym-list which lists the known pseudonyms of OBJECT-L
+
+OBJECT-O exists as a hash-table value as UUID-Y in the table contained of OBJECT-M pseudonym-hash slot
+
+So, imagine we want to find the pseudonyms for the entity OBJECT-L
+
+To do this we need to get from OBJECT-L to OBJECT-O.
+Because we don't refer to instances directly we refer OBJECT-L to it through UUID-J:
+
+ (gethash UUID-J *dbc-global-hash-table*)
+ => OBJECT-L
+
+Get the key/value pair of UUIDs which dereferece OBJECT-M and OBJECT-O e.g. a
+hash-table and a key into the table:
+
+ (slot-value (gethash UUID-J *dbc-global-hash-table*) 'hash-for-entity-foo)
+ => (UUID-K . UUID-Y)
+
+ (gethash (car (slot-value (gethash UUID-J *dbc-global-hash-table*) 'hash-for-entity-foo)) ; UUID-K
+          *dbc-global-hash-table*)
+ => OBJECT-M 
+
+ (slot-value (gethash (car (slot-value (gethash UUID-J *dbc-global-hash-table*) 'hash-for-entity-foo)) ; UUID-K
+                       *dbc-global-hash-table*) ; OBJECT-M
+              'pseudonym-hash)
+  ;=> #<HASH-TABLE ... >
+
+
+ (gethash (gethash (cdr (slot-value (gethash UUID-J *dbc-global-hash-table*) 'hash-for-entity-foo)) *dbc-global-hash-table*) ; UUID-Y
+          (slot-value (gethash (car (slot-value (gethash UUID-J *dbc-global-hash-table*) 'hash-for-entity-foo)) ; UUID-K
+                               *dbc-global-hash-table*) ; OBJECT-M
+                      'pseudonym-hash)                  ;#<HASH-TABLE ... >
+          *dbc-global-hash-table*)
+ ;=> OBJECT-O
+
+ (slot-value (gethash (gethash (cdr (slot-value (gethash UUID-J *dbc-global-hash-table*) 'hash-for-entity-foo)) *dbc-global-hash-table*) ; UUID-Y
+                      (slot-value (gethash (car (slot-value (gethash UUID-J *dbc-global-hash-table*) 'hash-for-entity-foo)) ; UUID-K
+                                           *dbc-global-hash-table*) ; OBJECT-M
+                                  'pseudonym-hash) ;#<HASH-TABLE ... >
+                      *dbc-global-hash-table*)     ; OBJECT-O
+             'pseudonym-list)
+ => ( ... list of pseudonyms for OBJECT-M ... )
+
+
+;;; ==============================
 ;;; :NOTE Following is an enumeration of the DBC class hierarchy.
 ;;; This spec should not be considered normative and should be updated as
 ;;; changes precipitate.
@@ -28,11 +141,22 @@ dbc-classes/dbc-class-uuid.lisp
 
 base-uuid
 
+(base-dbc)
+- base-uuid (base-dbc)
+-- system-object-uuid (base-uuid)
+   system-objects identified by UUID
+   
+    base-dbc
+    base-regexp
+    base-entity
+    base-control-id
+    system-object-uuid
+
 
 dbc-classes/dbc-class-control-id.lisp
 
 
-;; The class `base-control-id' is implemented to distringuish different
+;; The class `base-control-id' is implemented to distinguish different
 ;; types of controlled identities in classes with slots whose values specify
 ;; some form of value used for identification puroposes.
 ;; :NOTE subclasses of `base-control-id' are distinct from those of the class
@@ -45,7 +169,9 @@ dbc-classes/dbc-class-control-id.lisp
 ;;  `display-name-for-entity' and `display-name-for-entity-of-type' slot-values.
 
 
+
 - base-control-id (base-dbc)
+
 -- control-id-display-name                  (base-control-id) ;; String based identity
 --- control-id-display-name-for-entity-type (control-id-display-name)
 ---- control-id-display-artist              (control-id-display-name-for-entity-type)
@@ -97,7 +223,7 @@ dbc-classes/dbc-class-entity.lisp
 -- base-category-entity (base-entity)
 -- base-theme-entity    (base-entity)
 
--- base-media-entity    (base-entity)
+-- base-media-entity       (base-entity)
 --- media-entity-technique (base-media-entity)
 --- media-entity-material  (base-media-entity)
 --- media-entity-mount     (base-media-entity)

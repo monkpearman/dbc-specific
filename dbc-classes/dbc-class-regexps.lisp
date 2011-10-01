@@ -24,7 +24,6 @@
 ;;    (list msg)))
 ;;; ==============================
 
-
 
 ;;; ==============================
 (in-package #:dbc)
@@ -35,96 +34,26 @@
 ;;; :GENERIC-FUNCTIONS
 ;;; ==============================
 
-(defgeneric regexp-match-entity-class (obj &key)
-  (:documentation
-   #.(format nil
- "Return the entity-class for OBJ.~%~
-:SEE-ALSO `entity-regexp-subclass-allocation', `entity-regexp',
-`regexp-match-entity-class', `regexp-match-entity-db',
-`regexp-match-matcher-db', `regexp-match-container-type',
-`regexp-match-container-uuid', `regexp-matcher'.~%▶▶▶~%")))
+(defgeneric regexp-match-entity-class (obj &key))
 
-(defgeneric regexp-match-entity-db (obj &key)
-  (:documentation 
-   #.(format nil
-   "Return the entity-db lookup table for OBJ.~%~
-:SEE-ALSO `entity-regexp-subclass-allocation', `entity-regexp',
-`regexp-match-entity-class', `regexp-match-entity-db',
-`regexp-match-matcher-db', `regexp-match-container-type',
-`regexp-match-container-uuid', `regexp-matcher'.~%▶▶▶~%")))
+(defgeneric regexp-match-entity-db (obj &key))
 
-(defgeneric regexp-match-matcher-db (obj &key)
-  (:documentation 
-   #.(format nil
-      "Return the matcher-db lookup table for OBJ.~%~
-:SEE-ALSO `entity-regexp-subclass-allocation', `entity-regexp', 
-`regexp-match-entity-class', `regexp-match-entity-db',
-`regexp-match-matcher-db', `regexp-match-container-type',
-`regexp-match-container-uuid', `regexp-matcher'.~%▶▶▶~%")))
+(defgeneric regexp-match-matcher-db (obj &key))
 
-(defgeneric regexp-match-container-type (obj &key)
-  (:documentation 
-   #.(format nil 
-"Return the container type for OBJ's matcher.~%~
-:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
-`regexp-match-entity-db', `regexp-match-matcher-db',
-`regexp-match-container-type', `regexp-match-container-uuid',
-`regexp-matcher'.~%▶▶▶~%")))
+(defgeneric regexp-match-container-type (obj &key))
 
-(defgeneric (setf regexp-match-container-type) (container-type obj &key)
-  (:documentation 
-   #.(format nil
-"Set the CONTAINER-TYPE for OBJ matcher.~%~
-:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
-`regexp-match-entity-db', `regexp-match-matcher-db',
-`regexp-match-container-type', `regexp-match-container-uuid',
-`regexp-matcher'.~%▶▶▶~%")))
+(defgeneric (setf regexp-match-container-type) (container-type obj &key))
 
-(defgeneric regexp-match-container-uuid (obj &key)
-  (:documentation
-   #.(format nil 
-"Return the UUID of the container holding a matcher for OBJ.~%~
-:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
-`regexp-match-entity-db', `regexp-match-matcher-db',
-`regexp-match-container-type', `regexp-match-container-uuid',
-`regexp-matcher'.~%▶▶▶~%")))
+(defgeneric regexp-match-container-uuid (obj &key))
 
 ;; :NOTE This one probably needs additional options e.g. method-combination, etc.
 ;; It will almost certainly need an pre-emptive around method to prevent
 ;; inadverdent destruction of UUID's
-(defgeneric (setf regexp-match-container-uuid) (container-id obj &key)
-  (:documentation 
-   #.(format nil
-   "Set the match-container-uuid for the container holding OBJ's matcher.~%~
-    Specializers should take special care to ensure that they don't overwrite an existing UUID.~%~
-    An OBJ's UUID should be treated as an immutable constant in almost all circumstances.~%~
-    Therefor, the intent of this function is to mediate generation of UUID's run~%~
-    :after initialize-instance and/or when an instance is obsoleted with~%~
-    `cl:make-instances-obsolete'.~%~
-:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
-`regexp-match-entity-db', `regexp-match-matcher-db',
-`regexp-match-container-type', `regexp-match-container-uuid',
-`regexp-matcher'.~%▶▶▶~%")))
+(defgeneric (setf regexp-match-container-uuid) (container-id obj &key))
 
-(defgeneric regexp-matcher (obj &key)
-  (:documentation 
-   #.(format nil
-"Return OBJ's matcher.~%~
-:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
-`regexp-match-entity-db', `regexp-match-matcher-db',
-`regexp-match-container-type', `regexp-match-container-uuid',
-`regexp-matcher'.~%▶▶▶~%")))
+(defgeneric regexp-matcher (obj &key))
 
-(defgeneric (setf regexp-matcher) (matcher obj &key)
-  (:documentation 
-   #.(format nil
-   "Set OBJ's matcher.~%~
-    Speacializers should take care to verify that matcher can be contained of its~%~
-    specified container type.~%
-:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
-`regexp-match-entity-db', `regexp-match-matcher-db',
-`regexp-match-container-type', `regexp-match-container-uuid',
-`regexp-matcher'.~%▶▶▶~%")))
+(defgeneric (setf regexp-matcher) (matcher obj &key))
 
 
 ;;; ==============================
@@ -158,7 +87,7 @@
   (:documentation #.(classdoc 'entity-regexp-subclass-allocation :class-doc)))
 
 (defclass entity-regexp (base-regexp)
-  (( ;; global-per-subclass access with regexp-match-entity-class
+  ((;; global-per-subclass access with regexp-match-entity-class
     ;; entity-regexp-subclass-allocation subclass-match-entity-class
     match-entity-class 
     :initform nil 
@@ -179,10 +108,14 @@
     :initform nil
     :documentation #.(classdoc 'entity-regexp :match-container-type))
    ( ;; local-per-instance, access with regexp-match-container-id
-    match-container-uuid :initarg :match-container-id :initform nil
+    match-container-uuid
+    :initarg :match-container-id 
+    :initform nil
     :documentation #.(classdoc 'entity-regexp :match-container-uuid))
    ( ;; local-per-instance, access with regexp-matcher
-    match-entity-matcher :initarg :match-entity-matcher :initform nil
+    match-entity-matcher 
+    :initarg :match-entity-matcher 
+    :initform nil
     :documentation  #.(classdoc 'entity-regexp :match-entity-matcher)))
   (:documentation  #.(classdoc 'entity-regexp :class-doc)))
 
@@ -194,8 +127,7 @@
 ;;                :match-container-uuid <GENERATE>
 ;;                :match-entity-matcher (cl-ppcre:create-scanner "liza-terry 342"))
 
-;;; ==============================
-;;; 
+
 ;;; ==============================
 ;; #:*parsed-field-name-regexp-matcher-db*
 ;; #:parsed-field-name-regexp
@@ -239,13 +171,14 @@
 ;;; ==============================
 ;;; :NAFS
 ;;; ==============================
+
 (defclass naf-entity-type-regexp (entity-regexp)
   ;; match-entity-class
   ;; match-container-uuid
-  ;; match-container-type   
-  ;; match-entity-db
+  ;; match-container-type
+  ;; match-entity-db    
   ;; match-matcher-db
-  ;; match-entity-class-type 
+  ;; match-entity-class-type
   ()
   (:documentation #.(classdoc 'naf-entity-type-regexp :class-doc)))
 
@@ -259,6 +192,24 @@
   ;;(match-entity-container-type :initform 'list)
   ()
   (:documentation #.(classdoc 'naf-entity-alt-name-regexp :class-doc)))
+
+
+
+;; (make-instance 'entity-regexp 
+;;                :match-entity-class 'liza-terry 
+;;                :match-entity-db *liza-terry-db* 
+;;                :match-matcher-db *liza-terry-matcher-db* 
+;;                :match-container-type 'closure
+;;                :match-container-uuid <GENERATE>
+;;                :match-entity-matcher (cl-ppcre:create-scanner "liza-terry 342"))
+;; entity-regexp
+;; |-> naf-entity-regexp
+;;     |-> naf-entity-control-name-regexp
+;;         |-> naf-entity-artist-control-regexp
+;;     |-> naf-entity-alt-name-regexp
+;;         |-> naf-entity-artist-alt-regexp
+;;     |-> naf-entity-artist-regexp
+
 
 ;;; ==============================
 
@@ -280,12 +231,14 @@
   ()
   )
 
-;; (let ((base-naf-entity-regexp 
+;; (let ((base-naf-entity-regexp
 ;;        (make-entity-regexp-subclass-allocation 
 ;;         :match-entity-class 'naf-entity-artist-regexp 
 ;;         :match-entity-db    entity-db
 ;;         :match-matcher-db   matcher-db)))
 ;;   (setf *naf-artist-entity-regexp-db* base-naf-entity-regexp))
+
+;; *naf-artist-entity-regexp-db*
 
 ;; (regexp-match-entity-db *naf-artist-entity-regexp-db*)
 ;; (slot-value *naf-artist-entity-regexp-db* 'subclass-match-entity-db)
@@ -354,10 +307,11 @@
 ;;; ==============================
 ;;; :FUNCTIONS
 ;;; ==============================
+
 (defun make-entity-regexp-subclass-allocation-if (match-entity-class
                                                   match-entity-db
                                                   match-matcher-db)
-  ;; :NOTE We may have to declare these special if they aren't seen in the 
+  ;; :NOTE We may have to declare these special if they aren't seen
   ;;  outside the lexical enverionment 
   ;;(declare (special match-entity-db match-matcher-db ))
   (and
@@ -385,15 +339,15 @@
      :subclass-match-entity-db    ,match-entity-db 
      :subclass-match-matcher-db   ,match-matcher-db)))
 
-(defun make-entity-regexp-subclass-allocation (&key
-                                               match-entity-class
-                                               match-entity-db
-                                               match-matcher-db)
-  (let ((chk-keys 
-         (make-entity-regexp-subclass-allocation-if 
-          match-entity-class match-entity-db match-matcher-db)))
+(defun make-entity-regexp-subclass-allocation (&key match-entity-class
+                                                    match-entity-db
+                                                    match-matcher-db)
+  (let ((chk-keys  (make-entity-regexp-subclass-allocation-if match-entity-class
+                                                              match-entity-db
+                                                              match-matcher-db)))
     (apply #'make-instance 'entity-regexp-subclass-allocation
            chk-keys)))
+
 
 ;;; ==============================
 ;; :TODO Following three should signal an error if they don't find a value b/c
@@ -412,15 +366,15 @@
 ;; (regexp-match-entity-class *base-test-entity-regexp-instance*)
 ;; (multiple-value-list (regexp-match-entity-class *base-test-entity-regexp-instance*))
 (defmethod regexp-match-entity-class ((obj entity-regexp-subclass-allocation) &key)
-  (let* ((if-bnd
-          (and (slot-boundp obj 'subclass-match-entity-class)
-               (slot-value obj  'subclass-match-entity-class)))
-         (fnd-class (and if-bnd 
-                         (mon:ref-bind fc (find-class if-bnd)
-                           (and (eql (class-name fc) if-bnd)
-                                fc)))))
-    (and if-bnd fnd-class
-         (values fnd-class if-bnd))))
+  (let* ((if-bound (and (slot-exists-p obj 'subclass-match-entity-class)
+                        (slot-boundp obj 'subclass-match-entity-class)
+                        (slot-value obj  'subclass-match-entity-class)))
+         (found-class (and if-bound (mon:ref-bind fc (find-class if-bound)
+                                      (and (eql (class-name fc) if-bound)
+                                           fc)))))
+    (and if-bound
+         found-class
+         (values found-class if-bound))))
 
 ;; If OBJ's subclass-match-entity-db slot is bound and its slot-value is
 ;; `cl:hash-table-p' return as if by `cl:values' the hash-table object and the
@@ -428,20 +382,20 @@
 ;; (regexp-match-entity-db *base-test-entity-regexp-instance*)
 ;; (multiple-value-list (regexp-match-entity-db *base-test-entity-regexp-instance*))
 (defmethod regexp-match-entity-db ((obj entity-regexp-subclass-allocation) &key)
-  (let ((if-bnd
-         (and (slot-boundp obj 'subclass-match-entity-db)
-              (slot-value obj 'subclass-match-entity-db)))
-        (then-get-hsh nil))
-    ;; (and (symbolp if-bnd)
-    ;;      (setf then-get-hsh 
-    ;;            (symbol-value if-bnd)))
-    ;; (and then-get-hsh 
-    ;;      (hash-table-p then-get-hsh)
-    ;;      (values then-get-hsh if-bnd))))
-    ;; (and (symbolp if-bnd)
-    ;;      (setf then-get-hsh 
-    ;;            (symbol-value if-bnd)))
-    (and (hash-table-p if-bnd) if-bnd)))
+  (let ((if-bound (and (slot-exists-p obj 'subclass-match-entity-db)
+                       (slot-boundp obj 'subclass-match-entity-db)
+                       (slot-value obj 'subclass-match-entity-db)))
+        (then-get-hash '()))
+    ;; (and (symbolp if-bound)
+    ;;      (setf then-get-hash 
+    ;;            (symbol-value if-bound)))
+    ;; (and then-get-hash 
+    ;;      (hash-table-p then-get-hash)
+    ;;      (values then-get-hash if-bound))))
+    ;; (and (symbolp if-bound)
+    ;;      (setf then-get-hash 
+    ;;            (symbol-value if-bound)))
+    (and (hash-table-p if-bound) if-bound)))
 
 ;; If OBJ's subclass-match-matcher-db slot is bound and its slot-value is
 ;; `cl:hash-table-p' return as if by `cl:values' the hash-table object and the
@@ -449,36 +403,37 @@
 ;; (regexp-match-matcher-db *base-test-entity-regexp-instance*)
 ;; (multiple-value-list (regexp-match-entity-db *base-test-entity-regexp-instance*))
 (defmethod regexp-match-matcher-db ((obj entity-regexp-subclass-allocation) &key)
-  (let ((if-bnd
-         (and (slot-boundp obj 'subclass-match-matcher-db)
-              (slot-value obj  'subclass-match-matcher-db)))
-        (then-get-hsh nil))
-    (and (symbolp if-bnd)
-         (setf then-get-hsh 
-               (symbol-value if-bnd)))
-    (and then-get-hsh 
-         (hash-table-p then-get-hsh)
-         (values then-get-hsh if-bnd))))
+  (let ((if-bound (and (slot-exists-p obj 'subclass-match-matcher-db)
+                       (slot-boundp obj   'subclass-match-matcher-db)
+                       (slot-value obj    'subclass-match-matcher-db)))
+        (then-get-hash '()))
+    (and (symbolp if-bound)
+         (setf then-get-hash (symbol-value if-bound)))
+    (and then-get-hash 
+         (hash-table-p then-get-hash)
+         (values then-get-hash if-bound))))
 
 ;;; ==============================
 
 
 ;;; ==============================
-;; (make-instance 'entity-regexp 
+;; (make-instance 'entity-regexp
 ;;                :match-entity-class 'liza-terry 
 ;;                :match-entity-db *liza-terry-db* 
 ;;                :match-matcher-db *liza-terry-matcher-db* 
 ;;                :match-container-type 'closure
 ;;                :match-container-uuid <GENERATE>
 ;;                :match-entity-matcher (cl-ppcre:create-scanner "liza-terry 342"))
-;;; ==============================
-;; match-entity-class    ;; The class of the the thing matched e.g. an NAF-ARTIST-ENTITY
-;; match-entity-db       ;; A special variable of key/vals (match-container-uuid . entity-instance-uuid)
-;; match-matcher-db      ;; A special variable of key/vals (match-container-uuid . match-entity-matcher)
-;; match-container-type  ;; the type-of the match-entity-matcher 
-;; match-container-uuid  ;; uuid of the container holding the match-entity-matcher object
-;; match-entity-matcher  ;; a matcher object
 
+;;; ==============================
+;; match-entity-class    ;; The class of the the thing matched e.g. an NAF-ARTIST-ENTITY                   ;; :allocation :class (e.g. global per subclass)
+;; match-entity-db       ;; A special variable of key/vals ( match-container-uuid . entity-instance-uuid ) ;; :allocation :class (e.g. global per subclass)
+;; match-matcher-db      ;; A special variable of key/vals ( match-container-uuid . match-entity-matcher ) ;; :allocation :class (e.g. global per subclass)
+;; match-container-uuid  ;; UUID of the container holding the `match-entity-matcher' object -- local per subclass instance
+;;;                      ;;  specialize `regexp-match-container-uuid'
+;; match-container-type  ;; the type-of the `match-entity-matcher'  [ closure | list | string | array | hash-table ]  -- local per subclass instance
+;; match-entity-matcher  ;; a matcher object - it's type is identified by the slot-value of `match-container-type'    -- local per subclass instance
+;;
 
 ;; (defun make-instance-naf-entity-artist-control-regexp 
 ;;     (&key 
@@ -489,6 +444,17 @@
 ;;      match-container-uuid  ;; local-per-instance
 ;;      match-entity-matcher  ;; local-per-instance
 ;;      )
+
+;; subclass-match-entity-class  <-> regexp-match-entity-class
+;; subclass-match-entity-db     <-> regexp-match-entity-db
+;; subclass-match-matcher-db    <-> regexp-match-matcher-db
+
+;; match-entity-class     The class of the the thing matched e.g. an NAF-ARTIST-ENTITY
+;; match-container-uuid   specialize `regexp-match-container-uuid' -- local-per-subclass
+;; match-container-type   [ closure | list | string | array | hash-table ]  -- local-per-subclass
+;; match-entity-db       :allocation :class -- variable holding match-container-uuid/entity-instance-uuid pairs
+;; match-matcher-db      :allocation :class -- variable holding lookup table of match-container-uuid/matcher pairs
+;; match-entity-class-type 
 
 
 
@@ -512,7 +478,7 @@
 ;;; ==============================
 
 (fundoc 'make-entity-regexp-subclass-allocation-if 
-"Verify the keyword arguments for `make-entity-regexp-subclass-allocation'.~%~@
+ "Verify the keyword arguments for `make-entity-regexp-subclass-allocation'.~%~@
 If any of the following constraints are not met signal an error.~%~@
 Args MATCH-ENTITY-CLASS, MATCH-ENTITY-DB, and MATCH-MATCHER-DB must each be
 non-nil.~%~@
@@ -525,8 +491,8 @@ Args MATCH-ENTITY-DB and MATCH-MATCHER-DB must each satisfy `cl:hash-table-p'.~%
 
 (fundoc 'make-entity-regexp-subclass-allocation
 "Instantiate an instance of the ENTITY-REGEXP-SUBCLASS-ALLOCATION class.~%
-Keyword MATCH-ENTITY-CLASS is the class-name of that matchers of a subclass of
-the ENTITY-REGEXP class will match.~%
+Keyword MATCH-ENTITY-CLASS is the class-name of an isntance that matchers of a
+subclass of the ENTITY-REGEXP class will match.~%
 Keyword MATCH-ENTITY-DB is a symbol naming a special variable the value of
 which is a table mapping key/value pairs of the form:~%
  match-container-uuid entity-instance-uuid~%~@
@@ -536,6 +502,76 @@ which is a table mapping  key/value pairs of the form:~%
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `<XREF>'.~%▶▶▶")
+
+(generic-doc #'regexp-match-entity-class
+ "Get the entity-class for OBJ.~%~
+:SEE-ALSO `entity-regexp-subclass-allocation', `entity-regexp',
+`regexp-match-entity-class', `regexp-match-entity-db',
+`regexp-match-matcher-db', `regexp-match-container-type',
+`regexp-match-container-uuid', `regexp-matcher'.~%▶▶▶~%")
+
+(generic-doc #'regexp-match-entity-db
+   "Get the entity-db lookup table for OBJ.~%~
+:SEE-ALSO `entity-regexp-subclass-allocation', `entity-regexp',
+`regexp-match-entity-class', `regexp-match-entity-db',
+`regexp-match-matcher-db', `regexp-match-container-type',
+`regexp-match-container-uuid', `regexp-matcher'.~%▶▶▶~%")
+
+(generic-doc #'regexp-match-matcher-db
+             "Return the matcher-db lookup table for OBJ.~%~
+:SEE-ALSO `entity-regexp-subclass-allocation', `entity-regexp', 
+`regexp-match-entity-class', `regexp-match-entity-db',
+`regexp-match-matcher-db', `regexp-match-container-type',
+`regexp-match-container-uuid', `regexp-matcher'.~%▶▶▶~%")
+
+(generic-doc  #'regexp-match-container-type
+ "Get the container type for OBJ's matcher.~%~
+:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
+`regexp-match-entity-db', `regexp-match-matcher-db',
+`regexp-match-container-type', `regexp-match-container-uuid',
+`regexp-matcher'.~%▶▶▶~%")
+
+(generic-doc #'(setf regexp-match-container-type)
+ "Set the CONTAINER-TYPE for OBJ matcher.^~%~@
+:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
+`regexp-match-entity-db', `regexp-match-matcher-db',
+`regexp-match-container-type', `regexp-match-container-uuid',
+`regexp-matcher'.~%▶▶▶~%")
+
+(generic-doc #'regexp-match-container-uuid
+"Return the UUID of the container holding a matcher for OBJ.~%~
+:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
+`regexp-match-entity-db', `regexp-match-matcher-db',
+`regexp-match-container-type', `regexp-match-container-uuid',
+`regexp-matcher'.~%▶▶▶~%")
+
+(generic-doc #'(setf regexp-match-container-uuid)
+"Set the match-container-uuid for the container holding OBJ's matcher.~%~
+Specializers should take special care to ensure that they don't overwrite an existing UUID.~%~
+An OBJ's UUID should be treated as an immutable constant in almost all circumstances.~%~
+Therefor, the intent of this function is to mediate generation of UUID's run~%~
+:after initialize-instance and/or when an instance is obsoleted with~%~
+`cl:make-instances-obsolete'.~%~
+:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
+`regexp-match-entity-db', `regexp-match-matcher-db',
+`regexp-match-container-type', `regexp-match-container-uuid',
+`regexp-matcher'.~%▶▶▶~%")
+
+(generic-doc #'regexp-matcher
+"Get OBJ's matcher.~%~
+:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
+`regexp-match-entity-db', `regexp-match-matcher-db',
+`regexp-match-container-type', `regexp-match-container-uuid',
+`regexp-matcher'.~%▶▶▶~%")
+
+(generic-doc #'(setf regexp-matcher)
+"Set OBJ's matcher.~%~
+Speacializers should take care to verify that matcher can be contained of its~%~
+specified container type.~%
+:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
+`regexp-match-entity-db', `regexp-match-matcher-db',
+`regexp-match-container-type', `regexp-match-container-uuid',
+`regexp-matcher'.~%▶▶▶~%")
 
 ;;; ==============================
 
