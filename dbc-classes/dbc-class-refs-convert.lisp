@@ -44,9 +44,30 @@ slots for the class `parsed-ref'.
                    :do (setf (gethash key ref-hash) val)))
     ref-hash))
 
-;; :NOTE current arg KEY-ACCESSOR was PRIMARY-KEY-FUN which allowed passing an anonymous function instead of a slot-accessor e.g.:
-;;  (load-sax-parsed-xml-file-to-parsed-class-hash <PARSED-CLASS> <INPUT-FILE> <HASH-TABLE> #'(lambda (x) (cdr (assoc "ref" x :test 'string=))))
-;; :WAS (defun load-sax-parsed-xml-file-to-parsed-class-hash (parsed-class input-file hash-table primary-key-fun) 
+;;; ==============================
+;; :NOTE `load-sax-parsed-xml-file-to-parsed-class-hash' now has parameter
+;; KEY-ACCESSOR which was orignally named PRIMARY-KEY-FUN and provided a
+;; somewhat different interface which allowed passing an anonymous function
+;; instead of a slot-accessor e.g.:
+;;  (load-sax-parsed-xml-file-to-parsed-class-hash <PARSED-CLASS> 
+;;                                                 <INPUT-FILE> 
+;;                                                 <HASH-TABLE>
+;;                                                #'(lambda (x) (cdr (assoc "ref" x :test 'string=))))
+;; We've kept the orignal as commented as the alternative semantics may be prove useful in the future.
+;;
+;; (defun load-sax-parsed-xml-file-to-parsed-class-hash (parsed-class input-file hash-table primary-key-fun) 
+;;   (with-open-file (fl input-file :direction :input :element-type 'character :external-format :UTF-8)
+;;     (loop
+;;        for x = (read fl nil 'EOF)
+;;        until (eql x 'EOF)
+;;        do (loop 
+;;              with obj = (make-instance parsed-class)
+;;              for (field . val) in x
+;;              for ref = (funcall primary-key-fun x) ;; (cdr (assoc "ref" x :test 'string=))
+;;              do (set-parse-ref-slot-value field val obj)
+;;              finally (setf (gethash ref hash-table) obj))
+;;        finally (return (values hash-table (hash-table-count hash-table))))))
+;;
 (defun load-sax-parsed-xml-file-to-parsed-class-hash (parsed-class input-file hash-table key-accessor)
   ;; Arg PARSED-CLASS a symbol designating the class we are parsing.
   ;; Arg INPUT-FILE the file containing field/value consed pairs.
@@ -66,7 +87,10 @@ slots for the class `parsed-ref'.
   ;;                        *tt--parse-table*
   ;;                        #'item-number)
   ;; ;; => #<HASH-TABLE  ... >, 8969
-  ;; :NOTE For use with output of `write-sax-parsed-xml-refs-file'
+  ;; :NOTE For use with output of `write-sax-parsed-xml-refs-file'.
+  ;; `write-sax-parsed-xml-refs-file'
+  ;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-ref-slots',
+  ;; `write-sax-parsed-ref-slots-to-file', `write-sax-parsed-ref-hash-to-files'.~%▶▶▶")
   (with-open-file (fl input-file
                       :direction :input 
                       :element-type 'character
@@ -75,14 +99,99 @@ slots for the class `parsed-ref'.
        for x = (read fl nil 'EOF)
        until (eql x 'EOF)
        do (loop 
-             with obj = (make-instance parsed-class) ;; (make-instance 'parsed-ref)
+             with obj = (make-instance parsed-class)
              for (field . val) in x
-             ;; for ref = (funcall primary-key-fun x) ;; (cdr (assoc "ref" x :test 'string=))
-             ;; do (set-parse-ref-slot-value field val obj)
-             ;; finally (setf (gethash ref hash-table) obj)))       
              do (set-parse-ref-slot-value field val obj)
              finally (setf (gethash (funcall key-accessor obj) hash-table) obj))
        finally (return (values hash-table (hash-table-count hash-table))))))
+
+
+
+;; :NOTE There is nothing preventing us from making this the generalized
+;; interface for printing sax parsed slots it is not specific to the class
+;; `parsed-ref'.
+;;
+;; (fundoc 'print-sax-parsed-ref-slots
+;; Keyword PRINT-UNBOUND is a boolean.
+;; When t (the default) and a slot of OJBECT's is not `cl:slot-boundp' print its slot-value as "#<UNBOUND>".
+;; When null and OJBECT's a slot is not `cl:slot-boundp' print its slot-value as NIL. 
+;; The later is useful when serializing an object to a file b/c the de-serialzed
+;; OBJECT will have its slot :initarg intialized to nil which is what we've done elswhere for this class
+;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-ref-slots',
+;; `write-sax-parsed-ref-slots-to-file', `write-sax-parsed-ref-hash-to-files'.~%▶▶▶")
+(defun print-sax-parsed-ref-slots (object &key stream (print-unbound t))
+  (declare (parsed-ref object)
+           (boolean print-unbound))
+  (format stream "~&(~{~{:~26:A~S~}~^~%~})"
+          (loop 
+             with unbound = (when print-unbound "#<UNBOUND>")
+             for slot-chk in (mon:class-slot-list object)
+             for x = (slot-boundp object slot-chk)
+             if x
+             nconc (list (list slot-chk (slot-value object slot-chk))) into rtn 
+             else  
+             nconc (list (list slot-chk unbound)) into rtn
+             finally ;;(format stream "~&(~{~{:~26:A~S~}~^~%~})" rtn)))
+             (return rtn))))
+
+;; (fundoc 'write-sax-parsed-ref-slots-to-file
+;; :EXAMPLE
+;; (write-sax-parsed-ref-slots-to-file 
+;;  *tt--item*
+;;  :output-directory (merge-pathnames #P"individual-parse-refs-2011-10-01/" (sub-path *xml-output-dir*)))
+;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-ref-slots',
+;; `write-sax-parsed-ref-slots-to-file', `write-sax-parsed-ref-hash-to-files'.~%▶▶▶")
+(defun write-sax-parsed-ref-slots-to-file (object &key output-directory (directory-exists-check t))
+  (declare (parsed-ref object)
+           (boolean directory-exists-check))
+ (when directory-exists-check
+   (unless (equal output-directory
+                  (make-pathname :directory (pathname-directory (probe-file output-directory))))
+     (error "arg OUTPUT-DIRECTORY does not designate a valid directory~% got: ~S~%"
+            output-directory)))
+  (let* ((item-number-if (and (slot-exists-p object 'item-number)
+                              (slot-boundp  object 'item-number)
+                              (slot-value   object 'item-number)))
+         (item-number-if-stringp (or (and item-number-if
+                                          (stringp item-number-if)
+                                          item-number-if)))
+         (item-number-to-file-name (and item-number-if-stringp
+                                        (merge-pathnames 
+                                         (make-pathname :name (concatenate 'string "item-number-" item-number-if-stringp))
+                                         output-directory))))
+    (if item-number-to-file-name
+        (with-open-file (fl item-number-to-file-name
+                            :direction :output 
+                            :if-does-not-exist :create
+                            :if-exists :supersede
+                            :external-format :UTF-8)
+          (format nil ";;; :CLASS `parsed-ref' item-number ~D ~%;;; :FILE-CREATED  ~A~%"
+                  item-number-if-stringp (mon:timestamp-for-file))
+          (print-sax-parsed-ref-slots object :stream fl :print-unbound nil)
+          item-number-to-file-name)
+        (progn
+          (warn "~%Something wrong with arg OBJECT, declining to dump to file~%")
+          nil))))
+
+;; (fundoc 'write-sax-parsed-ref-hash-to-files
+;; :EXAMPLE
+;; (write-sax-parsed-ref-hash-to-files 
+;;  <HASH-TABLE>
+;;  :output-directory (merge-pathnames #P"individual-parse-refs-2011-10-01/" (sub-path *xml-output-dir*)))
+;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-ref-slots',
+;; `write-sax-parsed-ref-slots-to-file', `write-sax-parsed-ref-hash-to-files'.~%▶▶▶")
+(defun write-sax-parsed-ref-hash-to-files (hash-table &key output-directory)
+  (declare (hash-table hash-table))
+  (unless (equal output-directory
+                 (make-pathname :directory (pathname-directory (probe-file output-directory))))
+    (error "arg OUTPUT-DIRECTORY does not designate a valid directory~% got: ~S~%"
+           output-directory))
+  (maphash #'(lambda (k v)
+               (declare (ignore k) (parsed-ref v))
+               (write-sax-parsed-ref-slots-to-file v 
+                                                   :output-directory output-directory
+                                                   :directory-exists-check nil))
+           hash-table))
 
 ;; Next we need to map the hash-table values and for each object and each slot
 ;; of object clean up the crap in the fields.
@@ -91,384 +200,404 @@ slots for the class `parsed-ref'.
 ;; slot-values for a particular slot to a hast-table and then inspect these
 ;; manually.
 
-;; We also need a function to dump the table to a file.
-;; We should specialize a method for this?
 
 ;; (make-instance 'parsed-ref)
 
 ;;; ==============================
+
 (defclass parsed-ref (parsed-class)
   ((item-number
     :initarg :item-number
     :accessor item-number
-    :documentation "ref")
+    :documentation ":ORIGINAL-FIELD \"ref\"")
+
    (description-title
     :initarg :description-title
     :accessor description-title
-    :documentation  "title")
+    :documentation  ":ORIGINAL-FIELD \"title\"")
 
    (description-french ;; description-class
     :initarg :description-french
     :accessor description-french
-    :documentation "desc_fr")
+    :documentation ":ORIGINAL-FIELD \"desc_fr\"")
 
    (description-english ;; description-class
     :initarg :description-english
     :accessor description-english
-    :documentation "desc_en")
+    :documentation ":ORIGINAL-FIELD \"desc_en\"")
 
    (ignorable-history-french
     :initarg :ignorable-history-french
     :accessor ignorable-history-french
-    :documentation "histo_fr")
+    :documentation ":ORIGINAL-FIELD \"histo_fr\"")
 
    (ignorable-history-english
     :initarg  :ignorable-history-english
     :accessor ignorable-history-english
-    :documentation "histo_en")
+    :documentation ":ORIGINAL-FIELD \"histo_en\"")
 
    (description-quote
     :initarg :description-quote
     :accessor description-quote
-    :documentation "text_quote")
+    :documentation ":ORIGINAL-FIELD \"text_quote\"")
 
    (description-translation
     :initarg  :description-translation
     :accessor description-translation
-    :documentation "translation")
+    :documentation ":ORIGINAL-FIELD \"translation\"")
 
    (person-entity-coref
     :initarg :person-entity-coref
     :accessor person-entity-coref
-    :documentation "people")
+    :documentation ":ORIGINAL-FIELD \"people\"")
 
    (brand-entity-coref
     :initarg :brand-entity-coref
     :accessor brand-entity-coref
-    :documentation "brand")
+    :documentation ":ORIGINAL-FIELD \"brand\"")
 
    (composer-entity-coref
     :initarg :composer-entity-coref
     :accessor composer-entity-coref
-    :documentation "composer")
+    :documentation ":ORIGINAL-FIELD \"composer\"")
 
    (artist-entity-coref
     :initarg :artist-entity-coref
     :accessor artist-entity-coref
-    :documentation "artist")
+    :documentation ":ORIGINAL-FIELD \"artist\"")
 
    (author-entity-coref
     :initarg :author-entity-coref
     :accessor author-entity-coref
-    :documentation "author")
+    :documentation ":ORIGINAL-FIELD \"author\"")
 
    (taxon-entity-coref ;; linnaean-entity-coref???
     :initarg :taxon-entity-coref
     :accessor taxon-entity-coref
-    :documentation "latin_name")
+    :documentation ":ORIGINAL-FIELD \"latin_name\"")
 
    (publication-entity-coref  
     :initarg :publication-entity-coref
     :accessor publication-entity-coref
-    :documentation "book")
+    :documentation ":ORIGINAL-FIELD \"book\"")
 
    (publication-publisher
     :initarg :publication-publisher
     :accessor publication-publisher
-    :documentation "publisher")
+    :documentation ":ORIGINAL-FIELD \"publisher\"")
 
    (publication-location ;; For congruence with birth-location death-location
     :initarg :publication-location
     :accessor publication-location
-    :documentation "publish_location")
+    :documentation ":ORIGINAL-FIELD \"publish_location\"")
 
    (publication-volume   
     :initarg :publication-volume
     :accessor publication-volume
-    :documentation "volume")
+    :documentation ":ORIGINAL-FIELD \"volume\"")
 
    (publication-edition
     :initarg :publication-edition
     :accessor publication-edition
-    :documentation "edition")
+    :documentation ":ORIGINAL-FIELD \"edition\"")
 
    (publication-page
     :initarg :publication-page
     :accessor publication-page
-    :documentation "page")
+    :documentation ":ORIGINAL-FIELD \"page\"")
 
    (publication-plate ;; :NOTE this is the only field which has its first character capitalized
     :initarg :publication-plate
     :accessor publication-plate
-    :documentation    "Plate_number")
+    :documentation    ":ORIGINAL-FIELD \"Plate_number\"")
 
    (publication-issue
     :initarg :publication-issue
     :accessor publication-issue
-    :documentation "issue")
+    :documentation ":ORIGINAL-FIELD \"issue\"")
 
    ;; It isn't totally clear yet if this is neccesarrily a publication related fields
    (publication-date ;; For congruence with birth-date death-date 
     :initarg :publication-date
     :accessor publication-date  
-    :documentation "year")
+    :documentation ":ORIGINAL-FIELD \"year\"")
    ;; It isn't totally clear yet if this is neccesarrily a publication related fields
    (publication-date-range
     :initarg :publication-date-range
     :accessor publication-date-range
-    :documentation "year_year") 
+    :documentation ":ORIGINAL-FIELD \"year_year\"") 
 
    (category-0
     :initarg :category-0
     :accessor category-0
-    :documentation "categ")
+    :documentation ":ORIGINAL-FIELD \"categ\"")
 
    (category-1
     :initarg :category-1
     :accessor category-1
-    :documentation "c1")
+    :documentation ":ORIGINAL-FIELD \"c1\"")
 
    (category-2
     :initarg :category-2
     :accessor category-2
-    :documentation "c2")
+    :documentation ":ORIGINAL-FIELD \"c2\"")
 
    (category-3
     :initarg :category-3
     :accessor category-3
-    :documentation "c3")
+    :documentation ":ORIGINAL-FIELD \"c3\"")
 
    (category-4
     :initarg :category-4
     :accessor category-4
-    :documentation "c4")
+    :documentation ":ORIGINAL-FIELD \"c4\"")
 
    (category-5
     :initarg :category-5
     :accessor category-5
-    :documentation "c5")
+    :documentation ":ORIGINAL-FIELD \"c5\"")
 
    (category-6
     :initarg :category-6
     :accessor category-6
-    :documentation "c6")
+    :documentation ":ORIGINAL-FIELD \"c6\"")
 
    (category-precedence-list
     :initarg :category-precedence-list
     :accessor category-precedence-list
-    :documentation "bct")
+    :documentation ":ORIGINAL-FIELD \"bct\"")
 
    (documentation-category-0
     :initarg :documentation-category-0
     :accessor documentation-category-0
-    :documentation "categ_doc")
+    :documentation ":ORIGINAL-FIELD \"categ_doc\"")
 
    (documentation-category-1
     :initarg :documentation-category-1
     :accessor documentation-category-1
-    :documentation "c1_doc")
+    :documentation ":ORIGINAL-FIELD \"c1_doc\"")
 
    (documentation-category-2
     :initarg :documentation-category-2
     :accessor documentation-category-2
-    :documentation "c2_doc")
+    :documentation ":ORIGINAL-FIELD \"c2_doc\"")
 
    (documentation-category-3
     :initarg :documentation-category-3
     :accessor documentation-category-3
-    :documentation "c3_doc")
+    :documentation ":ORIGINAL-FIELD \"c3_doc\"")
 
    (theme-0
     :initarg :theme-0
     :accessor theme-0
-    :documentation "theme")
+    :documentation ":ORIGINAL-FIELD \"theme\"")
 
    (theme-1
     :initarg :theme-1
     :accessor theme-1
-    :documentation "theme2")
+    :documentation ":ORIGINAL-FIELD \"theme2\"")
 
    (theme-2
     :initarg :theme-2
     :accessor theme-2
-    :documentation "theme3")
+    :documentation ":ORIGINAL-FIELD \"theme3\"")
  
    (price-ask ;; The "-ask" suffix is for congruence with "price-ebay" :NOTE Need price-paid, price-sold,
     :initarg :price-ask
     :accessor price-ask
-    :documentation "price")
+    :documentation ":ORIGINAL-FIELD \"price\"")
 
    (keywords-sequence
     :initarg :keywords-sequence
     :accessor keywords-sequence
-    :documentation "keywords")
+    :documentation ":ORIGINAL-FIELD \"keywords\"")
 
    (description-condition ;; description-class
     :initarg :description-condition
     :accessor description-condition
-    :documentation "condition")
+    :documentation ":ORIGINAL-FIELD \"condition\"")
 
    (media-mount
     :initarg :media-mount
     :accessor media-mount
-    :documentation "onlinen")
+    :documentation ":ORIGINAL-FIELD \"onlinen\"")
 
    (media-technique
     :initarg :media-technique
     :accessor media-technique
-    :documentation "technique")
+    :documentation ":ORIGINAL-FIELD \"technique\"")
 
    (media-paper
     :initarg :media-paper
     :accessor media-paper
-    :documentation "paper")
+    :documentation ":ORIGINAL-FIELD \"paper\"")
 
    (media-color
     :initarg :media-color
     :accessor media-color
-    :documentation "color")
+    :documentation ":ORIGINAL-FIELD \"color\"")
 
    (unit-width
     :initarg :unit-width
     :accessor unit-width
-    :documentation "w")
+    :documentation ":ORIGINAL-FIELD \"w\"")
 
    (unit-height
     :initarg :unit-height
     :accessor unit-height
-    :documentation "h")
+    :documentation ":ORIGINAL-FIELD \"h\"")
 
    (ignorable-number ;; probably empty  
     :initarg :ignorable-number
     :accessor ignorable-number
-    :documentation "nbre")
+    :documentation ":ORIGINAL-FIELD \"nbre\"")
 
    (item-seller
     :initarg :item-seller
     :accessor item-seller
-    :documentation "seller")
+    :documentation ":ORIGINAL-FIELD \"seller\"")
 
    (item-bar-code
     :initarg :item-bar-code
     :accessor item-bar-code
-    :documentation "bar_code")
+    :documentation ":ORIGINAL-FIELD \"bar_code\"")
 
    (unit-weight
     :initarg :unit-weight
     :accessor unit-weight
-    :documentation "weight")
+    :documentation ":ORIGINAL-FIELD \"weight\"")
 
    (edit-by-creator
     :initarg :edit-by-creator
     :accessor edit-by-creator
-    :documentation "user_name")
+    :documentation ":ORIGINAL-FIELD \"user_name\"")
 
    (job-complete
     :initarg :job-complete
     :accessor job-complete
-    :documentation "done")
+    :documentation ":ORIGINAL-FIELD \"done\"")
 
    (job-id
     :initarg :job-id
     :accessor job-id
-    :documentation "job_name")
+    :documentation ":ORIGINAL-FIELD \"job_name\"")
 
    (job-locked ;; IGNORABLE  
     :initarg :job-locked
     :accessor job-locked
-    :documentation "locked")
+    :documentation ":ORIGINAL-FIELD \"locked\"")
 
    (item-active
     :initarg :item-active
     :accessor item-active
-    :documentation "online")
+    :documentation ":ORIGINAL-FIELD \"online\"")
 
    (item-uri
     :initarg :item-uri
     :accessor item-uri
-    :documentation "uri")
+    :documentation ":ORIGINAL-FIELD \"uri\"")
 
    (ignorable-notes
     :initarg :ignorable-notes
     :accessor ignorable-notes
-    :documentation "notes")
+    :documentation ":ORIGINAL-FIELD \"notes\"")
 
    (ignorable-keywords-type
     :initarg :ignorable-keywords-type
     :accessor ignorable-keywords-type
-    :documentation "keywords_type")
+    :documentation ":ORIGINAL-FIELD \"keywords_type\"")
 
    (item-can-repro ;; IGNORABLE  
     :initarg :item-can-repro
     :accessor item-can-repro
-    :documentation "av_repro")
+    :documentation ":ORIGINAL-FIELD \"av_repro\"")
 
    (documentation-related
     :initarg :documentation-related
     :accessor documentation-related
-    :documentation "related_doc")
+    :documentation ":ORIGINAL-FIELD \"related_doc\"")
 
    (price-sold-ebay
     :initarg :price-sold-ebay
     :accessor price-sold-ebay
-    :documentation "ebay_final")
+    :documentation ":ORIGINAL-FIELD \"ebay_final\"")
 
    (price-ask-ebay
     :initarg :price-ask-ebay
     :accessor price-ask-ebay
-    :documentation "ebay_price")
+    :documentation ":ORIGINAL-FIELD \"ebay_price\"")
 
    (title-ebay
     :initarg :title-ebay
     :accessor title-ebay
-    :documentation "ebay_title")
+    :documentation ":ORIGINAL-FIELD \"ebay_title\"")
 
    (control-id-ebay
     :initarg :control-id-ebay
     :accessor control-id-ebay
-    :documentation "ebay_id")
+    :documentation ":ORIGINAL-FIELD \"ebay_id\"")
 
    (title-seo
     :initarg :title-seo
     :accessor title-seo
-    :documentation "seo_title")
+    :documentation ":ORIGINAL-FIELD \"seo_title\"")
 
    (description-seo
     :initarg :description-seo
     :accessor description-seo
-    :documentation "description_seo")
+    :documentation ":ORIGINAL-FIELD \"description_seo\"")
 
    (keywords-seo
     :initarg :keywords-seo
     :accessor keywords-seo
-    :documentation "keywords_seo")
+    :documentation ":ORIGINAL-FIELD \"keywords_seo\"")
 
    (edit-date-origin ;; IGNORABLE assuming date_edit is present and corresponds.
     :initarg :edit-date-origin
     :accessor edit-date-origin
-    :documentation "date")
+    :documentation ":ORIGINAL-FIELD \"date\"")
 
    (edit-date
     :initarg :edit-date
     :accessor edit-date
-    :documentation "date_edit")
+    :documentation ":ORIGINAL-FIELD \"date_edit\"")
 
    (edit-history
     :initarg :edit-history
     :accessor edit-history
-    :documentation "edit_history"))
+    :documentation ":ORIGINAL-FIELD \"edit_history\""))
   (:documentation 
    #.(format nil
              "Class for parsed dbc xml `refs` table.~%~@
 :EXAMPLE ~%
  \(mon:class-slot-list  'parsed-ref\)~%~@
-:SEE-ALSO `<XREF>'.~%▶▶▶")))
+:SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash',
+`write-sax-parsed-xml-refs-file', `set-parse-ref-slot-value'.~%▶▶▶")))
 
-;; For use when reading in XML files parsed with sax
-;; The setf of the accessor ensures we always populate the slot-value with nil
+;;; ==============================
+;; (fundoc 'set-parse-ref-slot-value
+;; "Map orginal sql tables FIELD-STRING name to OBJECT's CLOS slot equivalent setting its slot-value to FIELD-VALUE.~%~@
+;; Return as if by `cl:values':~%
+;;  - nth-value 0 is the setf'd FIELD-VALUE as set with slot accessor corresponding to FIELD-STRING.
+;;  - nth-value 1 is OBJECT~%~@
+;; For use with `load-sax-parsed-xml-file-to-parsed-class-hash' after reading in
+;; XML files parsed with `write-sax-parsed-xml-refs-file'.~%~@
+;; OJBECT is an instance of class `parsed-ref'.~%~@
+;; Original FIELD-STRING is the car of the the consed key/value pairs in one of the alists 
+;; written to an output file by `write-sax-parsed-xml-refs-file' FIELD VALUE is
+;; the corresponding cdr of the consed key/value pair.~%~@
+;; The slot documentation of the class `parsed-ref' provides indication of the
+;; mapping from the original field name to our new slot name.~%~@
+;; :EXAMPLE
+;;  (set-parse-ref-slot-value "ref" "13000" (make-instance 'parsed-ref))
+;;
+;; :SEE-ALSO `<XREF>'.~%▶▶▶")
+;; 
+;; :NOTE The setf of the accessor ensures we always populate the slot-value with nil
 ;; so as to avoid errors when slot is not `slot-boundp'.
 (defun set-parse-ref-slot-value (field-string field-value object)
-  (string-case:string-case (field-string)
+  (values 
+   (string-case:string-case (field-string)
     ("ref" (setf (item-number object) field-value))
     ("title" (setf (description-title object) field-value))
     ("desc_fr" (setf (description-french object) field-value))
@@ -540,12 +669,8 @@ slots for the class `parsed-ref'.
     ("keywords_seo" (setf (keywords-seo object) field-value))
     ("date" (setf (edit-date-origin object) field-value))
     ("date_edit" (setf (edit-date object) field-value))
-    ("edit_history" (setf (edit-history object) field-value))))
-
-
-;; (mon:find-class-name-as-string 'parsed-ref "DBC")
-;; "PARSED-REF", PARSED-REF, PARSED-REF, :EXTERNAL
-;;; ==============================
+    ("edit_history" (setf (edit-history object) field-value)))
+   object))
 
 
 

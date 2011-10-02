@@ -2,13 +2,16 @@
 ;;; :FILE dbc-specific/dbc-parse/dbc-xml-parse-sax.lisp
 ;;; ==============================
 
+;;; ==============================
 ;; :NOTE Everything in this file works as of 2011-09-26
 ;; :TODO
-;;   - See comments for method specialized on `sax:start-element'
+;;   - See comments for `sax:start-element' method specialized on the class `dbc-sax-handler'.
+;;; ==============================
 
+
 (in-package #:dbc)
 
-(defparameter *parsed-data-current-row* '()
+(defparameter *parsed-data-current-row* '())
 
 (defparameter *parsed-data-output-path* nil)
 
@@ -35,7 +38,7 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
 `dbc-sax-current-chars', `dbc-sax-handler', `write-sax-parsed-delimiter',
 `write-sax-parsed-xml-row-to-file', `load-sax-parsed-xml-file-to-parsed-class-hash',
 `*parsed-data-current-row*', `*parsed-data-output-path*',
-`*parsed-data-output-stream*', `*xml-input-dir*', `*xml-output-dir*'.~%▶▶▶"))
+`*parsed-data-output-stream*', `*xml-input-dir*', `*xml-output-dir*'.~%▶▶▶")))
 
 (defgeneric dbc-sax-current-chars-clear (object)
   ;; (find-method #'dbc-sax-current-chars-clear nil '(dbc-sax-parsing-class))

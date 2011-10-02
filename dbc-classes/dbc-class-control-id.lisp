@@ -163,6 +163,7 @@
    ;; :NOTE storing these last to may imply that we estable methods which account for updated/changed/redefined instances
    ;; (control-id-instance-class)
    ;; (control-id-class-uuid))
+   )   
   (:documentation
    #.(format nil
              "The class `base-control-id' is an abstract-class.~%~@
