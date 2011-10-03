@@ -15,6 +15,11 @@
 (defclass artist-parse (parsed-class)
   ())
 
+;; (<SLOT>
+;;  :initarg :<INITARG>
+;;  :accessor <ACCESSOR>
+;;  :documentation ":ORIGINAL-FIELD \"<FIELD>\"")
+
 
 ;;; ==============================
 ;;; :TODO methods  
