@@ -32,7 +32,7 @@
 
 (defclass base-image (base-dbc)
   ()
-  (:documentation #.(format nil "Base class for dbc image insances.~%~@")))
+  (:documentation #.(format nil "Base class for dbc image insances.~%")))
 
 
 #|
@@ -87,9 +87,9 @@ image-size          {:type integer :display [:MB|:KB]}
 image-watermark      ;; i.e. image should/not be contextually watermarked. pdf reformatting, big nafs, etc.
 
 image-timestamp     {:type timestamp}
+                     ;; cl:file-write-date
 
 image-uuid          (:type UUID)
-
 
 ;;; ---------------
 image-orientation       ;; Base image orientation. 

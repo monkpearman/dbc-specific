@@ -7,9 +7,12 @@
 ;;; :NOTE C-P-L for DBC entities
 ;;; base-dbc
 ;;; - base-entity
-;;; -- base-category-entity
 ;;; -- base-theme-entity
+;;; -- base-category-entity
 ;;; -- base-naf-entity
+;;; -- base-media-entity
+;;; -- base-location-entity
+;;;
 ;;;     _________________ Below should have their own files
 ;;;
 ;;; --- naf-entity-person

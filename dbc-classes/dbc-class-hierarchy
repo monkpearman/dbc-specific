@@ -113,6 +113,59 @@ hash-table and a key into the table:
                       *dbc-global-hash-table*)     ; OBJECT-O
              'pseudonym-list)
  => ( ... list of pseudonyms for OBJECT-M ... )
+;;; ==============================
+:NOTE Actually some of the above assertions aren't entirely correct.
+
+Upon further review i now remember that alot of the UUID -> <THING> mappings were more simplistic
+Entities in the dbc system aren't always a direct instance of a class or subclass.
+
+Lets say we encounter the string "Chanel" in some context.
+
+Which entity are we referencing by "Chanel" is it the artist, person, or brand?
+
+We need a way to map from the string "Chanel" to each of the class instances the
+string "Chanel" may refer to, e.g. naf-entity-person, naf-entity-artist, naf-entity-brand.
+
+Assume the display name for the naf-entity-person, naf-entity-artist instances
+are identical as:
+ "Chanel (Gabrielle "Coco")" 
+If we did a simple lookup on that string as a key into the hypothetical
+hash-table *string-to-class-instance-mapping* which instance of "Chanel
+(Gabrielle "Coco")" will we find?
+
+ What we need is a way to map to the correct instance. 
+ Heres how we might do it:
+
+ (make-v5-uuid *naf-brand-entity-namespace* "Chanel (Gabrielle \"Coco\")")
+  => f9b6945d-3d00-5ba3-a798-39bdb41ee37c
+
+ (make-v5-uuid *naf-artist-entity-namespace* "Chanel (Gabrielle \"Coco\")")
+ => 57a2ff33-5528-536e-86d8-f7a3cb38d842 
+
+ (make-v5-uuid *naf-person-entity-namespace* "Chanel (Gabrielle \"Coco\")")
+ => e9f719b4-1c8f-54b4-b8de-bd158d0e4fd7
+
+ Now, while there is a naf-brand-entity closely associated with the string
+ "Chanel (Gabrielle "Coco")" it doesn't share that display name, e.g. the
+ display name for the Chanel naf-brand-entity is "Chanel".
+ So, any dereference on the UUID f9b6945d-3d00-5ba3-a798-39bdb41ee37c 
+ will not return. Instead, to find the instance of naf-brand-entity we'd do:
+  (make-v5-uuid *naf-brand-entity-namespace* "Chanel")
+
+ However, we could dereference on both of the UUIDs for the display-name 
+ "Chanel (Gabrielle "Coco")" in the namespaces:
+  *naf-person-entity-namespace* and *naf-artist-entity-namespace*
+  
+  So, depending on the current active context we can find the appropriate
+  corresponding entity for that context, e.g. when we are looking for instances
+  of naf-person-entity if the UUID of a display-name string in the
+  *naf-person-entity-namespace* exists in some hypothetical hash-table
+  *global-person-entity-hash-table* we can find the class instance associated
+  *with that display-name, e.g.
+
+   (gethash (make-v5-uuid *naf-person-entity-namespace* "Chanel (Gabrielle \"Coco\")")
+           *global-person-entity-hash-table*)
+  => #<naf-person-entity {1818191}>
 
 
 ;;; ==============================
@@ -168,6 +221,24 @@ dbc-classes/dbc-class-control-id.lisp
 ;;  involve complex interactions in the C-P-L around the
 ;;  `display-name-for-entity' and `display-name-for-entity-of-type' slot-values.
 
+;; *control-id-display-author-namespace*
+;; *control-id-display-brand-namespace*
+;; *control-id-display-location-namespace*
+;; *control-id-display-person-namespace*
+;; *control-id-display-publication-namespace*
+
+;; *control-id-display-category-namespace*
+;; *control-id-display-theme-namespace*
+;; *control-id-display-technique-namespace*
+;; *control-id-display-mount-namespace*
+;; *control-id-display-meterial-namespace*
+
+;; :NOTE Not clear if these are more system type objects entity type objects:
+;; *control-id-display-user-namespace*
+;; *control-id-display-documentation-namespace*
+;; *control-id-display-description-namespace*
+;; *control-id-display-image-namespace*
+
 
 
 - base-control-id (base-dbc)
@@ -181,6 +252,9 @@ dbc-classes/dbc-class-control-id.lisp
 ---- control-id-display-publication         (control-id-display-name-for-entity-type)
 ---- control-id-display-location            (control-id-display-name-for-entity-type)
 ---- control-id-display-technique           (control-id-display-name-for-entity-type)
+---- control-id-display-mount               (control-id-display-name-for-entity-type)
+---- control-id-display-material            (control-id-display-name-for-entity-type)
+
 
 ;; Item refs id-nums should be obfuscated with a UUID and are deprecated!
 ;; Entity id-nums may occure congruently and are deprecated!
@@ -208,6 +282,7 @@ dbc-classes/dbc-class-control-id.lisp
 ---- control-id-entity-num-brand         (control-id-entity-num)
 ---- control-id-entity-num-person        (control-id-entity-num)
 ---- control-id-entity-num-publication   (control-id-entity-num)
+---- control-id-entity-num-technique     (control-id-entity-num)
 
 
 -- control-id-db                     (base-control-id)
@@ -297,6 +372,11 @@ _____
 ------ naf-entity-publication-alt-regexp     (naf-entity-alt-name-regexp)
 
 
+dbc-classes/dbc-image.lisp
+
+base-image (base-dbc)
+
+
 dbc-classes/dbc-class-edit.lisp
 
 base-edit
@@ -304,12 +384,21 @@ base-edit
 
 dbc-classes/dbc-class-description.lisp
 
-base-description
+base-description                   (base-dbc)
+base-description-external          (base-description)
+base-description-internal          (base-description)
+base-description-entity            (base-description)
+base-description-entity-internal   (base-description-internal base-description-entity)
+base-description-entity-external   (base-description-external base-description-entity)
+base-description-entity-media-note (base-description-entity-internal)
+description-technique-note         (base-description-entity-media-note)
+
 
 
 dbc-classes/dbc-class-documentation.lisp
 
-base-documenation
+base-documenation (base-dbc)
+
 
 
 dbc-classes/dbc-class-parse-convert.lisp

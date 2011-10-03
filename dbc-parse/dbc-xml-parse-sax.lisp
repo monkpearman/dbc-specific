@@ -257,7 +257,7 @@ OUTPUT-FILE defaults to `*parsed-data-output-path*'.~%~@
   :input-file  \(merge-pathnames \(make-pathname :name \"dump-themes-DUMPING\"\)
                                 \(sub-path *xml-input-dir*\)\)
   :output-file \(merge-pathnames 
-                \(make-pathname :directory `\(:relative ,*xml-output-dir*\)
+                \(make-pathname :directory `\(:relative ,(sub-name *xml-output-dir*\)\)
                                :name \(concatenate 'string \"sax-themes-test-\" \(mon:time-string-yyyy-mm-dd\)\)
                                :type \"lisp\"\)
                 \(system-path *system-path*\)\)\)~%~@
