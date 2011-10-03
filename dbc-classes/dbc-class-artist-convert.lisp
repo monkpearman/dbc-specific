@@ -12,8 +12,8 @@
 
 (in-package #:dbc)
 
-;; (defclass artist-parse (parsed-class)
-;;   ())
+(defclass artist-parse (parsed-class)
+  ())
 
 
 ;;; ==============================
@@ -35,6 +35,39 @@
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
 
+;;; ==============================
+
+#P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/notes-versioned/sql-file-per-table-2010-08-25/from-DBC-ARCH-2010-09-01/dump-artist-infos-xml"
+
+;; (defparameter *tt--parse-artist-table* (make-hash-table :test 'equal))
+
+;; (write-sax-parsed-xml-to-file
+;;  :input-file  #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/notes-versioned/sql-file-per-table-2010-08-25/from-DBC-ARCH-2010-09-01/dump-artist-infos-xml"
+;;  ;; (merge-pathnames (make-pathname :name "dump-refs-DUMPING")
+;;  ;;                  (sub-path *xml-input-dir*))
+;;  :output-file 
+;;  (merge-pathnames 
+;;   (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*))
+;;                  :name (concatenate 'string "sax-artist-test-" (mon:time-string-yyyy-mm-dd))
+;;                  :type "lisp")
+;;   (system-path *system-path*)))
+
+;; from parse
+;; (length
+;;  '("bio" "id" "display" "nationality" "role" "lifespan" "date_born" "date_died"
+;;    "birth_location" "death_location" "LOC_control" "used_for" "found_in"
+;;    "appeared_in" "ads_for" "auction_records" "cancel_num" "special_note" "gender"
+;;    "date_edit" "ULAN_control" "default_pic" "print_default_pic" "also_author"
+;;    "also_people" "user_name" "naf_creator" "online" "date_edt"))
+;=> 29
+
+;; from list below:
+;; (length '("bio" "id" "display" "used_for" "role" "gender" "lifespan" "date_born"
+;; "date_died" "birth_location" "death_location" "nationality" "LOC_control"
+;; "ULAN_control" "also_author" "also_people" "appeared_in" "ads_for" "found_in"
+;; "auction_records" "default_pic" "print_default_pic" "online" "user_name"
+;; "naf_creator"))
+;; => 25
 
 ;;; ==============================
 ;; :NOTE All of these initial entity specific slot namespaces should be
@@ -50,9 +83,9 @@
 ;; "display"           ;; "control-id-display-artist"
 ;;
 ;; "used_for"          ;; "naf-entity-display-name-coref"
-;; "role"              ;; "naf-entity-role-coref"
+;; "role"              ;; "naf-entity-role-appearance"
 ;;
-;; "gender"            ;; 
+;; "gender"            ;; "naf-entity-gender-type"
 ;; "lifespan"          ;; "lifespan-date"
 ;; "date_born"         ;; "birth-date"
 ;; "date_died"         ;; "death-date"
@@ -60,29 +93,27 @@
 ;; "death_location"    ;; "location-death"
 ;; "nationality"       ;; "location-nationality"
 ;;
-;; "LOC_control"       ;; "control-id-1" ;; LOC
-;; "ULAN_control"      ;; "control-id-2" ;; ULAN
+;; "LOC_control"       ;; "control-id-db-0" ;; LOC
+;; "ULAN_control"      ;; "control-id-db-1" ;; ULAN
 ;;
 ;; "also_author"       ;; "naf-entity-author-coref"
 ;; "also_people"       ;; "naf-entity-person-coref"
 ;;
 ;;
-;; "appeared_in"       ;; "publication-appearance"
-;; "ads_for"           ;; "brand-appearance"
+;; "appeared_in"       ;; "publication-entity-appearance"
+;; "ads_for"           ;; "brand-entity-appearance"
 ;;
-;;
-;; "found_in"          ;; "citation-appearance"
-;; "auction_records"   ;; "sale-appearance"
+;; "found_in"          ;; "description-artist-note-general"
+;; "auction_records"   ;; "description-artist-note-sale-appearance"
 ;;
 ;; "default_pic"       ;; "image-default-id"
 ;; "print_default_pic" ;; "image-default-xref"
-;;
 ;;
 ;; "online"            ;; "naf-active"
 ;; "user_name"         ;; "edit-by"
 ;; "naf_creator"       ;; "edit-by-creator"
 ;;
-;; "date_edit"         ;; "edit-date-origin"
+;; "date_edit"         ;; "edit-date-origin" ;; date_edt is the good one
 ;; "date_edt"          ;; "edit-date"
 ;;
 ;; "cancel_num"        ;; "ignorable-cancel-num"
@@ -153,7 +184,7 @@
      
 
 ;;; ==============================
-;;  :FIELD "used_for" :TRANSFORM
+;;  :FIELD "used_for" :TRANSFORM "naf-entity-display-name-coref"
 ;;  :TYPE "text"
 ;;
 ;; :EXAMPLE-VALUES 
@@ -296,11 +327,8 @@
 ;;
 ;;  - co-refs `dbc:naf-entity-location'
 
-
- 
-
 ;;; ==============================
-;;  :FIELD "LOC_control" :TRANSFORM "control-id-loc"
+;;  :FIELD "LOC_control" :TRANSFORM "control-id-db-0"
 ;; :TYPE "varchar(15)"
 ;;
 ;; :EXAMPLE-VALUES 
@@ -317,7 +345,7 @@
 ;; 
 
 ;;; ==============================
-;; :FIELD "ULAN_control" :TRANSFORM "control-id-ulan"
+;; :FIELD "ULAN_control" :TRANSFORM "control-id-db-1"
 ;; :TYPE "varchar(15)"
 ;;
 ;; :EXAMPLE-VALUES 
@@ -357,7 +385,7 @@
 ;; - Co-refs with `dbc:naf-entity-person'
 
 ;;; ==============================
-;; :FIELD "appeared_in" :TRANSFORM "publication-appearance"
+;; :FIELD "appeared_in" :TRANSFORM "publication-entity-appearance"
 ;; :TYPE "text"
 ;;
 ;; :EXAMPLE-VALUES 
@@ -378,7 +406,7 @@
 ;; - Co-refs with `dbc:naf-entity-publication'
 
 ;;; ==============================
-;; :FIELD "ads_for"  :TRANSFORM "brand-appearance"
+;; :FIELD "ads_for"  :TRANSFORM "brand-entity-appearance"
 ;; :TYPE "text"
 ;;
 ;; :EXAMPLE-VALUES 
@@ -389,7 +417,7 @@
 ;; - Likely xrefs with a subclass of `dbc:base-category-entity'
 
 ;;; ==============================
-;; :FIELD "found_in"  :TRANSFORM "citation-appearance"
+;; :FIELD "found_in"  :TRANSFORM ;; "description-artist-note-general"
 ;; :TYPE "text"
 ;;
 ;; :EXAMPLE-VALUES 
@@ -405,7 +433,7 @@
 ;; 
 
 ;;; ==============================
-;; :FIELD "auction_records" :TRANSFORM "sale-appearance"
+;; :FIELD "auction_records" :TRANSFORM "description-artist-note-sale-appearance"
 ;;
 ;; :EXAMPLE-VALUES 
 ;;

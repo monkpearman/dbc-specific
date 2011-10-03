@@ -44,6 +44,7 @@ slots for the class `parsed-ref'.
                    :do (setf (gethash key ref-hash) val)))
     ref-hash))
 
+
 ;;; ==============================
 ;; :NOTE `load-sax-parsed-xml-file-to-parsed-class-hash' now has parameter
 ;; KEY-ACCESSOR which was orignally named PRIMARY-KEY-FUN and provided a
@@ -81,12 +82,19 @@ slots for the class `parsed-ref'.
   ;; As such, it should return always return a non-null value. If not the results are undefined.
   ;; :EXAMPLE
   ;; (defparameter *tt--parse-table* (make-hash-table :test 'equal))
-  ;; (clrhash *tt--parse-table*)
-  ;; (load-sax-parsed-xml-file-to-parsed-class-hash 'parsed-ref
-  ;;                        #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/xml-class-dump-dir/test-seq-2011-09-30"
-  ;;                        *tt--parse-table*
-  ;;                        #'item-number)
+  ;; (let ((parsed-sax-file (merge-pathnames 
+  ;;                    (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*))
+  ;;                                   :name (concatenate 'string "sax-refs-test-" (mon:time-string-yyyy-mm-dd))
+  ;;                                   :type "lisp")
+  ;;                     (system-path *system-path*))))
+  ;;   (write-sax-parsed-xml-to-file
+  ;;    :input-file  (merge-pathnames (make-pathname :name "dump-refs-DUMPING")
+  ;;                                  (sub-path *xml-input-dir*))
+  ;;    :output-file parsed-sax-file)
+  ;;   (load-sax-parsed-xml-file-to-parsed-class-hash 'parsed-ref  parsed-sax-file *tt--parse-table* #'item-number))
+  ;;                        
   ;; ;; => #<HASH-TABLE  ... >, 8969
+  ;; (clrhash *tt--parse-table*)
   ;; :NOTE For use with output of `write-sax-parsed-xml-refs-file'.
   ;; `write-sax-parsed-xml-refs-file'
   ;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-ref-slots',

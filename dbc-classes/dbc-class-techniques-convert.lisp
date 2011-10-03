@@ -15,11 +15,15 @@
 (in-package #:dbc)
 ;; *package*
 
-;; (defclass media-technique-entity (base-media-entity)
-;;   ())
+;; base-entity 
+;; - base-media-entity 
+;; -- media-technique-entity 
+
+(defclass media-technique-entity (base-media-entity)
+  ())
 ;;
-;; (defclass technique-parse (parsed-class)
-;;   ())
+(defclass technique-parse (parsed-class)
+  ())
 
 #|
 
@@ -30,16 +34,16 @@
   "date_edit" "user_name" "naf_creator" "notes" "default_pic" "online" "date_edt")
 
  <FIELD>              <TRANSFORM>
- "id"
- "display"
- "used_for"
- "technique_family"
- "variation_of"
- "notes"
- "default_pic"       ;; "image-default-id"
- "online"            ;; item-posted       ;; IGNORABLE always 0
- "date_edt"          ;; edit-date
+ "id"                ;; conrtol-id-entity-num-technique
+ "display"           ;; conrtol-id-entity-display-technique
+ "used_for"          ;; technique-entity-display-name-core
+ "technique_family"  ;; technique-entity-parent-type
+ "variation_of"      ;; technique-entity-type-coref
+ "notes"             ;; description-technique-notes
+ "default_pic"       ;; image-default-id
+ "date_edt"          ;; edit-date         ;; this is the good one
  "date_edit"         ;; edit-date-origin  ;; IGNORABLE assuming date_edt is present and corresponds
+ "online"            ;; technique-active  ;; IGNORABLE always 0
  "user_name"         ;; edit-by           ;; IGNORABLE always empty  
  "naf_creator"       ;; edit-by-creator   ;; IGNORABLE always empty
 
@@ -60,11 +64,11 @@
 		<field name="online">0</field>
 		<field name="date_edt">2006-10-02 04:00:00</field>
 
-;;; ==============================
+ ;;; ==============================
 
 
 ;;; ==============================
-;; :FIELD "id" :TRANSFORM
+;; :FIELD "id" :TRANSFORM conrtol-id-entity-num-technique
 ;;
 ;;         :TYPE "int(4) unsigned"
 ;;         :NULL-P "NO"
@@ -78,7 +82,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "display" :TRANSFORM
+;; :FIELD "display" :TRANSFORM conrtol-id-entity-display-technique
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -93,7 +97,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "used_for" :TRANSFORM
+;; :FIELD "used_for" :TRANSFORM technique-entity-display-name-coref
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -107,7 +111,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "technique_family" :TRANSFORM
+;; :FIELD "technique_family" :TRANSFORM technique-entity-parent-type
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -122,7 +126,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "variation_of" :TRANSFORM
+;; :FIELD "variation_of" :TRANSFORM technique-entity-type-coref
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -131,10 +135,21 @@
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
+;;  Etching - Mechanical
+;;  Line Engraving
 ;;
-;;
-;; -
-;;
+;;  :TODO id 36 has variation_of value: "Intaglio (mechanical)" that is wrong b/c there
+;;   is no other entity with this name and the only other like entity is denoted
+;;   as "Etching - Mechanical".
+;;   id 17 has a `display` vlaue "Etching Chemical" that is not congruent with "Etching - Mechanical"
+;; 
+;; - This (usually) indicates that the technique has a  subclass-of/subtype-of relation
+;;   and is an indication of the extent with which SQL/rdbms are not well suited
+;;   to our heirarchical data-structuring needs. We need to refactor this for CLOS.
+
+
+
+
 
 
 ;;; ==============================
@@ -236,7 +251,7 @@
 ;; - IGNORABLE always empty
 
 ;;; ==============================
-;; :FIELD "online" :TRANSFORM item-posted  ;; IGNORABLE always 0 
+;; :FIELD "online" :TRANSFORM technique-active  ;; IGNORABLE always 0 
 ;;
 ;;         :TYPE "tinyint(3) unsigned"
 ;;         :NULL-P "NO"

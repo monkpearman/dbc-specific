@@ -35,6 +35,7 @@
 ;; *package*
 
 
+
 ;;; ==============================
 ;;  <FIELD>               <TRANSFORM>
 ;;                        ;; 
@@ -44,28 +45,26 @@
 ;;
 ;; "book_real"            ;; "control-id-display-publication-full"
 ;;
-;; "author"               ;; "author-appearance"
-;; "illustrator"          ;; "artist-appearance"
+;; "author"               ;; "author-entity-appearance"
+;; "illustrator"          ;; "artist-entity-appearance"
 ;;
 ;; "date_pub"             ;; "publication-date"
-;; "loc_pub"              ;; "publication-location"
+;; "loc_pub"              ;; "publication-location" ;; location-entity
 ;; "volumes"              ;; "publication-volumes"
 ;; "pages"                ;; "publication-pages"
 ;; "illustrations"        ;; "publication-illustrations"
 ;; "subjects"             ;; "publication-subjects"
 ;;
-;; "lc_class"             ;; "control-id-1" ;; LOC
-;; "ULAN_control"         ;; "control-id-2" ;; ULAN
+;; "lc_class"             ;; "control-id-db-0" ;; LOC
+;; "ULAN_control"         ;; "control-id-db-1" ;; ULAN
 ;;
+;; "content"              ;; "description-publication-note-content"
+;; "notes"                ;; "description-publication-note-general"
+;; "special_note"         ;; "description-publication-note-special"
+;; "auction_records"      ;; "description-publication-note-sale-appearance"
 ;;
-;; "content"              ;; "publication-content-notes"
-;; "notes"                ;; "publication-general-notes"
-;; "special_note"         ;; "publication-special-notes"
-;;
-;; "auction_records"      ;; "sale-appearance"
-;;
-;; "default_pic"          ;; 
-;; "print_default_pic"    ;; "item-coref"
+;; "default_pic"          ;; "image-default-id"
+;; "print_default_pic"    ;; "image-default-xref"
 ;;
 ;; "online"               ;; "naf-active"
 ;; "date_edit"            ;; "edit-date-origin"
@@ -251,7 +250,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "special_note" :TRANSFORM
+;; :FIELD "special_note" :TRANSFORM "description-publication-note-general"
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -284,7 +283,7 @@
 ;; (search-forward-regexp "name=\"pages\">[^<].*</field" nil t)
 
 ;;; ==============================
-;; :FIELD "ULAN_control" :TRANSFORM "control-id-2"
+;; :FIELD "ULAN_control" :TRANSFORM "control-id-db-1"
 ;;
 ;;         :TYPE "varchar(20)"
 ;;         :NULL-P "YES"
@@ -299,7 +298,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "lc_class" :TRANSFORM
+;; :FIELD "lc_class" :TRANSFORM control-id-db-0
 ;;
 ;;         :TYPE "varchar(20)"
 ;;         :NULL-P "YES"
@@ -312,9 +311,9 @@
 ;;
 ;; -
 ;;
-
+;; 
 ;;; ==============================
-;; :FIELD "content" :TRANSFORM 
+;; :FIELD "content" :TRANSFORM "description-publication-note-content"
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "YES"
@@ -324,12 +323,13 @@
 ;; :EXAMPLE-VALUES 
 ;;  "French Periodical | Weekly French Serial Publications"
 ;;  "Fashion | Fashion Design | Fashion Illustrations | Sewing Patterns | Fashion Photography | Couture | Clothing Designers"
+;; "Fashion Publication, like Gazette du Bon Ton"
 ;;
 ;; - (split-piped-field-if (field-convert-1-0-x-empty "x")))
 ;; 
 
 ;;; ==============================
-;; :FIELD "notes" :TRANSFORM
+;; :FIELD "notes" :TRANSFORM "publication-description-note-general"
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "YES"
@@ -343,7 +343,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "auction_records" :TRANSFORM
+;; :FIELD "auction_records" :TRANSFORM "description-publication-note-sale-appearance"
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "YES"
@@ -351,9 +351,10 @@
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
+;;  Unremarkable Issue $10 {...}
+;;  Wolf, F. J. - cover February 1938 vol 38 no. 2  {...}
 ;;
-;;
-;; -
+;; - (search-forward-regexp "auction_records\">[^<]" nil t)
 ;;
 
 ;;; ==============================
