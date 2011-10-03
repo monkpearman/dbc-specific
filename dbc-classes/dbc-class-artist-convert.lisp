@@ -20,6 +20,12 @@
 ;;  :accessor <ACCESSOR>
 ;;  :documentation ":ORIGINAL-FIELD \"<FIELD>\"")
 
+;; (dotimes (i 3)
+;;   (princ "(<SLOT>\n :initarg :<INITARG>\n :accessor <ACCESSOR>\n :documentation \":ORIGINAL-FIELD \\\"<FIELD>\\\"\")\n" 
+;;          (current-buffer)))
+
+
+
 
 ;;; ==============================
 ;;; :TODO methods  
