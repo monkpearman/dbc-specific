@@ -49,10 +49,10 @@
 ;; "id"                ;; "control-id-entity-num-artist"
 ;; "display"           ;; "control-id-display-artist"
 ;;
-;; "used_for"          ;; 
-;; "role"              ;;
+;; "used_for"          ;; "naf-entity-display-name-coref"
+;; "role"              ;; "naf-entity-role-coref"
 ;;
-;; "gender"            ;;
+;; "gender"            ;; 
 ;; "lifespan"          ;; "lifespan-date"
 ;; "date_born"         ;; "birth-date"
 ;; "date_died"         ;; "death-date"

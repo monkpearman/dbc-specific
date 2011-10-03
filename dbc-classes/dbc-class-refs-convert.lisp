@@ -135,6 +135,9 @@ slots for the class `parsed-ref'.
              (return rtn))))
 
 ;; (fundoc 'write-sax-parsed-ref-slots-to-file
+;; Write a list of the slot/value pairs of OBJECT to a file in OUTPUT-DIRECTORY.
+;; Each slot/value pair is written in such a way that the list may be read and
+;; passed to `cl:make-instance' to re-instantiate the instance.
 ;; :EXAMPLE
 ;; (write-sax-parsed-ref-slots-to-file 
 ;;  *tt--item*
@@ -281,7 +284,7 @@ slots for the class `parsed-ref'.
     :accessor publication-entity-coref
     :documentation ":ORIGINAL-FIELD \"book\"")
 
-   (publication-publisher
+   (publication-publisher ;; 
     :initarg :publication-publisher
     :accessor publication-publisher
     :documentation ":ORIGINAL-FIELD \"publisher\"")
