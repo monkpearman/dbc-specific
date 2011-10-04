@@ -65,7 +65,7 @@ slots for the class `parsed-ref'.
 ;;              with obj = (make-instance parsed-class)
 ;;              for (field . val) in x
 ;;              for ref = (funcall primary-key-fun x) ;; (cdr (assoc "ref" x :test 'string=))
-;;              do (set-parse-ref-slot-value field val obj)
+;;              do (set-parsed-ref-slot-value field val obj)
 ;;              finally (setf (gethash ref hash-table) obj))
 ;;        finally (return (values hash-table (hash-table-count hash-table))))))
 ;;
@@ -109,7 +109,7 @@ slots for the class `parsed-ref'.
        do (loop 
              with obj = (make-instance parsed-class)
              for (field . val) in x
-             do (set-parse-ref-slot-value field val obj)
+             do (set-parsed-ref-slot-value field val obj)
              finally (setf (gethash (funcall key-accessor obj) hash-table) obj))
        finally (return (values hash-table (hash-table-count hash-table))))))
 
@@ -602,10 +602,10 @@ slots for the class `parsed-ref'.
 :EXAMPLE ~%
  \(mon:class-slot-list  'parsed-ref\)~%~@
 :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash',
-`write-sax-parsed-xml-refs-file', `set-parse-ref-slot-value'.~%▶▶▶")))
+`write-sax-parsed-xml-refs-file', `set-parsed-ref-slot-value'.~%▶▶▶")))
 
 ;;; ==============================
-;; (fundoc 'set-parse-ref-slot-value
+;; (fundoc 'set-parsed-ref-slot-value
 ;; "Map orginal sql tables FIELD-STRING name to OBJECT's CLOS slot equivalent setting its slot-value to FIELD-VALUE.~%~@
 ;; Return as if by `cl:values':~%
 ;;  - nth-value 0 is the setf'd FIELD-VALUE as set with slot accessor corresponding to FIELD-STRING.
@@ -619,13 +619,13 @@ slots for the class `parsed-ref'.
 ;; The slot documentation of the class `parsed-ref' provides indication of the
 ;; mapping from the original field name to our new slot name.~%~@
 ;; :EXAMPLE
-;;  (set-parse-ref-slot-value "ref" "13000" (make-instance 'parsed-ref))
+;;  (set-parsed-ref-slot-value "ref" "13000" (make-instance 'parsed-ref))
 ;;
 ;; :SEE-ALSO `<XREF>'.~%▶▶▶")
 ;; 
 ;; :NOTE The setf of the accessor ensures we always populate the slot-value with nil
 ;; so as to avoid errors when slot is not `slot-boundp'.
-(defun set-parse-ref-slot-value (field-string field-value object)
+(defun set-parsed-ref-slot-value (field-string field-value object)
   (values 
    (string-case:string-case (field-string)
     ("ref" (setf (item-number object) field-value))
