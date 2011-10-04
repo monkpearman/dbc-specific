@@ -15,7 +15,7 @@
              #:*system-notes-dir*
              #:*system-tests-dir*
              #:*system-tests-temp-dir*
-             #:*parsed-ref-field-name-slot-transform* ;; dbc-class-refs-convert.lisp
+             #:*parsed-inventory-record-field-name-slot-transform* ;; dbc-class-refs-convert.lisp
 	     #:*xml-output-dir* 
              #:*xml-output-refs-name*          ;; ---> OUTPUT
              #:*xml-output-refs-ext*           ;; ---> OUTPUT
@@ -25,7 +25,7 @@
              #:*xml-refs-match-list*
              #:*xml-refs-match-table*
              ;;
-             #:*parsed-ref-class-name*
+             #:*parsed-inventory-record-class-name*
 	     ;;
            ;; conditions.lisp
              ;;
@@ -159,6 +159,8 @@
              #:entity-regexp
              #:theme-entity-regexp
              #:category-entity-regexp
+             #:media-entity-regexp   
+             #:location-entity-regexp
              #:naf-entity-type-regexp
              #:naf-entity-control-name-regexp
              #:naf-entity-alt-name-regexp
@@ -177,20 +179,22 @@
              ;; :VARIABLES
              #:*category-entity-regexp-db*
              #:*theme-entity-regexp-db*
+             #:*media-entity-regexp-db*   
+             #:*location-entity-regexp-db*
              #:*parsed-field-name-regexp-db*
-             #:*naf-artist-entity-regexp-db*
-             #:*naf-person-entity-regexp-db*
-             #:*naf-author-entity-regexp-db*
-             #:*naf-brand-entity-regexp-db*
-             #:*naf-publication-entity-regexp-db*
+             #:*naf-entity-artist-regexp-db*
+             #:*naf-entity-person-regexp-db*
+             #:*naf-entity-author-regexp-db*
+             #:*naf-entity-brand-regexp-db*
+             #:*naf-entity-publication-regexp-db*
              ;;
              #:make-entity-regexp-subclass-allocation-if
              #:make-entity-regexp-subclass-allocation
              ;;
              ;;
-           ;; dbc-classes/dbc-class-refs-convert.lisp
+           ;; dbc-classes/dbc-class-parsed-inventory-record.lisp
              ;;
-             #:parsed-ref     ;; <CLASS>
+             #:parsed-inventory-record     ;; <CLASS>
              ;;
              #:make-ref-maker-sym-name 
              #:make-ref-maker-symbol
