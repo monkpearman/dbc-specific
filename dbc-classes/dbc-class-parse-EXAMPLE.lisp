@@ -1,0 +1,43 @@
+;;; :FILE-CREATED <Timestamp: #{2011-10-02T20:19:21-04:00Z}#{11397} - by MON>
+;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-classes/dbc-class-parse-EXAMPLE.lisp
+;;; ==============================
+
+(in-package #:dbc)
+;; *package*
+(defparameter *tt--parse-table* (make-hash-table :test 'equal))
+
+(let ((parsed-sax-file (merge-pathnames 
+                        (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*))
+                                       :name (concatenate 'string "sax-refs-test-" (mon:time-string-yyyy-mm-dd))
+                                       :type "lisp")
+                        (system-path *system-path*))))
+  (write-sax-parsed-xml-to-file
+   :input-file  (merge-pathnames (make-pathname :name "dump-refs-DUMPING")
+                                 (sub-path *xml-input-dir*))
+   :output-file parsed-sax-file)
+  (load-sax-parsed-xml-file-to-parsed-class-hash 'parsed-ref  parsed-sax-file *tt--parse-table* #'item-number))
+
+;; This will write all 8979 hash-table values to an individual file.
+(write-sax-parsed-ref-hash-to-files 
+ *tt--parse-table* 
+ :output-directory (ensure-directories-exist
+                    (merge-pathnames 
+                     (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*) 
+                                                           ,(concatenate 'string 
+                                                                         "individual-parse-refs-"
+                                                                         (mon:time-string-yyyy-mm-dd))))
+                     (system-path *system-path*))))
+;;
+;; On SLAPPY writing the 8979 files took 8.601 seconds which is ~1000 files per second:
+;;
+;; => Evaluation took:
+;;   8.601 seconds of real time
+;;   6.712979 seconds of total run time (6.026084 user, 0.686895 system)
+;;   [ Run times consist of 0.461 seconds GC time, and 6.252 seconds non-GC time. ]
+;;   78.05% CPU
+;;   14,298,721,940 processor cycles
+;;   428,620,536 bytes consed
+
+
+;;; ==============================
+;;; EOF
