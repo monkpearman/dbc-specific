@@ -21,6 +21,57 @@
   ()
   (:documentation "Base dbc parsed class."))
 
+(defclass parsed-naf-entity (parsed-class)
+  ()
+  (:documentation #.(format nil "Base class for parsing naf-entity records.~%~@
+:SEE-ALSO `parsed-artist-record', `parsed-author-record',~%~
+`parsed-person-record', `parsed-brand-record', `parsed-publication-record'.~%▶▶▶")))
+
+;; :NOTE Superclass `parsed-naf-entity' needs following generics specialized on it.
+;; As they common to multiple naf-entity sub-classes:
+;;  `parsed-artist-record' `parsed-author-record' `parsed-person-record'
+;;  `parsed-brand-record' `parsed-publication-record'
+;;
+;;  GENERIC                        ->    CLASS-SLOT
+;;  ---------------------------------------------------------------------------- 
+;; `naf-entity-display-name-coref' -> `naf-entity-artist-display-name-coref'
+
+;; `naf-entity-gender-type'       -> `naf-entity-gender-type'
+;; `lifespan-date' -> `lifespan-date'
+;; `birth-date' -> `birth-date'
+;; `death-date' -> `death-date'
+;; `location-birth' -> `location-birth'
+;; `location-death' -> 
+;; `location-nationality' -> 
+;; `control-id-db-0' -> `control-id-db-0'
+;; `control-id-db-1' -> `control-id-db-1'
+;; `naf-entity-author-coref'      -> `naf-entity-author-coref'
+;; `naf-entity-person-coref'      -> `naf-entity-author-coref'
+;; `naf-entity-publication-coref' -> `naf-entity-publication-coref'
+;; `naf-entity-brand-coref'       -> `naf-entity-brand-coref'
+;; `image-default-id'
+;; `image-default-xref'
+;; `naf-entity-active'
+;; `edit-by'
+;; `edit-by-creator'
+;; `edit-date-origin'
+;; `edit-date'
+
+;; description-artist-note-general
+;; description-artist-note-sale-appearance
+;; `base-description-entity-internal'
+
+
+
+;; 
+;; 
+;; 
+
+;; control-id-display-artist, control-id-display-publication
+;; control-id-doc-num-artist, control-id-doc-num-publication
+;; control-id-entity-num-publication, 
+
+;; naf-entity-role-appearance-coref
 
 
 ;;; ==============================
@@ -207,7 +258,7 @@
   ;; As such, it should return always return a non-null value. If not the results are undefined.
   ;; Arg SLOT-DISPATCH-FUNCTION is a function utilizing
   ;; `string-case:string-case' to map strings to an appropriate accesor
-  ;; e.g. `set-parsed-artist-slot-value', `set-parsed-inventory-record-slot-value', etc.
+  ;; e.g. `set-parsed-artist-record-slot-value', `set-parsed-inventory-record-slot-value', etc.
   ;; :EXAMPLE
   ;; (defparameter *tt--parse-table* (make-hash-table :test 'equal))
   ;; (let ((parsed-sax-file (merge-pathnames 

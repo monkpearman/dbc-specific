@@ -163,7 +163,7 @@ slots for the class `parsed-inventory-record'.
     :accessor naf-entity-author-coref
     :documentation ":ORIGINAL-FIELD \"author\"")
 
-   (taxon-entity-coref ;; linnaean-entity-coref???
+   (taxon-entity-coref
     :initarg :taxon-entity-coref
     :accessor taxon-entity-coref
     :documentation ":ORIGINAL-FIELD \"latin_name\"")
@@ -185,9 +185,9 @@ slots for the class `parsed-inventory-record'.
     :accessor publication-location
     :documentation ":ORIGINAL-FIELD \"publish_location\"")
 
-   (publication-volume   
-    :initarg :publication-volume
-    :accessor publication-volume
+   (publication-volumes ;; for congruence with class `parsed-publication-record' 
+    :initarg :publication-volumes
+    :accessor publication-volumes
     :documentation ":ORIGINAL-FIELD \"volume\"")
 
    (publication-edition
@@ -195,14 +195,14 @@ slots for the class `parsed-inventory-record'.
     :accessor publication-edition
     :documentation ":ORIGINAL-FIELD \"edition\"")
 
-   (publication-page
-    :initarg :publication-page
-    :accessor publication-page
+   (publication-pages
+    :initarg :publication-pages
+    :accessor publication-pages
     :documentation ":ORIGINAL-FIELD \"page\"")
 
-   (publication-plate ;; :NOTE this is the only field which has its first character capitalized
-    :initarg :publication-plate
-    :accessor publication-plate
+   (publication-plates ;; :NOTE this is the only field which has its first character capitalized
+    :initarg :publication-plates
+    :accessor publication-plates
     :documentation    ":ORIGINAL-FIELD \"Plate_number\"")
 
    (publication-issue
@@ -535,13 +535,13 @@ slots for the class `parsed-inventory-record'.
      ("publish_location" 
       (setf (publication-location object) field-value))
      ("volume" 
-      (setf (publication-volume object) field-value))
+      (setf (publication-volumes object) field-value))
      ("edition" 
       (setf (publication-edition object) field-value))
      ("page" 
-      (setf (publication-page object) field-value))
+      (setf (publication-pages object) field-value))
      ("Plate_number"
-      (setf (publication-plate object) field-value))
+      (setf (publication-plates object) field-value))
      ("issue"
       (setf (publication-issue object) field-value))
      ("year"
@@ -743,13 +743,13 @@ slots for the class `parsed-inventory-record'.
 ;;  "book"             ;; "naf-entity-publication-coref"
 ;;  "publisher"        ;; "publication-publisher"
 ;;  "publish_location" ;; "publication-location"   ;; For congruence with birth-location death-location
-;;  "volume"           ;; "publication-volume"
+;;  "volume"           ;; "publication-volumes"
 ;;  "edition"          ;; "publication-edition"
-;;  "page"             ;; "publication-page"
-;;  "Plate_number"     ;; "publication-plate"
+;;  "page"             ;; "publication-pages"
+;;  "Plate_number"     ;; "publication-plates"
 ;;  "issue"            ;; "publication-issue"
 ;;
-;;  :NOTE `parsed-artist' class has "appeared_in" -> "publication-appeared-in"
+;;  :NOTE `parsed-artist-record' class has "appeared_in" -> "publication-appeared-in"
 ;;
 ;; It isn't totally clear yet that these are neccesarrily publication related fields:
 ;;  "year"             ;; publication-date        ;; For congruence with birth-date death-date 
@@ -1065,7 +1065,7 @@ slots for the class `parsed-inventory-record'.
 ;;; ==============================
 
 ;;; ==============================
-;; :FIELD "Plate_number" :TRANSFORM publication-plate
+;; :FIELD "Plate_number" :TRANSFORM publication-plates
 ;;
 ;;         :TYPE "varchar(100)"
 ;;         :NULL-P "NO"
@@ -1086,10 +1086,12 @@ slots for the class `parsed-inventory-record'.
 ;;
 ;; :NOTE Why is this the only field containing a capitalized name, e.g. "Plate" in "Plate_number"?
 ;; - `mon:string-trim-whitespace'
-
+;;
+;; :NOTE we've chosen to use the plural form `publication-plates' for
+;; congruence with clss `parsed-publication-record' -- 2011-10-04
 
 ;;; ==============================
-;; :FIELD "volume" :TRANSFORM publication-volume
+;; :FIELD "volume" :TRANSFORM publication-volumes 
 ;;
 ;;         :TYPE "varchar(45)"
 ;;         :NULL-P "NO"
@@ -1099,7 +1101,8 @@ slots for the class `parsed-inventory-record'.
 ;;
 ;; :EXAMPLE-VALUES 
 ;;
-;;
+;; :NOTE we've chosen to use the plural form `publication-volumes' for
+;; congruence with clss `parsed-publication-record' -- 2011-10-04
 
 ;;; ==============================
 ;; :FIELD "edition" :TRANSFORM publication-edition
@@ -1133,7 +1136,7 @@ slots for the class `parsed-inventory-record'.
 ;; - Use `field-convert-1-0-x'
 
 ;;; ==============================
-;; :FIELD "page" :TRANSFORM publication-page
+;; :FIELD "page" :TRANSFORM publication-pages
 ;;
 ;;         :TYPE "varchar(45)"
 ;;         :NULL-P "NO"
@@ -1143,7 +1146,10 @@ slots for the class `parsed-inventory-record'.
 ;;
 ;; :EXAMPLE-VALUES 
 ;;
+;; :NOTE we've chosen to use the plural form `publication-pages' for
+;; congruence with clss `parsed-publication-record' -- 2011-10-04
 ;;
+
 
 ;;; ==============================
 ;; :FIELD "date" :TRANSFORM edit-date-origin

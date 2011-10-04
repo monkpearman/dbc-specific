@@ -63,8 +63,13 @@
 ---- control-id-display-author              (control-id-display-name-for-entity-type)
 ---- control-id-display-person              (control-id-display-name-for-entity-type)
 ---- control-id-display-publication         (control-id-display-name-for-entity-type)
----- control-id-display-location            (control-id-display-name-for-entity-type)
+---- control-id-display-publication-full    (control-id-display-name-for-entity-type) ;; or control-id-display-publication??
 ---- control-id-display-technique           (control-id-display-name-for-entity-type)
+---- control-id-display-material            (control-id-display-name-for-entity-type)
+---- control-id-display-mount               (control-id-display-name-for-entity-type)
+---- control-id-display-location            (control-id-display-name-for-entity-type)
+---- control-id-display-taxon               (control-id-display-name-for-entity-type)
+
 
 ;; Item refs id-nums should be obfuscated with a UUID and are deprecated!
 ;; Entity id-nums may occure congruently and are deprecated!
@@ -74,11 +79,13 @@
 ;; e.g. "control-id-doc-num-artist"    -> "control-id-doc-uuid"
 ;; e.g. "control-id-entity-num-artist" -> "control-id-entity-uuid"
 
--- control-id-deprecated                 (base-control-id)
+;; control-id-deprecated-record-id
 
---- control-id-item-num                  (control-id-deprecated)
+-- control-id-deprecated-record-id       (base-control-id)
 
---- control-id-doc-num                   (control-id-deprecated)
+--- control-id-item-num                  (control-id-deprecated-record-id)
+
+--- control-id-doc-num                   (control-id-deprecated-record-id)
 ---- control-id-doc-num-artist           (control-id-doc-num)
 ---- control-id-doc-num-brand            (control-id-doc-num)
 ---- control-id-doc-num-author           (control-id-doc-num)
@@ -86,7 +93,7 @@
 ---- control-id-doc-num-publication      (control-id-doc-num)
 ---- control-id-display-publication-full (control-id-doc-num)
 
---- control-id-entity-num                (control-id-deprecated)
+--- control-id-entity-num                (control-id-deprecated-record-id)
 ---- control-id-entity-num-artist        (control-id-entity-num)
 ---- control-id-entity-num-author        (control-id-entity-num)
 ---- control-id-entity-num-brand         (control-id-entity-num)
@@ -308,13 +315,40 @@ Likewise, such co-references may occur in both the same class and/or an entirely
   ()
   )
 
-(defclass control-id-display-location (control-id-display-name-for-entity-type)
-  ()
-  )
+;; :NOTE or subclass control-id-display-publication
+;; (defclass control-id-display-publication-full (control-id-display-name-for-entity-type)
+;;   ()
+;;   )
 
 (defclass control-id-display-technique (control-id-display-name-for-entity-type)
   ()
   )
+
+(defclass control-id-display-material (control-id-display-name-for-entity-type)
+  ()
+  )
+
+(defclass control-id-display-mount (control-id-display-name-for-entity-type)
+  ()
+  )
+
+(defclass control-id-display-mount (control-id-display-name-for-entity-type)
+  ()
+  )
+
+;; (defclass control-id-display-color (control-id-display-name-for-entity-type)
+;;   ()
+;;   )
+
+
+(defclass control-id-display-location (control-id-display-name-for-entity-type)
+  ()
+  )
+
+(defclass control-id-display-taxon (control-id-display-name-for-entity-type)
+  ()
+  )
+
 
 ;;; ==============================
 ;;

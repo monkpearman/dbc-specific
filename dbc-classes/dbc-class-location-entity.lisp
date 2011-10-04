@@ -1,5 +1,5 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-05-21T12:51:43-04:00Z}#{11206} - by MON>
-;;; :FILE dbc-specific/dbc-classes/dbc-class-entity-location.lisp
+;;; :FILE dbc-specific/dbc-classes/dbc-class-location-entity.lisp
 ;;; ==============================
 
 ;;; ==============================

@@ -1,5 +1,5 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-05-05T16:52:12-04:00Z}#{11184} - by MON>
-;;; :FILE dbc-specific/dbc-classes/dbc-class-publication-convert.lisp
+;;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-publication-record.lisp
 ;;; ==============================
 
 ;;; ==============================
@@ -35,6 +35,10 @@
 ;; *package*
 
 
+(defclass parsed-publication-record (parsed-naf-entity)
+  ()
+  )
+
 
 ;;; ==============================
 ;;  <FIELD>               <TRANSFORM>
@@ -45,15 +49,15 @@
 ;;
 ;; "book_real"            ;; "control-id-display-publication-full"
 ;;
-;; "author"               ;; "author-entity-appearance"
-;; "illustrator"          ;; "artist-entity-appearance"
+;; "author"               ;; "naf-entity-author-coref"
+;; "illustrator"          ;; "naf-entity-artist-coref"
 ;;
 ;; "date_pub"             ;; "publication-date"
 ;; "loc_pub"              ;; "publication-location" ;; location-entity
 ;; "volumes"              ;; "publication-volumes"
-;; "pages"                ;; "publication-pages"
+;; "pages"                ;; "publication-pages"    ;; :NOTE we really need a slot publication-plates
 ;; "illustrations"        ;; "publication-illustrations"
-;; "subjects"             ;; "publication-subjects"
+;; "subjects"             ;; "ignorable-publication-subjects" ;; IGNORABLE, but verify that this is so
 ;;
 ;; "lc_class"             ;; "control-id-db-0" ;; LOC
 ;; "ULAN_control"         ;; "control-id-db-1" ;; ULAN
@@ -79,7 +83,7 @@
 ;;; ==============================
 
 ;;; ==============================
-;; :FIELD "bio" :TRANSFORM "control-id-doc-num-publication"
+;; :FIELD "bio" :TRANSFORM control-id-doc-num-publication
 ;;
 ;;         :TYPE "int(10) unsigned"
 ;;         :NULL-P "NO"
@@ -94,7 +98,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "id" :TRANSFORM "control-id-entity-num-publication"
+;; :FIELD "id" :TRANSFORM control-id-entity-num-publication
 ;;
 ;;         :TYPE "int(4) unsigned"
 ;;         :NULL-P "NO"
@@ -108,7 +112,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "display" :TRANSFORM "control-id-display-publication"
+;; :FIELD "display" :TRANSFORM control-id-display-publication
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -122,7 +126,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "book_real" :TRANSFORM "control-id-display-publication-full"
+;; :FIELD "book_real" :TRANSFORM control-id-display-publication-full
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -137,7 +141,7 @@
 ;; - (split-used-fors "The Holy Land, Syria, Idumea, Arabia, Egypt & Nubia")
 
 ;;; ==============================
-;; :FIELD "author" :TRANSFORM "author-appearance"
+;; :FIELD "author" :TRANSFORM naf-entity-author-coref
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -151,7 +155,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "illustrator" :TRANSFORM "artist-appearance"
+;; :FIELD "illustrator" :TRANSFORM naf-entity-artist-coref
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -168,7 +172,7 @@
 ;; (split-piped-field-if (field-convert-1-0-x (field-convert-verify-string "x")))
 
 ;;; ==============================
-;; :FIELD "date_pub" :TRANSFORM "publication-date"
+;; :FIELD "date_pub" :TRANSFORM publication-date
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -185,7 +189,7 @@
 ;;   "year_year"        ;; publication-date-range
 
 ;;; ==============================
-;; :FIELD "loc_pub" :TRANSFORM "publication-location"
+;; :FIELD "loc_pub" :TRANSFORM publication-location
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "YES"
@@ -200,7 +204,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "volumes" :TRANSFORM "publication-volumes"
+;; :FIELD "volumes" :TRANSFORM publication-volumes
 ;;
 ;;         :TYPE "varchar(64)"
 ;;         :NULL-P "NO"
@@ -212,13 +216,14 @@
 ;;  13
 ;;  0
 ;; 
-;; - :NOTE item-refs has:
+;; - :NOTE item-refs had:
 ;;   "volume"           ;; "publication-volume"
+;; - It really sucks that one is plural an the other isn't... Should we bite the bullet and normalize??? Yes. 2011-10-04
 ;;
 ;; - (field-convert-1-0-x-empty-known nil *xml-publication-match-table*)
 
 ;;; ==============================
-;; :FIELD "pages" :TRANSFORM "publication-pages"
+;; :FIELD "pages" :TRANSFORM publication-pages
 ;;
 ;;         :TYPE "varchar(32)"
 ;;         :NULL-P "NO"
@@ -236,7 +241,7 @@
 ;;   "volume"           ;; "publication-pages"
 
 ;;; ==============================
-;; :FIELD "illustrations" :TRANSFORM "publication-illustrations"
+;; :FIELD "illustrations" :TRANSFORM publication-illustrations
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -246,11 +251,13 @@
 ;; :EXAMPLE-VALUES 
 ;;  120
 ;;
-;; -
+;; - We really a slot `publication-plates'!!!
+;; A plates count is different from the count `publication-pages' and also
+;; different from the count of `publication-illustrations...'
 ;;
 
 ;;; ==============================
-;; :FIELD "special_note" :TRANSFORM "description-publication-note-general"
+;; :FIELD "special_note" :TRANSFORM description-publication-note-general
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -264,7 +271,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "subjects" :TRANSFORM "publication-subjects"
+;; :FIELD "subjects" :TRANSFORM ignorable-publication-subjects
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -274,7 +281,7 @@
 ;; :EXAMPLE-VALUES 
 ;;
 ;;
-;; -appears unuses 
+;; -appears unused, verify that thsi is so.
 ;;
 ;; (search-forward-regexp "field name=\"subjects\">\\(^</field>\\)" nil t)
 ;; (search-forward-regexp "name=\"subjects\">[^<]")
@@ -283,7 +290,7 @@
 ;; (search-forward-regexp "name=\"pages\">[^<].*</field" nil t)
 
 ;;; ==============================
-;; :FIELD "ULAN_control" :TRANSFORM "control-id-db-1"
+;; :FIELD "ULAN_control" :TRANSFORM control-id-db-1
 ;;
 ;;         :TYPE "varchar(20)"
 ;;         :NULL-P "YES"
@@ -313,7 +320,7 @@
 ;;
 ;; 
 ;;; ==============================
-;; :FIELD "content" :TRANSFORM "description-publication-note-content"
+;; :FIELD "content" :TRANSFORM description-publication-note-content
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "YES"
@@ -343,7 +350,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "auction_records" :TRANSFORM "description-publication-note-sale-appearance"
+;; :FIELD "auction_records" :TRANSFORM description-publication-note-sale-appearance
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "YES"
@@ -358,7 +365,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "user_name" :TRANSFORM
+;; :FIELD "user_name" :TRANSFORM edit-by
 ;;
 ;;         :TYPE "varchar(32)"
 ;;         :NULL-P "YES"
@@ -372,7 +379,7 @@
 ;; (search-forward-regexp " name=\"user_name\"\>[^<]" nil t)
 
 ;;; ==============================
-;; :FIELD "naf_creator" :TRANSFORM
+;; :FIELD "naf_creator" :TRANSFORM edit-by-creator
 ;;
 ;;         :TYPE "varchar(32)"
 ;;         :NULL-P "YES"
@@ -403,7 +410,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "print_default_pic" :TRANSFORM
+;; :FIELD "print_default_pic" :TRANSFORM image-default-xref
 ;;
 ;;         :TYPE "varchar(10)"
 ;;         :NULL-P "NO"
@@ -420,7 +427,7 @@
 
 
 ;;; ==============================
-;; :FIELD "online" :TRANSFORM "naf-active"
+;; :FIELD "online" :TRANSFORM naf-active
 ;;
 ;;         :TYPE "tinyint(3) unsigned"
 ;;         :NULL-P "NO"
@@ -435,7 +442,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "date_edit" :TRANSFORM
+;; :FIELD "date_edit" :TRANSFORM edit-date-origin
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -450,7 +457,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "date_edt" :TRANSFORM
+;; :FIELD "date_edt" :TRANSFORM edit-date
 ;;
 ;;         :TYPE "timestamp"
 ;;         :NULL-P "NO"

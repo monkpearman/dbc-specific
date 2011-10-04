@@ -24,6 +24,15 @@
 ;; description-media-entity-color-note     (base-description-entity-media-note)
 ;; base-description-entity-location-note   (base-description-entity-internal)
 
+;; base-description-naf-entity             (base-description-entity)  ;; (base-description base-dbc)
+;; base-description-naf-entity-internal    (base-description-naf-entity base-description-entity-internal) 
+
+naf-entity (base-description base-dbc)
+entity-internal
+(base-description-internal base-description-entity)
+base-description          | base-description
+
+
 ;; ABSTRACT-CLASS
 (defclass base-description (base-dbc)
   ;; description-uuid ???
@@ -75,7 +84,7 @@ instance or slot and not their global domain or range.~%~@
   ()
   (:documentation
    #.(format nil
-             "ABSTRACT-CLASS
+             "ABSTRACT-CLASS~%~
 Used to annotate some particular internal aspect about a subclass of `base-entity'.~%")))
 
 ;; ABSTRACT-CLASS
@@ -83,16 +92,24 @@ Used to annotate some particular internal aspect about a subclass of `base-entit
   ()
   (:documentation
    #.(format nil
-             "ABSTRACT-CLASS
-Used to annotate some particular internal aspect about a subclass of `base-entity'.")))
+             "ABSTRACT-CLASS~%~
+Used to annotate some particular internal aspect about a subclass of `base-entity'.~%")))
 
 ;; ABSTRACT-CLASS
 (defclass base-description-location-entity-note (base-description-entity-internal)
   ()
   (:documentation
    #.(format nil
-             "ABSTRACT-CLASS
-Used to annotate some particular internal aspect about a subclass of `base-location-entity'.")))
+             "ABSTRACT-CLASS~%~
+Used to annotate some particular internal aspect about a subclass of `base-location-entity'.~%")))
+
+(defclass base-description-taxon-entity-note (base-description-entity-internal)
+  ()
+  (:documentation
+   #.(format nil
+             "ABSTRACT-CLASS~%~
+Used to annotate some particular internal aspect about a subclass of `base-taxon-entity'.~%")))  
+
 
 ;; ABSTRACT-CLASS
 (defclass base-description-media-entity-note (base-description-entity-internal)
@@ -100,31 +117,51 @@ Used to annotate some particular internal aspect about a subclass of `base-locat
   (:documentation 
    #.(format nil
              "ABSTRACT-CLASS~%~
-Used to annotate some particular internal aspect about a subclass of `base-media-entity'.")))
+Used to annotate some particular internal aspect about a subclass of `base-media-entity'.~%")))
 
 (defclass description-media-entity-technique-note (base-description-entity-media-note)
   ()
   (:documentation 
    #.(format nil
-             "Used to annotate some particular internal aspect about a `media-entity-technique'.")))
+             "Used to annotate some particular internal aspect about a `media-entity-technique'.~%")))
 
 (defclass description-media-entity-material-note (base-description-entity-media-note)
   ()
   (:documentation 
    #.(format nil
-             "Used to annotate some particular internal aspect about a `media-entity-material'.")))
+             "Used to annotate some particular internal aspect about a `media-entity-material'.~%")))
 
 (defclass description-media-entity-mount-note (base-description-entity-media-note)
   ()
   (:documentation 
    #.(format nil
-             "Used to annotate some particular internal aspect about a `media-entity-mount'.")))
+             "Used to annotate some particular internal aspect about a `media-entity-mount'.~%")))
 
 (defclass description-media-entity-color-note (base-description-entity-media-note)
   ()
   (:documentation 
    #.(format nil
-             "Used to annotate some particular internal aspect about a `media-entity-color'.")))
+             "Used to annotate some particular internal aspect about a `media-entity-color'.~%")))
+
+
+(defclass base-description-naf-entity (base-description-entity)
+  ()
+  (:documentation
+   #.(format nil
+             "ABSTRACT-CLASS~%~
+Used to annotate some particular aspect about a subclass of `base-entity'.~%")))
+
+;; :ABSTRACT-CLASS
+(defclass base-description-naf-entity-internal (base-description-naf-entity base-description-entity-internal)
+  ()
+  (:documentation
+   #.(format nil
+             "ABSTRACT-CLASS~%~
+Used to annotate some particular internal aspect about a subclass of `base-naf-entity'.~%")))
+
+
+;; thes have too much commonality so we need
+;; (defclass description-naf-entity-note ()
 
 ;; (defclass description-publication-note-content ()) ;; internal
 ;; (defclass description-publication-note-general ()) ;; internal

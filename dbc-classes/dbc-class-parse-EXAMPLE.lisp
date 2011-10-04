@@ -55,7 +55,7 @@
                               :type "lisp")
                (system-path *system-path*)))
 
-(load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-artist
+(load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-artist-record
                                                :input-file (merge-pathnames 
                                                             (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*))
                                                                            :name (concatenate 'string "sax-artist-test-" (mon:time-string-yyyy-mm-dd))
@@ -63,11 +63,11 @@
                                                             (system-path *system-path*))
                                                :hash-table *tt--parse-artist-table*
                                                :key-accessor #'control-id-entity-num-artist
-                                               :slot-dispatch-function #'set-parsed-artist-slot-value)
+                                               :slot-dispatch-function #'set-parsed-artist-record-slot-value)
 
 (write-sax-parsed-class-hash-to-files 
  *tt--parse-artist-table*
- :parsed-class 'parsed-artist
+ :parsed-class 'parsed-artist-record
  :slot-for-file-name 'control-id-entity-num-artist
  :prefix-for-file-name "artist-id-number"
  :output-directory (ensure-directories-exist
