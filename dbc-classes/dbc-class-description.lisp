@@ -11,20 +11,21 @@
 (in-package #:dbc)
 ;; *package*
 
-;; base-description                   (base-dbc)
-;; base-description-external          (base-description)
-;; base-description-internal          (base-description)
-;; base-description-entity            (base-description)
-;; base-description-entity-internal   (base-description-internal base-description-entity)
-;; base-description-entity-external   (base-description-external base-description-entity)
-;; base-description-entity-media-note (base-description-entity-internal)
-;; description-technique-note         (base-description-entity-media-note)
-;; description-material-note          (base-description-entity-media-note)
-;; description-mount-note             (base-description-entity-media-note)
-;; base-description-entity-location-note (base-description-entity-internal)
+;; base-description                        (base-dbc)
+;; base-description-external               (base-description)
+;; base-description-internal               (base-description)
+;; base-description-entity                 (base-description)
+;; base-description-entity-internal        (base-description-internal base-description-entity)
+;; base-description-entity-external        (base-description-external base-description-entity)
+;; base-description-entity-media-note      (base-description-entity-internal)
+;; description-media-entity-technique-note (base-description-entity-media-note)
+;; description-media-entity-material-note  (base-description-entity-media-note)
+;; description-media-entity-mount-note     (base-description-entity-media-note)
+;; base-description-entity-location-note   (base-description-entity-internal)
 
 ;; ABSTRACT-CLASS
 (defclass base-description (base-dbc)
+  ;; description-uuid ???
   ()
   (:documentation 
    #.(format nil 
@@ -32,10 +33,9 @@
               Base class for referencing dbc descriptions.~%~@
               A description is like a document but smaller and with less attributes.~%~@
              Examples of of descriptions include the item-ref slots:~%~% ~
-              description-title description-translation~% ~
-              description-english description-french~% ~
-              description-condition description-seo~% ~
-              description-technique-notes~%")))
+               description-item-title        description-item-english~% ~
+               description-item-french       description-item-quote~% ~
+               description-item-translation  description-item-condition~%")))
 
 ;; ABSTRACT-CLASS
 (defclass base-description-external (base-description)
@@ -60,6 +60,14 @@ instance or slot and not their global domain or range.~%~@
 :SEE-ALSO `<XREF>'.~%▶▶▶")))
 
 ;; ABSTRACT-CLASS
+(defclass base-description-entity (base-description)
+  ()
+  (:documentation
+   #.(format nil
+             "ABSTRACT-CLASS
+Used to annotate some particular internal aspect about a subclass of `base-entity'.")))
+
+;; ABSTRACT-CLASS
 (defclass base-description-entity-internal (base-description-internal base-description-entity)
   ()
   (:documentation
@@ -68,35 +76,34 @@ instance or slot and not their global domain or range.~%~@
 Used to annotate some particular internal aspect about a subclass of `base-entity'.")))
 
 ;; ABSTRACT-CLASS
-(defclass description-entity-media-note (base-description-entity-note)
-  ()
-  (:documentation 
-   #.(format nil
-             "ABSTRACT-CLASS~%~
-Used to annotate some particular internal aspect about a subclass of `base-media-entity'.")))
-
-;; ABSTRACT-CLASS
-(defclass base-description-entity-location-note (base-description-entity-media-note)
+(defclass base-description-location-entity-note (base-description-entity-internal)
   ()
   (:documentation
    #.(format nil
              "ABSTRACT-CLASS
 Used to annotate some particular internal aspect about a subclass of `base-location-entity'.")))
 
-(defclass description-technique-note (base-description-entity-media-note)
+;; ABSTRACT-CLASS
+(defclass base-description-media-entity-note (base-description-entity-internal)
+  ()
+  (:documentation 
+   #.(format nil
+             "ABSTRACT-CLASS~%~
+Used to annotate some particular internal aspect about a subclass of `base-media-entity'.")))
+
+(defclass description-media-entity-technique-note (base-description-entity-media-note)
   ()
   (:documentation 
    #.(format nil
              "Used to annotate some particular internal aspect about a `media-technique-entity'.")))
 
-
-(defclass description-material-note (base-description-entity-media-note)
+(defclass description-media-entity-material-note (base-description-entity-media-note)
   ()
   (:documentation 
    #.(format nil
              "Used to annotate some particular internal aspect about a `media-material-entity'.")))
 
-(defclass description-mount-note (base-description-entity-media-note)
+(defclass description-media-entity-mount-note (base-description-entity-media-note)
   ()
   (:documentation 
    #.(format nil
@@ -109,6 +116,15 @@ Used to annotate some particular internal aspect about a subclass of `base-locat
 
 ;; (defclass description-artist-note-general ())         ;; internal
 ;; (defclass description-artist-note-sale-appearance ()) ;; internal
+
+
+;; The class `parse-ref' has the following external slots:
+;;  description-item-title
+;;  description-item-english
+;;  description-item-french
+;;  description-item-quote
+;;  description-item-translation
+;;  description-item-condition
 
 ;;; ==============================
 

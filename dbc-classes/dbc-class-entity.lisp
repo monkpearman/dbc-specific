@@ -4,32 +4,50 @@
 
 
 ;;; ==============================
-;;; :NOTE C-P-L for DBC entities
-;;; base-dbc
-;;; - base-entity
-;;; -- base-theme-entity
-;;; -- base-category-entity
-;;; -- base-naf-entity
-;;; -- base-media-entity
-;;; -- base-location-entity
-;;;
-;;;     _________________ Below should have their own files
-;;;
-;;; --- naf-entity-person
-;;; --- naf-entity-artist
-;;; --- naf-entity-author
-;;; --- naf-entity-brand
-;;; --- naf-entity-publication 
-;;;
-;;; --- naf-entity-publisher ???
-;;; --- naf-entity-linnaean  ???
-;;;
-;;; -- base-location-entity
-;;; --- location-entity
-;;; ---- location-entity-verified
-;;; ---- location-entity-unverified
-;;; ---- location-entity-imagined
-;;;
+;; :NOTE C-P-L for DBC entities
+;; base-dbc
+;; - base-entity
+;; -- base-theme-entity
+;; -- base-category-entity
+;; -- base-naf-entity
+;; -- base-media-entity
+;; -- base-location-entity
+;;
+;;     _________________ Below should have their own files
+;;
+;; --- naf-entity-person
+;; --- naf-entity-artist
+;; --- naf-entity-author
+;; --- naf-entity-brand
+;; --- naf-entity-publication 
+;;
+;; --- naf-entity-publisher ???
+;; --- naf-entity-linnaean  ???
+;;
+;; -- base-location-entity
+;; --- location-entity
+;; ---- location-entity-verified
+;; ---- location-entity-unverified
+;; ---- location-entity-imagined
+;;
+;;
+;;; ==============================
+;; The naming scheme we try to abide when referencing <FOO>-entity-<BAR>:
+;; base-media-entity
+;;  -> media-entity-<FOO>
+;;
+;; base-naf-entity
+;;  -> naf-entity-<FOO>
+;;
+;; base-category-entity
+;;  -> category-entity-<FOO>
+;;
+;; base-theme-entity
+;;  -> theme-enity-<FOO>
+;;
+;; base-location-entity
+;;  -> location-entity-<FOO>
+
 ;;; ==============================
 
 

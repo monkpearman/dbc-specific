@@ -12,19 +12,202 @@
 
 (in-package #:dbc)
 
-(defclass artist-parse (parsed-class)
-  ())
+;; (length (mon:class-slot-list 'parsed-artist))
 
-;; (<SLOT>
-;;  :initarg :<INITARG>
-;;  :accessor <ACCESSOR>
-;;  :documentation ":ORIGINAL-FIELD \"<FIELD>\"")
+;; To get at just the string of the original field:
+;; (while (search-forward-regexp ":ORIGINAL-FIELD \\(\\\\\"\\)\\(.*\\)\\(\\\\\"\\)")
+;;   (replace-match "\\2"))
+;;
+(defclass parsed-artist (parsed-class)
 
-;; (dotimes (i 3)
-;;   (princ "(<SLOT>\n :initarg :<INITARG>\n :accessor <ACCESSOR>\n :documentation \":ORIGINAL-FIELD \\\"<FIELD>\\\"\")\n" 
-;;          (current-buffer)))
+  ((control-id-entity-num-artist
+    :initarg :control-id-entity-num-artist
+    :accessor control-id-entity-num-artist
+    :documentation ":ORIGINAL-FIELD \"id\"")
 
+   (control-id-doc-num-artist
+    :initarg :control-id-doc-num-artist
+    :accessor control-id-doc-num-artist
+    :documentation ":ORIGINAL-FIELD \"bio\"")
 
+   (control-id-display-artist
+    :initarg :control-id-display-artist
+    :accessor control-id-display-artist
+    :documentation ":ORIGINAL-FIELD \"display\"")
+
+   (naf-entity-artist-display-name-coref
+    :initarg :naf-entity-artist-display-name-coref
+    :accessor naf-entity-artist-display-name-coref
+    :documentation ":ORIGINAL-FIELD \"used_for\"")
+
+   (naf-entity-role-appearance-coref
+    :initarg :naf-entity-role-appearance-coref
+    :accessor naf-entity-role-appearance-coref
+    :documentation ":ORIGINAL-FIELD \"role\"")
+
+   (naf-entity-gender-type
+    :initarg :naf-entity-gender-type
+    :accessor naf-entity-gender-type
+    :documentation ":ORIGINAL-FIELD \"gender\"")
+
+   (lifespan-date
+    :initarg :lifespan-date
+    :accessor lifespan-date
+    :documentation ":ORIGINAL-FIELD \"lifespan\"")
+
+   (birth-date
+    :initarg :birth-date
+    :accessor birth-date
+    :documentation ":ORIGINAL-FIELD \"date_born\"")
+
+   (death-date
+    :initarg :death-date
+    :accessor death-date
+    :documentation ":ORIGINAL-FIELD \"date_died\"")
+
+   (location-birth
+    :initarg :location-birth
+    :accessor location-birth
+    :documentation ":ORIGINAL-FIELD \"birth_location\"")
+
+   (location-death
+    :initarg :location-death
+    :accessor location-death
+    :documentation ":ORIGINAL-FIELD \"death_location\"")
+
+   (location-nationality
+    :initarg :location-nationality
+    :accessor location-nationality
+    :documentation ":ORIGINAL-FIELD \"nationality\"")
+
+   (control-id-db-0 ;; LOC 
+    :initarg :control-id-db-0
+    :accessor control-id-db-0
+    :documentation ":ORIGINAL-FIELD \"LOC_control\"")
+
+   (control-id-db-1 ;; ULAN
+    :initarg :control-id-db-1
+    :accessor control-id-db-1
+    :documentation ":ORIGINAL-FIELD \"ULAN_control\"")
+
+   (naf-entity-author-coref
+    :initarg :naf-entity-author-coref
+    :accessor naf-entity-author-coref
+    :documentation ":ORIGINAL-FIELD \"also_author\"")
+
+   (naf-entity-person-coref
+    :initarg :naf-entity-person-coref
+    :accessor naf-entity-person-coref
+    :documentation ":ORIGINAL-FIELD \"also_people\"")
+
+   (naf-entity-publication-appearance-coref
+    :initarg :naf-entity-publication-appearance-coref
+    :accessor naf-entity-publication-appearance-coref
+    :documentation ":ORIGINAL-FIELD \"appeared_in\"")
+
+   (naf-entity-brand-appearance-coref
+    :initarg :naf-entity-brand-appearance-coref
+    :accessor naf-entity-brand-appearance-coref
+    :documentation ":ORIGINAL-FIELD \"ads_for\"")
+
+   (description-artist-note-general
+    :initarg :description-artist-note-general
+    :accessor description-artist-note-general
+    :documentation ":ORIGINAL-FIELD \"found_in\"")
+
+   (description-artist-note-sale-appearance
+    :initarg :description-artist-note-sale-appearance
+    :accessor description-artist-note-sale-appearance
+    :documentation ":ORIGINAL-FIELD \"auction_records\"")
+
+   ;; shares-generic
+   (image-default-id
+    :initarg :image-default-id
+    :accessor image-default-id
+    :documentation ":ORIGINAL-FIELD \"default_pic\"")
+
+   (image-default-xref
+    :initarg :image-default-xref
+    :accessor image-default-xref
+    :documentation ":ORIGINAL-FIELD \"print_default_pic\"")
+
+   (naf-entity-active
+    :initarg :naf-entity-active
+    :accessor naf-entity-active
+    :documentation ":ORIGINAL-FIELD \"online\"")
+
+   (edit-by
+    :initarg :edit-by
+    :accessor edit-by
+    :documentation ":ORIGINAL-FIELD \"user_name\"")
+
+   (edit-by-creator
+    :initarg :edit-by-creator
+    :accessor edit-by-creator
+    :documentation ":ORIGINAL-FIELD \"naf_creator\"")
+
+   ;; shares-generic
+   (edit-date-origin ;; date_edt is the good one IGNORABLE assuming date_edit is present and corresponds.
+    :initarg :edit-date-origin
+    :accessor edit-date-origin
+    :documentation ":ORIGINAL-FIELD \"date_edit\"")
+
+   ;; shares-generic
+   (edit-date
+    :initarg :edit-date
+    :accessor edit-date
+    :documentation ":ORIGINAL-FIELD \"date_edt\"")
+
+   (ignorable-cancel-num
+    :initarg :ignorable-cancel-num
+    :accessor ignorable-cancel-num
+    :documentation ":ORIGINAL-FIELD \"cancel_num\"")
+
+   (ignorable-special-note
+    :initarg :ignorable-special-note
+    :accessor ignorable-special-note
+    :documentation ":ORIGINAL-FIELD \"special_note\""))
+  (:documentation
+   #.(format nil
+             "Class for parsed dbc XML `artist_infos` table.~%~@
+:EXAMPLE ~%
+ \(mon:class-slot-list  'parsed-ref\)~%~@
+:SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash',
+`write-sax-parsed-xml-refs-file', `set-parse-ref-slot-value', `parsed-ref'.~%▶▶▶")))
+
+(defun set-parsed-artist-slot-value (field-string field-value object)
+  (values 
+   (string-case:string-case (field-string)
+     ("id" (setf (control-id-entity-num-artist object) field-value))
+     ("bio" (setf (control-id-doc-num-artist object) field-value))
+     ("display" (setf (control-id-display-artist object) field-value))
+     ("used_for" (setf (naf-entity-artist-display-name-coref object) field-value))
+     ("role" (setf (naf-entity-role-appearance-coref object) field-value))
+     ("gender" (setf (naf-entity-gender-type object) field-value))
+     ("lifespan" (setf (lifespan-date object) field-value))
+     ("date_born" (setf (birth-date object) field-value))
+     ("date_died" (setf (death-date object) field-value))
+     ("birth_location" (setf (location-birth object) field-value))
+     ("death_location" (setf (location-death object) field-value))
+     ("nationality" (setf (location-nationality object) field-value))
+     ("LOC_control" (setf (control-id-db-0 object) field-value))
+     ("ULAN_control" (setf (control-id-db-1 object) field-value))
+     ("also_author" (setf (naf-entity-author-coref object) field-value))
+     ("also_people" (setf (naf-entity-person-coref object) field-value))
+     ("appeared_in" (setf (naf-entity-publication-appearance-coref object) field-value))
+     ("ads_for" (setf (naf-entity-brand-appearance-coref object) field-value))
+     ("found_in" (setf (description-artist-note-general object) field-value))
+     ("auction_records" (setf (description-artist-note-sale-appearance object) field-value))
+     ("default_pic" (setf (image-default-id object) field-value))
+     ("print_default_pic" (setf (image-default-xref object) field-value))
+     ("online" (setf (naf-entity-active object) field-value))
+     ("user_name" (setf (edit-by object) field-value))
+     ("naf_creator" (setf (edit-by-creator object) field-value))
+     ("date_edit" (setf (edit-date-origin object) field-value))
+     ("date_edt" (setf (edit-date object) field-value))
+     ("cancel_num" (setf (ignorable-cancel-num object) field-value))
+     ("special_note" (setf (ignorable-special-note object) field-value)))
+   object))
 
 
 ;;; ==============================
@@ -63,22 +246,49 @@
 ;;                  :type "lisp")
 ;;   (system-path *system-path*)))
 
-;; from parse
-;; (length
-;;  '("bio" "id" "display" "nationality" "role" "lifespan" "date_born" "date_died"
-;;    "birth_location" "death_location" "LOC_control" "used_for" "found_in"
-;;    "appeared_in" "ads_for" "auction_records" "cancel_num" "special_note" "gender"
-;;    "date_edit" "ULAN_control" "default_pic" "print_default_pic" "also_author"
-;;    "also_people" "user_name" "naf_creator" "online" "date_edt"))
-;=> 29
-
-;; from list below:
 ;; (length '("bio" "id" "display" "used_for" "role" "gender" "lifespan" "date_born"
-;; "date_died" "birth_location" "death_location" "nationality" "LOC_control"
-;; "ULAN_control" "also_author" "also_people" "appeared_in" "ads_for" "found_in"
-;; "auction_records" "default_pic" "print_default_pic" "online" "user_name"
-;; "naf_creator"))
-;; => 25
+;;           "date_died" "birth_location" "death_location" "nationality" "LOC_control"
+;;           "ULAN_control" "also_author" "also_people" "appeared_in" "ads_for" "found_in"
+;;           "auction_records" "default_pic" "print_default_pic" "online" "user_name"
+;;           "naf_creator" "date_edit" "date_edt" "cancel_num" "special_note"))
+
+
+
+;; (<SLOT>
+;;  :initarg :<INITARG>
+;;  :accessor <ACCESSOR>
+;;  :documentation ":ORIGINAL-FIELD \"<FIELD>\"")
+
+;; (mon-insert-parsed-defclass-slots
+;;  '((control-id-entity-num-artist                 . "id")
+;;    (control-id-display-artist                    . "display")
+;;    (naf-entity-artist-display-name-coref                . "used_for")
+;;    (naf-entity-role-appearance-coref                   . "role")
+;;    (naf-entity-gender-type                       . "gender")
+;;    (lifespan-date                                . "lifespan")
+;;    (birth-date                                   . "date_born")
+;;    (death-date                                   . "date_died")
+;;    (location-birth                               . "birth_location")
+;;    (location-death                               . "death_location")
+;;    (location-nationality                         . "nationality")
+;;    (control-id-db-0                              . "LOC_control") ;; LOC
+;;    (control-id-db-1                              . "ULAN_control") ;; ULAN
+;;    (naf-entity-author-coref                      . "also_author")
+;;    (naf-entity-person-coref                      . "also_people")
+;;    (naf-entity-publication-appearance-coref                . "appeared_in")
+;;    (naf-entity-brand-appearance-coref                      . "ads_for")
+;;    (description-artist-note-general              . "found_in")
+;;    (description-artist-note-sale-appearance      . "auction_records")
+;;    (image-default-id                             . "default_pic")
+;;    (image-default-xref                           . "print_default_pic")
+;;    (naf-entity-active                                   . "online")
+;;    (edit-by                                      . "user_name")
+;;    (edit-by-creator                              . "naf_creator")
+;;    (edit-date-origin                             . "date_edit") ;; date_edt is the good one
+;;    (edit-date                                    . "date_edt")    
+;;    (ignorable-cancel-num                         . "cancel_num")
+;;    (ignorable-special-note                       . "special_note")))
+
 
 ;;; ==============================
 ;; :NOTE All of these initial entity specific slot namespaces should be
@@ -93,8 +303,8 @@
 ;; "id"                ;; "control-id-entity-num-artist"
 ;; "display"           ;; "control-id-display-artist"
 ;;
-;; "used_for"          ;; "naf-entity-display-name-coref"
-;; "role"              ;; "naf-entity-role-appearance"
+;; "used_for"          ;; "naf-entity-artist-display-name-coref"
+;; "role"              ;; "naf-entity-role-appearance-coref"
 ;;
 ;; "gender"            ;; "naf-entity-gender-type"
 ;; "lifespan"          ;; "lifespan-date"
@@ -111,8 +321,8 @@
 ;; "also_people"       ;; "naf-entity-person-coref"
 ;;
 ;;
-;; "appeared_in"       ;; "publication-entity-appearance"
-;; "ads_for"           ;; "brand-entity-appearance"
+;; "appeared_in"       ;; "naf-entity-publication-appearance-coref"
+;; "ads_for"           ;; "naf-entity-brand-appearance-coref"
 ;;
 ;; "found_in"          ;; "description-artist-note-general"
 ;; "auction_records"   ;; "description-artist-note-sale-appearance"
@@ -120,7 +330,7 @@
 ;; "default_pic"       ;; "image-default-id"
 ;; "print_default_pic" ;; "image-default-xref"
 ;;
-;; "online"            ;; "naf-active"
+;; "online"            ;; "naf-entity-active"
 ;; "user_name"         ;; "edit-by"
 ;; "naf_creator"       ;; "edit-by-creator"
 ;;
@@ -165,6 +375,7 @@
 ;;
 ;; :EXAMPLE-VALUES 
 ;;  "Benito (Eduardo Garcia)"
+;;  "No Signature (Photographer:Poster:)"
 ;;
 ;; - This is the artists display name. There is tension here because it is
 ;;   occasionally desirable that this name be allowed to change and/or merge
@@ -195,7 +406,7 @@
      
 
 ;;; ==============================
-;;  :FIELD "used_for" :TRANSFORM "naf-entity-display-name-coref"
+;;  :FIELD "used_for" :TRANSFORM "naf-entity-artist-display-name-coref"
 ;;  :TYPE "text"
 ;;
 ;; :EXAMPLE-VALUES 
@@ -396,7 +607,7 @@
 ;; - Co-refs with `dbc:naf-entity-person'
 
 ;;; ==============================
-;; :FIELD "appeared_in" :TRANSFORM "publication-entity-appearance"
+;; :FIELD "appeared_in" :TRANSFORM "naf-entity-publication-appearance-coref"
 ;; :TYPE "text"
 ;;
 ;; :EXAMPLE-VALUES 
@@ -417,7 +628,7 @@
 ;; - Co-refs with `dbc:naf-entity-publication'
 
 ;;; ==============================
-;; :FIELD "ads_for"  :TRANSFORM "brand-entity-appearance"
+;; :FIELD "ads_for"  :TRANSFORM "naf-entity-brand-appearance-coref"
 ;; :TYPE "text"
 ;;
 ;; :EXAMPLE-VALUES 
@@ -454,7 +665,7 @@
 
 
 ;;; ==============================
-;;  :FIELD "online"  :TRANSFORM "naf-active"
+;;  :FIELD "online"  :TRANSFORM "naf-entity-active"
 ;;  :TYPE "tinyint(3) unsigned"
 ;;
 ;; :EXAMPLE-VALUES 
