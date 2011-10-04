@@ -19,7 +19,7 @@
 particular type of media.~%~@
 Possible (generalized) examples of a technique include:~% ~
  engraving, lithograph, photography, offset, etc.~%~@
-:SEE-ALSO `description-media-entity-technique-note' `base-media-entity',~%~
+:SEE-ALSO `description-media-entity-technique-note', `base-media-entity',~%~
 `media-entity-technique', `media-entity-material', `media-entity-mount',~%~
 `media-entity-color'.~%▶▶▶")))
 
@@ -31,7 +31,7 @@ Possible (generalized) examples of a technique include:~% ~
 Slot values might be used to indicate the type of material (ie.. paper, fabric,~%~
 cardstock) as well as various aspects of its composition, e.g. whether it is
 glazed, cold-rolled, 10mil, etc.~%~@
-:SEE-ALSO `description-media-entity-material-note' `base-media-entity',~%~
+:SEE-ALSO `description-media-entity-material-note', `base-media-entity',~%~
 `media-entity-technique', `media-entity-material', `media-entity-mount',~%~
 `media-entity-color'.~%▶▶▶")))
 
@@ -44,7 +44,7 @@ glazed, cold-rolled, 10mil, etc.~%~@
               i.e. whether the media is linen backed, dry mounted, framed, etc.~%~
               :SEE-ALSO `description-media-entity-mount-note' `base-media-entity',~%~
               `media-entity-technique', `media-entity-material', `media-entity-mount',~%~
-              `media-entity-color'.~%▶▶▶"))))))
+              `media-entity-color'.~%▶▶▶")))
 
 (defclass media-entity-color (base-media-entity)
   ()
@@ -56,7 +56,7 @@ glazed, cold-rolled, 10mil, etc.~%~@
               - slot indicating a cannonical or standardized display name of a particular color value;~% ~
               - slot indicating corefs to a cannonical or standardized display name of a particular color value;~% ~
               - slot indicating whether color has a generalized parent category, e.g. ruby-red is subsumed by red;~%~
-             :SEE-ALSO `description-media-entity-color-note' `base-media-entity',~%~
+             :SEE-ALSO `description-media-entity-color-note', `base-media-entity',~%~
              `media-entity-technique', `media-entity-material', `media-entity-mount',~%~
              `media-entity-color'.~%▶▶▶")))
 
