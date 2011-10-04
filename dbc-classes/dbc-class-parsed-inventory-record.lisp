@@ -381,9 +381,9 @@ slots for the class `parsed-inventory-record'.
     :accessor job-locked
     :documentation ":ORIGINAL-FIELD \"locked\"")
 
-   (item-active
-    :initarg :item-active
-    :accessor item-active
+   (record-status-active
+    :initarg :record-status-active
+    :accessor record-status-active
     :documentation ":ORIGINAL-FIELD \"online\"")
 
    (item-uri
@@ -613,7 +613,7 @@ slots for the class `parsed-inventory-record'.
      ("locked"
       (setf (job-locked object) field-value))
      ("online"
-      (setf (item-active object) field-value))
+      (setf (record-status-active object) field-value))
      ("uri"
       (setf (item-uri object) field-value))
      ("notes"
@@ -795,7 +795,7 @@ slots for the class `parsed-inventory-record'.
 ;;  "done"             ;; job-complete
 ;;  "job_name"         ;; job-id
 ;;  "locked"           ;; job-locked   ;; IGNORABLE
-;;  "online"           ;; item-active
+;;  "online"           ;; record-status-active
 ;;
 ;;  "uri"              ;; item-uri
 
@@ -2175,7 +2175,7 @@ slots for the class `parsed-inventory-record'.
 
 
 ;;; ==============================
-;; :FIELD "online" :TRANSFORM item-active
+;; :FIELD "online" :TRANSFORM record-status-active
 ;;
 ;;         :TYPE "tinyint(3) unsigned"
 ;;         :NULL-P "NO"

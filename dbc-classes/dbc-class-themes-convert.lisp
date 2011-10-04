@@ -13,20 +13,20 @@
 
 ;; "id"                 :TRANSFORM "control-id-entity-num-theme"
 ;; "theme"              :TRANSFORM "control-id-display-theme"
-;; "active"             :TRANSFORM "theme-active"
+;; "active"             :TRANSFORM "record-status-active"
 ;; "display_pic"        :TRANSFORM "image-default-xref"
-;; "related_pic_num"    :TRANSFORM "image-xrefs" ? 
+;; "related_pic_num"    :TRANSFORM "image-coref"
 ;; "date_edit"          :TRANSFORM "edit-date"
-;; "subdivision_number" :TRANSFORM
-;; "range"              :TRANSFORM
-;; "RT"                 :TRANSFORM
-;; "BT"                 :TRANSFORM
-;; "US"                 :TRANSFORM
-;; "UF"                 :TRANSFORM
-;; "NT"                 :TRANSFORM
+;; "subdivision_number" :TRANSFORM ignorable-subdivision-number
+;; "range"              :TRANSFORM ignorable-range
+;; "RT"                 :TRANSFORM ignorable-rt  ;; theme-entity-rt-coref
+;; "BT"                 :TRANSFORM ignorable-bt  ;; theme-entity-bt-coref
+;; "US"                 :TRANSFORM ignorable-us  ;; theme-entity-use-coref
+;; "UF"                 :TRANSFORM ignorable-uf  ;; theme-entity-uf-coref
+;; "NT"                 :TRANSFORM ignorable-nt  ;; theme-entity-nt-coref
 
 ;;; ==============================
-;; :FIELD "id" :TRANSFORM
+;; :FIELD "id" :TRANSFORM control-id-entity-num-theme
 ;;
 ;;         :TYPE "smallint(5) unsigned"
 ;;         :NULL-P "NO"
@@ -89,7 +89,7 @@
 
 
 ;;; ==============================
-;; :FIELD "active" :TRANSFORM
+;; :FIELD "active" :TRANSFORM record-status-active
 ;;
 ;;         :TYPE "tinyint(3) unsigned"
 ;;         :NULL-P "NO"
@@ -105,8 +105,9 @@
 ;;    When "0" value of `related_pic_num` and `display_pic` will also be "0" and  value of `date_edit` will be "0000-00-00 00:00:00"
 ;;    When "1" value of `related_pic_num` and `display_pic` should contain item references.
 
+
 ;;; ==============================
-;; :FIELD "related_pic_num" :TRANSFORM
+;; :FIELD "related_pic_num" :TRANSFORM image-coref
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -126,7 +127,7 @@
 ;;  When "0" value of `display_pic` and `active` should also be "0" and value of `date_edit` will be "0000-00-00 00:00:00"
 
 ;;; ==============================
-;; :FIELD "display_pic" :TRANSFORM
+;; :FIELD "display_pic" :TRANSFORM image-default-xref
 ;;
 ;;         :TYPE "int(10) unsigned"
 ;;         :NULL-P "NO"
