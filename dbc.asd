@@ -110,7 +110,7 @@
              (:file "dbc-class-description")
              (:file "dbc-class-documentation")
              (:file "dbc-class-parse-convert")
-             (:file "dbc-class-refs-convert")
+             (:file "dbc-class-parsed-inventory-record.lisp")
              ;; (:file "dbc-class-entity-location")
              ;; (:file "dbc-class-artist-convert")
              ;; (:file "dbc-class-themes-convert")
