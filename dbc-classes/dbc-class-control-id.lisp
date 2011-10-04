@@ -159,11 +159,21 @@
    (control-id-namespace)
    (control-id-identifies)
    ;; Storing class data in conjunctions with UUIDs is prob. a bad idea.
-   ;; (control-id-of-instance)
-   ;; :NOTE storing these last to may imply that we estable methods which account for updated/changed/redefined instances
-   ;; (control-id-instance-class)
-   ;; (control-id-class-uuid))
-   )   
+   ;; implies that we establish _really_ complicated methods which account for
+   ;; updated/changed/redefined instances.
+   ;; The only way we can make this work is to let Rucksack handle the heavy lifting...
+   ;; See comments at `add-class-uuid-and-identity-to-hash' for additional discussion.
+   ;; 
+   ;; The slot CONTROL-ID-OF-INSTANCE is the UUID of the class instance being identified.~%~@
+   ;; (control-id-of-instance)    ; -- bad idea
+   ;;
+   ;; The slot CONTROL-ID-INSTANCE-CLASS is a symbol designating a class object.~%~@
+   ;; (control-id-instance-class) ;-- bad idea
+   ;;
+   ;; The slot CONTROL-ID-CLASS-UUID is the UUID of class instance of the entity
+   ;; identified (e.g. the entity's class-of).~%~@
+   ;; (control-id-class-uuid))    ;-- bad idea
+   )
   (:documentation
    #.(format nil
              "The class `base-control-id' is an abstract-class.~%~@
@@ -178,10 +188,6 @@ as the NAMESPACE arg used when generating the v5 UUIDs.~%~@
 The SLOT CONTROL-ID-IDENTIFIES is a string or symbol.~%~
 It is used as the NAME arg used when generating the the v5 UUID the slot-value.~%~
 for control-id-uuid.~%~@
-The slot CONTROL-ID-OF-INSTANCE is the UUID of the class instance being identified.~%~@
-The slot CONTROL-ID-INSTANCE-CLASS is a symbol designating a class object.~%~@
-The slot CONTROL-ID-CLASS-UUID is the UUID of class instance of the entity
-identified (e.g. the entity's class-of).~%~@
 :EXAMPLE~% ~
  \(mon:class-subclasses \(find-class 'base-control-id\)\)~%~@
 :NOTE subclasses of `base-control-id' are distinct from those of the class
@@ -218,9 +224,6 @@ which record displayable control-ids which identify a nameable thing.~%~@
 ;;   ;; control-id-uuid
 ;;   ;; control-id-namespace
 ;;   ;; control-id-identifies     -- symbol
-;;   ;; control-id-of-instance    -- bad idea
-;;   ;; control-id-instance-class -- bad idea
-;;   ;; control-id-class-uuid     -- bad idea
 ;;   ()
 ;;   (:documentation "Identifies class objects.
 ;; The slot control-id-identifies is a symbol.
@@ -250,9 +253,6 @@ which record displayable control-ids which identify a nameable thing.~%~@
   ;; control-id-uuid
   ;; control-id-namespace
   ;; control-id-identifies  -- string maybe specialized for display. Should satisfy `mon:string-not-null-empty-or-all-whitespace-p'
-  ;; control-id-of-instance
-  ;; control-id-instance-class
-  ;; control-id-class-uuid
   ()
   (:documentation 
    #.(format nil

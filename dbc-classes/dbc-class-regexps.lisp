@@ -65,25 +65,54 @@
   (:documentation #.(classdoc 'base-regexp :class-doc)))
 
 ;;; ==============================
+;; :NOTE 
+;; `entity-regexp-subclass-allocation', `entity-regexp'
+;; ,----
+;; | The :default-initargs class option is followed by a list of
+;; | alternating initialization argument names and default initial value
+;; | forms.  If any of these initialization arguments does not appear in
+;; | the initialization argument list supplied to ‘make-instance’, the
+;; | corresponding default initial value form is evaluated, and the
+;; | initialization argument name and the form's value are added to the
+;; | end of the initialization argument list before the instance is
+;; | created; see *Note Section 7.1 (Object Creation and
+;; | Initialization): Object Creation and Initialization.  The default
+;; | initial value form is evaluated each time it is used.  The lexical
+;; | environment in which this form is evaluated is the lexical
+;; | environment in which the ‘defclass’ form was evaluated.  The
+;; | dynamic environment is the dynamic environment in which
+;; | ‘make-instance’ was called.  If an initialization argument name
+;; | appears more than once in a :default-initargs class option, an
+;; | error is signaled.
+;; `----
+;; However, we may need to be carefull with :default-initargs with metaclasses...
+;; :SEE C.L.L thread started by James Anderson (i.e. de.setf.resource) 
+;;  entitled: "why does the mop handle default-initargs as persistent,"
+;; :SEE (URL `http://groups.google.com/group/comp.lang.lisp/browse_thread/thread/fef6511f1cbb3bbd/99b5ea0f7a5ce4b6?lnk=gst&q=%22%3Adefault-initargs%22#99b5ea0f7a5ce4b6')
+
+;;; ==============================
 ;; subclass-match-entity-class  <-> regexp-match-entity-class
 ;; subclass-match-entity-db     <-> regexp-match-entity-db
 ;; subclass-match-matcher-db    <-> regexp-match-matcher-db
 (defclass entity-regexp-subclass-allocation (base-regexp)
-  ((;; entity-regexp slot match-entity-class
+  (( ;; entity-regexp slot match-entity-class
     subclass-match-entity-class
     :initarg :subclass-match-entity-class
-    :initform nil ;;
+    ;; :initform nil ;;
     :documentation #.(classdoc 'entity-regexp-subclass-allocation :subclass-match-entity-class))
-   (;; entity-regexp slot match-entity-db 
+   ( ;; entity-regexp slot match-entity-db 
     subclass-match-entity-db
     :initarg :subclass-match-entity-db
-    :initform nil
+    ;; :initform nil
     :documentation #.(classdoc 'entity-regexp-subclass-allocation :subclass-match-entity-db))
-   (;; entity-regexp slot match-matcher-db
+   ( ;; entity-regexp slot match-matcher-db
     subclass-match-matcher-db
     :initarg :subclass-match-matcher-db
-    :initform nil
+    ;; :initform nil
     :documentation #.(classdoc 'entity-regexp-subclass-allocation :subclass-match-matcher-db)))
+  (:default-initargs :subclass-match-entity-class nil
+                     :subclass-match-entity-db nil
+                     :subclass-match-matcher-db nil)
   (:documentation #.(classdoc 'entity-regexp-subclass-allocation :class-doc)))
 
 (defclass entity-regexp (base-regexp)
@@ -105,18 +134,21 @@
    ( ;; local-per-instance, access with regexp-match-container-type
     match-container-type
     :initarg :match-container-type
-    :initform nil
+    ;; :initform nil
     :documentation #.(classdoc 'entity-regexp :match-container-type))
    ( ;; local-per-instance, access with regexp-match-container-id
     match-container-uuid
     :initarg :match-container-id 
-    :initform nil
+    ;; :initform nil
     :documentation #.(classdoc 'entity-regexp :match-container-uuid))
    ( ;; local-per-instance, access with regexp-matcher
     match-entity-matcher 
     :initarg :match-entity-matcher 
-    :initform nil
+    ;;:initform nil
     :documentation  #.(classdoc 'entity-regexp :match-entity-matcher)))
+  (:default-initargs :match-container-type nil
+                     :match-container-id nil
+                     :match-entity-matcher nil)
   (:documentation  #.(classdoc 'entity-regexp :class-doc)))
 
 ;; (make-instance 'entity-regexp 
@@ -365,10 +397,11 @@
 ;;
 ;; (regexp-match-entity-class *base-test-entity-regexp-instance*)
 ;; (multiple-value-list (regexp-match-entity-class *base-test-entity-regexp-instance*))
-(defmethod regexp-match-entity-class ((obj entity-regexp-subclass-allocation) &key)
-  (let* ((if-bound (and (slot-exists-p obj 'subclass-match-entity-class)
-                        (slot-boundp obj 'subclass-match-entity-class)
-                        (slot-value obj  'subclass-match-entity-class)))
+(defmethod regexp-match-entity-class ((object entity-regexp-subclass-allocation) &key)
+  (let* (;; :NOTE `subclass-match-entity-class' has :default-initargs value NIL.
+         (if-bound (and (slot-exists-p object 'subclass-match-entity-class)
+                        (slot-boundp   object 'subclass-match-entity-class)
+                        (slot-value    object 'subclass-match-entity-class)))
          (found-class (and if-bound (mon:ref-bind fc (find-class if-bound)
                                       (and (eql (class-name fc) if-bound)
                                            fc)))))
@@ -381,10 +414,11 @@
 ;; symbol naming it.
 ;; (regexp-match-entity-db *base-test-entity-regexp-instance*)
 ;; (multiple-value-list (regexp-match-entity-db *base-test-entity-regexp-instance*))
-(defmethod regexp-match-entity-db ((obj entity-regexp-subclass-allocation) &key)
-  (let ((if-bound (and (slot-exists-p obj 'subclass-match-entity-db)
-                       (slot-boundp obj 'subclass-match-entity-db)
-                       (slot-value obj 'subclass-match-entity-db)))
+(defmethod regexp-match-entity-db ((object entity-regexp-subclass-allocation) &key)
+  (let (;; :NOTE `subclass-match-entity-db' has :default-initargs value NIL.
+        (if-bound (and (slot-exists-p object 'subclass-match-entity-db)
+                       (slot-boundp   object 'subclass-match-entity-db)
+                       (slot-value    object 'subclass-match-entity-db)))
         (then-get-hash '()))
     ;; (and (symbolp if-bound)
     ;;      (setf then-get-hash 
@@ -402,10 +436,11 @@
 ;; symbol naming it.
 ;; (regexp-match-matcher-db *base-test-entity-regexp-instance*)
 ;; (multiple-value-list (regexp-match-entity-db *base-test-entity-regexp-instance*))
-(defmethod regexp-match-matcher-db ((obj entity-regexp-subclass-allocation) &key)
-  (let ((if-bound (and (slot-exists-p obj 'subclass-match-matcher-db)
-                       (slot-boundp obj   'subclass-match-matcher-db)
-                       (slot-value obj    'subclass-match-matcher-db)))
+(defmethod regexp-match-matcher-db ((object entity-regexp-subclass-allocation) &key)
+  (let ( ;; :NOTE `subclass-match-matcher-db' has :default-initargs value NIL.
+        (if-bound (and (slot-exists-p object 'subclass-match-matcher-db)
+                       (slot-boundp   object 'subclass-match-matcher-db)
+                       (slot-value    object 'subclass-match-matcher-db)))
         (then-get-hash '()))
     (and (symbolp if-bound)
          (setf then-get-hash (symbol-value if-bound)))

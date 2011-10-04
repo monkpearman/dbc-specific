@@ -104,7 +104,7 @@
              (:file "dbc-class-edit")
              (:file "dbc-class-entity")
              (:file "dbc-class-media-entity")
-             ;; (:file "dbc-class-location-entity")
+             (:file "dbc-class-location-entity")
              (:file "dbc-class-regexps")
              (:file "dbc-class-users")
              (:file "dbc-class-description")

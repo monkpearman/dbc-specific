@@ -171,9 +171,9 @@
    #.(format nil
              "Class for parsed dbc XML `artist_infos` table.~%~@
 :EXAMPLE ~%
- \(mon:class-slot-list  'parsed-ref\)~%~@
+ \(mon:class-slot-list  'parsed-inventory-record\)~%~@
 :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash',
-`write-sax-parsed-xml-refs-file', `set-parse-ref-slot-value', `parsed-ref'.~%▶▶▶")))
+`write-sax-parsed-xml-refs-file', `set-parse-ref-slot-value', `parsed-inventory-record'.~%▶▶▶")))
 
 (defun set-parsed-artist-slot-value (field-string field-value object)
   (values 

@@ -6,33 +6,53 @@
 (in-package #:dbc)
 ;; *package*
 
-(defparameter *parsed-ref-field-name-slot-transform* (make-hash-table :test 'equal))
 
-(vardoc '*parsed-ref-field-name-slot-transform*
+;;; ==============================
+;; :NOTE the idea behind `*parsed-inventory-record-field-name-slot-transform*'
+;; `make-ref-maker-sym-name', `make-ref-maker-symbol', `make-ref-lookup-table'
+;;  Was to let us control construction of the slot-names and slot-accessor symbols for the class `parsed-inventory-record'
+;; This would allow us to define generic functions much earlier than doing so
+;; automagically at class defininition time and by extensio would give us
+;; greater control over the method dispatch on the subclasses of the class `parsed-class'.
+;; So, for example certain slots will have generic functions shared over many different subclasses, e.g.:
+;; `edit-date-origin' `edit-date'
+;; `naf-entity-person-coref' `naf-entity-artist-coref'
+;; `naf-entity-author-coref' `naf-entity-brand-coref'
+;; `naf-entity-publication-coref'
+;;
+;;  We aren't currently pre-defining generics for these accessors but _we should be_...
+;;; ==============================
+
+(defparameter *parsed-inventory-record-field-name-slot-transform* (make-hash-table :test 'equal))
+
+(vardoc '*parsed-inventory-record-field-name-slot-transform*
         "Hashtable of field-name/transform pairs.~%~@
 To be populated with `dbc:preprocess-slot-transform' prior to constructing the
-slots for the class `parsed-ref'.
+slots for the class `parsed-inventory-record'.
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `<XREF>'.~%▶▶▶")
 
-;;; ==============================
+
+;; :UNUSED
 (defun make-ref-maker-sym-name (ref-parse-field)
-  ;; (make-ref-maker-sym-name "ref") => "REF-PARSED-REF"
+  ;; (make-ref-maker-sym-name "ref") => "REF-PARSED-INVENTORY-RECORD"
   (and (mon:string-not-null-or-empty-p ref-parse-field)
-       (make-parsed-class-slot-init-accessor-name "parsed-ref" ref-parse-field)))
+       (make-parsed-class-slot-init-accessor-name "parsed-inventory-record" ref-parse-field)))
 
 ;; (caddr (make-ref-maker-sym-name "artist"))
-;; (make-parsed-class-slot-init-accessor-name  "parsed-ref" "ref")
+;; (make-parsed-class-slot-init-accessor-name  "parsed-inventory-record" "ref")
 ;; (nth 0 (make-parsed-class-slot-init-accessor-name "dbc-ref" "keywords_type") "PFX"))
-;; (nth 2 (make-parsed-class-slot-init-accessor-name "parsed-ref" "keywords_type"))
+;; (nth 2 (make-parsed-class-slot-init-accessor-name "parsed-inventory-record" "keywords_type"))
 
+;; :UNUSED
 (defun make-ref-maker-symbol (sym-name)
   ;; (make-ref-maker-symbol "ref")
   ;; (symbolp (make-ref-maker-symbol "ref"))
   (let ((mk-sym (make-ref-maker-sym-name sym-name)))
     (and mk-sym (read-from-string (nth 2 (make-ref-maker-sym-name sym-name))))))
 
+;; :UNUSED
 (defun make-ref-lookup-table (ref-list)
   ;; (make-ref-lookup-table (list "ref" "price" "year" "artist" "condition"))
   (let ((ref-hash (make-hash-table :test 'equal)))
@@ -44,238 +64,40 @@ slots for the class `parsed-ref'.
                    :do (setf (gethash key ref-hash) val)))
     ref-hash))
 
-
 ;;; ==============================
-;; :NOTE `load-sax-parsed-xml-file-to-parsed-class-hash' now has parameter
-;; KEY-ACCESSOR which was orignally named PRIMARY-KEY-FUN and provided a
-;; somewhat different interface which allowed passing an anonymous function
-;; instead of a slot-accessor e.g.:
-;;  (load-sax-parsed-xml-file-to-parsed-class-hash <PARSED-CLASS> 
-;;                                                 <INPUT-FILE> 
-;;                                                 <HASH-TABLE>
-;;                                                #'(lambda (x) (cdr (assoc "ref" x :test 'string=))))
-;; We've kept the orignal as commented as the alternative semantics may be prove useful in the future.
+;; :TODO `make-parsed-class-slot-init-accessor-name'
+;;  - Separate the slot init-arg frobbing into a dedicated function
+;;  - Change optional arg PREFIX-INITARG-W should be a keyword PREFIX-INIT-W
+;;  - Add additional keyword SUFFFIX-INIT-W
+;;  - Add additional keyword TRANSFORM (or NORMALIZE ???) when non-nil should
+;;    rename from PARSED-FIELD to TRANSFORM
+;; - Return value should have the format:
+;;    <SLOT>  <TRANSFORM>  |  (<INIT> {INIT-PFX | INIT-SFX} )  <ACCESSOR>
 ;;
-;; (defun load-sax-parsed-xml-file-to-parsed-class-hash (parsed-class input-file hash-table primary-key-fun) 
-;;   (with-open-file (fl input-file :direction :input :element-type 'character :external-format :UTF-8)
-;;     (loop
-;;        for x = (read fl nil 'EOF)
-;;        until (eql x 'EOF)
-;;        do (loop 
-;;              with obj = (make-instance parsed-class)
-;;              for (field . val) in x
-;;              for ref = (funcall primary-key-fun x) ;; (cdr (assoc "ref" x :test 'string=))
-;;              do (set-parsed-ref-slot-value field val obj)
-;;              finally (setf (gethash ref hash-table) obj))
-;;        finally (return (values hash-table (hash-table-count hash-table))))))
+;; :SEE make-parsed-class-slot-accessor-name etc.
 ;;
-(defun load-sax-parsed-xml-file-to-parsed-class-hash (&key parsed-class input-file hash-table key-accessor slot-dispatch-function)
-  ;; Arg PARSED-CLASS a symbol designating the class we are parsing.
-  ;; Arg INPUT-FILE the file containing field/value consed pairs.
-  ;; Arg HASH-TABLE the hash-table to insert the class object to. 
-  ;; Its `cl:hash-table-test' should be appropriate for use with the type of
-  ;; return value of KEY-ACCESSOR, e.g. if KEY-ACCESSOR returns a string the
-  ;; `cl:hash-table-test' should be `cl:equal' or `cl:equalp'. whereas if
-  ;; KEY-ACCESSOR returns a symbol then `cl:eql' will suffice.
-  ;; Arg KEY-ACCESSOR names an accessor function which returns the primary key for the parsed table
-  ;; it return value will becomes a hash-table KEY associating PARSED-CLASS in HASH-TABLE.
-  ;; As such, it should return always return a non-null value. If not the results are undefined.
-  ;; Arg SLOT-DISPATCH-FUNCTION is a function utilizing
-  ;; `string-case:string-case' to map strings to an appropriate accesor
-  ;; e.g. `set-parsed-artist-slot-value', `set-parsed-ref-slot-value', etc.
-  ;; :EXAMPLE
-  ;; (defparameter *tt--parse-table* (make-hash-table :test 'equal))
-  ;; (let ((parsed-sax-file (merge-pathnames 
-  ;;                         (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*))
-  ;;                                        :name (concatenate 'string "sax-refs-test-" (mon:time-string-yyyy-mm-dd))
-  ;;                                        :type "lisp")
-  ;;                         (system-path *system-path*))))
-  ;;   (write-sax-parsed-xml-to-file
-  ;;    :input-file  (merge-pathnames (make-pathname :name "dump-refs-DUMPING")
-  ;;                                  (sub-path *xml-input-dir*))
-  ;;    :output-file parsed-sax-file)
-  ;;   (load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-ref  
-  ;;                                                  :input-file parsed-sax-file
-  ;;                                                  :hash-table  *tt--parse-table*
-  ;;                                                  :key-accessor  #'item-number
-  ;;                                                  :slot-dispatch-function #'set-parse-ref-slot-value))
-  ;;                        
-  ;; ;; => #<HASH-TABLE  ... >, 8969
-  ;; (clrhash *tt--parse-table*)
-  ;; :NOTE For use with output of `write-sax-parsed-xml-refs-file'.
-  ;; `write-sax-parsed-xml-refs-file'
-  ;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
-  ;; `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
-  (with-open-file (fl input-file
-                      :direction :input 
-                      :element-type 'character
-                      :external-format :UTF-8)
-    (loop
-       for x = (read fl nil 'EOF)
-       until (eql x 'EOF)
-       do (loop 
-             with obj = (make-instance parsed-class)
-             for (field . val) in x
-             do (funcall slot-dispatch-function field val obj)
-             finally (setf (gethash (funcall key-accessor obj) hash-table) obj))
-       finally (return (values hash-table (hash-table-count hash-table))))))
-
-(defun print-sax-parsed-slots-padding-format-control (object)
-  ;; Return a format-control string for printing the slots of OBJECT with
-  ;; padding adjusted according to the longest symbol-name of its slots.
-  ;; Helper function for use with:
-  ;; `print-sax-parsed-slots'
-  ;; `write-sax-parsed-slots-to-file', 
-  ;; `write-sax-parsed-class-hash-to-files'
-  ;; (print-sax-parsed-slots-padding-format-control (make-instance 'parsed-ref))
-  (format nil "~~&(~~{~~{:~~~D:A~~S~~}~~^~~%~~})" 
-          (+ 
-           (reduce #'max 
-                   (map 'list #'(lambda (x) (length (string x)))
-                        (mon:class-slot-list object)))
-           4)))
-
-;; :NOTE There is nothing preventing us from making this the generalized
-;; interface for printing sax parsed slots it is not specific to the class
-;; `parsed-ref'.
+;; --
+;;  Current signature is:
+;;   (make-parsed-class-slot-init-accessor-name named-class parsed-field &optional prefix-initarg-w)
 ;;
-;; (fundoc 'print-sax-parsed-slots
-;; Keyword PRINT-UNBOUND is a boolean.
-;; When t (the default) and a slot of OJBECT's is not `cl:slot-boundp' print its slot-value as "#<UNBOUND>".
-;; When null and OJBECT's a slot is not `cl:slot-boundp' print its slot-value as NIL. 
-;; The later is useful when serializing an object to a file b/c the de-serialzed
-;; OBJECT will have its slot :initarg intialized to nil which is what we've done elswhere for this class
-;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
-;; `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
-(defun print-sax-parsed-slots (object &key stream (print-unbound t) (pre-padded-format-control nil))
-  (declare (type parsed-class object)
-           (type (or string null) pre-padded-format-control)
-           (type boolean print-unbound))
-  (let ((calculate-padding (if pre-padded-format-control
-                               pre-padded-format-control
-                               (print-sax-parsed-slots-padding-format-control object))))
-    (format stream calculate-padding ;; "~&(~{~{:~26:A~S~}~^~%~})"
-            (loop 
-               with unbound = (when print-unbound "#<UNBOUND>")
-               for slot-chk in (mon:class-slot-list object)
-               for x = (slot-boundp object slot-chk)
-               if x
-               nconc (list (list slot-chk (slot-value object slot-chk))) into rtn 
-               else  
-               nconc (list (list slot-chk unbound)) into rtn
-               finally ;;(format stream "~&(~{~{:~26:A~S~}~^~%~})" rtn)))
-               (return rtn)))))
-
-
-
-;; (fundoc 'write-sax-parsed-slots-to-file
-;; Write a list of the slot/value pairs of OBJECT to a file in OUTPUT-DIRECTORY.
-;; Each slot/value pair is written in such a way that the list may be read and
-;; passed to `cl:make-instance' to re-instantiate the instance.
-;; Arg SLOT-FOR-FILE-NAME is a symbol, e.g. 'item-number, 'control-id-entity-num-artist, etc.
-;; If it satisfies `cl:slot-exists-p', `cl:slot-boundp' and `cl:slot-value' its
-;; value is used as the suffix for a file name, if not an error is signaled.
-;; Arg PREFIX-FOR-FILE-NAME is a string, e.g. "item-number", "artist-enity-num", etc.
-;; It is combined with `cl:slot-value' of SLOT-FOR-FILE-NAME when makeing a pathname to write OBJECT to. 
-;; When a string is provided it should not contain a trailing #\-.
-;; If PREFIX-FOR-FILE-NAME is null the `cl:string' representation of SLOT-FOR-FILE-NAME is used instead.
-;; :EXAMPLE
-;; (write-sax-parsed-slots-to-file 
-;;  *tt--item* 'item-number \"item-number\"
-;;  :output-directory (merge-pathnames #P"individual-parse-refs-2011-10-01/" (sub-path *xml-output-dir*)))
-;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
-;; `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
-(defun write-sax-parsed-slots-to-file (object &key slot-for-file-name 
-                                                   prefix-for-file-name
-                                                   output-directory 
-                                                   (directory-exists-check t)
-                                                   (pre-padded-format-control nil))
-  (declare  (parsed-class object)
-            (type (and symbol (mon::not-null)) slot-for-file-name)
-            (type (or mon:string-not-empty null) prefix-for-file-name)
-            (boolean directory-exists-check))
-  (when directory-exists-check
-   (unless (equal output-directory
-                  (make-pathname :directory (pathname-directory (probe-file output-directory))))
-     (error "arg OUTPUT-DIRECTORY does not designate a valid directory~% got: ~S~%"
-            output-directory)))
-  (let* ((slot-value-if (and (slot-exists-p object slot-for-file-name) ;; 'item-number
-                            (slot-boundp   object slot-for-file-name)
-                            (slot-value    object slot-for-file-name)))
-        (slot-value-if-stringp (or (and slot-value-if
-                                        (stringp slot-value-if)
-                                        slot-value-if)))
-        (slot-value-to-file-name (and slot-value-if-stringp
-                                      (merge-pathnames 
-                                       (make-pathname :name (concatenate 'string 
-                                                                         (or prefix-for-file-name
-                                                                             (string slot-for-file-name))
-                                                                         "-"
-                                                                         slot-value-if-stringp))
-                                       output-directory)))
-        (calculate-padding (if pre-padded-format-control
-                               pre-padded-format-control
-                               (print-sax-parsed-slots-padding-format-control object))))
-    (if slot-value-to-file-name
-        (with-open-file (fl slot-value-to-file-name
-                            :direction :output 
-                            :if-does-not-exist :create
-                            :if-exists :supersede
-                            :external-format :UTF-8)
-          (format nil ";;; :CLASS `~A'' ~A ~A ~%;;; :FILE-CREATED  ~A~%"
-                  (string-downcase (class-name (class-of object)))
-                  slot-for-file-name
-                  slot-value-if-stringp
-                  (mon:timestamp-for-file))
-          (print-sax-parsed-slots object :stream fl :print-unbound nil :pre-padded-format-control calculate-padding)
-          slot-value-to-file-name)
-        (progn
-          (warn "~%Something wrong with arg OBJECT, declining to dump to file~%")
-          nil))))
-
-;; (fundoc 'write-sax-parsed-class-hash-to-files
-;; :EXAMPLE
-;; (write-sax-parsed-class-hash-to-files 
-;;  <HASH-TABLE> :parse-class <PARSED-CLASS> :slot-for-file-name 'item-number :prefix-for-file-name "item-number"
-;;  :output-directory (merge-pathnames #P"individual-parse-refs-2011-10-01/" (sub-path *xml-output-dir*)))
-;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
-;; `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
-(defun write-sax-parsed-class-hash-to-files (hash-table &key parsed-class
-                                                             slot-for-file-name
-                                                             prefix-for-file-name
-                                                             output-directory)
-  (declare (type hash-table hash-table)
-           (type (and symbol (mon::not-null)) slot-for-file-name parsed-class)
-           (type (or mon:string-not-empty null) prefix-for-file-name))
-  (unless (equal output-directory
-                 (make-pathname :directory (pathname-directory (probe-file output-directory))))
-    (error "arg OUTPUT-DIRECTORY does not designate a valid directory~% got: ~S~%"
-           output-directory))
-  (let ((calculate-padding (print-sax-parsed-slots-padding-format-control (make-instance parsed-class))))
-    (maphash #'(lambda (k v)
-                 (declare (ignore k) 
-                          (parsed-class v))
-                 (write-sax-parsed-slots-to-file v 
-                                                 :slot-for-file-name slot-for-file-name 
-                                                 :prefix-for-file-name prefix-for-file-name
-                                                 :output-directory output-directory
-                                                 :directory-exists-check nil
-                                                 :pre-padded-format-control calculate-padding))
-             hash-table)))
-
-;; Next we need to map the hash-table values and for each object and each slot
-;; of object clean up the crap in the fields.
+;; Current return values have the format:
+;;  <SLOT>  ( <INIT-PFX> <FIELD-NAME> ) <ACCESSOR>
 ;;
-;; One way to do this is to build mapping functions that dump all instances
-;; slot-values for a particular slot to a hast-table and then inspect these
-;; manually.
+;; Current return values are:
+;;  (make-parsed-class-slot-init-accessor-name "parsed-inventory-record"  "artist"  "p")
+;;   => ("ARTIST" "P-ARTIST" "PARSED-INVENTORY-RECORD-ARTIST")
+;;
+;;  (make-parsed-class-slot-init-accessor-name "parsed-inventory-record" "keywords_type")
+;;  => ("KEYWORDS-TYPE" "KEYWORDS-TYPE" "PARSED-INVENTORY-RECORD-KEYWORDS-TYPE")
+;;  
+;;
 
 
-;; (make-instance 'parsed-ref)
+;; (make-instance 'parsed-inventory-record)
 
 ;;; ==============================
 
-(defclass parsed-ref (parsed-class)
+(defclass parsed-inventory-record (parsed-class)
   ((item-number
     :initarg :item-number
     :accessor item-number
@@ -644,106 +466,184 @@ slots for the class `parsed-ref'.
    #.(format nil
              "Class for parsed dbc xml `refs` table.~%~@
 :EXAMPLE ~%
- \(mon:class-slot-list  'parsed-ref\)~%~@
+ \(mon:class-slot-list  'parsed-inventory-record\)~%~@
 :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash',
-`write-sax-parsed-xml-refs-file', `set-parsed-ref-slot-value'.~%▶▶▶")))
+`write-sax-parsed-xml-refs-file', `set-parsed-inventory-record-slot-value'.~%▶▶▶")))
 
 ;;; ==============================
-;; (fundoc 'set-parsed-ref-slot-value
+;; (fundoc 'set-parsed-inventory-record-slot-value
 ;; "Map orginal sql tables FIELD-STRING name to OBJECT's CLOS slot equivalent setting its slot-value to FIELD-VALUE.~%~@
 ;; Return as if by `cl:values':~%
 ;;  - nth-value 0 is the setf'd FIELD-VALUE as set with slot accessor corresponding to FIELD-STRING.
 ;;  - nth-value 1 is OBJECT~%~@
 ;; For use with `load-sax-parsed-xml-file-to-parsed-class-hash' after reading in
 ;; XML files parsed with `write-sax-parsed-xml-refs-file'.~%~@
-;; OJBECT is an instance of class `parsed-ref'.~%~@
+;; OJBECT is an instance of class `parsed-inventory-record'.~%~@
 ;; Original FIELD-STRING is the car of the the consed key/value pairs in one of the alists 
 ;; written to an output file by `write-sax-parsed-xml-refs-file' FIELD VALUE is
 ;; the corresponding cdr of the consed key/value pair.~%~@
-;; The slot documentation of the class `parsed-ref' provides indication of the
+;; The slot documentation of the class `parsed-inventory-record' provides indication of the
 ;; mapping from the original field name to our new slot name.~%~@
 ;; :EXAMPLE
-;;  (set-parsed-ref-slot-value "ref" "13000" (make-instance 'parsed-ref))
+;;  (set-parsed-inventory-record-slot-value "ref" "13000" (make-instance 'parsed-inventory-record))
 ;;
 ;; :SEE-ALSO `<XREF>'.~%▶▶▶")
 ;; 
 ;; :NOTE The setf of the accessor ensures we always populate the slot-value with nil
 ;; so as to avoid errors when slot is not `slot-boundp'.
-(defun set-parsed-ref-slot-value (field-string field-value object)
+;; 
+;; :TODO Currently these accessor methods are defined automagically at class creation.
+;; We need to unify common routines and symbol-names to appropriate generic
+;; functions and where the behavior is generalized across all class specialize
+;; them on the class `parsed-class'.
+;;
+(defun set-parsed-inventory-record-slot-value (field-string field-value object)
   (values 
    (string-case:string-case (field-string)
-    ("ref" (setf (item-number object) field-value))
-    ("title" (setf (description-item-title object) field-value))
-    ("desc_fr" (setf (description-item-french object) field-value))
-    ("desc_en" (setf (description-item-english object) field-value))
-    ("histo_fr" (setf (ignorable-history-french object) field-value))
-    ("histo_en" (setf (ignorable-history-english object) field-value))
-    ("text_quote" (setf (description-item-quote object) field-value))
-    ("translation" (setf (description-item-translation object) field-value))
-    ("people" (setf (naf-entity-person-coref object) field-value))
-    ("brand" (setf (naf-entity-brand-coref object) field-value))
-    ("composer" (setf (naf-entity-composer-coref object) field-value))
-    ("artist" (setf (naf-entity-artist-coref object) field-value))
-    ("author" (setf (naf-entity-author-coref object) field-value))
-    ("latin_name" (setf (taxon-entity-coref object) field-value))
-    ("book" (setf (naf-entity-publication-coref object) field-value))
-    ("publisher" (setf (publication-publisher object) field-value))
-    ("publish_location" (setf (publication-location object) field-value))
-    ("volume" (setf (publication-volume object) field-value))
-    ("edition" (setf (publication-edition object) field-value))
-    ("page" (setf (publication-page object) field-value))
-    ("Plate_number" (setf (publication-plate object) field-value))
-    ("issue" (setf (publication-issue object) field-value))
-    ("year" (setf (publication-date object) field-value))
-    ("year_year" (setf (publication-date-range object) field-value))
-    ("categ" (setf (category-entity-0-coref object) field-value)) 
-    ("c1" (setf (category-entity-1-coref object) field-value))
-    ("c2" (setf (category-entity-2-coref object) field-value))
-    ("c3" (setf (category-entity-3-coref object) field-value))
-    ("c4" (setf (category-entity-4-coref object) field-value))
-    ("c5" (setf (category-entity-5-coref object) field-value))
-    ("c6" (setf (category-entity-6-coref object) field-value))
-    ("bct" (setf (category-entity-precedence-list object) field-value))
-    ("categ_doc" (setf (documentation-category-entity-0-coref object) field-value))
-    ("c1_doc" (setf (documentation-category-entity-1-coref object) field-value))
-    ("c2_doc" (setf (documentation-category-entity-2-coref object) field-value))
-    ("c3_doc" (setf (documentation-category-entity-3-coref object) field-value))
-    ("theme" (setf (theme-entity-0-coref object) field-value))
-    ("theme2" (setf (theme-entity-1-coref object) field-value))
-    ("theme3" (setf (theme-entity-2-coref object) field-value))
-    ("price" (setf (price-ask object) field-value))
-    ("keywords" (setf (keywords-sequence object) field-value))
-    ("condition" (setf (description-item-condition object) field-value))
-    ("onlinen" (setf (media-entity-mount object) field-value))
-    ("technique" (setf (media-entity-technique object) field-value))
-    ("paper" (setf (media-entity-paper object) field-value))
-    ("color" (setf (media-entity-color object) field-value))
-    ("w" (setf (unit-width object) field-value))
-    ("h" (setf (unit-height object) field-value))
-    ("nbre" (setf (ignorable-number object) field-value))
-    ("seller" (setf (item-seller object) field-value))
-    ("bar_code" (setf (item-bar-code object) field-value))
-    ("weight" (setf (unit-weight object) field-value))
-    ("user_name" (setf (edit-by-creator object) field-value))
-    ("done" (setf (job-complete object) field-value))
-    ("job_name" (setf (job-id object) field-value))
-    ("locked" (setf (job-locked object) field-value))
-    ("online" (setf (item-active object) field-value))
-    ("uri" (setf (item-uri object) field-value))
-    ("notes" (setf (ignorable-notes object) field-value))
-    ("keywords_type" (setf (ignorable-keywords-type object) field-value))
-    ("av_repro" (setf (item-can-repro object) field-value))
-    ("related_doc" (setf (documentation-related object) field-value))
-    ("ebay_final" (setf (price-sold-ebay object) field-value))
-    ("ebay_price" (setf (price-ask-ebay object) field-value))
-    ("ebay_title" (setf (title-ebay object) field-value))
-    ("ebay_id" (setf (control-id-ebay object) field-value))
-    ("seo_title" (setf (description-item-seo-title object) field-value))
-    ("description_seo" (setf (description-item-seo object) field-value))
-    ("keywords_seo" (setf (keywords-seo object) field-value))
-    ("date" (setf (edit-date-origin object) field-value))
-    ("date_edit" (setf (edit-date object) field-value))
-    ("edit_history" (setf (edit-history object) field-value)))
+     ("ref" 
+      (setf (item-number object) field-value))
+     ("title" 
+      (setf (description-item-title object) field-value))
+     ("desc_fr" 
+      (setf (description-item-french object) field-value))
+     ("desc_en" 
+      (setf (description-item-english object) field-value))
+     ("histo_fr" 
+      (setf (ignorable-history-french object) field-value))
+     ("histo_en" 
+      (setf (ignorable-history-english object) field-value))
+     ("text_quote"
+      (setf (description-item-quote object) field-value))
+     ("translation"
+      (setf (description-item-translation object) field-value))
+     ("people"
+      (setf (naf-entity-person-coref object) field-value))
+     ("brand"
+      (setf (naf-entity-brand-coref object) field-value))
+     ("composer"
+      (setf (naf-entity-composer-coref object) field-value))
+     ("artist" 
+      (setf (naf-entity-artist-coref object) field-value))
+     ("author"
+      (setf (naf-entity-author-coref object) field-value))
+     ("latin_name"
+      (setf (taxon-entity-coref object) field-value))
+     ("book"
+      (setf (naf-entity-publication-coref object) field-value))
+     ("publisher" 
+      (setf (publication-publisher object) field-value))
+     ("publish_location" 
+      (setf (publication-location object) field-value))
+     ("volume" 
+      (setf (publication-volume object) field-value))
+     ("edition" 
+      (setf (publication-edition object) field-value))
+     ("page" 
+      (setf (publication-page object) field-value))
+     ("Plate_number"
+      (setf (publication-plate object) field-value))
+     ("issue"
+      (setf (publication-issue object) field-value))
+     ("year"
+      (setf (publication-date object) field-value))
+     ("year_year"
+      (setf (publication-date-range object) field-value))
+     ("categ"
+      (setf (category-entity-0-coref object) field-value)) 
+     ("c1"
+      (setf (category-entity-1-coref object) field-value))
+     ("c2"
+      (setf (category-entity-2-coref object) field-value))
+     ("c3"
+      (setf (category-entity-3-coref object) field-value))
+     ("c4"
+      (setf (category-entity-4-coref object) field-value))
+     ("c5"
+      (setf (category-entity-5-coref object) field-value))
+     ("c6"
+      (setf (category-entity-6-coref object) field-value))
+     ("bct"
+      (setf (category-entity-precedence-list object) field-value))
+     ("categ_doc"
+      (setf (documentation-category-entity-0-coref object) field-value))
+     ("c1_doc"
+      (setf (documentation-category-entity-1-coref object) field-value))
+     ("c2_doc"
+      (setf (documentation-category-entity-2-coref object) field-value))
+     ("c3_doc"
+      (setf (documentation-category-entity-3-coref object) field-value))
+     ("theme"
+      (setf (theme-entity-0-coref object) field-value))
+     ("theme2"
+      (setf (theme-entity-1-coref object) field-value))
+     ("theme3"
+      (setf (theme-entity-2-coref object) field-value))
+     ("price"
+      (setf (price-ask object) field-value))
+     ("keywords"
+      (setf (keywords-sequence object) field-value))
+     ("condition"
+      (setf (description-item-condition object) field-value))
+     ("onlinen"
+      (setf (media-entity-mount object) field-value))
+     ("technique"
+      (setf (media-entity-technique object) field-value))
+     ("paper"
+      (setf (media-entity-paper object) field-value))
+     ("color"
+      (setf (media-entity-color object) field-value))
+     ("w"
+      (setf (unit-width object) field-value))
+     ("h"
+      (setf (unit-height object) field-value))
+     ("nbre"
+      (setf (ignorable-number object) field-value))
+     ("seller"
+      (setf (item-seller object) field-value))
+     ("bar_code"
+      (setf (item-bar-code object) field-value))
+     ("weight"
+      (setf (unit-weight object) field-value))
+     ("user_name"
+      (setf (edit-by-creator object) field-value))
+     ("done"
+      (setf (job-complete object) field-value))
+     ("job_name"
+      (setf (job-id object) field-value))
+     ("locked"
+      (setf (job-locked object) field-value))
+     ("online"
+      (setf (item-active object) field-value))
+     ("uri"
+      (setf (item-uri object) field-value))
+     ("notes"
+      (setf (ignorable-notes object) field-value))
+     ("keywords_type"
+      (setf (ignorable-keywords-type object) field-value))
+     ("av_repro"
+      (setf (item-can-repro object) field-value))
+     ("related_doc"
+      (setf (documentation-related object) field-value))
+     ("ebay_final"
+      (setf (price-sold-ebay object) field-value))
+     ("ebay_price"
+      (setf (price-ask-ebay object) field-value))
+     ("ebay_title"
+      (setf (title-ebay object) field-value))
+     ("ebay_id"
+      (setf (control-id-ebay object) field-value))
+     ("seo_title"
+      (setf (description-item-seo-title object) field-value))
+     ("description_seo"
+      (setf (description-item-seo object) field-value))
+     ("keywords_seo"
+      (setf (keywords-seo object) field-value))
+     ("date"
+      (setf (edit-date-origin object) field-value))
+     ("date_edit"
+      (setf (edit-date object) field-value))
+     ("edit_history"
+      (setf (edit-history object) field-value)))
    object))
 
 
@@ -787,33 +687,7 @@ slots for the class `parsed-ref'.
 ;;  "edit_history")
 
 
-;;; ==============================
-;; :TODO `make-parsed-class-slot-init-accessor-name'
-;;  - Separate the slot init-arg frobbing into a dedicated function
-;;  - Change optional arg PREFIX-INITARG-W should be a keyword PREFIX-INIT-W
-;;  - Add additional keyword SUFFFIX-INIT-W
-;;  - Add additional keyword TRANSFORM (or NORMALIZE ???) when non-nil should
-;;    rename from PARSED-FIELD to TRANSFORM
-;; - Return value should have the format:
-;;    <SLOT>  <TRANSFORM>  |  (<INIT> {INIT-PFX | INIT-SFX} )  <ACCESSOR>
-;;
-;; :SEE make-parsed-class-slot-accessor-name etc.
-;;
-;; --
-;;  Current signature is:
-;;   (make-parsed-class-slot-init-accessor-name named-class parsed-field &optional prefix-initarg-w)
-;;
-;; Current return values have the format:
-;;  <SLOT>  ( <INIT-PFX> <FIELD-NAME> ) <ACCESSOR>
-;;
-;; Current return values are:
-;;  (make-parsed-class-slot-init-accessor-name "parsed-ref"  "artist"  "p")
-;;   => ("ARTIST" "P-ARTIST" "PARSED-REF-ARTIST")
-;;
-;;  (make-parsed-class-slot-init-accessor-name "parsed-ref" "keywords_type")
-;;  => ("KEYWORDS-TYPE" "KEYWORDS-TYPE" "PARSED-REF-KEYWORDS-TYPE")
-;;  
-;;
+
 
 
 ;;; ==============================
@@ -844,7 +718,7 @@ slots for the class `parsed-ref'.
 ;;; ==============================
 ;;
 ;;
-;; (make-parsed-class-slot-init-accessor-name "parsed-ref" "keywords_type" "init")
+;; (make-parsed-class-slot-init-accessor-name "parsed-inventory-record" "keywords_type" "init")
 ;;    <SLOT>  <TRANSFORM>  |  (<INIT> {INIT-PFX | INIT-SFX})  <ACCESSOR>  
 ;; '(
 ;;

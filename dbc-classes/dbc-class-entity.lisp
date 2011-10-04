@@ -24,11 +24,17 @@
 ;; --- naf-entity-publisher ???
 ;; --- naf-entity-linnaean  ???
 ;;
-;; -- base-location-entity
-;; --- location-entity
-;; ---- location-entity-verified
-;; ---- location-entity-unverified
-;; ---- location-entity-imagined
+;; dbc-classes/dbc-class-media-entity.lisp
+;; --- media-entity-technique (base-media-entity)
+;; --- media-entity-material  (base-media-entity)
+;; --- media-entity-mount     (base-media-entity)
+;; --- media-entity-color     (base-media-entity)
+;;
+;; dbc-classes/dbc-class-location-entity.lisp
+;; --- location-entity             (base-location-entity)
+;; ---- location-entity-verified   (location-entity)
+;; ---- location-entity-unverified (location-entity)
+;; ---- location-entity-imagined   (location-entity)
 ;;
 ;;
 ;;; ==============================
@@ -100,6 +106,12 @@ external domain.~%
              :SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp',~%~
              `naf-entity-alt-name-regexp'.~%▶▶▶")))
 
+;; base-entity               (base-dbc)
+;; - base-media-entity       (base-entity)
+;; -- media-entity-technique (base-media-entity)
+;; -- media-entity-material  (base-media-entity)
+;; -- media-entity-mount     (base-media-entity)
+;; -- media-entity-color     (base-media-entity)
 (defclass base-media-entity (base-entity)
   ()
   (:documentation 
@@ -116,9 +128,17 @@ external domain.~%
                  -- black and white, red, white, blue, etc.~%~@
              :EXAMPLE~% ~
               \(mon:class-subclasses \(find-class 'base-media-entity\)\)
-             :SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp',~%~
-             `naf-entity-alt-name-regexp'.~%▶▶▶")))
+:SEE-ALSO `media-entity-technique',`media-entity-material',
+`media-entity-mount', `media-entity-color',
+`base-description-entity-media-note', `naf-entity-type-regexp',
+`naf-entity-control-name-regexp', `naf-entity-alt-name-regexp'.~%▶▶▶")))
 
+;; base-entity                    (base-dbc)
+;; - base-location-entity         (base-entity)
+;; -- location-entity             (base-location-entity)
+;; --- location-entity-verified   (location-entity)
+;; --- location-entity-unverified (location-entity)
+;; --- location-entity-imagined   (location-entity)
 (defclass base-location-entity (base-entity)
    ()
   (:documentation 
@@ -139,6 +159,7 @@ understood as follows:~% ~%
  \(mon:class-subclasses \(find-class 'base-location-entity\)\)
 :SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp',~%~
 `naf-entity-alt-name-regexp'.~%▶▶▶")))
+
 
 ;;; ==============================
 

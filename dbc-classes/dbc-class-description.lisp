@@ -21,6 +21,7 @@
 ;; description-media-entity-technique-note (base-description-entity-media-note)
 ;; description-media-entity-material-note  (base-description-entity-media-note)
 ;; description-media-entity-mount-note     (base-description-entity-media-note)
+;; description-media-entity-color-note     (base-description-entity-media-note)
 ;; base-description-entity-location-note   (base-description-entity-internal)
 
 ;; ABSTRACT-CLASS
@@ -44,7 +45,8 @@
    #.(format nil
              "ABSTRACT-CLASS~%~
 Instances of this class are used to provide public exerternally visible~%~
-descriptions of some aspect of an object in the dbc system.~%")))
+descriptions of some aspect of an object in the dbc system.~%~@
+:SEE-ALSO `base-description-internal'.~%")))
 
 ;; ABSTRACT-CLASS
 (defclass base-description-internal (base-description)
@@ -57,7 +59,16 @@ aspect of a class, a class instance, or some slot(s) comprising a class instance
 The purpose of the class is distinct from the :documentation value for a slot or class~%~
 b/c its instances provide descriptions about a particular state of a class~%~
 instance or slot and not their global domain or range.~%~@
-:SEE-ALSO `<XREF>'.~%▶▶▶")))
+:SEE-ALSO `base-description-external'.~%")))
+
+;; ABSTRACT-CLASS
+;; ;; `base-description-item' a bad name 
+;; (defclass base-description-inventory-record (base-description)
+;;   ()
+;;   (:documentation
+;;    #.(format nil
+;;              "ABSTRACT-CLASS
+;; Used to annotate some particular internal aspect about a subclass of `base-entity'.~%")))
 
 ;; ABSTRACT-CLASS
 (defclass base-description-entity (base-description)
@@ -65,7 +76,7 @@ instance or slot and not their global domain or range.~%~@
   (:documentation
    #.(format nil
              "ABSTRACT-CLASS
-Used to annotate some particular internal aspect about a subclass of `base-entity'.")))
+Used to annotate some particular internal aspect about a subclass of `base-entity'.~%")))
 
 ;; ABSTRACT-CLASS
 (defclass base-description-entity-internal (base-description-internal base-description-entity)
@@ -95,19 +106,25 @@ Used to annotate some particular internal aspect about a subclass of `base-media
   ()
   (:documentation 
    #.(format nil
-             "Used to annotate some particular internal aspect about a `media-technique-entity'.")))
+             "Used to annotate some particular internal aspect about a `media-entity-technique'.")))
 
 (defclass description-media-entity-material-note (base-description-entity-media-note)
   ()
   (:documentation 
    #.(format nil
-             "Used to annotate some particular internal aspect about a `media-material-entity'.")))
+             "Used to annotate some particular internal aspect about a `media-entity-material'.")))
 
 (defclass description-media-entity-mount-note (base-description-entity-media-note)
   ()
   (:documentation 
    #.(format nil
-             "Used to annotate some particular internal aspect about a `media-mount-entity'.")))
+             "Used to annotate some particular internal aspect about a `media-entity-mount'.")))
+
+(defclass description-media-entity-color-note (base-description-entity-media-note)
+  ()
+  (:documentation 
+   #.(format nil
+             "Used to annotate some particular internal aspect about a `media-entity-color'.")))
 
 ;; (defclass description-publication-note-content ()) ;; internal
 ;; (defclass description-publication-note-general ()) ;; internal

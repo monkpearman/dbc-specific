@@ -302,6 +302,7 @@ dbc-classes/dbc-class-entity.lisp
 --- media-entity-technique (base-media-entity)
 --- media-entity-material  (base-media-entity)
 --- media-entity-mount     (base-media-entity)
+--- media-entity-color     (base-media-entity)
 
 -- base-location-entity (base-entity)
 --- location-entity
@@ -384,14 +385,20 @@ base-edit
 
 dbc-classes/dbc-class-description.lisp
 
-base-description                   (base-dbc)
-base-description-external          (base-description)
-base-description-internal          (base-description)
-base-description-entity            (base-description)
-base-description-entity-internal   (base-description-internal base-description-entity)
-base-description-entity-external   (base-description-external base-description-entity)
-base-description-entity-media-note (base-description-entity-internal)
-description-technique-note         (base-description-entity-media-note)
+- base-description                            (base-dbc)
+-- base-description-external                  (base-description)
+-- base-description-internal                  (base-description)
+-- base-description-entity                    (base-description)
+--- base-description-entity-internal          (base-description-internal base-description-entity)
+--- base-description-entity-external          (base-description-external base-description-entity)
+---- base-description-entity-media-note       (base-description-entity-internal)
+----- description-media-entity-technique-note (base-description-entity-media-note)
+----- description-media-entity-material-note  (base-description-entity-media-note)
+----- description-media-entity-mount-note     (base-description-entity-media-note)
+----- description-media-entity-color-note     (base-description-entity-media-note)
+---- base-description-entity-location-note    (base-description-entity-internal)
+
+
 
 
 

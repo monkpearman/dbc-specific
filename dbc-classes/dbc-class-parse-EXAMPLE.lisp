@@ -15,7 +15,7 @@
    :input-file  (merge-pathnames (make-pathname :name "dump-refs-DUMPING")
                                  (sub-path *xml-input-dir*))
    :output-file parsed-sax-file)
-  (load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-ref  
+  (load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-inventory-record  
                                                  :input-file parsed-sax-file
                                                  :hash-table  *tt--parse-table*
                                                  :key-accessor  #'item-number
@@ -25,7 +25,7 @@
 ;; This will write all 8979 hash-table values to an individual file.
 (write-sax-parsed-class-hash-to-files
  *tt--parse-table*
- :parsed-class 'parsed-ref
+ :parsed-class 'parsed-inventory-record
  :slot-for-file-name 'item-number
  :prefix-for-file-name "item-number"
  :output-directory (ensure-directories-exist
