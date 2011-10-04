@@ -8,7 +8,13 @@
 ;;;  - uuids
 ;;;  - indexed terms
 ;;;  - 
+;;; :NOTE The class `parse-ref' has the following slots:
+;;;  documentation-category-entity-0-coref
+;;;  documentation-category-entity-1-coref
+;;;  documentation-category-entity-2-coref
+;;;  documentation-category-entity-3-coref
 ;;; ==============================
+
 
 
 (in-package #:dbc)
