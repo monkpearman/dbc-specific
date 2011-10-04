@@ -15,7 +15,12 @@
    :input-file  (merge-pathnames (make-pathname :name "dump-refs-DUMPING")
                                  (sub-path *xml-input-dir*))
    :output-file parsed-sax-file)
-  (load-sax-parsed-xml-file-to-parsed-class-hash 'parsed-ref  parsed-sax-file *tt--parse-table* #'item-number))
+  (load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-ref  
+                                                 :input-file parsed-sax-file
+                                                 :hash-table  *tt--parse-table*
+                                                 :key-accessor  #'item-number
+                                                 :slot-dispatch-function #'set-parse-ref-slot-value))
+
 
 ;; This will write all 8979 hash-table values to an individual file.
 (write-sax-parsed-class-hash-to-files
@@ -40,6 +45,39 @@
 ;;   78.05% CPU
 ;;   14,298,721,940 processor cycles
 ;;   428,620,536 bytes consed
+
+(write-sax-parsed-xml-to-file
+ :input-file  (merge-pathnames (make-pathname :name "dump-artist-infos-xml")
+                               (sub-path *xml-input-dir*))
+ :output-file (merge-pathnames 
+               (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*))
+                              :name (concatenate 'string "sax-artist-test-" (mon:time-string-yyyy-mm-dd))
+                              :type "lisp")
+               (system-path *system-path*)))
+
+(load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-artist
+                                               :input-file (merge-pathnames 
+                                                            (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*))
+                                                                           :name (concatenate 'string "sax-artist-test-" (mon:time-string-yyyy-mm-dd))
+                                                                           :type "lisp")
+                                                            (system-path *system-path*))
+                                               :hash-table *tt--parse-artist-table*
+                                               :key-accessor #'control-id-entity-num-artist
+                                               :slot-dispatch-function #'set-parsed-artist-slot-value)
+
+(write-sax-parsed-class-hash-to-files 
+ *tt--parse-artist-table*
+ :parsed-class 'parsed-artist
+ :slot-for-file-name 'control-id-entity-num-artist
+ :prefix-for-file-name "artist-id-number"
+ :output-directory (ensure-directories-exist
+                    (merge-pathnames 
+                     (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*) 
+                                                           ,(concatenate 'string 
+                                                                         "individual-parse-artists-"
+                                                                         (mon:time-string-yyyy-mm-dd))))
+                     (system-path *system-path*))))
+
 
 
 ;;; ==============================
