@@ -232,6 +232,7 @@ dbc-classes/dbc-class-control-id.lisp
 ;; *control-id-display-technique-namespace*
 ;; *control-id-display-mount-namespace*
 ;; *control-id-display-meterial-namespace*
+;; *control-id-display-taxon-namespace*
 
 ;; :NOTE Not clear if these are more system type objects entity type objects:
 ;; *control-id-display-user-namespace*
@@ -250,10 +251,12 @@ dbc-classes/dbc-class-control-id.lisp
 ---- control-id-display-author              (control-id-display-name-for-entity-type)
 ---- control-id-display-person              (control-id-display-name-for-entity-type)
 ---- control-id-display-publication         (control-id-display-name-for-entity-type)
+---- control-id-display-publication-full    (control-id-display-publication) ;; !!!
 ---- control-id-display-location            (control-id-display-name-for-entity-type)
 ---- control-id-display-technique           (control-id-display-name-for-entity-type)
 ---- control-id-display-mount               (control-id-display-name-for-entity-type)
 ---- control-id-display-material            (control-id-display-name-for-entity-type)
+---- control-id-display-taxon               (control-id-display-name-for-entity-type)
 
 
 ;; Item refs id-nums should be obfuscated with a UUID and are deprecated!
@@ -264,19 +267,22 @@ dbc-classes/dbc-class-control-id.lisp
 ;; e.g. "control-id-doc-num-artist"    -> "control-id-doc-uuid"
 ;; e.g. "control-id-entity-num-artist" -> "control-id-entity-uuid"
 
--- control-id-deprecated                 (base-control-id)
+control-id-doc-num
 
---- control-id-item-num                  (control-id-deprecated)
+-- control-id-deprecated-record-id       (base-control-id)
 
---- control-id-doc-num                   (control-id-deprecated)
+
+--- control-id-item-num                  (control-id-deprecated-record-id)
+
+--- control-id-doc-num                   (control-id-deprecated-record-id)
 ---- control-id-doc-num-artist           (control-id-doc-num)
 ---- control-id-doc-num-brand            (control-id-doc-num)
 ---- control-id-doc-num-author           (control-id-doc-num)
 ---- control-id-doc-num-person           (control-id-doc-num)
 ---- control-id-doc-num-publication      (control-id-doc-num)
----- control-id-display-publication-full (control-id-doc-num)
 
---- control-id-entity-num                (control-id-deprecated)
+
+--- control-id-entity-num                (control-id-deprecated-record-id)
 ---- control-id-entity-num-artist        (control-id-entity-num)
 ---- control-id-entity-num-author        (control-id-entity-num)
 ---- control-id-entity-num-brand         (control-id-entity-num)
@@ -284,7 +290,9 @@ dbc-classes/dbc-class-control-id.lisp
 ---- control-id-entity-num-publication   (control-id-entity-num)
 ---- control-id-entity-num-technique     (control-id-entity-num)
 
-
+;; These will need a dispatch on a string match. because we currently have
+;; slot-names control-id-db-0 and control-id-db-1 for the classes `naf-entity-<FOO>'
+;; This is because we can't (at first) be sure from which db the control-id is derived.
 -- control-id-db                     (base-control-id)
 --- control-id-db-loc                (control-id-db) ;; nb2007017414 | n 98028882 | no 99021790
 --- control-id-db-ulan               (control-id-db) ;; 500013504
@@ -297,11 +305,13 @@ dbc-classes/dbc-class-entity.lisp
 - base-entity           (base-dbc)
 -- base-category-entity (base-entity)
 -- base-theme-entity    (base-entity)
+-- base-taxon-entity    (base-entity)
 
 -- base-media-entity       (base-entity)
 --- media-entity-technique (base-media-entity)
 --- media-entity-material  (base-media-entity)
 --- media-entity-mount     (base-media-entity)
+--- media-entity-color     (base-media-entity)
 
 -- base-location-entity (base-entity)
 --- location-entity
@@ -315,8 +325,11 @@ dbc-classes/dbc-class-entity.lisp
 --- location-entity-death       (location-entity-????) 
 --- location-entity-published   (location-entity-????)
 
+;; -- base-taxon-entity (base-entity)
+;; taxon-entity-coref
 
--- base-citation-entity (base-entity)
+;; base-citation-entity is  not currently implemented.
+-- base-citation-entity         (base-entity)
 --- citation-entity-institution (base-citation-entity)
 --- citation-entity-publication (base-citation-entity)
 --- citation-entity-website     (base-citation-entity)
@@ -324,11 +337,11 @@ dbc-classes/dbc-class-entity.lisp
 -- base-naf-entity      (base-entity)
     _________________ Below should have their own files
 
---- naf-entity-person       (base-naf-entity)
---- naf-entity-artist       (base-naf-entity)
---- naf-entity-author       (base-naf-entity)
---- naf-entity-brand        (base-naf-entity)
---- naf-entity-publication  (base-naf-entity)
+--- naf-entity-person                  (base-naf-entity)
+--- naf-entity-artist                  (base-naf-entity)
+--- naf-entity-author                  (base-naf-entity)
+--- naf-entity-brand                   (base-naf-entity)
+--- naf-entity-publication             (base-naf-entity)
 ---- naf-entity-publication-book       (naf-entity-publication)
 ---- naf-entity-publication-subscribed (naf-entity-publication)
 ---- naf-entity-publication-atlas      (naf-entity-publication)
@@ -337,9 +350,7 @@ dbc-classes/dbc-class-entity.lisp
 ---- naf-entity-publication-pamphlet   (naf-entity-publication)
 
     ______________________  These are as yet undecided w/r/t how to handle
---- naf-entity-linnaean     (base-naf-entity)
 --- naf-entity-publisher    (base-naf-entity)
---- naf-entity-publication  (base-naf-entity)
 --- naf-entity-institution  (base-naf-entity)
 --- naf-entity-citation     (base-naf-entity) ;; Or, maybe (base-naf-entity base-citation-entity)
 
@@ -384,15 +395,19 @@ base-edit
 
 dbc-classes/dbc-class-description.lisp
 
-base-description                   (base-dbc)
-base-description-external          (base-description)
-base-description-internal          (base-description)
-base-description-entity            (base-description)
-base-description-entity-internal   (base-description-internal base-description-entity)
-base-description-entity-external   (base-description-external base-description-entity)
-base-description-entity-media-note (base-description-entity-internal)
-description-technique-note         (base-description-entity-media-note)
-
+- base-description                            (base-dbc)
+-- base-description-external                  (base-description)
+-- base-description-internal                  (base-description)
+-- base-description-entity                    (base-description)
+--- base-description-entity-internal          (base-description-internal base-description-entity)
+--- base-description-entity-external          (base-description-external base-description-entity)
+---- base-description-entity-media-note       (base-description-entity-internal)
+----- description-media-entity-technique-note (base-description-entity-media-note)
+----- description-media-entity-material-note  (base-description-entity-media-note)
+----- description-media-entity-mount-note     (base-description-entity-media-note)
+----- description-media-entity-color-note     (base-description-entity-media-note)
+---- base-description-location-entity-note    (base-description-entity-internal)
+---- base-description-taxon-entity-note       (base-description-entity-internal)
 
 
 dbc-classes/dbc-class-documentation.lisp
@@ -404,9 +419,25 @@ base-documenation (base-dbc)
 dbc-classes/dbc-class-parse-convert.lisp
 
 parsed-class
+parsed-naf-entity    (parsed-class)
+
 
            
-dbc-classes/dbc-class-refs-convert.lisp
+dbc-classes/dbc-class-parsed-inventory-record.lisp
+parsed-inventory-record (parsed-class)
+
+
+dbc-classes/dbc-class-parsed-artist-record.lisp
+parsed-artist-record (parsed-naf-entity)
+
+
+dbc-classes/dbc-class-parsed-publication-record.lisp
+parsed-publication-record (parsed-naf-entity)
+
+
+
+dbc-classes/dbc-class-parsed-technique-record.lisp
+parsed-technique-record (parsed-naf-entity)
 
 
 ;;; ==============================

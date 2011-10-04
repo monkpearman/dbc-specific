@@ -1,7 +1,7 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-01-04T16:36:51-05:00Z}#{11012} - by MON>
-;;; :FILE dbc-specific/dbc-classes/dbc-class-artist.lisp
+;;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-artist-record-record.lisp
 ;;; ==============================
-
+;; 
 
 ;;; ==============================
 ;;; Clean these up first with emacs regexp: 
@@ -12,24 +12,30 @@
 
 (in-package #:dbc)
 
-;; (length (mon:class-slot-list 'parsed-artist))
+;; (length (mon:class-slot-list 'parsed-artist-record))
+
+
+;; control-id-entity-num
 
 ;; To get at just the string of the original field:
 ;; (while (search-forward-regexp ":ORIGINAL-FIELD \\(\\\\\"\\)\\(.*\\)\\(\\\\\"\\)")
 ;;   (replace-match "\\2"))
 ;;
-(defclass parsed-artist (parsed-class)
+(defclass parsed-artist-record (parsed-naf-entity)
 
-  ((control-id-entity-num-artist
+  (;; control-id-entity-num
+   (control-id-entity-num-artist
     :initarg :control-id-entity-num-artist
     :accessor control-id-entity-num-artist
     :documentation ":ORIGINAL-FIELD \"id\"")
 
+   ;; control-id-naf-entity-doc-num
    (control-id-doc-num-artist
     :initarg :control-id-doc-num-artist
     :accessor control-id-doc-num-artist
     :documentation ":ORIGINAL-FIELD \"bio\"")
 
+   ;; control-id-naf-entity-display-name
    (control-id-display-artist
     :initarg :control-id-display-artist
     :accessor control-id-display-artist
@@ -45,69 +51,82 @@
     :accessor naf-entity-role-appearance-coref
     :documentation ":ORIGINAL-FIELD \"role\"")
 
+   ;; shares-generic
    (naf-entity-gender-type
     :initarg :naf-entity-gender-type
     :accessor naf-entity-gender-type
     :documentation ":ORIGINAL-FIELD \"gender\"")
 
+   ;; shares-generic
    (lifespan-date
     :initarg :lifespan-date
     :accessor lifespan-date
     :documentation ":ORIGINAL-FIELD \"lifespan\"")
 
+   ;; shares-generic
    (birth-date
     :initarg :birth-date
     :accessor birth-date
     :documentation ":ORIGINAL-FIELD \"date_born\"")
 
+   ;; shares-generic
    (death-date
     :initarg :death-date
     :accessor death-date
     :documentation ":ORIGINAL-FIELD \"date_died\"")
 
+   ;; shares-generic
    (location-birth
     :initarg :location-birth
     :accessor location-birth
     :documentation ":ORIGINAL-FIELD \"birth_location\"")
 
+   ;; shares-generic
    (location-death
     :initarg :location-death
     :accessor location-death
     :documentation ":ORIGINAL-FIELD \"death_location\"")
 
+   ;; shares-generic
    (location-nationality
     :initarg :location-nationality
     :accessor location-nationality
     :documentation ":ORIGINAL-FIELD \"nationality\"")
 
+   ;; shares-generic
    (control-id-db-0 ;; LOC 
     :initarg :control-id-db-0
     :accessor control-id-db-0
     :documentation ":ORIGINAL-FIELD \"LOC_control\"")
 
+   ;; shares-generic
    (control-id-db-1 ;; ULAN
     :initarg :control-id-db-1
     :accessor control-id-db-1
     :documentation ":ORIGINAL-FIELD \"ULAN_control\"")
 
+   ;; shares-generic
    (naf-entity-author-coref
     :initarg :naf-entity-author-coref
     :accessor naf-entity-author-coref
     :documentation ":ORIGINAL-FIELD \"also_author\"")
 
+   ;; shares-generic
    (naf-entity-person-coref
     :initarg :naf-entity-person-coref
     :accessor naf-entity-person-coref
     :documentation ":ORIGINAL-FIELD \"also_people\"")
 
-   (naf-entity-publication-appearance-coref
-    :initarg :naf-entity-publication-appearance-coref
-    :accessor naf-entity-publication-appearance-coref
+   ;; shares-generic
+   (naf-entity-publication-coref
+    :initarg :naf-entity-publication-coref
+    :accessor naf-entity-publication-coref
     :documentation ":ORIGINAL-FIELD \"appeared_in\"")
 
-   (naf-entity-brand-appearance-coref
-    :initarg :naf-entity-brand-appearance-coref
-    :accessor naf-entity-brand-appearance-coref
+   ;; shares-generic
+   (naf-entity-brand-coref
+    :initarg :naf-entity-brand-coref
+    :accessor naf-entity-brand-coref
     :documentation ":ORIGINAL-FIELD \"ads_for\"")
 
    (description-artist-note-general
@@ -126,21 +145,25 @@
     :accessor image-default-id
     :documentation ":ORIGINAL-FIELD \"default_pic\"")
 
+   ;; shares-generic
    (image-default-xref
     :initarg :image-default-xref
     :accessor image-default-xref
     :documentation ":ORIGINAL-FIELD \"print_default_pic\"")
-
-   (naf-entity-active
-    :initarg :naf-entity-active
-    :accessor naf-entity-active
+   
+   ;; shares-generic
+   (record-status-active
+    :initarg :record-status-active
+    :accessor record-status-active
     :documentation ":ORIGINAL-FIELD \"online\"")
 
+   ;; shares-generic
    (edit-by
     :initarg :edit-by
     :accessor edit-by
     :documentation ":ORIGINAL-FIELD \"user_name\"")
 
+   ;; shares-generic
    (edit-by-creator
     :initarg :edit-by-creator
     :accessor edit-by-creator
@@ -171,11 +194,11 @@
    #.(format nil
              "Class for parsed dbc XML `artist_infos` table.~%~@
 :EXAMPLE ~%
- \(mon:class-slot-list  'parsed-ref\)~%~@
+ \(mon:class-slot-list  'parsed-inventory-record\)~%~@
 :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash',
-`write-sax-parsed-xml-refs-file', `set-parse-ref-slot-value', `parsed-ref'.~%▶▶▶")))
+`write-sax-parsed-xml-refs-file', `set-parse-ref-slot-value', `parsed-inventory-record'.~%▶▶▶")))
 
-(defun set-parsed-artist-slot-value (field-string field-value object)
+(defun set-parsed-artist-record-slot-value (field-string field-value object)
   (values 
    (string-case:string-case (field-string)
      ("id" (setf (control-id-entity-num-artist object) field-value))
@@ -194,13 +217,13 @@
      ("ULAN_control" (setf (control-id-db-1 object) field-value))
      ("also_author" (setf (naf-entity-author-coref object) field-value))
      ("also_people" (setf (naf-entity-person-coref object) field-value))
-     ("appeared_in" (setf (naf-entity-publication-appearance-coref object) field-value))
-     ("ads_for" (setf (naf-entity-brand-appearance-coref object) field-value))
+     ("appeared_in" (setf (naf-entity-publication-coref object) field-value))
+     ("ads_for" (setf (naf-entity-brand-coref object) field-value))
      ("found_in" (setf (description-artist-note-general object) field-value))
      ("auction_records" (setf (description-artist-note-sale-appearance object) field-value))
      ("default_pic" (setf (image-default-id object) field-value))
      ("print_default_pic" (setf (image-default-xref object) field-value))
-     ("online" (setf (naf-entity-active object) field-value))
+     ("online" (setf (record-status-active object) field-value))
      ("user_name" (setf (edit-by object) field-value))
      ("naf_creator" (setf (edit-by-creator object) field-value))
      ("date_edit" (setf (edit-date-origin object) field-value))
@@ -275,13 +298,13 @@
 ;;    (control-id-db-1                              . "ULAN_control") ;; ULAN
 ;;    (naf-entity-author-coref                      . "also_author")
 ;;    (naf-entity-person-coref                      . "also_people")
-;;    (naf-entity-publication-appearance-coref                . "appeared_in")
-;;    (naf-entity-brand-appearance-coref                      . "ads_for")
+;;    (naf-entity-publication-coref                . "appeared_in")
+;;    (naf-entity-brand-coref                      . "ads_for")
 ;;    (description-artist-note-general              . "found_in")
 ;;    (description-artist-note-sale-appearance      . "auction_records")
 ;;    (image-default-id                             . "default_pic")
 ;;    (image-default-xref                           . "print_default_pic")
-;;    (naf-entity-active                                   . "online")
+;;    (record-status-active                                   . "online")
 ;;    (edit-by                                      . "user_name")
 ;;    (edit-by-creator                              . "naf_creator")
 ;;    (edit-date-origin                             . "date_edit") ;; date_edt is the good one
@@ -321,8 +344,8 @@
 ;; "also_people"       ;; "naf-entity-person-coref"
 ;;
 ;;
-;; "appeared_in"       ;; "naf-entity-publication-appearance-coref"
-;; "ads_for"           ;; "naf-entity-brand-appearance-coref"
+;; "appeared_in"       ;; "naf-entity-publication-coref"
+;; "ads_for"           ;; "naf-entity-brand-coref"
 ;;
 ;; "found_in"          ;; "description-artist-note-general"
 ;; "auction_records"   ;; "description-artist-note-sale-appearance"
@@ -330,7 +353,7 @@
 ;; "default_pic"       ;; "image-default-id"
 ;; "print_default_pic" ;; "image-default-xref"
 ;;
-;; "online"            ;; "naf-entity-active"
+;; "online"            ;; "record-status-active"
 ;; "user_name"         ;; "edit-by"
 ;; "naf_creator"       ;; "edit-by-creator"
 ;;
@@ -607,7 +630,7 @@
 ;; - Co-refs with `dbc:naf-entity-person'
 
 ;;; ==============================
-;; :FIELD "appeared_in" :TRANSFORM "naf-entity-publication-appearance-coref"
+;; :FIELD "appeared_in" :TRANSFORM "naf-entity-publication-coref"
 ;; :TYPE "text"
 ;;
 ;; :EXAMPLE-VALUES 
@@ -628,7 +651,7 @@
 ;; - Co-refs with `dbc:naf-entity-publication'
 
 ;;; ==============================
-;; :FIELD "ads_for"  :TRANSFORM "naf-entity-brand-appearance-coref"
+;; :FIELD "ads_for"  :TRANSFORM "naf-entity-brand-coref"
 ;; :TYPE "text"
 ;;
 ;; :EXAMPLE-VALUES 
@@ -665,7 +688,7 @@
 
 
 ;;; ==============================
-;;  :FIELD "online"  :TRANSFORM "naf-entity-active"
+;;  :FIELD "online"  :TRANSFORM "record-status-active"
 ;;  :TYPE "tinyint(3) unsigned"
 ;;
 ;; :EXAMPLE-VALUES 

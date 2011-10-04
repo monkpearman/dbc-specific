@@ -63,8 +63,13 @@
 ---- control-id-display-author              (control-id-display-name-for-entity-type)
 ---- control-id-display-person              (control-id-display-name-for-entity-type)
 ---- control-id-display-publication         (control-id-display-name-for-entity-type)
----- control-id-display-location            (control-id-display-name-for-entity-type)
+---- control-id-display-publication-full    (control-id-display-name-for-entity-type) ;; or control-id-display-publication??
 ---- control-id-display-technique           (control-id-display-name-for-entity-type)
+---- control-id-display-material            (control-id-display-name-for-entity-type)
+---- control-id-display-mount               (control-id-display-name-for-entity-type)
+---- control-id-display-location            (control-id-display-name-for-entity-type)
+---- control-id-display-taxon               (control-id-display-name-for-entity-type)
+
 
 ;; Item refs id-nums should be obfuscated with a UUID and are deprecated!
 ;; Entity id-nums may occure congruently and are deprecated!
@@ -74,11 +79,13 @@
 ;; e.g. "control-id-doc-num-artist"    -> "control-id-doc-uuid"
 ;; e.g. "control-id-entity-num-artist" -> "control-id-entity-uuid"
 
--- control-id-deprecated                 (base-control-id)
+;; control-id-deprecated-record-id
 
---- control-id-item-num                  (control-id-deprecated)
+-- control-id-deprecated-record-id       (base-control-id)
 
---- control-id-doc-num                   (control-id-deprecated)
+--- control-id-item-num                  (control-id-deprecated-record-id)
+
+--- control-id-doc-num                   (control-id-deprecated-record-id)
 ---- control-id-doc-num-artist           (control-id-doc-num)
 ---- control-id-doc-num-brand            (control-id-doc-num)
 ---- control-id-doc-num-author           (control-id-doc-num)
@@ -86,7 +93,7 @@
 ---- control-id-doc-num-publication      (control-id-doc-num)
 ---- control-id-display-publication-full (control-id-doc-num)
 
---- control-id-entity-num                (control-id-deprecated)
+--- control-id-entity-num                (control-id-deprecated-record-id)
 ---- control-id-entity-num-artist        (control-id-entity-num)
 ---- control-id-entity-num-author        (control-id-entity-num)
 ---- control-id-entity-num-brand         (control-id-entity-num)
@@ -159,11 +166,21 @@
    (control-id-namespace)
    (control-id-identifies)
    ;; Storing class data in conjunctions with UUIDs is prob. a bad idea.
-   ;; (control-id-of-instance)
-   ;; :NOTE storing these last to may imply that we estable methods which account for updated/changed/redefined instances
-   ;; (control-id-instance-class)
-   ;; (control-id-class-uuid))
-   )   
+   ;; implies that we establish _really_ complicated methods which account for
+   ;; updated/changed/redefined instances.
+   ;; The only way we can make this work is to let Rucksack handle the heavy lifting...
+   ;; See comments at `add-class-uuid-and-identity-to-hash' for additional discussion.
+   ;; 
+   ;; The slot CONTROL-ID-OF-INSTANCE is the UUID of the class instance being identified.~%~@
+   ;; (control-id-of-instance)    ; -- bad idea
+   ;;
+   ;; The slot CONTROL-ID-INSTANCE-CLASS is a symbol designating a class object.~%~@
+   ;; (control-id-instance-class) ;-- bad idea
+   ;;
+   ;; The slot CONTROL-ID-CLASS-UUID is the UUID of class instance of the entity
+   ;; identified (e.g. the entity's class-of).~%~@
+   ;; (control-id-class-uuid))    ;-- bad idea
+   )
   (:documentation
    #.(format nil
              "The class `base-control-id' is an abstract-class.~%~@
@@ -178,10 +195,6 @@ as the NAMESPACE arg used when generating the v5 UUIDs.~%~@
 The SLOT CONTROL-ID-IDENTIFIES is a string or symbol.~%~
 It is used as the NAME arg used when generating the the v5 UUID the slot-value.~%~
 for control-id-uuid.~%~@
-The slot CONTROL-ID-OF-INSTANCE is the UUID of the class instance being identified.~%~@
-The slot CONTROL-ID-INSTANCE-CLASS is a symbol designating a class object.~%~@
-The slot CONTROL-ID-CLASS-UUID is the UUID of class instance of the entity
-identified (e.g. the entity's class-of).~%~@
 :EXAMPLE~% ~
  \(mon:class-subclasses \(find-class 'base-control-id\)\)~%~@
 :NOTE subclasses of `base-control-id' are distinct from those of the class
@@ -218,9 +231,6 @@ which record displayable control-ids which identify a nameable thing.~%~@
 ;;   ;; control-id-uuid
 ;;   ;; control-id-namespace
 ;;   ;; control-id-identifies     -- symbol
-;;   ;; control-id-of-instance    -- bad idea
-;;   ;; control-id-instance-class -- bad idea
-;;   ;; control-id-class-uuid     -- bad idea
 ;;   ()
 ;;   (:documentation "Identifies class objects.
 ;; The slot control-id-identifies is a symbol.
@@ -250,9 +260,6 @@ which record displayable control-ids which identify a nameable thing.~%~@
   ;; control-id-uuid
   ;; control-id-namespace
   ;; control-id-identifies  -- string maybe specialized for display. Should satisfy `mon:string-not-null-empty-or-all-whitespace-p'
-  ;; control-id-of-instance
-  ;; control-id-instance-class
-  ;; control-id-class-uuid
   ()
   (:documentation 
    #.(format nil
@@ -308,13 +315,40 @@ Likewise, such co-references may occur in both the same class and/or an entirely
   ()
   )
 
-(defclass control-id-display-location (control-id-display-name-for-entity-type)
-  ()
-  )
+;; :NOTE or subclass control-id-display-publication
+;; (defclass control-id-display-publication-full (control-id-display-name-for-entity-type)
+;;   ()
+;;   )
 
 (defclass control-id-display-technique (control-id-display-name-for-entity-type)
   ()
   )
+
+(defclass control-id-display-material (control-id-display-name-for-entity-type)
+  ()
+  )
+
+(defclass control-id-display-mount (control-id-display-name-for-entity-type)
+  ()
+  )
+
+(defclass control-id-display-mount (control-id-display-name-for-entity-type)
+  ()
+  )
+
+;; (defclass control-id-display-color (control-id-display-name-for-entity-type)
+;;   ()
+;;   )
+
+
+(defclass control-id-display-location (control-id-display-name-for-entity-type)
+  ()
+  )
+
+(defclass control-id-display-taxon (control-id-display-name-for-entity-type)
+  ()
+  )
+
 
 ;;; ==============================
 ;;

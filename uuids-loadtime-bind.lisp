@@ -38,6 +38,35 @@
 ;;
 ;; *uuid-namespace-control-id-image-directory*  
 ;; 
+
+(defvar *control-id-display-taxon-namespace*
+  (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
+                           :control-id '*control-id-display-taxon-namespace*))
+
+(defvar *control-id-display-category-namespace*
+  (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
+                           :control-id '*control-id-display-category-namespace*))
+
+(defvar *control-id-display-theme-namespace*
+  (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
+                           :control-id '*control-id-display-theme-namespace*))
+
+(defvar *control-id-display-technique-namespace*
+  (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
+                           :control-id '*control-id-display-technique-namespace*))
+
+(defvar *control-id-display-mount-namespace*
+  (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
+                           :control-id '*control-id-display-mount-namespace*))
+
+(defvar *control-id-display-mount-namespace*
+  (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
+                           :control-id '*control-id-display-mount-namespace*))
+
+(defvar *control-id-display-meterial-namespace*
+  (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
+                           :control-id '*control-id-display-meterial-namespace*))
+
 (defvar *control-id-display-artist-namespace*
   (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
                            :control-id '*control-id-display-artist-namespace*))

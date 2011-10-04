@@ -1,5 +1,5 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-05-21T12:51:43-04:00Z}#{11206} - by MON>
-;;; :FILE dbc-specific/dbc-classes/dbc-class-entity-location.lisp
+;;; :FILE dbc-specific/dbc-classes/dbc-class-location-entity.lisp
 ;;; ==============================
 
 ;;; ==============================
@@ -54,6 +54,7 @@
 
 (defclass location-entity (base-location-entity)
   ((display-name
+    ;; control-id-display-location
     :initarg :display-name 
     ;; :initform 
     ;; (make-instance 'base-display-name-for-entity-type
@@ -62,6 +63,7 @@
     ;; 
     ;; :initform  ;; (or (and (mon:string-not-empty <FORM>) <FORM>) (error "String 
     ;; :documentation "The default display-name for an entity. Its")
+    )
    (appellations-modern
     :initarg :appellations-modern
     :initform nil
@@ -90,7 +92,10 @@ When non-nil slot-value is a [ <STRING> | <LIST-OF-STRINGS> ].~%~@
  \"Hindostan\"~% ~
  \(\"Hindostan\" \"Ganges\"\)~%"))
    )
-  :documentation 
+  (:default-initargs :display-name nil
+                     :appellations-modern nil
+                     :appellations-historic nil)
+  (:documentation 
   #.(format nil
             "Top-level from which location-entity~%~@
 :SEE-ALSO `<XREF>'.~%▶▶▶")))

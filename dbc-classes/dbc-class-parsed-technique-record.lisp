@@ -15,15 +15,10 @@
 (in-package #:dbc)
 ;; *package*
 
-;; base-entity 
-;; - base-media-entity 
-;; -- media-technique-entity 
-
-(defclass media-technique-entity (base-media-entity)
-  ())
 ;;
-(defclass technique-parse (parsed-class)
-  ())
+(defclass parsed-technique-record (parsed-class)
+  ()
+  )
 
 #|
 
@@ -41,12 +36,11 @@
  "variation_of"      ;; technique-entity-type-coref
  "notes"             ;; description-technique-notes
  "default_pic"       ;; image-default-id
- "date_edt"          ;; edit-date         ;; this is the good one
- "date_edit"         ;; edit-date-origin  ;; IGNORABLE assuming date_edt is present and corresponds
- "online"            ;; technique-active  ;; IGNORABLE always 0
- "user_name"         ;; edit-by           ;; IGNORABLE always empty  
- "naf_creator"       ;; edit-by-creator   ;; IGNORABLE always empty
-
+ "date_edt"          ;; edit-date              ;; this is the good one
+ "date_edit"         ;; edit-date-origin       ;; IGNORABLE assuming date_edt is present and corresponds
+ "online"            ;; record-status-active   ;; IGNORABLE always 0
+ "user_name"         ;; edit-by                ;; IGNORABLE always empty  
+ "naf_creator"       ;; edit-by-creator        ;; IGNORABLE always empty
 
 
 ;;; ==============================

@@ -12,6 +12,7 @@
 ;; -- base-naf-entity
 ;; -- base-media-entity
 ;; -- base-location-entity
+;; -- base-taxon-entity
 ;;
 ;;     _________________ Below should have their own files
 ;;
@@ -22,13 +23,18 @@
 ;; --- naf-entity-publication 
 ;;
 ;; --- naf-entity-publisher ???
-;; --- naf-entity-linnaean  ???
 ;;
-;; -- base-location-entity
-;; --- location-entity
-;; ---- location-entity-verified
-;; ---- location-entity-unverified
-;; ---- location-entity-imagined
+;; dbc-classes/dbc-class-media-entity.lisp
+;; --- media-entity-technique (base-media-entity)
+;; --- media-entity-material  (base-media-entity)
+;; --- media-entity-mount     (base-media-entity)
+;; --- media-entity-color     (base-media-entity)
+;;
+;; dbc-classes/dbc-class-location-entity.lisp
+;; --- location-entity             (base-location-entity)
+;; ---- location-entity-verified   (location-entity)
+;; ---- location-entity-unverified (location-entity)
+;; ---- location-entity-imagined   (location-entity)
 ;;
 ;;
 ;;; ==============================
@@ -90,6 +96,34 @@ external domain.~%
               \(mon:class-subclasses \(find-class 'base-category-entity\)\)
              :SEE-ALSO `category-entity-regexp'.~%▶▶▶")))
 
+
+(defclass base-taxon-entity (base-entity)
+  ()
+  (:documentation #.(format nil
+                            "Base class for referencing DBC taxonomic entitites.~%~% ~
+ ,----~%~
+ | taxon, \(pl. taxa\), n.~%~
+ | taxonomic unit, whether named or not: i.e. a population, or group of populations~%~
+ | of organisms which are usually inferred to be phylogenetically related and which~%~
+ | have characters in common which differentiate \(q.v.\) the unit \(e.g. a geographic~%~
+ | population, a genus, a family, an order\) from other such units. A taxon~%~
+ | encompasses all included taxa of lower rank \(q.v.\) and individual organisms.~%~
+ `---- The Glossary of the International Code of Zoological Nomenclature \(1999\).~%~@
+Precedence list of taxonmic rank:~%~% ~
+ life~% ~
+ - domain~% ~
+ -- kingdom~% ~
+ --- phylum~% ~
+ ---- class~% ~
+ ----- order~% ~
+ ------ family~% ~
+ ------- genus~% ~
+ -------- species~%~@
+And more specifically we are concerned with the mapping from:~%~% ~
+  historic-appellation -> modern-appellation~%~@
+:NOTE the decision to use the sybmolic prefix ``taxon'' is because i can
+ _NEVER_ remember how to spell Linnaeus/Linnaean...~%")))
+
 (defclass base-naf-entity (base-entity)
   ()
   (:documentation 
@@ -100,6 +134,12 @@ external domain.~%
              :SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp',~%~
              `naf-entity-alt-name-regexp'.~%▶▶▶")))
 
+;; base-entity               (base-dbc)
+;; - base-media-entity       (base-entity)
+;; -- media-entity-technique (base-media-entity)
+;; -- media-entity-material  (base-media-entity)
+;; -- media-entity-mount     (base-media-entity)
+;; -- media-entity-color     (base-media-entity)
 (defclass base-media-entity (base-entity)
   ()
   (:documentation 
@@ -116,9 +156,17 @@ external domain.~%
                  -- black and white, red, white, blue, etc.~%~@
              :EXAMPLE~% ~
               \(mon:class-subclasses \(find-class 'base-media-entity\)\)
-             :SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp',~%~
-             `naf-entity-alt-name-regexp'.~%▶▶▶")))
+:SEE-ALSO `media-entity-technique',`media-entity-material',
+`media-entity-mount', `media-entity-color',
+`base-description-entity-media-note', `naf-entity-type-regexp',
+`naf-entity-control-name-regexp', `naf-entity-alt-name-regexp'.~%▶▶▶")))
 
+;; base-entity                    (base-dbc)
+;; - base-location-entity         (base-entity)
+;; -- location-entity             (base-location-entity)
+;; --- location-entity-verified   (location-entity)
+;; --- location-entity-unverified (location-entity)
+;; --- location-entity-imagined   (location-entity)
 (defclass base-location-entity (base-entity)
    ()
   (:documentation 
@@ -139,6 +187,7 @@ understood as follows:~% ~%
  \(mon:class-subclasses \(find-class 'base-location-entity\)\)
 :SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp',~%~
 `naf-entity-alt-name-regexp'.~%▶▶▶")))
+
 
 ;;; ==============================
 

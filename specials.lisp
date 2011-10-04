@@ -46,17 +46,17 @@
 (defparameter *xml-input-refs-name-temp*  nil )
 
 ;;; ==============================
-(defvar *parsed-ref-class-name* "PARSED-REF")
+(defvar *parsed-inventory-record-class-name* "PARSED-INVENTORY-RECORD")
 
-;; (find-symbol "PARSED-REF")
-;; (find-symbol "PARSED-REF")
+;; (find-symbol "PARSED-INVENTORY-RECORD")
+;; (find-symbol "PARSED-INVENTORY-RECORD")
 
-;; (class-name (find-class 'parsed-ref)
-;; (mon:class-instance-p 'parsed-ref)
+;; (class-name (find-class 'parsed-inventory-record)
+;; (mon:class-instance-p 'parsed-inventory-record)
 ;; (
 ;; (find-class-name 
-;; (mon:class-name-of (format nil "~S" (class-name (find-class 'parsed-ref)))
-;; "parsed-ref"
+;; (mon:class-name-of (format nil "~S" (class-name (find-class 'parsed-inventory-record)))
+;; "parsed-inventory-record"
 ;; (class
 
 (defparameter *xml-refs-match-table* nil)

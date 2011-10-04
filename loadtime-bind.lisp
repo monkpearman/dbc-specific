@@ -113,9 +113,9 @@
        ;; ---> OUTPUT
        (setf *xml-output-refs-name*
              (make-pathname :directory (pathname-directory (sub-path *xml-output-dir*))
-                            ;; :NOTE When really parsing use "parsed-refs-xml" 
-                            ;;       when testing use "parsed-refs-xml-SCRATCH"
-                            :name "parsed-refs-xml-SCRATCH"))
+                            ;; :NOTE When really parsing use "parsed-inventory-records-xml" 
+                            ;;       when testing use "parsed-inventory-records-xml-SCRATCH"
+                            :name "parsed-inventory-records-xml-SCRATCH"))
        (and *xml-output-refs-name*
             (setf *xml-output-refs-ext*
                   (merge-pathnames  (make-pathname :type "out") *xml-output-refs-name*)))

@@ -42,7 +42,7 @@
 ;; 
 ;; ---> OUTPUT
 ;; *xml-output-refs-name*
-;; "../dbc-specific/xml-class-dump-dir/parsed-refs-xml"
+;; "../dbc-specific/xml-class-dump-dir/parsed-inventory-records-xml"
 ;;
 ;; *xml-output-refs-ext*
 ;; (fad:file-exists-p *xml-output-refs-ext*)

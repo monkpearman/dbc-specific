@@ -58,8 +58,8 @@ Its pathname is accessible with the `dbc:sub-path' accessor.~%~@
 
 ;;; ==============================
 
-(vardoc '*parsed-ref-class-name*
-"String naming the class \"PARSED-REF\"
+(vardoc '*parsed-inventory-record-class-name*
+"String naming the class \"PARSED-INVENTORY-RECORD\"
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `<XREF>'.~%▶▶▶")
@@ -72,7 +72,7 @@ Its pathname is accessible with the `dbc:sub-path' accessor.~%~@
 (vardoc '*xml-refs-match-table*
         "A hash-table mapping XML field names to corresponding parsing-function for use when parsing dbc-xml-refs.~%~@
 The hash-table's keys are strings identifying XML field names i.e. attribute events.~%~@
-The hash-table's vaules are symbols identifying a slot accessor for the class `parsed-ref'.~%~@
+The hash-table's vaules are symbols identifying a slot accessor for the class `parsed-inventory-record'.~%~@
 Bound with `dbc:make-ref-lookup-table' to values of variable `dbc:*xml-refs-match-list*'.~%~@
 :EXAMPLE~%
  \(gethash \"ref\" *xml-refs-match-table*\)~%~@
@@ -878,29 +878,29 @@ If FIELD-NAME is not present in FIELD-NAME-TRANSFORM-TABLE put it there after
 preprocessing with make-parsed-name-preprocess.~%~@
 Keywords PREFIX-W and SUFFIX-W are as per `make-parsed-name-preprocess'.~%~@
 :EXAMPLE~%
- \(preprocess-slot-transform \"field-name\" *parsed-ref-field-name-slot-transform*\)
+ \(preprocess-slot-transform \"field-name\" *parsed-inventory-record-field-name-slot-transform*\)
  ;=> \"FIELD-NAME\"
- \(gethash \"field-name\" *parsed-ref-field-name-slot-transform*\)
+ \(gethash \"field-name\" *parsed-inventory-record-field-name-slot-transform*\)
  ;=> \"FIELD-NAME\", T~%
- \(preprocess-slot-transform \"field-name2\" *parsed-ref-field-name-slot-transform*\)
+ \(preprocess-slot-transform \"field-name2\" *parsed-inventory-record-field-name-slot-transform*\)
  ;=> \"FIELD-NAME2\"
- \(gethash \"field-name2\" *parsed-ref-field-name-slot-transform*\)
+ \(gethash \"field-name2\" *parsed-inventory-record-field-name-slot-transform*\)
  ;=> \"FIELD-NAME2\", T~%
- \(preprocess-slot-transform \"field-name2\" *parsed-ref-field-name-slot-transform* :prefix-w \"prefix\"\)
+ \(preprocess-slot-transform \"field-name2\" *parsed-inventory-record-field-name-slot-transform* :prefix-w \"prefix\"\)
  ;=> \"PREFIX-FIELD-NAME2\"
- \(gethash \"field-name2\" *parsed-ref-field-name-slot-transform*\)
+ \(gethash \"field-name2\" *parsed-inventory-record-field-name-slot-transform*\)
  ;=> \"PREFIX-FIELD-NAME2\", T~%
- \(preprocess-slot-transform \"field-name2\" *parsed-ref-field-name-slot-transform* :suffix-w \"suffix\"\)
+ \(preprocess-slot-transform \"field-name2\" *parsed-inventory-record-field-name-slot-transform* :suffix-w \"suffix\"\)
  ;=> \"FIELD-NAME2-SUFFIX\"
- \(gethash \"field-name2\" *parsed-ref-field-name-slot-transform*\)
+ \(gethash \"field-name2\" *parsed-inventory-record-field-name-slot-transform*\)
  ;=> \"FIELD-NAME2-SUFFIX\", T~%
- \(preprocess-slot-transform \"field-name2\" *parsed-ref-field-name-slot-transform* :prefix-w \"prefix\" :suffix-w \"suffix\"\)
+ \(preprocess-slot-transform \"field-name2\" *parsed-inventory-record-field-name-slot-transform* :prefix-w \"prefix\" :suffix-w \"suffix\"\)
  ;=> \"PREFIX-FIELD-NAME2-SUFFIX\"
- \(gethash \"field-name2\" *parsed-ref-field-name-slot-transform*\)
+ \(gethash \"field-name2\" *parsed-inventory-record-field-name-slot-transform*\)
  ;=> \"PREFIX-FIELD-NAME2-SUFFIX\", T~%
  \(progn
-   \(remhash \"field-name\" *parsed-ref-field-name-slot-transform*\)
-   \(remhash \"field-name2\" *parsed-ref-field-name-slot-transform*\)\)~%~@
+   \(remhash \"field-name\" *parsed-inventory-record-field-name-slot-transform*\)
+   \(remhash \"field-name2\" *parsed-inventory-record-field-name-slot-transform*\)\)~%~@
 :SEE-ALSO `<XREF>'.~%▶▶▶")
 
 ;; this interface has changes pending 2011-09-26
@@ -917,13 +917,13 @@ Return value has the form:~%
      \"<PARSED-FIELD>-<NAMED-CLASS>\" \)~%~@
 :EXAMPLE~%
  ;;                                          <NAMED-CLASS>  <PARSED-FIELD> &OPTIONAL <PREFIX-INITARG-W>
- \(make-parsed-class-slot-init-accessor-name  \"parsed-ref\"   \"ref\"\)~%
- \(make-parsed-class-slot-init-accessor-name  \"parsed-ref\"   \"year_year\"\)~%
- \(make-parsed-class-slot-init-accessor-name  \"parsed-ref\"   \"ref\"                     \"init\"\)~%
- \(make-parsed-class-slot-init-accessor-name  \"parsed-ref\"   \"ref\"                     \"init\"\)
+ \(make-parsed-class-slot-init-accessor-name  \"parsed-inventory-record\"   \"ref\"\)~%
+ \(make-parsed-class-slot-init-accessor-name  \"parsed-inventory-record\"   \"year_year\"\)~%
+ \(make-parsed-class-slot-init-accessor-name  \"parsed-inventory-record\"   \"ref\"                     \"init\"\)~%
+ \(make-parsed-class-slot-init-accessor-name  \"parsed-inventory-record\"   \"ref\"                     \"init\"\)
  => \(\"REF\"                     ; <PARSED-FIELD>                    ; -> slot in class
      \"INIT-REF\"                ; <PREFIX-INITARG-W>-<PARSED-FIELD> ; -> slot initarg
-     \"PARSED-REF-REF\"\)         ; <PARSED-FIELD>-<NAMED-CLASS>      ; -> slot accessor~%~@
+     \"PARSED-INVENTORY-RECORD-REF\"\)         ; <PARSED-FIELD>-<NAMED-CLASS>      ; -> slot accessor~%~@
 :SEE-ALSO `<XREF>'.~%▶▶▶")
 
 

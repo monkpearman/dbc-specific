@@ -15,7 +15,7 @@
    :input-file  (merge-pathnames (make-pathname :name "dump-refs-DUMPING")
                                  (sub-path *xml-input-dir*))
    :output-file parsed-sax-file)
-  (load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-ref  
+  (load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-inventory-record  
                                                  :input-file parsed-sax-file
                                                  :hash-table  *tt--parse-table*
                                                  :key-accessor  #'item-number
@@ -25,7 +25,7 @@
 ;; This will write all 8979 hash-table values to an individual file.
 (write-sax-parsed-class-hash-to-files
  *tt--parse-table*
- :parsed-class 'parsed-ref
+ :parsed-class 'parsed-inventory-record
  :slot-for-file-name 'item-number
  :prefix-for-file-name "item-number"
  :output-directory (ensure-directories-exist
@@ -56,7 +56,7 @@
                               :type "lisp")
                (system-path *system-path*)))
 
-(load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-artist
+(load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-artist-record
                                                :input-file (merge-pathnames 
                                                             (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*))
                                                                            :name (concatenate 'string "sax-artist-test-" (mon:time-string-yyyy-mm-dd))
@@ -64,11 +64,11 @@
                                                             (system-path *system-path*))
                                                :hash-table *tt--parse-artist-table*
                                                :key-accessor #'control-id-entity-num-artist
-                                               :slot-dispatch-function #'set-parsed-artist-slot-value)
+                                               :slot-dispatch-function #'set-parsed-artist-record-slot-value)
 
 (write-sax-parsed-class-hash-to-files 
  *tt--parse-artist-table*
- :parsed-class 'parsed-artist
+ :parsed-class 'parsed-artist-record
  :slot-for-file-name 'control-id-entity-num-artist
  :prefix-for-file-name "artist-id-number"
  :output-directory (ensure-directories-exist
