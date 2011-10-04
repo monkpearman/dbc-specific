@@ -1,5 +1,5 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-01-06T13:37:33-05:00Z}#{11014} - by MON>
-;;; :FILE dbc-classes/dbc-class-refs-convert.lisp
+;;; :FILE dbc-classes/dbc-class-parsed-inventory-record.lisp
 ;;; ==============================
 
 
