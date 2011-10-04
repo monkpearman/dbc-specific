@@ -201,6 +201,37 @@
 
 
 ;;; ==============================
+;;; :MEDIA-ENTITY
+;;; ==============================
+(defvar *media-entity-regexp-db* nil)
+
+(defclass media-entity-regexp (entity-regexp)
+  ;; match-entity-class
+  ;; match-container-uuid
+  ;; match-container-type   
+  ;; match-entity-db
+  ;; match-matcher-db
+  ()
+  (:documentation #.(classdoc 'media-entity-regexp :class-doc)))
+
+;;; ==============================
+;;; :LOCATION-ENTITY
+;;; ==============================
+
+(defvar *location-entity-regexp-db* nil)
+
+(defclass location-entity-regexp (entity-regexp)
+  ;; match-entity-class
+  ;; match-container-uuid
+  ;; match-container-type   
+  ;; match-entity-db
+  ;; match-matcher-db
+  ()
+  (:documentation #.(classdoc 'location-entity-regexp :class-doc)))
+
+
+
+;;; ==============================
 ;;; :NAFS
 ;;; ==============================
 
@@ -248,7 +279,7 @@
 ;;; ==============================
 ;;; :NAF-ARTIST
 ;;; ==============================
-(defvar *naf-artist-entity-regexp-db* nil) ;;(make-hash-table))
+(defvar *naf-entity-artist-regexp-db* nil) ;;(make-hash-table))
 
 ;; :match-entity-class
 (defclass naf-entity-artist-control-regexp (naf-entity-control-name-regexp)
@@ -279,7 +310,7 @@
 ;;; ==============================
 ;;; :NAF-PERSON
 ;;; ==============================
-(defvar *naf-person-entity-regexp-db* nil)
+(defvar *naf-entity-person-regexp-db* nil)
 
 (defclass naf-entity-person-control-regexp (naf-entity-control-name-regexp)
   ()
@@ -292,7 +323,7 @@
 ;;; ==============================
 ;;; :NAF-AUTHOR
 ;;; ==============================
-(defvar *naf-author-entity-regexp-db* nil)
+(defvar *naf-entity-author-regexp-db* nil)
 
 (defclass naf-entity-author-control-regexp (naf-entity-control-name-regexp)
   ()
@@ -305,7 +336,7 @@
 ;;; ==============================
 ;;; :NAF-BRAND
 ;;; ==============================
-(defvar *naf-brand-entity-regexp-db* nil)
+(defvar *naf-entity-brand-regexp-db* nil)
 
 (defclass naf-entity-brand-control-regexp (naf-entity-control-name-regexp)
   ()
@@ -316,7 +347,7 @@
   (:documentation #.(classdoc 'naf-entity-brand-alt-regexp :class-doc)))
 
 ;;; ==============================
-(defvar *naf-publication-entity-regexp-db* nil)
+(defvar *naf-entity-publication-regexp-db* nil)
 
 (defclass naf-entity-publication-control-regexp (naf-entity-control-name-regexp)
   ()

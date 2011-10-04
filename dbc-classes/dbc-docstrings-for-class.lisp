@@ -242,6 +242,22 @@ Don't instantiate directly from this class.~%~@
 :SEE-ALSO `base-category-entity'.~%▶▶▶"))
 
 ;;; ==============================
+;; media-entity-regexp
+(make-documented-class 'media-entity-regexp
+:class-doc
+ #.(format nil
+"An `entity-regexp' sub-class for DBC media types.~%~
+:SEE-ALSO `base-media-entity'.~%▶▶▶"))
+
+;;; ==============================
+;; location-entity-regexp
+(make-documented-class 'location-entity-regexp
+:class-doc
+ #.(format nil
+"An `entity-regexp' sub-class for DBC location entities.~%~
+:SEE-ALSO `base-location-entity'.~%▶▶▶"))
+
+;;; ==============================
 ;; naf-entity-type-regexp
 (make-documented-class 'naf-entity-type-regexp
 :class-doc
