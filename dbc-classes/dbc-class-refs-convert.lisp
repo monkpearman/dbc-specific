@@ -239,19 +239,19 @@ slots for the class `parsed-ref'.
     :accessor item-number
     :documentation ":ORIGINAL-FIELD \"ref\"")
 
-   (description-title
-    :initarg :description-title
-    :accessor description-title
+   (description-item-title
+    :initarg :description-item-title
+    :accessor description-item-title
     :documentation  ":ORIGINAL-FIELD \"title\"")
 
-   (description-french ;; description-class
-    :initarg :description-french
-    :accessor description-french
+   (description-item-french ;; description-class
+    :initarg :description-item-french
+    :accessor description-item-french
     :documentation ":ORIGINAL-FIELD \"desc_fr\"")
 
-   (description-english ;; description-class
-    :initarg :description-english
-    :accessor description-english
+   (description-item-english ;; description-class
+    :initarg :description-item-english
+    :accessor description-item-english
     :documentation ":ORIGINAL-FIELD \"desc_en\"")
 
    (ignorable-history-french
@@ -264,14 +264,14 @@ slots for the class `parsed-ref'.
     :accessor ignorable-history-english
     :documentation ":ORIGINAL-FIELD \"histo_en\"")
 
-   (description-quote
-    :initarg :description-quote
-    :accessor description-quote
+   (description-item-quote
+    :initarg :description-item-quote
+    :accessor description-item-quote
     :documentation ":ORIGINAL-FIELD \"text_quote\"")
 
-   (description-translation
-    :initarg  :description-translation
-    :accessor description-translation
+   (description-item-translation
+    :initarg  :description-item-translation
+    :accessor description-item-translation
     :documentation ":ORIGINAL-FIELD \"translation\"")
 
    (naf-entity-person-coref
@@ -309,11 +309,13 @@ slots for the class `parsed-ref'.
     :accessor naf-entity-publication-coref
     :documentation ":ORIGINAL-FIELD \"book\"")
 
+   ;; publication-publisher-entity ??
    (publication-publisher ;; 
     :initarg :publication-publisher
     :accessor publication-publisher
     :documentation ":ORIGINAL-FIELD \"publisher\"")
 
+   ;; publication-location-entity ??
    (publication-location ;; For congruence with birth-location death-location
     :initarg :publication-location
     :accessor publication-location
@@ -355,79 +357,79 @@ slots for the class `parsed-ref'.
     :accessor publication-date-range
     :documentation ":ORIGINAL-FIELD \"year_year\"") 
 
-   (category-0
-    :initarg :category-0
-    :accessor category-0
+   (category-entity-0-coref
+    :initarg :category-entity-0-coref
+    :accessor category-entity-0-coref
     :documentation ":ORIGINAL-FIELD \"categ\"")
 
-   (category-1
-    :initarg :category-1
-    :accessor category-1
+   (category-entity-1-coref
+    :initarg :category-entity-1-coref
+    :accessor category-entity-1-coref
     :documentation ":ORIGINAL-FIELD \"c1\"")
 
-   (category-2
-    :initarg :category-2
-    :accessor category-2
+   (category-entity-2-coref
+    :initarg :category-entity-2-coref
+    :accessor category-entity-2-coref
     :documentation ":ORIGINAL-FIELD \"c2\"")
 
-   (category-3
-    :initarg :category-3
-    :accessor category-3
+   (category-entity-3-coref
+    :initarg :category-entity-3-coref
+    :accessor category-entity-3-coref
     :documentation ":ORIGINAL-FIELD \"c3\"")
 
-   (category-4
-    :initarg :category-4
-    :accessor category-4
+   (category-entity-4-coref
+    :initarg :category-entity-4-coref
+    :accessor category-entity-4-coref
     :documentation ":ORIGINAL-FIELD \"c4\"")
 
-   (category-5
-    :initarg :category-5
-    :accessor category-5
+   (category-entity-5-coref
+    :initarg :category-entity-5-coref
+    :accessor category-entity-5-coref
     :documentation ":ORIGINAL-FIELD \"c5\"")
 
-   (category-6
-    :initarg :category-6
-    :accessor category-6
+   (category-entity-6-coref
+    :initarg :category-entity-6-coref
+    :accessor category-entity-6-coref
     :documentation ":ORIGINAL-FIELD \"c6\"")
 
-   (category-precedence-list
-    :initarg :category-precedence-list
-    :accessor category-precedence-list
+   (category-entity-precedence-list
+    :initarg :category-entity-precedence-list
+    :accessor category-entity-precedence-list
     :documentation ":ORIGINAL-FIELD \"bct\"")
 
-   (documentation-category-0
-    :initarg :documentation-category-0
-    :accessor documentation-category-0
+   (documentation-category-entity-0-coref
+    :initarg :documentation-category-entity-0-coref
+    :accessor documentation-category-entity-0-coref
     :documentation ":ORIGINAL-FIELD \"categ_doc\"")
 
-   (documentation-category-1
-    :initarg :documentation-category-1
-    :accessor documentation-category-1
+   (documentation-category-entity-1-coref
+    :initarg :documentation-category-entity-1-coref
+    :accessor documentation-category-entity-1-coref
     :documentation ":ORIGINAL-FIELD \"c1_doc\"")
 
-   (documentation-category-2
-    :initarg :documentation-category-2
-    :accessor documentation-category-2
+   (documentation-category-entity-2-coref
+    :initarg :documentation-category-entity-2-coref
+    :accessor documentation-category-entity-2-coref
     :documentation ":ORIGINAL-FIELD \"c2_doc\"")
 
-   (documentation-category-3
-    :initarg :documentation-category-3
-    :accessor documentation-category-3
+   (documentation-category-entity-3-coref
+    :initarg :documentation-category-entity-3-coref
+    :accessor documentation-category-entity-3-coref
     :documentation ":ORIGINAL-FIELD \"c3_doc\"")
 
-   (theme-0
-    :initarg :theme-0
-    :accessor theme-0
+   (theme-entity-0-coref
+    :initarg :theme-entity-0-coref
+    :accessor theme-entity-0-coref
     :documentation ":ORIGINAL-FIELD \"theme\"")
 
-   (theme-1
-    :initarg :theme-1
-    :accessor theme-1
+   (theme-entity-1-coref
+    :initarg :theme-entity-1-coref
+    :accessor theme-entity-1-coref
     :documentation ":ORIGINAL-FIELD \"theme2\"")
 
-   (theme-2
-    :initarg :theme-2
-    :accessor theme-2
+   (theme-entity-2-coref
+    :initarg :theme-entity-2-coref
+    :accessor theme-entity-2-coref
     :documentation ":ORIGINAL-FIELD \"theme3\"")
  
    (price-ask ;; The "-ask" suffix is for congruence with "price-ebay" :NOTE Need price-paid, price-sold,
@@ -440,9 +442,9 @@ slots for the class `parsed-ref'.
     :accessor keywords-sequence
     :documentation ":ORIGINAL-FIELD \"keywords\"")
 
-   (description-condition ;; description-class
-    :initarg :description-condition
-    :accessor description-condition
+   (description-item-condition ;; description-class
+    :initarg :description-item-condition
+    :accessor description-item-condition
     :documentation ":ORIGINAL-FIELD \"condition\"")
 
    (media-entity-mount
@@ -565,14 +567,14 @@ slots for the class `parsed-ref'.
     :accessor control-id-ebay
     :documentation ":ORIGINAL-FIELD \"ebay_id\"")
 
-   (title-seo
-    :initarg :title-seo
-    :accessor title-seo
+   (description-item-seo-title
+    :initarg :description-item-seo-title
+    :accessor description-item-seo-title
     :documentation ":ORIGINAL-FIELD \"seo_title\"")
 
-   (description-seo
-    :initarg :description-seo
-    :accessor description-seo
+   (description-item-seo
+    :initarg :description-item-seo
+    :accessor description-item-seo
     :documentation ":ORIGINAL-FIELD \"description_seo\"")
 
    (keywords-seo
@@ -629,13 +631,13 @@ slots for the class `parsed-ref'.
   (values 
    (string-case:string-case (field-string)
     ("ref" (setf (item-number object) field-value))
-    ("title" (setf (description-title object) field-value))
-    ("desc_fr" (setf (description-french object) field-value))
-    ("desc_en" (setf (description-english object) field-value))
+    ("title" (setf (description-item-title object) field-value))
+    ("desc_fr" (setf (description-item-french object) field-value))
+    ("desc_en" (setf (description-item-english object) field-value))
     ("histo_fr" (setf (ignorable-history-french object) field-value))
     ("histo_en" (setf (ignorable-history-english object) field-value))
-    ("text_quote" (setf (description-quote object) field-value))
-    ("translation" (setf (description-translation object) field-value))
+    ("text_quote" (setf (description-item-quote object) field-value))
+    ("translation" (setf (description-item-translation object) field-value))
     ("people" (setf (naf-entity-person-coref object) field-value))
     ("brand" (setf (naf-entity-brand-coref object) field-value))
     ("composer" (setf (naf-entity-composer-coref object) field-value))
@@ -652,24 +654,24 @@ slots for the class `parsed-ref'.
     ("issue" (setf (publication-issue object) field-value))
     ("year" (setf (publication-date object) field-value))
     ("year_year" (setf (publication-date-range object) field-value))
-    ("categ" (setf (category-0 object) field-value)) 
-    ("c1" (setf (category-1 object) field-value))
-    ("c2" (setf (category-2 object) field-value))
-    ("c3" (setf (category-3 object) field-value))
-    ("c4" (setf (category-4 object) field-value))
-    ("c5" (setf (category-5 object) field-value))
-    ("c6" (setf (category-6 object) field-value))
-    ("bct" (setf (category-precedence-list object) field-value))
-    ("categ_doc" (setf (documentation-category-0 object) field-value))
-    ("c1_doc" (setf (documentation-category-1 object) field-value))
-    ("c2_doc" (setf (documentation-category-2 object) field-value))
-    ("c3_doc" (setf (documentation-category-3 object) field-value))
-    ("theme" (setf (theme-0 object) field-value))
-    ("theme2" (setf (theme-1 object) field-value))
-    ("theme3" (setf (theme-2 object) field-value))
+    ("categ" (setf (category-entity-0-coref object) field-value)) 
+    ("c1" (setf (category-entity-1-coref object) field-value))
+    ("c2" (setf (category-entity-2-coref object) field-value))
+    ("c3" (setf (category-entity-3-coref object) field-value))
+    ("c4" (setf (category-entity-4-coref object) field-value))
+    ("c5" (setf (category-entity-5-coref object) field-value))
+    ("c6" (setf (category-entity-6-coref object) field-value))
+    ("bct" (setf (category-entity-precedence-list object) field-value))
+    ("categ_doc" (setf (documentation-category-entity-0-coref object) field-value))
+    ("c1_doc" (setf (documentation-category-entity-1-coref object) field-value))
+    ("c2_doc" (setf (documentation-category-entity-2-coref object) field-value))
+    ("c3_doc" (setf (documentation-category-entity-3-coref object) field-value))
+    ("theme" (setf (theme-entity-0-coref object) field-value))
+    ("theme2" (setf (theme-entity-1-coref object) field-value))
+    ("theme3" (setf (theme-entity-2-coref object) field-value))
     ("price" (setf (price-ask object) field-value))
     ("keywords" (setf (keywords-sequence object) field-value))
-    ("condition" (setf (description-condition object) field-value))
+    ("condition" (setf (description-item-condition object) field-value))
     ("onlinen" (setf (media-entity-mount object) field-value))
     ("technique" (setf (media-entity-technique object) field-value))
     ("paper" (setf (media-entity-paper object) field-value))
@@ -694,8 +696,8 @@ slots for the class `parsed-ref'.
     ("ebay_price" (setf (price-ask-ebay object) field-value))
     ("ebay_title" (setf (title-ebay object) field-value))
     ("ebay_id" (setf (control-id-ebay object) field-value))
-    ("seo_title" (setf (title-seo object) field-value))
-    ("description_seo" (setf (description-seo object) field-value))
+    ("seo_title" (setf (description-item-seo-title object) field-value))
+    ("description_seo" (setf (description-item-seo object) field-value))
     ("keywords_seo" (setf (keywords-seo object) field-value))
     ("date" (setf (edit-date-origin object) field-value))
     ("date_edit" (setf (edit-date object) field-value))
@@ -806,13 +808,13 @@ slots for the class `parsed-ref'.
 ;;
 ;;  "ref"              ;; item-number
 ;;
-;;  "title"            ;; description-title
-;;  "desc_fr"          ;; description-french     ;; description-class
-;;  "desc_en"          ;; description-english    ;; description-class
+;;  "title"            ;; description-item-title
+;;  "desc_fr"          ;; description-item-french     ;; description-class
+;;  "desc_en"          ;; description-item-english    ;; description-class
 ;;  "histo_fr"         ;; ignorable-history-french
 ;;  "histo_en"         ;; ignorable-history-english
-;;  "text_quote"       ;; description-quote
-;;  "translation"      ;; description-translation
+;;  "text_quote"       ;; description-item-quote
+;;  "translation"      ;; description-item-translation
 ;;
 ;;  "people"           ;; naf-entity-person-coref
 ;;  "brand"            ;; naf-entity-brand-coref
@@ -837,27 +839,27 @@ slots for the class `parsed-ref'.
 ;;  "year"             ;; publication-date        ;; For congruence with birth-date death-date 
 ;;  "year_year"        ;; publication-date-range  ;;
 ;;
-;;  "categ"            ;; category-0
-;;  "c1"               ;; category-1
-;;  "c2"               ;; category-2
-;;  "c3"               ;; category-3
-;;  "c4"               ;; category-4
-;;  "c6"               ;; category-6
-;;  "c5"               ;; category-5
-;;  "bct"              ;; category-precedence-list
+;;  "categ"            ;; category-entity-0-coref
+;;  "c1"               ;; category-entity-1-coref
+;;  "c2"               ;; category-entity-2-coref
+;;  "c3"               ;; category-entity-3-coref
+;;  "c4"               ;; category-entity-4-coref
+;;  "c6"               ;; category-entity-6-coref
+;;  "c5"               ;; category-entity-5-coref
+;;  "bct"              ;; category-entity-precedence-list
 ;;
-;;  "categ_doc"        ;; documentation-category-0
-;;  "c1_doc"           ;; documentation-category-1
-;;  "c2_doc"           ;; documentation-category-2
-;;  "c3_doc"           ;; documentation-category-3
+;;  "categ_doc"        ;; documentation-category-entity-0-coref
+;;  "c1_doc"           ;; documentation-category-entity-1-coref
+;;  "c2_doc"           ;; documentation-category-entity-2-coref
+;;  "c3_doc"           ;; documentation-category-entity-3-coref
 ;;
-;;  "theme"            ;; theme-0
-;;  "theme2"           ;; theme-1
-;;  "theme3"           ;; theme-2
+;;  "theme"            ;; theme-entity-0-coref
+;;  "theme2"           ;; theme-entity-1-coref
+;;  "theme3"           ;; theme-entity-2-coref
 ;;
 ;;  "keywords"         ;; keywords-sequence
 ;;
-;;  "condition"        ;; description-condition  ;; description-class
+;;  "condition"        ;; description-item-condition  ;; description-class
 ;;  "onlinen"          ;; media-entity-mount
 ;;  "technique"        ;; media-entity-technique
 ;;  "paper"            ;; media-entity-paper
@@ -893,8 +895,8 @@ slots for the class `parsed-ref'.
 ;;  "ebay_price"       ;; price-ask-ebay
 ;;  "ebay_title"       ;; title-ebay
 ;;  "ebay_id"          ;; id-ebay ??? uuid-ebay
-;;  "seo_title"        ;; title-seo
-;;  "description_seo"  ;; description-seo
+;;  "seo_title"        ;; description-item-seo-title
+;;  "description_seo"  ;; description-item-seo
 ;;  "keywords_seo"     ;; keywords-seo
 ;;
 ;;  "date"             ;; edit-date-origin  ;; IGNORABLE assuming date_edit is present and corresponds 
@@ -971,7 +973,7 @@ slots for the class `parsed-ref'.
 ;;; ==============================
 
 ;;; ==============================
-;; :FIELD "title" :TRANSFORM description-title :CLASS description-class
+;; :FIELD "title" :TRANSFORM description-item-title :CLASS description-class
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -998,7 +1000,7 @@ slots for the class `parsed-ref'.
 ;; 
 
 ;;; ==============================
-;; :FIELD "desc_fr" :TRANSFORM description-french  :CLASS description-class
+;; :FIELD "desc_fr" :TRANSFORM description-item-french  :CLASS description-class
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -1013,7 +1015,7 @@ slots for the class `parsed-ref'.
 ;;   Use `field-convert-1-0-x'
 
 ;;; ==============================
-;; :FIELD "desc_en" :TRANSFORM description-english  :CLASS description-class
+;; :FIELD "desc_en" :TRANSFORM description-item-english  :CLASS description-class
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -1040,7 +1042,7 @@ slots for the class `parsed-ref'.
 ;; - Remove "&quot;"
 
 ;;; ==============================
-;; :FIELD "translation" :TRANSFORM description-translation
+;; :FIELD "translation" :TRANSFORM description-item-translation
 ;;
 ;;         :TYPE "tinyint(3) unsigned"
 ;;         :NULL-P "NO"
@@ -1111,7 +1113,7 @@ slots for the class `parsed-ref'.
 ;;   Use `field-convert-1-0-x'
 
 ;;; ==============================
-;; :FIELD "text_quote" :TRANSFORM description-quote
+;; :FIELD "text_quote" :TRANSFORM description-item-quote
 ;;
 ;;         :TYPE "varchar(100)"
 ;;         :NULL-P "NO"
@@ -1496,7 +1498,7 @@ slots for the class `parsed-ref'.
 ;; The themes should be dedicated class instances.
 
 ;;; ==============================
-;; :FIELD "theme" :TRANSFORM theme-0
+;; :FIELD "theme" :TRANSFORM theme-entity-0-coref
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1512,7 +1514,7 @@ slots for the class `parsed-ref'.
 ;; - Replace "&amp;" -> "and"
 
 ;;; ==============================
-;; :FIELD "theme2" :TRANSFORM theme-1
+;; :FIELD "theme2" :TRANSFORM theme-entity-1-coref
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "YES"
@@ -1528,7 +1530,7 @@ slots for the class `parsed-ref'.
 ;; - Replace "&amp;" -> "and"
 
 ;;; ==============================
-;; :FIELD "theme3" :TRANSFORM theme-2
+;; :FIELD "theme3" :TRANSFORM theme-entity-2-coref
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "YES"
@@ -1581,7 +1583,7 @@ slots for the class `parsed-ref'.
 ;;
 
 ;;; ==============================
-;; :FIELD "condition" :TRANSFORM description-condition
+;; :FIELD "condition" :TRANSFORM description-item-condition
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -1731,7 +1733,7 @@ slots for the class `parsed-ref'.
 ;;; ==============================
 
 ;;; ==============================
-;; :FIELD "bct" :TRANSFORM category-precedence-list
+;; :FIELD "bct" :TRANSFORM category-entity-precedence-list
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1752,7 +1754,7 @@ slots for the class `parsed-ref'.
 
 
 ;;; ==============================
-;; :FIELD "categ" :TRANSFORM category-0
+;; :FIELD "categ" :TRANSFORM category-entity-0-coref
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1785,7 +1787,7 @@ slots for the class `parsed-ref'.
 
 
 ;;; ==============================
-;; :FIELD "c1" :TRANSFORM :TRANSFORM category-1
+;; :FIELD "c1" :TRANSFORM :TRANSFORM category-entity-1-coref
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1798,7 +1800,7 @@ slots for the class `parsed-ref'.
 ;;
 
 ;;; ==============================
-;; :FIELD "c2" :TRANSFORM category-2
+;; :FIELD "c2" :TRANSFORM category-entity-2-coref
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1811,7 +1813,7 @@ slots for the class `parsed-ref'.
 ;;
 
 ;;; ==============================
-;; :FIELD "c3" :TRANSFORM category-3
+;; :FIELD "c3" :TRANSFORM category-entity-3-coref
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1824,7 +1826,7 @@ slots for the class `parsed-ref'.
 ;;
 
 ;;; ==============================
-;; :FIELD "c4" :TRANSFORM category-4
+;; :FIELD "c4" :TRANSFORM category-entity-4-coref
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1837,7 +1839,7 @@ slots for the class `parsed-ref'.
 ;;
 
 ;;; ==============================
-;; :FIELD "c5" :TRANSFORM category-5
+;; :FIELD "c5" :TRANSFORM category-entity-5-coref
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1850,7 +1852,7 @@ slots for the class `parsed-ref'.
 ;;
 
 ;;; ==============================
-;; :FIELD "c6" :TRANSFORM category-6
+;; :FIELD "c6" :TRANSFORM category-entity-6-coref
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1864,7 +1866,7 @@ slots for the class `parsed-ref'.
 ;; - The "1" value _may_ be used to indicate depth in the class tree 
 
 ;;; ==============================
-;; :FIELD "categ_doc" :TRANSFORM documentation-category-0
+;; :FIELD "categ_doc" :TRANSFORM documentation-category-entity-0-coref
 ;;
 ;;         :TYPE "int(10) unsigned"
 ;;         :NULL-P "NO"
@@ -1882,7 +1884,7 @@ slots for the class `parsed-ref'.
 ;; - (search-forward-regexp "categ_doc\">[^<0].*<" nil t)
 
 ;;; ==============================
-;; :FIELD "c1_doc" :TRANSFORM documentation-category-1
+;; :FIELD "c1_doc" :TRANSFORM documentation-category-entity-1-coref
 ;;
 ;;         :TYPE "int(10) unsigned"
 ;;         :NULL-P "NO"
@@ -1899,7 +1901,7 @@ slots for the class `parsed-ref'.
 ;; - Is this ever used? No.
 
 ;;; ==============================
-;; :FIELD "c2_doc" :TRANSFORM documentation-category-2
+;; :FIELD "c2_doc" :TRANSFORM documentation-category-entity-2-coref
 ;;
 ;;         :TYPE "int(10) unsigned"
 ;;         :NULL-P "NO"
@@ -1917,7 +1919,7 @@ slots for the class `parsed-ref'.
 
 
 ;;; ==============================
-;; :FIELD "c3_doc" :TRANSFORM documentation-category-3
+;; :FIELD "c3_doc" :TRANSFORM documentation-category-entity-3-coref
 ;;
 ;;         :TYPE "int(10) unsigned"
 ;;         :NULL-P "NO"
@@ -1961,7 +1963,7 @@ slots for the class `parsed-ref'.
 ;;
 
 ;;; ==============================
-;; :FIELD "seo_title" :TRANSFORM title-seo
+;; :FIELD "seo_title" :TRANSFORM description-item-seo-title
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -2015,7 +2017,7 @@ slots for the class `parsed-ref'.
 ;; - What fucking mess... 
 
 ;;; ==============================
-;; :FIELD "description_seo" :TRANSFORM description-seo :CLASS description-class
+;; :FIELD "description_seo" :TRANSFORM description-item-seo :CLASS description-class
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -2024,6 +2026,9 @@ slots for the class `parsed-ref'.
 ;;
 ;; :EXAMPLE-VALUES 
 ;;  "air, plane, airplane, Biplane, aircraft, expo, center, blimp, dirigible,"
+;;   "A Pochoir for the 1922 periodical Styl 1922 shos a dress made of golden
+;;    yellow Matelasse with a matching hat, by the popular Berlin fashion
+;;    designer Johanna Marbach."
 ;;
 ;; - `split-comma-field' works so long as we can be sure that there are
 ;;   never free commas as used as an SEO descriptor:
@@ -2097,6 +2102,16 @@ slots for the class `parsed-ref'.
 ;;   contextually relevant information which should not be elided. 
 ;;   Possible solutions, query the existing 
 ;;   
+;;
+;; - see ref 8785 for Gould's items having big long year range lists which should
+;;    be replaced with something like "date range 1850-1883"
+;;  "1850 1851 1852 1853 1854 1855 1856 1857 1858 1859 1860 1861 1862 1863 1864 1865 1866 1867 1868 1869 1870 1871 1872 1873 1874 1875 1876 1877 1878 1879 1880 1881 1882 1883"
+;;  (cl-ppcre:create-scanner 
+;;
+;; "\(1850 \)\(18[0-9][0-9] \)+1883\( +\)"
+;; (cl-ppcre:scan "((1850 )(18[0-9][0-9] )+1883( +))"
+;;                "1850 1851 1852 1853 1854 1855 1856 1857 1858 1859 1860 1861 1862 1863 1864 1865 1866 1867 1868 1869 1870 1871 1872 1873 1874 1875 1876 1877 1878 1879 1880 1881 1882 1883      ")
+;;
 ;;
 ;;   (defun dbc-remove-unwanted-strings (string-bag seq)
 ;;    delete-if #'(lambda (x)
