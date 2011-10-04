@@ -69,7 +69,7 @@ slots for the class `parsed-ref'.
 ;;              finally (setf (gethash ref hash-table) obj))
 ;;        finally (return (values hash-table (hash-table-count hash-table))))))
 ;;
-(defun load-sax-parsed-xml-file-to-parsed-class-hash (parsed-class input-file hash-table key-accessor)
+(defun load-sax-parsed-xml-file-to-parsed-class-hash (&key parsed-class input-file hash-table key-accessor slot-dispatch-function)
   ;; Arg PARSED-CLASS a symbol designating the class we are parsing.
   ;; Arg INPUT-FILE the file containing field/value consed pairs.
   ;; Arg HASH-TABLE the hash-table to insert the class object to. 
@@ -80,18 +80,25 @@ slots for the class `parsed-ref'.
   ;; Arg KEY-ACCESSOR names an accessor function which returns the primary key for the parsed table
   ;; it return value will becomes a hash-table KEY associating PARSED-CLASS in HASH-TABLE.
   ;; As such, it should return always return a non-null value. If not the results are undefined.
+  ;; Arg SLOT-DISPATCH-FUNCTION is a function utilizing
+  ;; `string-case:string-case' to map strings to an appropriate accesor
+  ;; e.g. `set-parsed-artist-slot-value', `set-parsed-ref-slot-value', etc.
   ;; :EXAMPLE
   ;; (defparameter *tt--parse-table* (make-hash-table :test 'equal))
   ;; (let ((parsed-sax-file (merge-pathnames 
-  ;;                    (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*))
-  ;;                                   :name (concatenate 'string "sax-refs-test-" (mon:time-string-yyyy-mm-dd))
-  ;;                                   :type "lisp")
-  ;;                     (system-path *system-path*))))
+  ;;                         (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*))
+  ;;                                        :name (concatenate 'string "sax-refs-test-" (mon:time-string-yyyy-mm-dd))
+  ;;                                        :type "lisp")
+  ;;                         (system-path *system-path*))))
   ;;   (write-sax-parsed-xml-to-file
   ;;    :input-file  (merge-pathnames (make-pathname :name "dump-refs-DUMPING")
   ;;                                  (sub-path *xml-input-dir*))
   ;;    :output-file parsed-sax-file)
-  ;;   (load-sax-parsed-xml-file-to-parsed-class-hash 'parsed-ref  parsed-sax-file *tt--parse-table* #'item-number))
+  ;;   (load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-ref  
+  ;;                                                  :input-file parsed-sax-file
+  ;;                                                  :hash-table  *tt--parse-table*
+  ;;                                                  :key-accessor  #'item-number
+  ;;                                                  :slot-dispatch-function #'set-parse-ref-slot-value))
   ;;                        
   ;; ;; => #<HASH-TABLE  ... >, 8969
   ;; (clrhash *tt--parse-table*)
@@ -109,10 +116,9 @@ slots for the class `parsed-ref'.
        do (loop 
              with obj = (make-instance parsed-class)
              for (field . val) in x
-             do (set-parsed-ref-slot-value field val obj)
+             do (funcall slot-dispatch-function field val obj)
              finally (setf (gethash (funcall key-accessor obj) hash-table) obj))
        finally (return (values hash-table (hash-table-count hash-table))))))
-
 
 (defun print-sax-parsed-slots-padding-format-control (object)
   ;; Return a format-control string for printing the slots of OBJECT with
@@ -129,7 +135,6 @@ slots for the class `parsed-ref'.
                         (mon:class-slot-list object)))
            4)))
 
-
 ;; :NOTE There is nothing preventing us from making this the generalized
 ;; interface for printing sax parsed slots it is not specific to the class
 ;; `parsed-ref'.
@@ -143,7 +148,7 @@ slots for the class `parsed-ref'.
 ;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
 ;; `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
 (defun print-sax-parsed-slots (object &key stream (print-unbound t) (pre-padded-format-control nil))
-  (declare (type parsed-ref object)
+  (declare (type parsed-class object)
            (type (or string null) pre-padded-format-control)
            (type boolean print-unbound))
   (let ((calculate-padding (if pre-padded-format-control
@@ -181,19 +186,20 @@ slots for the class `parsed-ref'.
 ;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
 ;; `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
 (defun write-sax-parsed-slots-to-file (object &key slot-for-file-name 
-                                                     prefix-for-file-name
-                                                     output-directory (directory-exists-check t)
-                                                     (pre-padded-format-control nil))
-  (declare  (parsed-ref object)
+                                                   prefix-for-file-name
+                                                   output-directory 
+                                                   (directory-exists-check t)
+                                                   (pre-padded-format-control nil))
+  (declare  (parsed-class object)
             (type (and symbol (mon::not-null)) slot-for-file-name)
             (type (or mon:string-not-empty null) prefix-for-file-name)
             (boolean directory-exists-check))
- (when directory-exists-check
+  (when directory-exists-check
    (unless (equal output-directory
                   (make-pathname :directory (pathname-directory (probe-file output-directory))))
      (error "arg OUTPUT-DIRECTORY does not designate a valid directory~% got: ~S~%"
             output-directory)))
- (let* ((slot-value-if (and (slot-exists-p object slot-for-file-name) ;; 'item-number
+  (let* ((slot-value-if (and (slot-exists-p object slot-for-file-name) ;; 'item-number
                             (slot-boundp   object slot-for-file-name)
                             (slot-value    object slot-for-file-name)))
         (slot-value-if-stringp (or (and slot-value-if
@@ -230,24 +236,28 @@ slots for the class `parsed-ref'.
 ;; (fundoc 'write-sax-parsed-class-hash-to-files
 ;; :EXAMPLE
 ;; (write-sax-parsed-class-hash-to-files 
-;;  <HASH-TABLE>
+;;  <HASH-TABLE> :parse-class <PARSED-CLASS> :slot-for-file-name 'item-number :prefix-for-file-name "item-number"
 ;;  :output-directory (merge-pathnames #P"individual-parse-refs-2011-10-01/" (sub-path *xml-output-dir*)))
 ;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
 ;; `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
-(defun write-sax-parsed-class-hash-to-files (hash-table &key output-directory
-                                                             (pre-padded-format-control nil))
+(defun write-sax-parsed-class-hash-to-files (hash-table &key parsed-class
+                                                             slot-for-file-name
+                                                             prefix-for-file-name
+                                                             output-directory)
   (declare (type hash-table hash-table)
-           (type (or string null) pre-padded-format-control))
+           (type (and symbol (mon::not-null)) slot-for-file-name parsed-class)
+           (type (or mon:string-not-empty null) prefix-for-file-name))
   (unless (equal output-directory
                  (make-pathname :directory (pathname-directory (probe-file output-directory))))
     (error "arg OUTPUT-DIRECTORY does not designate a valid directory~% got: ~S~%"
            output-directory))
-  (let ((calculate-padding (if pre-padded-format-control
-                               pre-padded-format-control
-                               (print-sax-parsed-slots-padding-format-control object))))
+  (let ((calculate-padding (print-sax-parsed-slots-padding-format-control (make-instance parsed-class))))
     (maphash #'(lambda (k v)
-                 (declare (ignore k) (parsed-ref v))
+                 (declare (ignore k) 
+                          (parsed-class v))
                  (write-sax-parsed-slots-to-file v 
+                                                 :slot-for-file-name slot-for-file-name 
+                                                 :prefix-for-file-name prefix-for-file-name
                                                  :output-directory output-directory
                                                  :directory-exists-check nil
                                                  :pre-padded-format-control calculate-padding))
