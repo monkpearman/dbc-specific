@@ -98,7 +98,7 @@ slots for the class `parsed-ref'.
   ;; :NOTE For use with output of `write-sax-parsed-xml-refs-file'.
   ;; `write-sax-parsed-xml-refs-file'
   ;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
-  ;; `write-sax-parsed-slots-to-file', `write-sax-parsed-ref-hash-to-files'.~%▶▶▶")
+  ;; `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
   (with-open-file (fl input-file
                       :direction :input 
                       :element-type 'character
@@ -125,7 +125,7 @@ slots for the class `parsed-ref'.
 ;; The later is useful when serializing an object to a file b/c the de-serialzed
 ;; OBJECT will have its slot :initarg intialized to nil which is what we've done elswhere for this class
 ;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
-;; `write-sax-parsed-slots-to-file', `write-sax-parsed-ref-hash-to-files'.~%▶▶▶")
+;; `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
 (defun print-sax-parsed-slots (object &key stream (print-unbound t))
   (declare (parsed-ref object)
            (boolean print-unbound))
@@ -157,7 +157,7 @@ slots for the class `parsed-ref'.
 ;;  *tt--item* 'item-number \"item-number\"
 ;;  :output-directory (merge-pathnames #P"individual-parse-refs-2011-10-01/" (sub-path *xml-output-dir*)))
 ;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
-;; `write-sax-parsed-slots-to-file', `write-sax-parsed-ref-hash-to-files'.~%▶▶▶")
+;; `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
 (defun write-sax-parsed-slots-to-file (object &key slot-for-file-name 
                                                        prefix-for-file-name
                                                        output-directory (directory-exists-check t))
@@ -201,14 +201,14 @@ slots for the class `parsed-ref'.
           (warn "~%Something wrong with arg OBJECT, declining to dump to file~%")
           nil))))
 
-;; (fundoc 'write-sax-parsed-ref-hash-to-files
+;; (fundoc 'write-sax-parsed-class-hash-to-files
 ;; :EXAMPLE
-;; (write-sax-parsed-ref-hash-to-files 
+;; (write-sax-parsed-class-hash-to-files 
 ;;  <HASH-TABLE>
 ;;  :output-directory (merge-pathnames #P"individual-parse-refs-2011-10-01/" (sub-path *xml-output-dir*)))
 ;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
-;; `write-sax-parsed-slots-to-file', `write-sax-parsed-ref-hash-to-files'.~%▶▶▶")
-(defun write-sax-parsed-ref-hash-to-files (hash-table &key output-directory)
+;; `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
+(defun write-sax-parsed-class-hash-to-files (hash-table &key output-directory)
   (declare (hash-table hash-table))
   (unless (equal output-directory
                  (make-pathname :directory (pathname-directory (probe-file output-directory))))
