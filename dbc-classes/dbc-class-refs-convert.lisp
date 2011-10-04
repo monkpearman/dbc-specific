@@ -97,8 +97,8 @@ slots for the class `parsed-ref'.
   ;; (clrhash *tt--parse-table*)
   ;; :NOTE For use with output of `write-sax-parsed-xml-refs-file'.
   ;; `write-sax-parsed-xml-refs-file'
-  ;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-ref-slots',
-  ;; `write-sax-parsed-ref-slots-to-file', `write-sax-parsed-ref-hash-to-files'.~%▶▶▶")
+  ;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
+  ;; `write-sax-parsed-slots-to-file', `write-sax-parsed-ref-hash-to-files'.~%▶▶▶")
   (with-open-file (fl input-file
                       :direction :input 
                       :element-type 'character
@@ -114,20 +114,19 @@ slots for the class `parsed-ref'.
        finally (return (values hash-table (hash-table-count hash-table))))))
 
 
-
 ;; :NOTE There is nothing preventing us from making this the generalized
 ;; interface for printing sax parsed slots it is not specific to the class
 ;; `parsed-ref'.
 ;;
-;; (fundoc 'print-sax-parsed-ref-slots
+;; (fundoc 'print-sax-parsed-slots
 ;; Keyword PRINT-UNBOUND is a boolean.
 ;; When t (the default) and a slot of OJBECT's is not `cl:slot-boundp' print its slot-value as "#<UNBOUND>".
 ;; When null and OJBECT's a slot is not `cl:slot-boundp' print its slot-value as NIL. 
 ;; The later is useful when serializing an object to a file b/c the de-serialzed
 ;; OBJECT will have its slot :initarg intialized to nil which is what we've done elswhere for this class
-;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-ref-slots',
-;; `write-sax-parsed-ref-slots-to-file', `write-sax-parsed-ref-hash-to-files'.~%▶▶▶")
-(defun print-sax-parsed-ref-slots (object &key stream (print-unbound t))
+;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
+;; `write-sax-parsed-slots-to-file', `write-sax-parsed-ref-hash-to-files'.~%▶▶▶")
+(defun print-sax-parsed-slots (object &key stream (print-unbound t))
   (declare (parsed-ref object)
            (boolean print-unbound))
   (format stream "~&(~{~{:~26:A~S~}~^~%~})"
@@ -142,44 +141,62 @@ slots for the class `parsed-ref'.
              finally ;;(format stream "~&(~{~{:~26:A~S~}~^~%~})" rtn)))
              (return rtn))))
 
-;; (fundoc 'write-sax-parsed-ref-slots-to-file
+;; (fundoc 'write-sax-parsed-slots-to-file
 ;; Write a list of the slot/value pairs of OBJECT to a file in OUTPUT-DIRECTORY.
 ;; Each slot/value pair is written in such a way that the list may be read and
 ;; passed to `cl:make-instance' to re-instantiate the instance.
+;; Arg SLOT-FOR-FILE-NAME is a symbol, e.g. 'item-number, 'control-id-entity-num-artist, etc.
+;; If it satisfies `cl:slot-exists-p', `cl:slot-boundp' and `cl:slot-value' its
+;; value is used as the suffix for a file name, if not an error is signaled.
+;; Arg PREFIX-FOR-FILE-NAME is a string, e.g. "item-number", "artist-enity-num", etc.
+;; It is combined with `cl:slot-value' of SLOT-FOR-FILE-NAME when makeing a pathname to write OBJECT to. 
+;; When a string is provided it should not contain a trailing #\-.
+;; If PREFIX-FOR-FILE-NAME is null the `cl:string' representation of SLOT-FOR-FILE-NAME is used instead.
 ;; :EXAMPLE
-;; (write-sax-parsed-ref-slots-to-file 
-;;  *tt--item*
+;; (write-sax-parsed-slots-to-file 
+;;  *tt--item* 'item-number \"item-number\"
 ;;  :output-directory (merge-pathnames #P"individual-parse-refs-2011-10-01/" (sub-path *xml-output-dir*)))
-;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-ref-slots',
-;; `write-sax-parsed-ref-slots-to-file', `write-sax-parsed-ref-hash-to-files'.~%▶▶▶")
-(defun write-sax-parsed-ref-slots-to-file (object &key output-directory (directory-exists-check t))
-  (declare (parsed-ref object)
-           (boolean directory-exists-check))
+;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
+;; `write-sax-parsed-slots-to-file', `write-sax-parsed-ref-hash-to-files'.~%▶▶▶")
+(defun write-sax-parsed-slots-to-file (object &key slot-for-file-name 
+                                                       prefix-for-file-name
+                                                       output-directory (directory-exists-check t))
+  (declare  (parsed-ref object)
+            (type (and symbol (mon::not-null)) slot-for-file-name)
+            (type (or mon:string-not-empty null) prefix-for-file-name)
+            (boolean directory-exists-check))
  (when directory-exists-check
    (unless (equal output-directory
                   (make-pathname :directory (pathname-directory (probe-file output-directory))))
      (error "arg OUTPUT-DIRECTORY does not designate a valid directory~% got: ~S~%"
             output-directory)))
-  (let* ((item-number-if (and (slot-exists-p object 'item-number)
-                              (slot-boundp  object 'item-number)
-                              (slot-value   object 'item-number)))
-         (item-number-if-stringp (or (and item-number-if
-                                          (stringp item-number-if)
-                                          item-number-if)))
-         (item-number-to-file-name (and item-number-if-stringp
-                                        (merge-pathnames 
-                                         (make-pathname :name (concatenate 'string "item-number-" item-number-if-stringp))
-                                         output-directory))))
-    (if item-number-to-file-name
-        (with-open-file (fl item-number-to-file-name
+ (let* ((slot-value-if (and (slot-exists-p object slot-for-file-name) ;; 'item-number
+                            (slot-boundp   object slot-for-file-name)
+                            (slot-value    object slot-for-file-name)))
+        (slot-value-if-stringp (or (and slot-value-if
+                                        (stringp slot-value-if)
+                                        slot-value-if)))
+        (slot-value-to-file-name (and slot-value-if-stringp
+                                      (merge-pathnames 
+                                       (make-pathname :name (concatenate 'string 
+                                                                         (or prefix-for-file-name
+                                                                             (string slot-for-file-name))
+                                                                         "-"
+                                                                         slot-value-if-stringp))
+                                       output-directory))))
+    (if slot-value-to-file-name
+        (with-open-file (fl slot-value-to-file-name
                             :direction :output 
                             :if-does-not-exist :create
                             :if-exists :supersede
                             :external-format :UTF-8)
-          (format nil ";;; :CLASS `parsed-ref' item-number ~D ~%;;; :FILE-CREATED  ~A~%"
-                  item-number-if-stringp (mon:timestamp-for-file))
-          (print-sax-parsed-ref-slots object :stream fl :print-unbound nil)
-          item-number-to-file-name)
+          (format nil ";;; :CLASS `~A'' ~A ~A ~%;;; :FILE-CREATED  ~A~%"
+                  (string-downcase (class-name (class-of object)))
+                  slot-for-file-name
+                  slot-value-if-stringp
+                  (mon:timestamp-for-file))
+          (print-sax-parsed-slots object :stream fl :print-unbound nil)
+          slot-value-to-file-name)
         (progn
           (warn "~%Something wrong with arg OBJECT, declining to dump to file~%")
           nil))))
@@ -189,8 +206,8 @@ slots for the class `parsed-ref'.
 ;; (write-sax-parsed-ref-hash-to-files 
 ;;  <HASH-TABLE>
 ;;  :output-directory (merge-pathnames #P"individual-parse-refs-2011-10-01/" (sub-path *xml-output-dir*)))
-;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-ref-slots',
-;; `write-sax-parsed-ref-slots-to-file', `write-sax-parsed-ref-hash-to-files'.~%▶▶▶")
+;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
+;; `write-sax-parsed-slots-to-file', `write-sax-parsed-ref-hash-to-files'.~%▶▶▶")
 (defun write-sax-parsed-ref-hash-to-files (hash-table &key output-directory)
   (declare (hash-table hash-table))
   (unless (equal output-directory
@@ -199,7 +216,7 @@ slots for the class `parsed-ref'.
            output-directory))
   (maphash #'(lambda (k v)
                (declare (ignore k) (parsed-ref v))
-               (write-sax-parsed-ref-slots-to-file v 
+               (write-sax-parsed-slots-to-file v 
                                                    :output-directory output-directory
                                                    :directory-exists-check nil))
            hash-table))
@@ -257,29 +274,29 @@ slots for the class `parsed-ref'.
     :accessor description-translation
     :documentation ":ORIGINAL-FIELD \"translation\"")
 
-   (person-entity-coref
-    :initarg :person-entity-coref
-    :accessor person-entity-coref
+   (naf-entity-person-coref
+    :initarg :naf-entity-person-coref
+    :accessor naf-entity-person-coref
     :documentation ":ORIGINAL-FIELD \"people\"")
 
-   (brand-entity-coref
-    :initarg :brand-entity-coref
-    :accessor brand-entity-coref
+   (naf-entity-brand-coref
+    :initarg :naf-entity-brand-coref
+    :accessor naf-entity-brand-coref
     :documentation ":ORIGINAL-FIELD \"brand\"")
 
-   (composer-entity-coref
-    :initarg :composer-entity-coref
-    :accessor composer-entity-coref
+   (naf-entity-composer-coref
+    :initarg :naf-entity-composer-coref
+    :accessor naf-entity-composer-coref
     :documentation ":ORIGINAL-FIELD \"composer\"")
 
-   (artist-entity-coref
-    :initarg :artist-entity-coref
-    :accessor artist-entity-coref
+   (naf-entity-artist-coref
+    :initarg :naf-entity-artist-coref
+    :accessor naf-entity-artist-coref
     :documentation ":ORIGINAL-FIELD \"artist\"")
 
-   (author-entity-coref
-    :initarg :author-entity-coref
-    :accessor author-entity-coref
+   (naf-entity-author-coref
+    :initarg :naf-entity-author-coref
+    :accessor naf-entity-author-coref
     :documentation ":ORIGINAL-FIELD \"author\"")
 
    (taxon-entity-coref ;; linnaean-entity-coref???
@@ -287,9 +304,9 @@ slots for the class `parsed-ref'.
     :accessor taxon-entity-coref
     :documentation ":ORIGINAL-FIELD \"latin_name\"")
 
-   (publication-entity-coref  
-    :initarg :publication-entity-coref
-    :accessor publication-entity-coref
+   (naf-entity-publication-coref
+    :initarg :naf-entity-publication-coref
+    :accessor naf-entity-publication-coref
     :documentation ":ORIGINAL-FIELD \"book\"")
 
    (publication-publisher ;; 
@@ -428,24 +445,24 @@ slots for the class `parsed-ref'.
     :accessor description-condition
     :documentation ":ORIGINAL-FIELD \"condition\"")
 
-   (media-mount
-    :initarg :media-mount
-    :accessor media-mount
+   (media-entity-mount
+    :initarg :media-entity-mount
+    :accessor media-entity-mount
     :documentation ":ORIGINAL-FIELD \"onlinen\"")
 
-   (media-technique
-    :initarg :media-technique
-    :accessor media-technique
+   (media-entity-technique
+    :initarg :media-entity-technique
+    :accessor media-entity-technique
     :documentation ":ORIGINAL-FIELD \"technique\"")
 
-   (media-paper
-    :initarg :media-paper
-    :accessor media-paper
+   (media-entity-paper
+    :initarg :media-entity-paper
+    :accessor media-entity-paper
     :documentation ":ORIGINAL-FIELD \"paper\"")
 
-   (media-color
-    :initarg :media-color
-    :accessor media-color
+   (media-entity-color
+    :initarg :media-entity-color
+    :accessor media-entity-color
     :documentation ":ORIGINAL-FIELD \"color\"")
 
    (unit-width
@@ -563,12 +580,14 @@ slots for the class `parsed-ref'.
     :accessor keywords-seo
     :documentation ":ORIGINAL-FIELD \"keywords_seo\"")
 
+   ;; shares-generic   
    (edit-date-origin ;; IGNORABLE assuming date_edit is present and corresponds.
     :initarg :edit-date-origin
     :accessor edit-date-origin
     :documentation ":ORIGINAL-FIELD \"date\"")
 
-   (edit-date
+   ;; shares-generic   
+   (edit-date 
     :initarg :edit-date
     :accessor edit-date
     :documentation ":ORIGINAL-FIELD \"date_edit\"")
@@ -617,13 +636,13 @@ slots for the class `parsed-ref'.
     ("histo_en" (setf (ignorable-history-english object) field-value))
     ("text_quote" (setf (description-quote object) field-value))
     ("translation" (setf (description-translation object) field-value))
-    ("people" (setf (person-entity-coref object) field-value))
-    ("brand" (setf (brand-entity-coref object) field-value))
-    ("composer" (setf (composer-entity-coref object) field-value))
-    ("artist" (setf (artist-entity-coref object) field-value))
-    ("author" (setf (author-entity-coref object) field-value))
+    ("people" (setf (naf-entity-person-coref object) field-value))
+    ("brand" (setf (naf-entity-brand-coref object) field-value))
+    ("composer" (setf (naf-entity-composer-coref object) field-value))
+    ("artist" (setf (naf-entity-artist-coref object) field-value))
+    ("author" (setf (naf-entity-author-coref object) field-value))
     ("latin_name" (setf (taxon-entity-coref object) field-value))
-    ("book" (setf (publication-entity-coref object) field-value))
+    ("book" (setf (naf-entity-publication-coref object) field-value))
     ("publisher" (setf (publication-publisher object) field-value))
     ("publish_location" (setf (publication-location object) field-value))
     ("volume" (setf (publication-volume object) field-value))
@@ -651,10 +670,10 @@ slots for the class `parsed-ref'.
     ("price" (setf (price-ask object) field-value))
     ("keywords" (setf (keywords-sequence object) field-value))
     ("condition" (setf (description-condition object) field-value))
-    ("onlinen" (setf (media-mount object) field-value))
-    ("technique" (setf (media-technique object) field-value))
-    ("paper" (setf (media-paper object) field-value))
-    ("color" (setf (media-color object) field-value))
+    ("onlinen" (setf (media-entity-mount object) field-value))
+    ("technique" (setf (media-entity-technique object) field-value))
+    ("paper" (setf (media-entity-paper object) field-value))
+    ("color" (setf (media-entity-color object) field-value))
     ("w" (setf (unit-width object) field-value))
     ("h" (setf (unit-height object) field-value))
     ("nbre" (setf (ignorable-number object) field-value))
@@ -795,15 +814,15 @@ slots for the class `parsed-ref'.
 ;;  "text_quote"       ;; description-quote
 ;;  "translation"      ;; description-translation
 ;;
-;;  "people"           ;; person-entity-coref
-;;  "brand"            ;; brand-entity-coref
-;;  "composer"         ;; composer-entity-coref
-;;  "artist"           ;; artist-entity-coref
-;;  "author"           ;; author-entity-coref
+;;  "people"           ;; naf-entity-person-coref
+;;  "brand"            ;; naf-entity-brand-coref
+;;  "composer"         ;; naf-entity-composer-coref
+;;  "artist"           ;; naf-entity-artist-coref
+;;  "author"           ;; naf-entity-author-coref
 ;;  "latin_name"       ;; taxon-entity-coref  ;; linnaean-entity-coref???
 ;;
 ;;
-;;  "book"             ;; "publication-entity-coref"
+;;  "book"             ;; "naf-entity-publication-coref"
 ;;  "publisher"        ;; "publication-publisher"
 ;;  "publish_location" ;; "publication-location"   ;; For congruence with birth-location death-location
 ;;  "volume"           ;; "publication-volume"
@@ -839,10 +858,10 @@ slots for the class `parsed-ref'.
 ;;  "keywords"         ;; keywords-sequence
 ;;
 ;;  "condition"        ;; description-condition  ;; description-class
-;;  "onlinen"          ;; media-mount
-;;  "technique"        ;; media-technique
-;;  "paper"            ;; media-paper
-;;  "color"            ;; media-color
+;;  "onlinen"          ;; media-entity-mount
+;;  "technique"        ;; media-entity-technique
+;;  "paper"            ;; media-entity-paper
+;;  "color"            ;; media-entity-color
 ;;  "w"                ;; unit-width
 ;;  "h"                ;; unit-height
 ;;  "price"            ;; price-ask
@@ -1297,7 +1316,7 @@ slots for the class `parsed-ref'.
 ;;; ==============================
 
 ;;; ==============================
-;; :FIELD "artist" :TRANSFORM artist-entity-coref
+;; :FIELD "artist" :TRANSFORM naf-entity-artist-coref
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1316,7 +1335,7 @@ slots for the class `parsed-ref'.
 
 
 ;;; ==============================
-;; :FIELD "author" :TRANSFORM  author-entity-coref
+;; :FIELD "author" :TRANSFORM  naf-entity-author-coref
 ;;
 ;;         :TYPE "varchar(100)"
 ;;         :NULL-P "NO"
@@ -1333,7 +1352,7 @@ slots for the class `parsed-ref'.
 ;; - This field will have a class-instance if it is non-nil
 
 ;;; ==============================
-;; :FIELD "book" :TRANSFORM  publication-entity-coref
+;; :FIELD "book" :TRANSFORM  naf-entity-publication-coref
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1349,7 +1368,7 @@ slots for the class `parsed-ref'.
 ;; 
 
 ;;; ==============================
-;; :FIELD "composer" :TRANSFORM composer-entity-coref
+;; :FIELD "composer" :TRANSFORM naf-entity-composer-coref
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "YES"
@@ -1363,7 +1382,7 @@ slots for the class `parsed-ref'.
 ;; (count-matches "field name=\"composer\" xsi:nil=\"true\"") => 727
 ;; 
 ;;; ==============================
-;; :FIELD "brand" :TRANSFORM brand-entity-coref
+;; :FIELD "brand" :TRANSFORM naf-entity-brand-coref
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1384,7 +1403,7 @@ slots for the class `parsed-ref'.
 ;; - This field will have a class-instance if it is non-nil
 
 ;;; ==============================
-;; :FIELD "people" :TRANSFORM person-entity-coref
+;; :FIELD "people" :TRANSFORM naf-entity-person-coref
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1531,7 +1550,7 @@ slots for the class `parsed-ref'.
 ;;; ==============================
 
 ;;; ==============================
-;; :FIELD "technique" :TRANSFORM media-technique
+;; :FIELD "technique" :TRANSFORM media-entity-technique
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1546,7 +1565,7 @@ slots for the class `parsed-ref'.
 ;;
 
 ;;; ==============================
-;; :FIELD "paper" :TRANSFORM media-paper
+;; :FIELD "paper" :TRANSFORM media-entity-paper
 ;;
 ;;         :TYPE "varchar(100)"
 ;;         :NULL-P "NO"
@@ -1649,7 +1668,7 @@ slots for the class `parsed-ref'.
 ;; - Use `mon:number-to-string' or `parse-integer'
 
 ;;; ==============================
-;; :FIELD "color"  :TRANSFORM media-color
+;; :FIELD "color"  :TRANSFORM media-entity-color
 ;;
 ;;         :TYPE "tinyint(3) unsigned"
 ;;         :NULL-P "NO"
@@ -1674,7 +1693,7 @@ slots for the class `parsed-ref'.
 ;;  2 - color 
 
 ;;; ==============================
-;; :FIELD "onlinen" :TRANSFORM media-mount
+;; :FIELD "onlinen" :TRANSFORM media-entity-mount
 ;;
 ;;         :TYPE "tinyint(3) unsigned"
 ;;         :NULL-P "NO"
