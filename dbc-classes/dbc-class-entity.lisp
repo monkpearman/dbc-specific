@@ -12,6 +12,7 @@
 ;; -- base-naf-entity
 ;; -- base-media-entity
 ;; -- base-location-entity
+;; -- base-taxon-entity
 ;;
 ;;     _________________ Below should have their own files
 ;;
@@ -22,7 +23,6 @@
 ;; --- naf-entity-publication 
 ;;
 ;; --- naf-entity-publisher ???
-;; --- naf-entity-linnaean  ???
 ;;
 ;; dbc-classes/dbc-class-media-entity.lisp
 ;; --- media-entity-technique (base-media-entity)
@@ -95,6 +95,34 @@ external domain.~%
              :EXAMPLE~% ~
               \(mon:class-subclasses \(find-class 'base-category-entity\)\)
              :SEE-ALSO `category-entity-regexp'.~%▶▶▶")))
+
+
+(defclass base-taxon-entity (base-entity)
+  ()
+  (:documentation #.(format nil
+                            "Base class for referencing DBC taxonomic entitites.~%~% ~
+ ,----~%~
+ | taxon, \(pl. taxa\), n.~%~
+ | taxonomic unit, whether named or not: i.e. a population, or group of populations~%~
+ | of organisms which are usually inferred to be phylogenetically related and which~%~
+ | have characters in common which differentiate \(q.v.\) the unit \(e.g. a geographic~%~
+ | population, a genus, a family, an order\) from other such units. A taxon~%~
+ | encompasses all included taxa of lower rank \(q.v.\) and individual organisms.~%~
+ `---- The Glossary of the International Code of Zoological Nomenclature \(1999\).~%~@
+Precedence list of taxonmic rank:~%~% ~
+ life~% ~
+ - domain~% ~
+ -- kingdom~% ~
+ --- phylum~% ~
+ ---- class~% ~
+ ----- order~% ~
+ ------ family~% ~
+ ------- genus~% ~
+ -------- species~%~@
+And more specifically we are concerned with the mapping from:~%~% ~
+  historic-appellation -> modern-appellation~%~@
+:NOTE the decision to use the sybmolic prefix ``taxon'' is because i can
+ _NEVER_ remember how to spell Linnaeus/Linnaean...~%")))
 
 (defclass base-naf-entity (base-entity)
   ()
