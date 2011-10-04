@@ -1,7 +1,7 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-01-04T16:36:51-05:00Z}#{11012} - by MON>
-;;; :FILE dbc-specific/dbc-classes/dbc-class-artist.lisp
+;;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-artist-record.lisp
 ;;; ==============================
-
+;; 
 
 ;;; ==============================
 ;;; Clean these up first with emacs regexp: 
@@ -13,6 +13,11 @@
 (in-package #:dbc)
 
 ;; (length (mon:class-slot-list 'parsed-artist))
+
+;; We need a class `parsed-naf-entity' which subclasses `parsed-class'
+;; :NOTE Should have a generic `naf-entity-display-name-coref' methods
+;; specialized on `parsed-artist', `parsed-author', `parsed-person',
+;; `parsed-brand', `parsed-publication', etc.
 
 ;; To get at just the string of the original field:
 ;; (while (search-forward-regexp ":ORIGINAL-FIELD \\(\\\\\"\\)\\(.*\\)\\(\\\\\"\\)")
@@ -45,66 +50,79 @@
     :accessor naf-entity-role-appearance-coref
     :documentation ":ORIGINAL-FIELD \"role\"")
 
+   ;; shares-generic
    (naf-entity-gender-type
     :initarg :naf-entity-gender-type
     :accessor naf-entity-gender-type
     :documentation ":ORIGINAL-FIELD \"gender\"")
 
+   ;; shares-generic
    (lifespan-date
     :initarg :lifespan-date
     :accessor lifespan-date
     :documentation ":ORIGINAL-FIELD \"lifespan\"")
 
+   ;; shares-generic
    (birth-date
     :initarg :birth-date
     :accessor birth-date
     :documentation ":ORIGINAL-FIELD \"date_born\"")
 
+   ;; shares-generic
    (death-date
     :initarg :death-date
     :accessor death-date
     :documentation ":ORIGINAL-FIELD \"date_died\"")
 
+   ;; shares-generic
    (location-birth
     :initarg :location-birth
     :accessor location-birth
     :documentation ":ORIGINAL-FIELD \"birth_location\"")
 
+   ;; shares-generic
    (location-death
     :initarg :location-death
     :accessor location-death
     :documentation ":ORIGINAL-FIELD \"death_location\"")
 
+   ;; shares-generic
    (location-nationality
     :initarg :location-nationality
     :accessor location-nationality
     :documentation ":ORIGINAL-FIELD \"nationality\"")
 
+   ;; shares-generic
    (control-id-db-0 ;; LOC 
     :initarg :control-id-db-0
     :accessor control-id-db-0
     :documentation ":ORIGINAL-FIELD \"LOC_control\"")
 
+   ;; shares-generic
    (control-id-db-1 ;; ULAN
     :initarg :control-id-db-1
     :accessor control-id-db-1
     :documentation ":ORIGINAL-FIELD \"ULAN_control\"")
 
+   ;; shares-generic
    (naf-entity-author-coref
     :initarg :naf-entity-author-coref
     :accessor naf-entity-author-coref
     :documentation ":ORIGINAL-FIELD \"also_author\"")
 
+   ;; shares-generic
    (naf-entity-person-coref
     :initarg :naf-entity-person-coref
     :accessor naf-entity-person-coref
     :documentation ":ORIGINAL-FIELD \"also_people\"")
 
+   ;; shares-generic
    (naf-entity-publication-appearance-coref
     :initarg :naf-entity-publication-appearance-coref
     :accessor naf-entity-publication-appearance-coref
     :documentation ":ORIGINAL-FIELD \"appeared_in\"")
 
+   ;; shares-generic
    (naf-entity-brand-appearance-coref
     :initarg :naf-entity-brand-appearance-coref
     :accessor naf-entity-brand-appearance-coref
@@ -126,21 +144,25 @@
     :accessor image-default-id
     :documentation ":ORIGINAL-FIELD \"default_pic\"")
 
+   ;; shares-generic
    (image-default-xref
     :initarg :image-default-xref
     :accessor image-default-xref
     :documentation ":ORIGINAL-FIELD \"print_default_pic\"")
-
+   
+   ;; shares-generic
    (naf-entity-active
     :initarg :naf-entity-active
     :accessor naf-entity-active
     :documentation ":ORIGINAL-FIELD \"online\"")
 
+   ;; shares-generic
    (edit-by
     :initarg :edit-by
     :accessor edit-by
     :documentation ":ORIGINAL-FIELD \"user_name\"")
 
+   ;; shares-generic
    (edit-by-creator
     :initarg :edit-by-creator
     :accessor edit-by-creator
