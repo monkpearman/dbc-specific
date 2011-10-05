@@ -27,10 +27,10 @@
 ;; base-description-naf-entity             (base-description-entity)  ;; (base-description base-dbc)
 ;; base-description-naf-entity-internal    (base-description-naf-entity base-description-entity-internal) 
 
-naf-entity (base-description base-dbc)
-entity-internal
-(base-description-internal base-description-entity)
-base-description          | base-description
+;; naf-entity (base-description base-dbc)
+;; entity-internal
+;; (base-description-internal base-description-entity)
+;; base-description          | base-description
 
 
 ;; ABSTRACT-CLASS
