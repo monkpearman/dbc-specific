@@ -471,7 +471,7 @@
 ;;  :ROLE ("Designer" "Caricaturist" "Illustrator")
 
 ;;; ==============================
-;;  :FIELD "gender" :TRANSFORM
+;;  :FIELD "gender" :TRANSFORM naf-entity-gender-type
 ;;  :TYPE "varchar(255)"
 ;;
 ;; :EXAMPLE-VALUES 
