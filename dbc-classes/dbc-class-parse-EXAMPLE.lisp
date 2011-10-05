@@ -6,11 +6,27 @@
 ;; *package*
 (defparameter *tt--parse-table* (make-hash-table :test 'equal))
 
-(let ((parsed-sax-file (merge-pathnames 
-                        (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*))
-                                       :name (concatenate 'string "sax-refs-test-" (mon:time-string-yyyy-mm-dd))
-                                       :type "lisp")
-                        (system-path *system-path*))))
+(defun %ensure-dated-parsed-directory (&key directory-prefix)
+  (declare (type mon:string-not-empty directory-prefix))
+  (string-right-trim #(#\-) "individual-parse-refs-")
+  (ensure-directories-exist
+   (merge-pathnames 
+    (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*) 
+                                          ,(format nil "~A-~A"
+                                                   (string-trim #(#\- #\space) directory-prefix)
+                                                   (mon:time-string-yyyy-mm-dd))))
+    (system-path *system-path*))))
+
+(defun %make-pathname-parsed-sax-dump-file (&key parse-file-prefix)
+  (merge-pathnames 
+   (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*))
+                  :name (format nil "~A-~A"
+                                (string-trim #(#\- #\space) parse-file-prefix)
+                                (mon:time-string-yyyy-mm-dd))
+                  :type "lisp")
+   (system-path *system-path*)))
+
+(let ((parsed-sax-file (%make-pathname-parsed-sax-dump-file :parse-file-prefix "sax-refs-test")))
   (write-sax-parsed-xml-to-file
    :input-file  (merge-pathnames (make-pathname :name "dump-refs-DUMPING")
                                  (sub-path *xml-input-dir*))
@@ -19,8 +35,7 @@
                                                  :input-file parsed-sax-file
                                                  :hash-table  *tt--parse-table*
                                                  :key-accessor  #'item-number
-                                                 :slot-dispatch-function #'set-parse-ref-slot-value))
-
+                                                 :slot-dispatch-function #'set-parsed-inventory-record-slot-value))
 
 ;; This will write all 8979 hash-table values to an individual file.
 (write-sax-parsed-class-hash-to-files
@@ -28,13 +43,8 @@
  :parsed-class 'parsed-inventory-record
  :slot-for-file-name 'item-number
  :prefix-for-file-name "item-number"
- :output-directory (ensure-directories-exist
-                    (merge-pathnames 
-                     (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*) 
-                                                           ,(concatenate 'string 
-                                                                         "individual-parse-refs-"
-                                                                         (mon:time-string-yyyy-mm-dd))))
-                     (system-path *system-path*))))
+ :output-directory (%ensure-dated-parsed-directory :directory-prefix "individual-parse-refs"))
+ 
 ;;
 ;; On SLAPPY writing the 8979 files took 8.601 seconds which is ~1000 files per second:
 ;;
@@ -50,35 +60,21 @@
 (write-sax-parsed-xml-to-file
  :input-file  (merge-pathnames (make-pathname :name "dump-artist-infos-xml")
                                (sub-path *xml-input-dir*))
- :output-file (merge-pathnames 
-               (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*))
-                              :name (concatenate 'string "sax-artist-test-" (mon:time-string-yyyy-mm-dd))
-                              :type "lisp")
-               (system-path *system-path*)))
+ :output-file (%make-pathname-parsed-sax-dump-file :parse-file-prefix "sax-artist-test"))
 
-(load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-artist-record
-                                               :input-file (merge-pathnames 
-                                                            (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*))
-                                                                           :name (concatenate 'string "sax-artist-test-" (mon:time-string-yyyy-mm-dd))
-                                                                           :type "lisp")
-                                                            (system-path *system-path*))
-                                               :hash-table *tt--parse-artist-table*
-                                               :key-accessor #'control-id-entity-num-artist
-                                               :slot-dispatch-function #'set-parsed-artist-record-slot-value)
+(load-sax-parsed-xml-file-to-parsed-class-hash
+ :parsed-class 'parsed-artist-record
+ :input-file (%make-pathname-parsed-sax-dump-file :parse-file-prefix "sax-artist-test")
+ :hash-table *tt--parse-artist-table*
+ :key-accessor #'control-id-entity-num-artist
+ :slot-dispatch-function #'set-parsed-artist-record-slot-value)
 
 (write-sax-parsed-class-hash-to-files 
  *tt--parse-artist-table*
  :parsed-class 'parsed-artist-record
  :slot-for-file-name 'control-id-entity-num-artist
  :prefix-for-file-name "artist-id-number"
- :output-directory (ensure-directories-exist
-                    (merge-pathnames 
-                     (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*) 
-                                                           ,(concatenate 'string 
-                                                                         "individual-parse-artists-"
-                                                                         (mon:time-string-yyyy-mm-dd))))
-                     (system-path *system-path*))))
-
+ :output-directory (%ensure-dated-parsed-directory :directory-prefix "individual-parse-artists"))
 
 ;;; ==============================
 ;;; EOF
