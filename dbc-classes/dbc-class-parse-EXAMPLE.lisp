@@ -1,5 +1,5 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-10-02T20:19:21-04:00Z}#{11397} - by MON>
-;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-classes/dbc-class-parse-EXAMPLE.lisp
+;;; :FILE dbc-specific/dbc-classes/dbc-class-parse-EXAMPLE.lisp
 ;;; ==============================
 
 (in-package #:dbc)
@@ -8,7 +8,6 @@
 
 (defun %ensure-dated-parsed-directory (&key directory-prefix)
   (declare (type mon:string-not-empty directory-prefix))
-  (string-right-trim #(#\-) "individual-parse-refs-")
   (ensure-directories-exist
    (merge-pathnames 
     (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*) 
