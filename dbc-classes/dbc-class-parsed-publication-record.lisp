@@ -39,7 +39,6 @@
   ()
   )
 
-
 ;;; ==============================
 ;;  <FIELD>               <TRANSFORM>
 ;;                        ;; 
@@ -70,7 +69,7 @@
 ;; "default_pic"          ;; "image-default-id"
 ;; "print_default_pic"    ;; "image-default-xref"
 ;;
-;; "online"               ;; "naf-active"
+;; "online"               ;; "record-status-active"
 ;; "date_edit"            ;; "edit-date-origin"
 ;; "date_edt"             ;; "edit-date"
 ;;
@@ -427,7 +426,7 @@
 
 
 ;;; ==============================
-;; :FIELD "online" :TRANSFORM naf-active
+;; :FIELD "online" :TRANSFORM record-status-active
 ;;
 ;;         :TYPE "tinyint(3) unsigned"
 ;;         :NULL-P "NO"
