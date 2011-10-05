@@ -381,9 +381,9 @@ slots for the class `parsed-inventory-record'.
     :accessor job-locked
     :documentation ":ORIGINAL-FIELD \"locked\"")
 
-   (item-active
-    :initarg :item-active
-    :accessor item-active
+   (record-status-active
+    :initarg :record-status-active
+    :accessor record-status-active
     :documentation ":ORIGINAL-FIELD \"online\"")
 
    (item-uri
