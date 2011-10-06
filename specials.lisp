@@ -40,45 +40,23 @@
 ;;
 ;;; <--- PARSED INPUT
 (defparameter *xml-input-dir* (list "sql-file-per-table-2010-08-25" "from-DBC-ARCH-2010-09-01"))
- ;; <--- INPUPT XML parsing file REAL
-(defparameter *xml-input-refs-name* nil)
-;; <--- XML parsing input file TEMP
-(defparameter *xml-input-refs-name-temp*  nil )
+
 
 ;;; ==============================
-(defvar *parsed-inventory-record-class-name* "PARSED-INVENTORY-RECORD")
 
-;; (find-symbol "PARSED-INVENTORY-RECORD")
-;; (find-symbol "PARSED-INVENTORY-RECORD")
+(defvar *big-parsed-class-field-slot-accessor-mapping-table* (make-hash-table))
 
-;; (class-name (find-class 'parsed-inventory-record)
-;; (mon:class-instance-p 'parsed-inventory-record)
-;; (
-;; (find-class-name 
-;; (mon:class-name-of (format nil "~S" (class-name (find-class 'parsed-inventory-record)))
-;; "parsed-inventory-record"
-;; (class
-
-(defparameter *xml-refs-match-table* nil)
-
-;; (defparameter *tt--rmt* (make-ref-lookup-table *xml-refs-match-list*))
-
-(defparameter *xml-refs-match-list*
-  ;; before adding the hashtable pre NEW YORK.
-  (list "ref" "price" "year" ;; "year_year"
-        "artist" "condition"))
-;; ("ref" "bar_code" "title" "Plate_number" "price" "desc_fr" "desc_en" "condition"
-;;  "histo_fr" "histo_en" "categ" "c1" "c2" "c3" "c4" "theme" "keywords" "issue"
-;;  "year" "artist" "author" "book" "publisher" "publish_location" "w" "h"
-;;  "technique" "paper" "color" "onlinen" "av_repro" "latin_name" "nbre" "online"
-;;  "seller" "people" "related_doc" "brand" "translation" "date" "user_name" "done"
-;;  "job_name" "locked" "keywords_type" "text_quote" "theme3" "theme2" "c6" "weight"
-;;  "c5" "composer" "uri" "year_year" "notes" "volume" "edition" "page" "bct"
-;;  "categ_doc" "c1_doc" "c2_doc" "c3_doc" "ebay_final" "ebay_price" "ebay_title"
-;;  "ebay_id" "seo_title" "description_seo" "keywords_seo" "date_edit"
-;;  "edit_history")
-
-;; (substitute #\- #\_ (format nil "~:@(~A~)" "keywords_seo"))
+(vardoc '*big-parsed-class-field-slot-accessor-mapping-table*
+"Big table of mapping parsed-class symbols to instances of class `parsed-class-field-slot-accessor-mapping'.
+Its keys name object instances which subclass the class `parsed-class'.
+Its values are an instance of three slots:~%~%  ~
+ parsed-class-mapped -- is a sybmol namign a parsed-class~% ~
+ field-to-accessor-table -- is a hash-table mapping field-names to slot-accessors~% ~
+ accessor-to-field-table -- is a hash-table mapping slot-accessors to field-names~%~@
+For use with the macro `def-set-parsed-class-record-slot-value' which is used to
+define functions which map setf slot-value forms for use with
+`string-case:string-case'.
+:SEE-ALSO `make-parsed-class-field-slot-accessor-mapping'.~%▶▶▶")
 
 
 ;;; ==============================

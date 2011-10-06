@@ -15,15 +15,10 @@
              #:*system-notes-dir*
              #:*system-tests-dir*
              #:*system-tests-temp-dir*
-             #:*parsed-inventory-record-field-name-slot-transform* ;; dbc-class-refs-convert.lisp
 	     #:*xml-output-dir* 
              #:*xml-output-refs-name*          ;; ---> OUTPUT
              #:*xml-output-refs-ext*           ;; ---> OUTPUT
              #:*xml-input-dir*                 ;; <--- INPUT
-             #:*xml-input-refs-name*           ;; <--- INPUT
-             #:*xml-input-refs-name-temp*      ;; <--- INPUT
-             #:*xml-refs-match-list*
-             #:*xml-refs-match-table*
              ;;
              #:*parsed-inventory-record-class-name*
 	     ;;
@@ -72,14 +67,6 @@
              ;;
              #:parsed-class   ;; <CLASS>
              ;;
-             #:*regexp-whitespace-chars* ;; VARIABLE
-             #:preprocess-whitespace
-             #:preprocess-leading-trailing-dashes
-             #:preprocess-underscore-to-dash
-             #:preprocess-string-case
-             #:make-parsed-name-preprocess
-             #:preprocess-slot-transform
-             #:make-parsed-class-slot-init-accessor-name
              ;;
              ;;
            ;; dbc-classes/dbc-class-image.lisp
@@ -130,6 +117,7 @@
              #:base-naf-entity
              #:base-media-entity
              #:base-location-entity
+             #:base-taxon-entity
              ;;
 
            ;; dbc-classes/dbc-specific/dbc-class-techniques-convert.lisp
@@ -196,9 +184,6 @@
              ;;
              #:parsed-inventory-record     ;; <CLASS>
              ;;
-             #:make-ref-maker-sym-name 
-             #:make-ref-maker-symbol
-             #:make-ref-lookup-table
              ;;
            ;; :MODULE dbc-parse
              ;;
@@ -315,7 +300,24 @@
               #:*french-month-names*
               ;;
            ;; loadtime-bind.lisp
-             ;;
+
+              ;;
+              ;; :DEPRECATED
+              ;; #:*parsed-inventory-record-field-name-slot-transform* ;; dbc-class-refs-convert.lisp
+              ;; #:*xml-input-refs-name*           ;; <--- INPUT
+              ;; #:*xml-input-refs-name-temp*      ;; <--- INPUT
+              ;; #:*regexp-whitespace-chars* ;; VARIABLE
+              ;; #:preprocess-whitespace
+              ;; #:preprocess-leading-trailing-dashes
+              ;; #:preprocess-underscore-to-dash
+              ;; #:preprocess-string-case
+              ;; #:make-parsed-name-preprocess
+              ;; #:preprocess-slot-transform
+              ;; #:make-parsed-class-slot-init-accessor-name
+              ;; #:make-ref-maker-sym-name 
+              ;; #:make-ref-maker-symbol
+              ;; #:make-ref-lookup-table
+              ;;
 	    ))
 
 

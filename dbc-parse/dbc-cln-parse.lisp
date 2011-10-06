@@ -51,7 +51,7 @@
                  (eq (aref (caddr chk) 0) #\x))
       field-string-cons)))
 
-(defun split-used-fors (used-for-string)
+(defun split-used-fors (used-for-string &key (split-on "|"))
   ;; Is there a reason why we shouldn't be using this instead:
   ;; (declare (type (or null simple-string) used-for-string)) 
   ;; (declare (type string used-for-string))
@@ -60,7 +60,7 @@
             (mon:string-all-whitespace-p used-for-string))
     (return-from split-used-fors (values nil used-for-string)))
   (loop 
-     :with split = (mon:string-split-on-chars used-for-string "|")
+     :with split = (mon:string-split-on-chars used-for-string split-on)
      :for x in split 
      :for y = (string-trim " " x)
      :unless (or (null y) (eql (length y) 0)) 
@@ -73,13 +73,13 @@
 ;;mon:string-
 ;; :NOTE This can be adapted if/when we ever split the found_in field to work on
 ;; the for "^Appeared-in:" fields there as well.
-(defun split-appeared-in (appeared-in-string)
+(defun split-appeared-in (appeared-in-string &key (split-on "|"))
   (declare (type mon:string-or-null appeared-in-string))
   (when (or (mon:string-null-or-empty-p appeared-in-string)
             (mon:string-all-whitespace-p appeared-in-string))
     (return-from split-appeared-in (values nil appeared-in-string)))
   (loop 
-     :with split = (mon:string-split-on-chars appeared-in-string "|")
+     :with split = (mon:string-split-on-chars appeared-in-string split-on)
      :for x in split 
      :for y = (string-trim " " x)
      :unless (or (null y) (eql (length y) 0)) 

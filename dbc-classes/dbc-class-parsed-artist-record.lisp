@@ -14,7 +14,6 @@
 
 ;; (length (mon:class-slot-list 'parsed-artist-record))
 
-
 ;; control-id-entity-num
 
 ;; To get at just the string of the original field:

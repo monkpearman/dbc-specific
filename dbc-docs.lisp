@@ -58,33 +58,6 @@ Its pathname is accessible with the `dbc:sub-path' accessor.~%~@
 
 ;;; ==============================
 
-(vardoc '*parsed-inventory-record-class-name*
-"String naming the class \"PARSED-INVENTORY-RECORD\"
-:EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%▶▶▶")
-
-
-;;; ==============================
-;;; :XML-MATCH-TABLES
-;;; ==============================
-
-(vardoc '*xml-refs-match-table*
-        "A hash-table mapping XML field names to corresponding parsing-function for use when parsing dbc-xml-refs.~%~@
-The hash-table's keys are strings identifying XML field names i.e. attribute events.~%~@
-The hash-table's vaules are symbols identifying a slot accessor for the class `parsed-inventory-record'.~%~@
-Bound with `dbc:make-ref-lookup-table' to values of variable `dbc:*xml-refs-match-list*'.~%~@
-:EXAMPLE~%
- \(gethash \"ref\" *xml-refs-match-table*\)~%~@
-:SEE-ALSO `<XREF>'.~%▶▶▶")
-
-(vardoc '*xml-refs-match-list*
-"List of fields needed when parsing dbc-xml-refs.~%~@
-Bound at loadtime with `dbc:make-ref-lookup-table' as key values in hasthable of
-variable `dbc:*xml-refs-match-table*'.~%~@
-:EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%▶▶▶")
 
 
 ;;; ==============================
@@ -130,27 +103,6 @@ Evaluated when system is loaded.~%~@
 :SEE-ALSO `*xml-output-dir*', `*xml-output-refs-name*', `*xml-output-refs-ext*',
 `*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*'.~%▶▶▶")
 
-(vardoc '*xml-input-refs-name*
-"<--- Input file.~%~@
-Use when parsing XML full dbc refs table.~%~@
-Tweaked to remove non-valid portions at head of document.~%~@
-:EXAMPLE~%
- \(pathname-directory *xml-input-refs-name*\)~%
- \(pathname-name *xml-input-refs-name*\)~%
- \(namestring *xml-input-refs-name*\)~%~@
-:SEE-ALSO `*xml-output-dir*', `*xml-output-refs-name*', `*xml-output-refs-ext*',
-`*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*'.~%▶▶▶")
-
-(vardoc '*xml-input-refs-name-temp*
-"<--- Input file.~%~@
-Temporary file for parsing XML refs before handling the whole shebang.~%~@
-Use `*xml-input-refs-name*' when ready.~%~@
-:EXAMPLE~%
- \(pathname-directory *xml-input-refs-name-temp*\)~%
- \(pathname-name *xml-input-refs-name-temp*\)~%
- \(namestring *xml-input-refs-name-temp*\)~%~@
-:SEE-ALSO `*xml-output-dir*', `*xml-output-refs-name*', `*xml-output-refs-ext*',
-`*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*'.~%▶▶▶")
 
 
 ;;; ==============================
@@ -793,138 +745,6 @@ Return value when source is closed. is as if by the form: (values) e.g.:~%
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `<XREF>'.~%▶▶▶")
 
-
-
-;;; ==============================
-;;; :DBC-CLASS-PARSE-CONVERT-DOCUMENTATION
-;;; dbc-classes/dbc-class-parse-convert.lisp
-;;; ==============================
-
-(vardoc '*regexp-whitespace-chars*
-"Regular expression for finding whitespace characters.~%~@
-:SEE-ALSO `mon:*whitespace-chars*', `make-parsed-name-preprocess',
-`preprocess-whitespace', `preprocess-leading-trailing-dashes',
-`preprocess-underscore-to-dash', `preprocess-string-case',
-`*regexp-whitespace-chars*'.~%▶▶▶")
-
-(fundoc 'preprocess-string-case
-        "Convert FIELD-NAME to an upper-case string.~%~@
-:EXAMPLE~%
-  \(preprocess-string-case \"LoTS-OF-undeRSCOrES\"\)~%~@
-:SEE-ALSO `make-parsed-name-preprocess', `preprocess-whitespace',
-`preprocess-leading-trailing-dashes', `preprocess-underscore-to-dash',
-`preprocess-string-case', `*regexp-whitespace-chars*'.~%▶▶▶")
-
-(fundoc 'preprocess-whitespace
-"Remove whitepspace characters occuring anywhere in FIELD-NAME.~%~@
-FIELD-NAME is an object of type `cl:simple-string'.~%
- :EXAMPLE~%
-  \(preprocess-whitespace \" -LoTS_OF_ undeRSCOrES_ \"\)~%
-  \(string= \(preprocess-whitespace \" -LoTS_OF_ undeRSCOrES_ \"\) \"-LoTS_OF_undeRSCOrES_\"\)~%~@
-:SEE-ALSO `make-parsed-name-preprocess', `preprocess-whitespace',
-`preprocess-leading-trailing-dashes', `preprocess-underscore-to-dash',
-`preprocess-string-case', `*regexp-whitespace-chars*'.~%▶▶▶")
-
-(fundoc 'preprocess-leading-trailing-dashes
-        "Remove leading and trailing underscore and dash characters #\\_ #\\-.~%~@
-FIELD-NAME is an object of type `cl:simple-string'.~%~@
-:EXAMPLE~%
- \(preprocess-leading-trailing-dashes \"-LoTS_OF_undeRSCOrES_\"\)
-:SEE-ALSO `make-parsed-name-preprocess', `preprocess-whitespace',
-`preprocess-leading-trailing-dashes', `preprocess-underscore-to-dash',
-`preprocess-string-case', `*regexp-whitespace-chars*'.~%▶▶▶")
-
-(fundoc 'preprocess-underscore-to-dash
-"Convert internal occurences of underscore character #\\_ to dash character #\\-.~%~@
-FIELD-NAME is an object of type `cl:simple-string'.~%
-:EXAMPLE~%
- \(preprocess-underscore-to-dash  \"Lots_of_underscores_\"\)~%
- \(string= \(preprocess-underscore-to-dash \"Lots_of_underscores_\"\) \"Lots-of-underscores\"\)~%~@
-:NOTE Declared as of type `cl:simple-string' and using `cl:nsubstitute',
-call after a `cl:copy-seq' of string.
-:SEE-ALSO `mon:string-underscore-to-dash', `dbc:field-name-underscore-to-dash',
-`make-parsed-name-preprocess', `preprocess-whitespace',
-`preprocess-leading-trailing-dashes', `preprocess-underscore-to-dash',
-`preprocess-string-case', `*regexp-whitespace-chars*'.~%▶▶▶")
-
-(fundoc 'make-parsed-name-preprocess
-        "Preprocess FIELD-NAME for generation of slot-name and/or :initarg :reader :writer :accessor.
-FIELD-NAME is an object of type `cl:simple-string'.~%
-KEYWORD PREFIX-W is a string to prefix FIELD-NAME with.~%~@
-KEYWORD SUFFIX-W is a string to suffix FIELD-NAME with.~%~@
-:EXAMPLE~%
- \(make-parsed-name-preprocess \" -LoTS_OF_undeRSCOrES_\"\)
- ;=> \"LOTS-OF-UNDERSCORES\"~%
- \(string= \(make-parsed-name-preprocess \" -LoTS_OF_undeRSCOrES_\"\) \"LOTS-OF-UNDERSCORES\"\)
- ;=> T~%
- \(make-parsed-name-preprocess \" -LoTS_OF_undeRSCOrES_\" :prefix-w \"prefix\" \)
- ;=> \"PREFIX-LOTS-OF-UNDERSCORES\"~%
- \(make-parsed-name-preprocess \" -LoTS_OF_undeRSCOrES_\" :suffix-w \"and-suffix\"\)
- ;=> \"LOTS-OF-UNDERSCORES-AND-SUFFIX\"~%
- \(make-parsed-name-preprocess \" -LoTS_OF_undeRSCOrES_\"
-                              :prefix-w \"__-_not-prefixed-W \"
-                              :suffix-w \"    or-suffixed-with-whitespace      \"\)
- ;=> \"NOT-PREFIXED-W-LOTS-OF-UNDERSCORES-OR-SUFFIXED-WITH-WHITESPACE\"~%~@
-:SEE-ALSO `make-parsed-name-preprocess', `preprocess-whitespace',
-`preprocess-leading-trailing-dashes', `preprocess-underscore-to-dash',
-`preprocess-string-case', `*regexp-whitespace-chars*'.~%▶▶▶")
-
-(fundoc 'preprocess-slot-transform
-        "Find FIELD-NAME in FIELD-NAME-TRANSFORM-TABLE and preprocess it with `make-parsed-name-preprocess'.~%~@
-FIELD-NAME is a string.~%~@
-FIELD-NAME-TRANSFORM-TABLE is an object of type hash-table or a symbol which evaluates to one. 
-Its `cl:hash-table-test' should be return equal. An error is signaled if not.~%~@
-If FIELD-NAME is not present in FIELD-NAME-TRANSFORM-TABLE put it there after
-preprocessing with make-parsed-name-preprocess.~%~@
-Keywords PREFIX-W and SUFFIX-W are as per `make-parsed-name-preprocess'.~%~@
-:EXAMPLE~%
- \(preprocess-slot-transform \"field-name\" *parsed-inventory-record-field-name-slot-transform*\)
- ;=> \"FIELD-NAME\"
- \(gethash \"field-name\" *parsed-inventory-record-field-name-slot-transform*\)
- ;=> \"FIELD-NAME\", T~%
- \(preprocess-slot-transform \"field-name2\" *parsed-inventory-record-field-name-slot-transform*\)
- ;=> \"FIELD-NAME2\"
- \(gethash \"field-name2\" *parsed-inventory-record-field-name-slot-transform*\)
- ;=> \"FIELD-NAME2\", T~%
- \(preprocess-slot-transform \"field-name2\" *parsed-inventory-record-field-name-slot-transform* :prefix-w \"prefix\"\)
- ;=> \"PREFIX-FIELD-NAME2\"
- \(gethash \"field-name2\" *parsed-inventory-record-field-name-slot-transform*\)
- ;=> \"PREFIX-FIELD-NAME2\", T~%
- \(preprocess-slot-transform \"field-name2\" *parsed-inventory-record-field-name-slot-transform* :suffix-w \"suffix\"\)
- ;=> \"FIELD-NAME2-SUFFIX\"
- \(gethash \"field-name2\" *parsed-inventory-record-field-name-slot-transform*\)
- ;=> \"FIELD-NAME2-SUFFIX\", T~%
- \(preprocess-slot-transform \"field-name2\" *parsed-inventory-record-field-name-slot-transform* :prefix-w \"prefix\" :suffix-w \"suffix\"\)
- ;=> \"PREFIX-FIELD-NAME2-SUFFIX\"
- \(gethash \"field-name2\" *parsed-inventory-record-field-name-slot-transform*\)
- ;=> \"PREFIX-FIELD-NAME2-SUFFIX\", T~%
- \(progn
-   \(remhash \"field-name\" *parsed-inventory-record-field-name-slot-transform*\)
-   \(remhash \"field-name2\" *parsed-inventory-record-field-name-slot-transform*\)\)~%~@
-:SEE-ALSO `<XREF>'.~%▶▶▶")
-
-;; this interface has changes pending 2011-09-26
-(fundoc 'make-parsed-class-slot-init-accessor-name
- "Return 3 elt list strings suitable for interning as slot, initarg, and accessor.~%~@
-NAMED-CLASS is a string naming a class which will subclass `dbc:parsed-class'.~%~@
-PARSED-FIELD is a string field name in an xml table.~%~@
-It is transformed with `dbc:field-name-underscore-to-dash'.~%~@
-PREFIX-INITARG-W is a string to prefix a slot initarg name with. When ommited
-defaults to processed value of PARSED-FIELD.~%~@
-Return value has the form:~%
-  \( \"<PARSED-FIELD>\"  ;; Post cleaning.
-     \"<PREFIX-INITARG-W>-<PARSED-FIELD>\"
-     \"<PARSED-FIELD>-<NAMED-CLASS>\" \)~%~@
-:EXAMPLE~%
- ;;                                          <NAMED-CLASS>  <PARSED-FIELD> &OPTIONAL <PREFIX-INITARG-W>
- \(make-parsed-class-slot-init-accessor-name  \"parsed-inventory-record\"   \"ref\"\)~%
- \(make-parsed-class-slot-init-accessor-name  \"parsed-inventory-record\"   \"year_year\"\)~%
- \(make-parsed-class-slot-init-accessor-name  \"parsed-inventory-record\"   \"ref\"                     \"init\"\)~%
- \(make-parsed-class-slot-init-accessor-name  \"parsed-inventory-record\"   \"ref\"                     \"init\"\)
- => \(\"REF\"                     ; <PARSED-FIELD>                    ; -> slot in class
-     \"INIT-REF\"                ; <PREFIX-INITARG-W>-<PARSED-FIELD> ; -> slot initarg
-     \"PARSED-INVENTORY-RECORD-REF\"\)         ; <PARSED-FIELD>-<NAMED-CLASS>      ; -> slot accessor~%~@
-:SEE-ALSO `<XREF>'.~%▶▶▶")
 
 
 ;;; ==============================

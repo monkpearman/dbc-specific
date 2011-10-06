@@ -5,7 +5,7 @@
 
 (format nil "~%~%load-time-value pathname: ~S~%~%" (load-time-value *default-pathname-defaults*))
 
-(setf *xml-refs-match-table* (make-ref-lookup-table *xml-refs-match-list*))
+;; (setf *xml-refs-match-table* (make-ref-lookup-table *xml-refs-match-list*))
 
 
 ;;; ==============================
@@ -95,33 +95,33 @@
     ;;   (system-described *xml-input-dir* nil))
     ))
 
-(and (sub-path *xml-input-dir*)
-     (let (;; *xml-input-refs-name*
-           (chk-sfr-if (fad:file-exists-p
-                        (make-pathname :directory (pathname-directory (sub-path *xml-input-dir*))
-                                       :name "dump-refs-DUMPING")))
-           ;; *xml-input-refs-name-temp*
-           (chk-nts-if
-            (and 
-             (sub-path *system-notes-dir*)
-             (merge-pathnames (make-pathname :directory '(:relative "scratch-xml-for-parse")
-                                             ;; :NOTE When really parsing use *xml-input-refs-name*
-                                             ;;       when testing use "example-refs-in-short" and/or "example-refs"
-                                             :name "example-refs-in-short"
-                                             :type "in")
-                              (sub-path *system-notes-dir*)))))
-       ;; ---> OUTPUT
-       (setf *xml-output-refs-name*
-             (make-pathname :directory (pathname-directory (sub-path *xml-output-dir*))
-                            ;; :NOTE When really parsing use "parsed-inventory-records-xml" 
-                            ;;       when testing use "parsed-inventory-records-xml-SCRATCH"
-                            :name "parsed-inventory-records-xml-SCRATCH"))
-       (and *xml-output-refs-name*
-            (setf *xml-output-refs-ext*
-                  (merge-pathnames  (make-pathname :type "out") *xml-output-refs-name*)))
-       ;; <--- INPUT
-       (and chk-sfr-if (setf *xml-input-refs-name* chk-sfr-if))
-       (and chk-nts-if (setf *xml-input-refs-name-temp* chk-nts-if))))
+;; (and (sub-path *xml-input-dir*)
+;;      (let (;; *xml-input-refs-name*
+;;            (chk-sfr-if (fad:file-exists-p
+;;                         (make-pathname :directory (pathname-directory (sub-path *xml-input-dir*))
+;;                                        :name "dump-refs-DUMPING")))
+;;            ;; *xml-input-refs-name-temp*
+;;            (chk-nts-if
+;;             (and 
+;;              (sub-path *system-notes-dir*)
+;;              (merge-pathnames (make-pathname :directory '(:relative "scratch-xml-for-parse")
+;;                                              ;; :NOTE When really parsing use *xml-input-refs-name*
+;;                                              ;;       when testing use "example-refs-in-short" and/or "example-refs"
+;;                                              :name "example-refs-in-short"
+;;                                              :type "in")
+;;                               (sub-path *system-notes-dir*)))))
+;;        ;; ---> OUTPUT
+;;        (setf *xml-output-refs-name*
+;;              (make-pathname :directory (pathname-directory (sub-path *xml-output-dir*))
+;;                             ;; :NOTE When really parsing use "parsed-inventory-records-xml" 
+;;                             ;;       when testing use "parsed-inventory-records-xml-SCRATCH"
+;;                             :name "parsed-inventory-records-xml-SCRATCH"))
+;;        (and *xml-output-refs-name*
+;;             (setf *xml-output-refs-ext*
+;;                   (merge-pathnames  (make-pathname :type "out") *xml-output-refs-name*)))
+;;        ;; <--- INPUT
+;;        (and chk-sfr-if (setf *xml-input-refs-name* chk-sfr-if))
+;;        (and chk-nts-if (setf *xml-input-refs-name-temp* chk-nts-if))))
 
 (setf *parsed-data-output-path*
       (merge-pathnames (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*))
@@ -154,6 +154,20 @@
 ;; *xml-input-refs-name-temp*
 ;;; ==============================
 
+
+;; :TEST `set-parsed-inventory-record-slot-value'
+;; (let ((obj (make-instance 'parsed-inventory-record)))
+;;   (set-parsed-inventory-record-slot-value "edit_history" "88" obj)
+;;   (values obj (edit-history obj)))
+;;
+;; (let ((obj (make-instance 'parsed-inventory-record)))
+;;   (accessor-to-field-table obj))
+;;
+;;; *big-parsed-class-field-slot-accessor-mapping-table*
+
+(def-set-parsed-class-record-slot-value 
+    set-parsed-inventory-record-slot-value
+    parsed-inventory-record)
 
 
 ;;; ==============================

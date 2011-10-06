@@ -6,26 +6,204 @@
 (in-package #:dbc)
 ;; *package*
 
+;;; ==============================
+;; :EXAMPLE
+;; (def-set-parsed-class-record-slot-value
+;;     set-parsed-inventory-record-slot-value              ; FUN-NAME
+;;     parsed-inventory-record                             ; PARSED-CLASS 
+;;   *big-parsed-class-field-slot-accessor-mapping-table*) ; GLOBAL-HASH-TABLE-VAR
+;;
+;; :TODO incorporate original fundoc of `set-parsed-inventory-record-slot-value' with new macro.
+;;
+;; (fundoc 'set-parsed-inventory-record-slot-value
+;; "Map orginal sql tables FIELD-STRING name to OBJECT's CLOS slot equivalent setting its slot-value to FIELD-VALUE.~%~@
+;; Return as if by `cl:values':~%
+;;  - nth-value 0 is the setf'd FIELD-VALUE as set with slot accessor corresponding to FIELD-STRING.
+;;  - nth-value 1 is OBJECT~%~@
+;; For use with `load-sax-parsed-xml-file-to-parsed-class-hash' after reading in
+;; XML files parsed with `write-sax-parsed-xml-refs-file'.~%~@
+;; OJBECT is an instance of class `parsed-inventory-record'.~%~@
+;; Original FIELD-STRING is the car of the the consed key/value pairs in one of the alists 
+;; written to an output file by `write-sax-parsed-xml-refs-file' FIELD VALUE is
+;; the corresponding cdr of the consed key/value pair.~%~@
+;; The slot documentation of the class `parsed-inventory-record' provides indication of the
+;; mapping from the original field name to our new slot name.~%~@
+;; :EXAMPLE
+;;  (set-parsed-inventory-record-slot-value "ref" "13000" (make-instance 'parsed-inventory-record))
+;;
+;; :SEE-ALSO `<XREF>'.~%▶▶▶")
+;; 
+;; :NOTE The setf of the accessor ensures we always populate the slot-value with nil
+;; so as to avoid errors when slot is not `slot-boundp'.
+;; 
+;; :TODO Currently these accessor methods are defined automagically at class creation.
+;; We need to unify common routines and symbol-names to appropriate generic
+;; functions and where the behavior is generalized across all class specialize
+;; them on the class `parsed-class'.
+;;
+(defmacro def-set-parsed-class-record-slot-value (fun-name parsed-class) ; global-hash-table-var)
+  ;; (let ((body-forms (%expand-parsed-class-record-setf-slot-value-forms parsed-class global-hash-table-var)))
+  ;; (%expand-parsed-class-record-setf-slot-value-forms parsed-class global-hash-table-var)  
+  (let ((body-forms (%parsed-class-record-setf-slot-value-forms parsed-class)))
+    `(defun ,fun-name (field-string field-value object)
+       (values 
+        (string-case:string-case (field-string)
+          ,@body-forms)
+          object))))
+
+;; :NOTE Arg HASH-TABLE will always be `*big-parsed-class-field-slot-accessor-mapping-table*'
+;; But, lets not hardwire a global variable just in case!
+;; :EXAMPLE
+;; (%parsed-class-record-setf-slot-value-forms 'parsed-inventory-record *big-parsed-class-field-slot-accessor-mapping-table*)
+(defun %parsed-class-record-setf-slot-value-forms (parsed-class-lookup); hash-table)
+    ;; :NOTE This version with explicit call to HASH-TABLE and with backquoted template.
+    ;; (let ((setf-forms ()))
+    ;;   (maphash #'(lambda (k v) (push `(,k (setf (,v object) field-value)) setf-forms ))
+    ;;            (field-to-accessor-table (gethash parsed-class-lookup *big-parsed-class-field-slot-accessor-mapping-table*)))
+    ;;   (setf setf-forms (nreverse setf-forms))))
+    (let ((setf-forms ()))  
+      (maphash #'(lambda (k v)
+                   (push (list k (list (quote setf) (list v (quote object)) (quote field-value))) setf-forms))
+               (field-to-accessor-table (gethash parsed-class-lookup 
+                                                 *big-parsed-class-field-slot-accessor-mapping-table*)))
+                                                 ;; hash-table)))
+      (setf setf-forms (nreverse setf-forms))))
+
 
 ;;; ==============================
 ;;; :CLASSES
 ;;; ==============================
 
-;; :NOTE This is the base class from wich other converted dbc-classes inherit.
-;;      The intent is that this class should allow auxillary :before :after :around
-;;      methods to act on the primary-methods of `parsed-class' inheritors.
-;;      IOW, this your basic mixin base class :)
+(defgeneric field-to-accessor-table (object)
+  (:documentation "Return a hash-table mapping field-names to slot-accessor for object.~%"))
 
+(defgeneric accessor-to-field-table (object)
+  (:documentation "Return a hash-table mapping field-names to slot-accessor for object.~%"))
+
+(defgeneric parsed-class-mapped (object)
+  (:documentation 
+   "Return a symbol naming the class mapped by the hash-tables of slots:~%~% ~
+accessor-to-field-table and field-to-accessor-table."))
+
+(defclass parsed-class-field-slot-accessor-mapping (base-dbc)
+  ((parsed-class-mapped
+    :reader parsed-class-mapped)
+   (field-to-accessor-table
+    :reader field-to-accessor-table)
+   (accessor-to-field-table
+    :reader accessor-to-field-table))
+  (:documentation 
+   #.(format nil
+             "Object for holding a mappings of field-names with slot-accessors.~%~@
+slot parsed-class-mapped is symbol designating the parse-class whose slots are
+mapped by hash-tables in slots accessor-to-field-table and
+slot-accessor-field-name-table.~%~@
+Slot field-to-accessor-table is a hash-table mapping from:~%~% ~
+  field-name (a string) to slot-accessor \(a symbol)
+Its `cl:hash-table-test' is `cl:equal'.~%~@
+Slot accessor-to-field-table is a hash-table with an inverse mapping from:~%~% ~
+ symbol to field-name~%~
+Its `cl:hash-table-test' is `cl:eql'.~%~@
+:SEE-ALSO `<XREF>'.~%▶▶▶")))
+
+;; Return an instance of class `parsed-class-field-slot-accessor-mapping'.~%~@
+;; Arg PARSED-CLASS-MAPPED is a symbol designating a class which subclasses `parsed-class'.
+;; Arg FIELD-TO-ACCESSOR-ALIST is an alist used to map the hash-tables of slots
+;; field-to-accessor-table and accessor-to-field-table.
+;; The car of each elt of FIELD-TO-ACCESSOR-ALIST is a string designating a field-name.
+;; The cdr is a symbol designating an slot-accessor of class PARSED-CLASS-MAPPED.~%~@
+;; :EXAMPLE
+;; (let ((example-object (make-parsed-class-field-slot-accessor-mapping
+;;                        'parsed-naf-entity
+;;                        '(("categ" . category-entity-0-coref)))))
+;;   (values
+;;    (gethash
+;;     (gethash "categ" (field-to-accessor-table example-object))
+;;     (accessor-to-field-table example-object))
+;;    (gethash
+;;     (gethash 'category-entity-0-coref (accessor-to-field-table example-object))
+;;     (field-to-accessor-table example-object))
+;;    (parsed-class-mapped example-object)))
+;;
+;; :NOTE As above, the are GLOBAL-HASH-TABLE-VAR will always be `*big-parsed-class-field-slot-accessor-mapping-table*'
+(defun make-parsed-class-field-slot-accessor-mapping (parsed-class-mapped field-to-accessor-alist); global-hash-table-var)
+  (unless (and (not (typep parsed-class-mapped 'boolean))
+               (subtypep (find-class parsed-class-mapped) (find-class 'parsed-class)))
+    (error "Arg PARSED-CLASS-MAPPED not a valid subtype of class `parsed-class'"))
+  (let* ((mapping            (make-instance 'parsed-class-field-slot-accessor-mapping))
+         (table-length-maybe (mon:prime-or-next-greatest  (length field-to-accessor-alist)))         
+         (table-size         (if (> table-length-maybe sb-impl::+min-hash-table-size+)
+                                 table-length-maybe
+                                 sb-impl::+min-hash-table-size+))
+         (f2a-table  (setf (slot-value mapping 'field-to-accessor-table)
+                           (make-hash-table :test #'equal :size table-size)))
+         (a2f-table  (setf (slot-value mapping 'accessor-to-field-table)
+                           (make-hash-table :size table-size))))
+    (dolist (pair field-to-accessor-alist (mon:hash-invert-key-val f2a-table a2f-table))
+      (setf (gethash (car pair) f2a-table) (cdr pair)))
+    ;; Bind slot-value of parsed-class-mapped last. No reason binding it earler
+    ;; as the hash-mapping stuff above might error.
+    ;; If PARSED-CLASS-MAPPED is already in our big global table we remove it as
+    ;; it may non longer be current.
+    (remhash (setf (slot-value mapping 'parsed-class-mapped) parsed-class-mapped)
+             *big-parsed-class-field-slot-accessor-mapping-table*)
+    ;;(setf (gethash parsed-class-mapped global-hash-table-var) mapping)))
+    (setf (gethash parsed-class-mapped *big-parsed-class-field-slot-accessor-mapping-table*) mapping)))
+
+
+;; (defun print-parsed-class-field-slot-accessor-mapping (object stream)
+;;   (format stream "~%:PARSED-CLASS-MAPPED     ~S ~S~%:FIELD-TO-ACCESSOR-TABLE ~S~%:ACCESSOR-TO-FIELD-TABLE ~S~%"
+;;           (slot-value object 'parsed-class-mapped)
+;;           (find-class (slot-value object 'parsed-class-mapped))
+;;           (field-to-accessor-table object)
+;;           (accessor-to-field-table object)))
+;;
+(defmethod print-object ((object parsed-class-field-slot-accessor-mapping) stream)
+  ;;(remove-method  #'print-object (find-method #'print-object nil '(parsed-class-field-slot-accessor-mapping t)))
+  (print-unreadable-object (object stream) ; :type t) 
+    (format stream "HASH-MAPPED-CLASS ~S" (slot-value object 'parsed-class-mapped))))
+
+;; :NOTE This is the base class from wich other converted dbc-classes inherit.
+;;       The intent is that this class should allow auxillary :before :after :around
+;;       methods to act on the primary-methods of `parsed-class' inheritors.
+;;       IOW, this your basic mixin base class :)
 (defclass parsed-class (base-dbc)
   ;; :NOTE Which other slots accessors and generics should this class establish?
   ()
   (:documentation "Base dbc parsed class."))
+
+;; (remove-method #'parsed-class-mapped (find-method #'parsed-class-mapped nil '(parsed-class)))
+(defmethod parsed-class-mapped ((object parsed-class))
+  ;; (let* ((objects-class  (class-of object))
+  ;;        (subclass-check (or (subtypep objects-class (find-class 'parsed-class))
+  ;;                            (error "OBJECT must be a subclass `parsed-class'"))))
+  ;;   (and subclass-check 
+  ;;        (setf subclass-check (class-name subclass-check)))
+  ;;   (gethash subclass-check *big-parsed-class-field-slot-accessor-mapping-table*)
+  ;;   )
+  (let* ((the-class-parsed-class (find-class 'parsed-class))
+         (objects-class  (class-of object))
+         (subclass-check (or (and (not (eq the-class-parsed-class objects-class))
+                                  (subtypep objects-class (find-class 'parsed-class))
+                                  (class-name objects-class))
+                             (error "OBJECT must be a subclass `parsed-class' and not an instance of `parsed-class'"))))
+    (gethash subclass-check *big-parsed-class-field-slot-accessor-mapping-table*)))
+
+(defmethod accessor-to-field-table ((object parsed-class))
+  (accessor-to-field-table (parsed-class-mapped object)))
+
+(defmethod field-to-accessor-table ((object parsed-class))
+  (field-to-accessor-table (parsed-class-mapped object)))
 
 (defclass parsed-naf-entity (parsed-class)
   ()
   (:documentation #.(format nil "Base class for parsing naf-entity records.~%~@
 :SEE-ALSO `parsed-artist-record', `parsed-author-record',~%~
 `parsed-person-record', `parsed-brand-record', `parsed-publication-record'.~%▶▶▶")))
+
+
+
+
 
 ;; :NOTE Superclass `parsed-naf-entity' needs following generics specialized on it.
 ;; As they common to multiple naf-entity sub-classes:
@@ -51,7 +229,7 @@
 ;; `naf-entity-brand-coref'       -> `naf-entity-brand-coref'
 ;; `image-default-id'
 ;; `image-default-xref'
-;; `naf-entity-active'
+;; `record-status-active'        -> `record-status-active'
 ;; `edit-by'
 ;; `edit-by-creator'
 ;; `edit-date-origin'
@@ -60,8 +238,6 @@
 ;; description-artist-note-general
 ;; description-artist-note-sale-appearance
 ;; `base-description-entity-internal'
-
-
 
 ;; 
 ;; 
@@ -73,148 +249,6 @@
 
 ;; naf-entity-role-appearance-coref
 
-
-;;; ==============================
-;;; :FUNCTIONS
-;;; ==============================
-
-(defvar *regexp-whitespace-chars*
-  #.(format nil "[~{~C~}]" mon:*whitespace-chars*))
-
-;; (deftype preprocess-simple-string (&optional size)
-;;   ;; (typep "string" '(preprocess-simple-string 6))
-;;   ;; (typep "string" 'preprocess-simple-string)
-;;   (let ((sz (list (or size '*))))
-;;     `(simple-array character ,sz)))
-
-(defun preprocess-whitespace (field-name)
-  (declare (type simple-string field-name))
-  (cl-ppcre:regex-replace-all (the (simple-array character (9)) *regexp-whitespace-chars*)  field-name ""))
-
-(declaim (inline preprocess-leading-trailing-dashes))
-(defun preprocess-leading-trailing-dashes (field-name)
-  (declare (type simple-string field-name)
-           (optimize speed))
-  ;;(mon:string-replace-all  field-name  "_" "" )
-  (string-trim "_- " field-name))
-
-(declaim (inline preprocess-underscore-to-dash))
-(defun preprocess-underscore-to-dash (field-name)
-  (declare (type simple-string field-name)
-           (optimize speed))
-  (setf field-name (preprocess-leading-trailing-dashes field-name))
-  (nsubstitute #\- #\_ field-name))
-
-;; (string= (preprocess-underscore-to-dash "Lots_of_underscores_") "Lots-of-underscores")
-
-(declaim (inline preprocess-string-case))
-(defun preprocess-string-case (field-name)
-  (declare (type simple-string field-name)
-           (optimize speed))
-  ;; :NOTE using `cl:nstring-upcase', call after something that returns a copy of string.
-  (nstring-upcase field-name))
-
-(defun make-parsed-name-preprocess (field-name &key prefix-w suffix-w)
-  (declare (type string field-name)
-           ((or null string)  prefix-w suffix-w)
-           (inline preprocess-underscore-to-dash
-                   preprocess-leading-trailing-dashes
-                   preprocess-string-case))
-  (let ( ;; CL:COPY-SEQ so we're sure we don't destructively modidfy eslewhere.
-        (rslt (copy-seq field-name))
-        (pfx  (and prefix-w 
-                   (mon:string-not-empty-p prefix-w )
-                   (concatenate 'string (make-parsed-name-preprocess prefix-w) "-")))
-        (sfx  (and suffix-w 
-                   (mon:string-not-empty-p suffix-w)
-                   (concatenate 'string "-" (make-parsed-name-preprocess suffix-w)))))
-    (declare (type simple-string field-name))
-    (setf rslt (preprocess-whitespace rslt))
-    (setf rslt (preprocess-underscore-to-dash rslt))
-    (setf rslt (preprocess-leading-trailing-dashes rslt))
-    (setf rslt (preprocess-string-case rslt))
-    (setf rslt (concatenate 'string pfx rslt sfx))))
-
-;; (defun preprocess-slot-to-defclass-slot () (...) )
-(defun preprocess-slot-transform (field-name field-name-transform-table &key prefix-w suffix-w)
-  (declare (string field-name))
-  (let* ((chk-is-hash (mon:hash-or-symbol-p field-name-transform-table))
-         (chk-hash (ecase (hash-table-test chk-is-hash)
-                     (equal chk-is-hash)))
-         (get-transform (gethash field-name (the hash-table chk-hash))))
-    (declare (hash-table chk-hash))
-    (or (and get-transform 
-             (or (and (string= get-transform
-                               (make-parsed-name-preprocess field-name :prefix-w prefix-w :suffix-w suffix-w))
-                      get-transform)
-                 (setf get-transform (make-parsed-name-preprocess field-name :prefix-w prefix-w :suffix-w suffix-w)))
-             (setf (gethash field-name chk-hash) get-transform))
-        (setf (gethash field-name chk-hash) 
-              (make-parsed-name-preprocess field-name :prefix-w prefix-w :suffix-w suffix-w)))))
-
-;;; ==============================
-;; :SOURCE quicklisp/quicklisp/dist.lisp :WAS `config-file-initargs'
-;; Modeled after `config-file-initargs' but use functions frome mon: package instead of quicklisp centric ones.
-;; Useful for reading in key value pairs from file by line use `mon:make-keyword-sanely'
-;; (defun read-key-val-args-from-file (file)
-;;   (let ((key-val-prs '())) 
-;;     (for-each-line (line file)
-;;       (unless (ignorable-line line)
-;;         (destructure-line (key-word val)
-;;             line
-;;           (let ((keyword (initarg-keyword (string-right-trim ":" key-word))))
-;;             (push value key-val-pr)
-;;             (push keyword key-val-pr)))))
-;;     key-val-prs))
-
-;;; ==============================
-;; alexandria:symbolicate alexandria:format-symbol alexandria:make-keyword
-(defun make-parsed-class-slot-init-accessor-name (named-class parsed-field &optional prefix-initarg-w)
-  ;; (make-parsed-class-slot-init-accessor-name "parsed-fef" "keyword_type" "INIT")
-  ;;  => ("KEYWORD-TYPE" "INIT-KEYWORD-TYPE" "PARSED-FEF-KEYWORD-TYPE")
-  ;;     ( <SLOT>         <INIT>              <ACCESSOR> )
-  (declare (string named-class parsed-field)
-           ((or null string) prefix-initarg-w))
-  (let* ((slot     (field-name-underscore-to-dash parsed-field))
-         (init
-          (or (and (stringp prefix-initarg-w)
-                   (concatenate 'string (string-upcase prefix-initarg-w) "-" slot))
-              slot))
-         (access   (format nil "~A-~A" (string-upcase named-class) slot)))
-    (list slot init access)))
-
-
-;; (make-parsed-class-slot-init-accessor-name "parsed-class" "ref" )
-
-;; (               <TRANSFORM> 
-;; ( <FIELD-NAME>  <RENAME-TO>  (<INITP> <INIT-PFX>) )
-
-;; These need to something more generalized versions:
-;; `make-ref-maker-sym-name' ->  `make-parsed-sym-slot-name'
-;; `make-ref-maker-symbol'   ->  `make-parse-slot-symbol'    ;; using `alexandria:symbolicate'/`alexandria:make-keyword'
-;; `make-ref-lookup-table'   ->  `make-parsed-lookup-table'
-
-;; (defun make-parsed-sym-slot-name (slot-string-name)
-;; (alexandria:symbolicate 
-;; (alexandria:symbolicate  (sb-int:sane-package)
-
-;; (alexandria:symbolicate  "make-parsed-class-slot-init-accessor-name" 
-;; (mon::find-package*
-;; (mon:where-is-local "make-parsed-class-slot-init-accessor-name")
-
-;;; (unintern 'is-bubba)
-;; (read-from-string "is-bubba")
-;; (mon:where-is-local "is-bubba")
-
-
-;;; ==============================
-;; :TODO Use alexandria:symbolicate alexandria:format-symbol alexandria:make-keyword alexandria:symbolicate
-;;  to process return value of make-parsed-class-slot-init-accessor-name at loadtime to generate 
-;;  <slot> :initarg <ACCESSOR> 
-;; symbols for <CLASS> in <PACKAGE> 
-;; Define classe _AFTER_ pushing the return  values onto a hashtable.
-;;
-;; :NOTE Use `mon:string-case' for this.
 
 
 ;;; ==============================
@@ -296,20 +330,20 @@
              finally (setf (gethash (funcall key-accessor obj) hash-table) obj))
        finally (return (values hash-table (hash-table-count hash-table))))))
 
+;; Return a format-control string for printing the slots of OBJECT with
+;; padding adjusted according to the longest symbol-name of its slots.
+;; Helper function for use with:
+;; `print-sax-parsed-slots'
+;; `write-sax-parsed-slots-to-file', 
+;; `write-sax-parsed-class-hash-to-files'
+;; :EXAMPLE
+;;  (print-sax-parsed-slots-padding-format-control (make-instance 'parsed-inventory-record))
 (defun print-sax-parsed-slots-padding-format-control (object)
-  ;; Return a format-control string for printing the slots of OBJECT with
-  ;; padding adjusted according to the longest symbol-name of its slots.
-  ;; Helper function for use with:
-  ;; `print-sax-parsed-slots'
-  ;; `write-sax-parsed-slots-to-file', 
-  ;; `write-sax-parsed-class-hash-to-files'
-  ;; (print-sax-parsed-slots-padding-format-control (make-instance 'parsed-inventory-record))
   (format nil "~~&(~~{~~{:~~~D:A~~S~~}~~^~~%~~})" 
-          (+ 
-           (reduce #'max 
-                   (map 'list #'(lambda (x) (length (string x)))
-                        (mon:class-slot-list object)))
-           4)))
+          (+ (reduce #'max 
+                     (map 'list #'(lambda (x) (length (string x)))
+                          (mon:class-slot-list object)))
+             4)))
 
 ;; :NOTE There is nothing preventing us from making this the generalized
 ;; interface for printing sax parsed slots it is not specific to the class
@@ -330,7 +364,7 @@
   (let ((calculate-padding (if pre-padded-format-control
                                pre-padded-format-control
                                (print-sax-parsed-slots-padding-format-control object))))
-    (format stream calculate-padding ;; "~&(~{~{:~26:A~S~}~^~%~})"
+    (format stream calculate-padding 
             (loop 
                with unbound = (when print-unbound "#<UNBOUND>")
                for slot-chk in (mon:class-slot-list object)
@@ -339,10 +373,7 @@
                nconc (list (list slot-chk (slot-value object slot-chk))) into rtn 
                else  
                nconc (list (list slot-chk unbound)) into rtn
-               finally ;;(format stream "~&(~{~{:~26:A~S~}~^~%~})" rtn)))
-               (return rtn)))))
-
-
+               finally (return rtn)))))
 
 ;; (fundoc 'write-sax-parsed-slots-to-file
 ;; Write a list of the slot/value pairs of OBJECT to a file in OUTPUT-DIRECTORY.

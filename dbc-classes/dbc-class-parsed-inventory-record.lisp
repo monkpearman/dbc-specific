@@ -7,91 +7,6 @@
 ;; *package*
 
 
-;;; ==============================
-;; :NOTE the idea behind `*parsed-inventory-record-field-name-slot-transform*'
-;; `make-ref-maker-sym-name', `make-ref-maker-symbol', `make-ref-lookup-table'
-;;  Was to let us control construction of the slot-names and slot-accessor symbols for the class `parsed-inventory-record'
-;; This would allow us to define generic functions much earlier than doing so
-;; automagically at class defininition time and by extensio would give us
-;; greater control over the method dispatch on the subclasses of the class `parsed-class'.
-;; So, for example certain slots will have generic functions shared over many different subclasses, e.g.:
-;; `edit-date-origin' `edit-date'
-;; `naf-entity-person-coref' `naf-entity-artist-coref'
-;; `naf-entity-author-coref' `naf-entity-brand-coref'
-;; `naf-entity-publication-coref'
-;;
-;;  We aren't currently pre-defining generics for these accessors but _we should be_...
-;;; ==============================
-
-(defparameter *parsed-inventory-record-field-name-slot-transform* (make-hash-table :test 'equal))
-
-(vardoc '*parsed-inventory-record-field-name-slot-transform*
-        "Hashtable of field-name/transform pairs.~%~@
-To be populated with `dbc:preprocess-slot-transform' prior to constructing the
-slots for the class `parsed-inventory-record'.
-:EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%▶▶▶")
-
-
-;; :UNUSED
-(defun make-ref-maker-sym-name (ref-parse-field)
-  ;; (make-ref-maker-sym-name "ref") => "REF-PARSED-INVENTORY-RECORD"
-  (and (mon:string-not-null-or-empty-p ref-parse-field)
-       (make-parsed-class-slot-init-accessor-name "parsed-inventory-record" ref-parse-field)))
-
-;; (caddr (make-ref-maker-sym-name "artist"))
-;; (make-parsed-class-slot-init-accessor-name  "parsed-inventory-record" "ref")
-;; (nth 0 (make-parsed-class-slot-init-accessor-name "dbc-ref" "keywords_type") "PFX"))
-;; (nth 2 (make-parsed-class-slot-init-accessor-name "parsed-inventory-record" "keywords_type"))
-
-;; :UNUSED
-(defun make-ref-maker-symbol (sym-name)
-  ;; (make-ref-maker-symbol "ref")
-  ;; (symbolp (make-ref-maker-symbol "ref"))
-  (let ((mk-sym (make-ref-maker-sym-name sym-name)))
-    (and mk-sym (read-from-string (nth 2 (make-ref-maker-sym-name sym-name))))))
-
-;; :UNUSED
-(defun make-ref-lookup-table (ref-list)
-  ;; (make-ref-lookup-table (list "ref" "price" "year" "artist" "condition"))
-  (let ((ref-hash (make-hash-table :test 'equal)))
-    (loop
-       :for ref :in ref-list
-       :collecting (cons ref (make-ref-maker-symbol ref)) :into tbl
-       :finally (loop
-                   :for (key . val) :in tbl
-                   :do (setf (gethash key ref-hash) val)))
-    ref-hash))
-
-;;; ==============================
-;; :TODO `make-parsed-class-slot-init-accessor-name'
-;;  - Separate the slot init-arg frobbing into a dedicated function
-;;  - Change optional arg PREFIX-INITARG-W should be a keyword PREFIX-INIT-W
-;;  - Add additional keyword SUFFFIX-INIT-W
-;;  - Add additional keyword TRANSFORM (or NORMALIZE ???) when non-nil should
-;;    rename from PARSED-FIELD to TRANSFORM
-;; - Return value should have the format:
-;;    <SLOT>  <TRANSFORM>  |  (<INIT> {INIT-PFX | INIT-SFX} )  <ACCESSOR>
-;;
-;; :SEE make-parsed-class-slot-accessor-name etc.
-;;
-;; --
-;;  Current signature is:
-;;   (make-parsed-class-slot-init-accessor-name named-class parsed-field &optional prefix-initarg-w)
-;;
-;; Current return values have the format:
-;;  <SLOT>  ( <INIT-PFX> <FIELD-NAME> ) <ACCESSOR>
-;;
-;; Current return values are:
-;;  (make-parsed-class-slot-init-accessor-name "parsed-inventory-record"  "artist"  "p")
-;;   => ("ARTIST" "P-ARTIST" "PARSED-INVENTORY-RECORD-ARTIST")
-;;
-;;  (make-parsed-class-slot-init-accessor-name "parsed-inventory-record" "keywords_type")
-;;  => ("KEYWORDS-TYPE" "KEYWORDS-TYPE" "PARSED-INVENTORY-RECORD-KEYWORDS-TYPE")
-;;  
-;;
-
 
 ;; (make-instance 'parsed-inventory-record)
 
@@ -470,7 +385,92 @@ slots for the class `parsed-inventory-record'.
 :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash',
 `write-sax-parsed-xml-refs-file', `set-parsed-inventory-record-slot-value'.~%▶▶▶")))
 
+(make-parsed-class-field-slot-accessor-mapping 
+ 'parsed-inventory-record
+ '(("ref"  . item-number)
+   ("title"  . description-item-title)
+   ("desc_fr"  . description-item-french)
+   ("desc_en"  . description-item-english)
+   ("histo_fr"  . ignorable-history-french)
+   ("histo_en"  . ignorable-history-english)
+   ("text_quote" . description-item-quote)
+   ("translation" . description-item-translation)
+   ("people" . naf-entity-person-coref)
+   ("brand" . naf-entity-brand-coref)
+   ("composer" . naf-entity-composer-coref)
+   ("artist"  . naf-entity-artist-coref)
+   ("author" . naf-entity-author-coref)
+   ("latin_name" . taxon-entity-coref)
+   ("book" . naf-entity-publication-coref)
+   ("publisher"  . publication-publisher)
+   ("publish_location"  . publication-location)
+   ("volume"  . publication-volumes)
+   ("edition"  . publication-edition)
+   ("page"  . publication-pages)
+   ("Plate_number" . publication-plates)
+   ("issue" . publication-issue)
+   ("year" . publication-date)
+   ("year_year" . publication-date-range)
+   ("categ" . category-entity-0-coref) 
+   ("c1" . category-entity-1-coref)
+   ("c2" . category-entity-2-coref)
+   ("c3" . category-entity-3-coref)
+   ("c4" . category-entity-4-coref)
+   ("c5" . category-entity-5-coref)
+   ("c6" . category-entity-6-coref)
+   ("bct" . category-entity-precedence-list)
+   ("categ_doc" . documentation-category-entity-0-coref)
+   ("c1_doc" . documentation-category-entity-1-coref)
+   ("c2_doc" . documentation-category-entity-2-coref)
+   ("c3_doc" . documentation-category-entity-3-coref)
+   ("theme" . theme-entity-0-coref)
+   ("theme2" . theme-entity-1-coref)
+   ("theme3" . theme-entity-2-coref)
+   ("price" . price-ask)
+   ("keywords" . keywords-sequence)
+   ("condition" . description-item-condition)
+   ("onlinen" . media-entity-mount)
+   ("technique" . media-entity-technique)
+   ("paper" . media-entity-paper)
+   ("color" . media-entity-color)
+   ("w" . unit-width)
+   ("h" . unit-height)
+   ("nbre" . ignorable-number)
+   ("seller" . item-seller)
+   ("bar_code" . item-bar-code)
+   ("weight" . unit-weight)
+   ("user_name" . edit-by-creator)
+   ("done" . job-complete)
+   ("job_name" . job-id)
+   ("locked" . job-locked)
+   ("online" . record-status-active)
+   ("uri" . item-uri)
+   ("notes" . ignorable-notes)
+   ("keywords_type" . ignorable-keywords-type)
+   ("av_repro" . item-can-repro)
+   ("related_doc" . documentation-related)
+   ("ebay_final" . price-sold-ebay)
+   ("ebay_price" . price-ask-ebay)
+   ("ebay_title" . title-ebay)
+   ("ebay_id" . control-id-ebay)
+   ("seo_title" . description-item-seo-title)
+   ("description_seo" . description-item-seo)
+   ("keywords_seo" . keywords-seo)
+   ("date" . edit-date-origin)
+   ("date_edit" . edit-date)
+   ("edit_history" . edit-history))
+ )
+
+
+;; :NOTE `set-parsed-inventory-record-slot-value' is defined in loadtime-bind.lisp
+;; (def-set-parsed-class-record-slot-value 
+;;     set-parsed-inventory-record-slot-value
+;;     parsed-inventory-record)
+
+;;; *big-parsed-class-field-slot-accessor-mapping-table*
+
 ;;; ==============================
+;; :NOTE Depreated use the macro'd version instead.
 ;; (fundoc 'set-parsed-inventory-record-slot-value
 ;; "Map orginal sql tables FIELD-STRING name to OBJECT's CLOS slot equivalent setting its slot-value to FIELD-VALUE.~%~@
 ;; Return as if by `cl:values':~%
@@ -497,154 +497,156 @@ slots for the class `parsed-inventory-record'.
 ;; functions and where the behavior is generalized across all class specialize
 ;; them on the class `parsed-class'.
 ;;
-(defun set-parsed-inventory-record-slot-value (field-string field-value object)
-  (values 
-   (string-case:string-case (field-string)
-     ("ref" 
-      (setf (item-number object) field-value))
-     ("title" 
-      (setf (description-item-title object) field-value))
-     ("desc_fr" 
-      (setf (description-item-french object) field-value))
-     ("desc_en" 
-      (setf (description-item-english object) field-value))
-     ("histo_fr" 
-      (setf (ignorable-history-french object) field-value))
-     ("histo_en" 
-      (setf (ignorable-history-english object) field-value))
-     ("text_quote"
-      (setf (description-item-quote object) field-value))
-     ("translation"
-      (setf (description-item-translation object) field-value))
-     ("people"
-      (setf (naf-entity-person-coref object) field-value))
-     ("brand"
-      (setf (naf-entity-brand-coref object) field-value))
-     ("composer"
-      (setf (naf-entity-composer-coref object) field-value))
-     ("artist" 
-      (setf (naf-entity-artist-coref object) field-value))
-     ("author"
-      (setf (naf-entity-author-coref object) field-value))
-     ("latin_name"
-      (setf (taxon-entity-coref object) field-value))
-     ("book"
-      (setf (naf-entity-publication-coref object) field-value))
-     ("publisher" 
-      (setf (publication-publisher object) field-value))
-     ("publish_location" 
-      (setf (publication-location object) field-value))
-     ("volume" 
-      (setf (publication-volumes object) field-value))
-     ("edition" 
-      (setf (publication-edition object) field-value))
-     ("page" 
-      (setf (publication-pages object) field-value))
-     ("Plate_number"
-      (setf (publication-plates object) field-value))
-     ("issue"
-      (setf (publication-issue object) field-value))
-     ("year"
-      (setf (publication-date object) field-value))
-     ("year_year"
-      (setf (publication-date-range object) field-value))
-     ("categ"
-      (setf (category-entity-0-coref object) field-value)) 
-     ("c1"
-      (setf (category-entity-1-coref object) field-value))
-     ("c2"
-      (setf (category-entity-2-coref object) field-value))
-     ("c3"
-      (setf (category-entity-3-coref object) field-value))
-     ("c4"
-      (setf (category-entity-4-coref object) field-value))
-     ("c5"
-      (setf (category-entity-5-coref object) field-value))
-     ("c6"
-      (setf (category-entity-6-coref object) field-value))
-     ("bct"
-      (setf (category-entity-precedence-list object) field-value))
-     ("categ_doc"
-      (setf (documentation-category-entity-0-coref object) field-value))
-     ("c1_doc"
-      (setf (documentation-category-entity-1-coref object) field-value))
-     ("c2_doc"
-      (setf (documentation-category-entity-2-coref object) field-value))
-     ("c3_doc"
-      (setf (documentation-category-entity-3-coref object) field-value))
-     ("theme"
-      (setf (theme-entity-0-coref object) field-value))
-     ("theme2"
-      (setf (theme-entity-1-coref object) field-value))
-     ("theme3"
-      (setf (theme-entity-2-coref object) field-value))
-     ("price"
-      (setf (price-ask object) field-value))
-     ("keywords"
-      (setf (keywords-sequence object) field-value))
-     ("condition"
-      (setf (description-item-condition object) field-value))
-     ("onlinen"
-      (setf (media-entity-mount object) field-value))
-     ("technique"
-      (setf (media-entity-technique object) field-value))
-     ("paper"
-      (setf (media-entity-paper object) field-value))
-     ("color"
-      (setf (media-entity-color object) field-value))
-     ("w"
-      (setf (unit-width object) field-value))
-     ("h"
-      (setf (unit-height object) field-value))
-     ("nbre"
-      (setf (ignorable-number object) field-value))
-     ("seller"
-      (setf (item-seller object) field-value))
-     ("bar_code"
-      (setf (item-bar-code object) field-value))
-     ("weight"
-      (setf (unit-weight object) field-value))
-     ("user_name"
-      (setf (edit-by-creator object) field-value))
-     ("done"
-      (setf (job-complete object) field-value))
-     ("job_name"
-      (setf (job-id object) field-value))
-     ("locked"
-      (setf (job-locked object) field-value))
-     ("online"
-      (setf (record-status-active object) field-value))
-     ("uri"
-      (setf (item-uri object) field-value))
-     ("notes"
-      (setf (ignorable-notes object) field-value))
-     ("keywords_type"
-      (setf (ignorable-keywords-type object) field-value))
-     ("av_repro"
-      (setf (item-can-repro object) field-value))
-     ("related_doc"
-      (setf (documentation-related object) field-value))
-     ("ebay_final"
-      (setf (price-sold-ebay object) field-value))
-     ("ebay_price"
-      (setf (price-ask-ebay object) field-value))
-     ("ebay_title"
-      (setf (title-ebay object) field-value))
-     ("ebay_id"
-      (setf (control-id-ebay object) field-value))
-     ("seo_title"
-      (setf (description-item-seo-title object) field-value))
-     ("description_seo"
-      (setf (description-item-seo object) field-value))
-     ("keywords_seo"
-      (setf (keywords-seo object) field-value))
-     ("date"
-      (setf (edit-date-origin object) field-value))
-     ("date_edit"
-      (setf (edit-date object) field-value))
-     ("edit_history"
-      (setf (edit-history object) field-value)))
-   object))
+;; (defun set-parsed-inventory-record-slot-value (field-string field-value object)
+;;   (values 
+;;    (string-case:string-case (field-string)
+;;      ("ref" 
+;;       (setf (item-number object) field-value))
+;;      ("title" 
+;;       (setf (description-item-title object) field-value))
+;;      ("desc_fr" 
+;;       (setf (description-item-french object) field-value))
+;;      ("desc_en" 
+;;       (setf (description-item-english object) field-value))
+;;      ("histo_fr" 
+;;       (setf (ignorable-history-french object) field-value))
+;;      ("histo_en" 
+;;       (setf (ignorable-history-english object) field-value))
+;;      ("text_quote"
+;;       (setf (description-item-quote object) field-value))
+;;      ("translation"
+;;       (setf (description-item-translation object) field-value))
+;;      ("people"
+;;       (setf (naf-entity-person-coref object) field-value))
+;;      ("brand"
+;;       (setf (naf-entity-brand-coref object) field-value))
+;;      ("composer"
+;;       (setf (naf-entity-composer-coref object) field-value))
+;;      ("artist" 
+;;       (setf (naf-entity-artist-coref object) field-value))
+;;      ("author"
+;;       (setf (naf-entity-author-coref object) field-value))
+;;      ("latin_name"
+;;       (setf (taxon-entity-coref object) field-value))
+;;      ("book"
+;;       (setf (naf-entity-publication-coref object) field-value))
+;;      ("publisher" 
+;;       (setf (publication-publisher object) field-value))
+;;      ("publish_location" 
+;;       (setf (publication-location object) field-value))
+;;      ("volume" 
+;;       (setf (publication-volumes object) field-value))
+;;      ("edition" 
+;;       (setf (publication-edition object) field-value))
+;;      ("page" 
+;;       (setf (publication-pages object) field-value))
+;;      ("Plate_number"
+;;       (setf (publication-plates object) field-value))
+;;      ("issue"
+;;       (setf (publication-issue object) field-value))
+;;      ("year"
+;;       (setf (publication-date object) field-value))
+;;      ("year_year"
+;;       (setf (publication-date-range object) field-value))
+;;      ("categ"
+;;       (setf (category-entity-0-coref object) field-value)) 
+;;      ("c1"
+;;       (setf (category-entity-1-coref object) field-value))
+;;      ("c2"
+;;       (setf (category-entity-2-coref object) field-value))
+;;      ("c3"
+;;       (setf (category-entity-3-coref object) field-value))
+;;      ("c4"
+;;       (setf (category-entity-4-coref object) field-value))
+;;      ("c5"
+;;       (setf (category-entity-5-coref object) field-value))
+;;      ("c6"
+;;       (setf (category-entity-6-coref object) field-value))
+;;      ("bct"
+;;       (setf (category-entity-precedence-list object) field-value))
+;;      ("categ_doc"
+;;       (setf (documentation-category-entity-0-coref object) field-value))
+;;      ("c1_doc"
+;;       (setf (documentation-category-entity-1-coref object) field-value))
+;;      ("c2_doc"
+;;       (setf (documentation-category-entity-2-coref object) field-value))
+;;      ("c3_doc"
+;;       (setf (documentation-category-entity-3-coref object) field-value))
+;;      ("theme"
+;;       (setf (theme-entity-0-coref object) field-value))
+;;      ("theme2"
+;;       (setf (theme-entity-1-coref object) field-value))
+;;      ("theme3"
+;;       (setf (theme-entity-2-coref object) field-value))
+;;      ("price"
+;;       (setf (price-ask object) field-value))
+;;      ("keywords"
+;;       (setf (keywords-sequence object) field-value))
+;;      ("condition"
+;;       (setf (description-item-condition object) field-value))
+;;      ("onlinen"
+;;       (setf (media-entity-mount object) field-value))
+;;      ("technique"
+;;       (setf (media-entity-technique object) field-value))
+;;      ("paper"
+;;       (setf (media-entity-paper object) field-value))
+;;      ("color"
+;;       (setf (media-entity-color object) field-value))
+;;      ("w"
+;;       (setf (unit-width object) field-value))
+;;      ("h"
+;;       (setf (unit-height object) field-value))
+;;      ("nbre"
+;;       (setf (ignorable-number object) field-value))
+;;      ("seller"
+;;       (setf (item-seller object) field-value))
+;;      ("bar_code"
+;;       (setf (item-bar-code object) field-value))
+;;      ("weight"
+;;       (setf (unit-weight object) field-value))
+;;      ("user_name"
+;;       (setf (edit-by-creator object) field-value))
+;;      ("done"
+;;       (setf (job-complete object) field-value))
+;;      ("job_name"
+;;       (setf (job-id object) field-value))
+;;      ("locked"
+;;       (setf (job-locked object) field-value))
+;;      ("online"
+;;       (setf (record-status-active object) field-value))
+;;      ("uri"
+;;       (setf (item-uri object) field-value))
+;;      ("notes"
+;;       (setf (ignorable-notes object) field-value))
+;;      ("keywords_type"
+;;       (setf (ignorable-keywords-type object) field-value))
+;;      ("av_repro"
+;;       (setf (item-can-repro object) field-value))
+;;      ("related_doc"
+;;       (setf (documentation-related object) field-value))
+;;      ("ebay_final"
+;;       (setf (price-sold-ebay object) field-value))
+;;      ("ebay_price"
+;;       (setf (price-ask-ebay object) field-value))
+;;      ("ebay_title"
+;;       (setf (title-ebay object) field-value))
+;;      ("ebay_id"
+;;       (setf (control-id-ebay object) field-value))
+;;      ("seo_title"
+;;       (setf (description-item-seo-title object) field-value))
+;;      ("description_seo"
+;;       (setf (description-item-seo object) field-value))
+;;      ("keywords_seo"
+;;       (setf (keywords-seo object) field-value))
+;;      ("date"
+;;       (setf (edit-date-origin object) field-value))
+;;      ("date_edit"
+;;       (setf (edit-date object) field-value))
+;;      ("edit_history"
+;;       (setf (edit-history object) field-value)))
+;;    object))
+
+
 
 
 
@@ -668,23 +670,10 @@ slots for the class `parsed-inventory-record'.
 
 
 ;;; ==============================
-;; :NOTE Accessor functions should match the REF-<SLOT>-MAKER names of
-;; `*xml-refs-match-table*' as generated with `dbc:make-ref-lookup-table'.
-;;
-;; THIS IS THE LIST OF SLOTS for `*xml-refs-match-list*':
-;;
-;; (eql (length *xml-refs-match-list*) 72) => t
-;;
-;; ("ref" "bar_code" "title" "Plate_number" "price" "desc_fr" "desc_en" "condition"
-;;  "histo_fr" "histo_en" "categ" "c1" "c2" "c3" "c4" "theme" "keywords" "issue"
-;;  "year" "artist" "author" "book" "publisher" "publish_location" "w" "h"
-;;  "technique" "paper" "color" "onlinen" "av_repro" "latin_name" "nbre" "online"
-;;  "seller" "people" "related_doc" "brand" "translation" "date" "user_name" "done"
-;;  "job_name" "locked" "keywords_type" "text_quote" "theme3" "theme2" "c6" "weight"
-;;  "c5" "composer" "uri" "year_year" "notes" "volume" "edition" "page" "bct"
-;;  "categ_doc" "c1_doc" "c2_doc" "c3_doc" "ebay_final" "ebay_price" "ebay_title"
-;;  "ebay_id" "seo_title" "description_seo" "keywords_seo" "date_edit"
-;;  "edit_history")
+;; :TODO We need to match all occurences of in all parsed-classes where the "field-name" is also the "field-value"
+;; e.g. situations like this: ("ebay_price" . "ebay_price")
+;; (defun filter-field-name-value-is-field-name (object )
+;;   )
 
 
 
