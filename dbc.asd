@@ -109,8 +109,9 @@
              (:file "dbc-class-users")
              (:file "dbc-class-description")
              (:file "dbc-class-documentation")
-             (:file "dbc-class-parse-convert")
-             
+             (:file "dbc-class-parsed-field-slot-mapping")
+             (:file "dbc-class-parsed")
+             (:file "dbc-class-parsed-convert")
              (:file "dbc-class-parsed-inventory-record")
              (:file "dbc-class-parsed-artist-record")
              ;; (:file "dbc-class-parsed-publication-record")
