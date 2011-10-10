@@ -143,7 +143,6 @@ Used to annotate some particular internal aspect about a subclass of `base-media
    #.(format nil
              "Used to annotate some particular internal aspect about a `media-entity-color'.~%")))
 
-
 (defclass base-description-naf-entity (base-description-entity)
   ()
   (:documentation

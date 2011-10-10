@@ -15,22 +15,138 @@
 (in-package #:dbc)
 ;; *package*
 
-;;
+;; media-entity-technique
 (defclass parsed-technique-record (parsed-class)
-  ()
-  )
+  ((conrtol-id-entity-num-technique
+    :initarg :conrtol-id-entity-num-technique
+    :accessor conrtol-id-entity-num-technique
+    :documentation ":ORIGINAL-FIELD \"id\"")
 
-#|
+   (conrtol-id-display-technique
+    :initarg :conrtol-id-display-technique
+    :accessor conrtol-id-display-technique
+    :documentation ":ORIGINAL-FIELD \"display\"")
 
-:SLOT-LIST
- eql length 12
+   (technique-entity-display-name-coref 
+    :initarg :technique-entity-display-name-coref
+    :accessor technique-entity-display-name-coref
+    :documentation ":ORIGINAL-FIELD \"used_for\"")
 
+   (technique-entity-parent-type
+    :initarg :technique-entity-parent-type
+    :accessor technique-entity-parent-type 
+    :documentation ":ORIGINAL-FIELD \"technique_family\"")
+   
+   (technique-entity-type-coref
+    :initarg :technique-entity-type-coref
+    :accessor technique-entity-type-coref
+    :documentation ":ORIGINAL-FIELD \"variation_of\"")
+
+   (description-media-entity-technique-note
+    :initarg :description-technique-notes
+    :accessor description-media-entity-technique-note
+    :documentation ":ORIGINAL-FIELD \"notes\"")
+
+   (image-default-id 
+    :initarg :image-default-id 
+    :accessor image-default-id 
+    :documentation ":ORIGINAL-FIELD \"default_pic\"")
+   
+   ;; this is the good one
+   (edit-date 
+    :initarg :edit-date
+    :accessor edit-date
+    :documentation ":ORIGINAL-FIELD \"date_edt\"")
+   
+   ;; IGNORABLE assuming date_edt is present and corresponds
+   (edit-date-origin
+    :initarg :edit-date-origin
+    :accessor edit-date-origin
+    :documentation ":ORIGINAL-FIELD \"date_edit\"")
+       
+   ;; IGNORABLE always 0
+   (record-status-active
+    :initarg :record-status-active 
+    :accessor record-status-active
+    :documentation ":ORIGINAL-FIELD \"online\"")
+
+   ;; IGNORABLE always empty
+   (edit-by 
+    :initarg :edit-by 
+    :accessor edit-by 
+    :documentation ":ORIGINAL-FIELD \"user_name\"")
+ 
+   ;; IGNORABLE always empty
+   (edit-by-creator 
+    :initarg :edit-by-creator 
+    :accessor edit-by-creator 
+    :documentation ":ORIGINAL-FIELD \"naf_creator\"")
+   )
+  (:documentation
+   #.(format nil
+             "Class for parsed dbc XML `technique_infos` table.~%~@
+:EXAMPLE~%
+ \(mon:class-slot-list  'parsed-technique-record\)~%~@
+:SEE-ALSO `media-entity-technique',
+`load-sax-parsed-xml-file-to-parsed-class-hash',
+`write-sax-parsed-xml-refs-file', `set-parse-ref-slot-value'.~%▶▶▶")))
+
+(make-parsed-class-field-slot-accessor-mapping 
+ 'parsed-technique-record
+ '(("id"                . conrtol-id-entity-num-technique)
+   ("display"           . conrtol-id-display-technique)
+   ("used_for"          . technique-entity-display-name-coref)
+   ("technique_family"  . technique-entity-parent-type)
+   ("variation_of"      . technique-entity-type-coref)
+   ("notes"             . description-media-entity-technique-note)
+   ("default_pic"       . image-default-id)
+   ("date_edt"          . edit-date)
+   ("date_edit"         . edit-date-origin)
+   ("online"            . record-status-active)
+   ("user_name"         . edit-by)
+   ("naf_creator"       . edit-by-creator)))
+
+
+;; :NOTE `set-parsed-technique-record-slot-value' is defined in loadtime-bind.lisp
+;; (def-set-parsed-class-record-slot-value 
+;;     set-parsed-technique-record-slot-value
+;;     parsed-technique-record)
+;;
+;;; *big-parsed-class-field-slot-accessor-mapping-table*
+
+;; :NOTE Depreated use the macro'd version generated with `def-set-parsed-class-record-slot-value' instead.
+;; (defun set-parsed-technique-record-slot-value (field-string field-value object)
+;;   (values
+;;    (string-case:string-case (field-string)
+;;      ("id" (setf (conrtol-id-entity-num-technique object) field-value))
+;;      ("display" (setf (conrtol-id-display-technique object) field-value))
+;;      ("used_for"
+;;       (setf (technique-entity-display-name-coref object) field-value))
+;;      ("technique_family"
+;;       (setf (technique-entity-parent-type object) field-value))
+;;      ("variation_of" (setf (technique-entity-type-coref object) field-value))
+;;      ("notes"
+;;       (setf (description-media-entity-technique-note object) field-value))
+;;      ("default_pic" (setf (image-default-id object) field-value))
+;;      ("date_edt" (setf (edit-date object) field-value))
+;;      ("date_edit" (setf (edit-date-origin object) field-value))
+;;      ("online" (setf (record-status-active object) field-value))
+;;      ("user_name" (setf (edit-by object) field-value))
+;;      ("naf_creator" (setf (edit-by-creator object) field-value)))
+;;    object))
+
+                     
+#|                   
+                     
+:SLOT-LIST           
+ eql length 12       
+                     
  ("id" "display" "used_for" "technique_family" "variation_of"
   "date_edit" "user_name" "naf_creator" "notes" "default_pic" "online" "date_edt")
 
  <FIELD>              <TRANSFORM>
  "id"                ;; conrtol-id-entity-num-technique
- "display"           ;; conrtol-id-entity-display-technique
+ "display"           ;; conrtol-id-display-technique
  "used_for"          ;; technique-entity-display-name-core
  "technique_family"  ;; technique-entity-parent-type
  "variation_of"      ;; technique-entity-type-coref
@@ -70,13 +186,13 @@
 ;;         :EXTRA "auto_increment"
 ;;
 ;; :EXAMPLE-VALUES 
-;;
+;;  9
 ;;
 ;; -
 ;;
 
 ;;; ==============================
-;; :FIELD "display" :TRANSFORM conrtol-id-entity-display-technique
+;; :FIELD "display" :TRANSFORM conrtol-id-display-technique
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -85,7 +201,7 @@
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
-;;
+;;  Printing Techniques
 ;;
 ;; -
 ;;
@@ -99,7 +215,7 @@
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
-;;
+;;  Litho | lithographie
 ;;
 ;; -
 ;;
@@ -114,7 +230,7 @@
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
-;;
+;;  Planographic and Process Techniques
 ;;
 ;; -
 ;;
@@ -131,6 +247,7 @@
 ;; :EXAMPLE-VALUES 
 ;;  Etching - Mechanical
 ;;  Line Engraving
+;;  Lithography
 ;;
 ;;  :TODO id 36 has variation_of value: "Intaglio (mechanical)" that is wrong b/c there
 ;;   is no other entity with this name and the only other like entity is denoted

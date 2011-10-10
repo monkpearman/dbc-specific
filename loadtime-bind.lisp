@@ -169,6 +169,14 @@
     set-parsed-inventory-record-slot-value
     parsed-inventory-record)
 
+(def-set-parsed-class-record-slot-value 
+    set-parsed-artist-record-slot-value
+    parsed-artist-record)
+
+(def-set-parsed-class-record-slot-value 
+    set-parsed-technique-record-slot-value
+    parsed-technique-record)
+
 
 ;;; ==============================
 ;;; :EOF

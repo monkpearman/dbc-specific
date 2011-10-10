@@ -192,44 +192,88 @@
   (:documentation
    #.(format nil
              "Class for parsed dbc XML `artist_infos` table.~%~@
-:EXAMPLE ~%
+:EXAMPLE~%
  \(mon:class-slot-list  'parsed-inventory-record\)~%~@
 :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash',
 `write-sax-parsed-xml-refs-file', `set-parse-ref-slot-value', `parsed-inventory-record'.~%▶▶▶")))
 
-(defun set-parsed-artist-record-slot-value (field-string field-value object)
-  (values 
-   (string-case:string-case (field-string)
-     ("id" (setf (control-id-entity-num-artist object) field-value))
-     ("bio" (setf (control-id-doc-num-artist object) field-value))
-     ("display" (setf (control-id-display-artist object) field-value))
-     ("used_for" (setf (naf-entity-artist-display-name-coref object) field-value))
-     ("role" (setf (naf-entity-role-appearance-coref object) field-value))
-     ("gender" (setf (naf-entity-gender-type object) field-value))
-     ("lifespan" (setf (lifespan-date object) field-value))
-     ("date_born" (setf (birth-date object) field-value))
-     ("date_died" (setf (death-date object) field-value))
-     ("birth_location" (setf (location-birth object) field-value))
-     ("death_location" (setf (location-death object) field-value))
-     ("nationality" (setf (location-nationality object) field-value))
-     ("LOC_control" (setf (control-id-db-0 object) field-value))
-     ("ULAN_control" (setf (control-id-db-1 object) field-value))
-     ("also_author" (setf (naf-entity-author-coref object) field-value))
-     ("also_people" (setf (naf-entity-person-coref object) field-value))
-     ("appeared_in" (setf (naf-entity-publication-coref object) field-value))
-     ("ads_for" (setf (naf-entity-brand-coref object) field-value))
-     ("found_in" (setf (description-artist-note-general object) field-value))
-     ("auction_records" (setf (description-artist-note-sale-appearance object) field-value))
-     ("default_pic" (setf (image-default-id object) field-value))
-     ("print_default_pic" (setf (image-default-xref object) field-value))
-     ("online" (setf (record-status-active object) field-value))
-     ("user_name" (setf (edit-by object) field-value))
-     ("naf_creator" (setf (edit-by-creator object) field-value))
-     ("date_edit" (setf (edit-date-origin object) field-value))
-     ("date_edt" (setf (edit-date object) field-value))
-     ("cancel_num" (setf (ignorable-cancel-num object) field-value))
-     ("special_note" (setf (ignorable-special-note object) field-value)))
-   object))
+
+;; make-parsed-class-field-slot-accessor-mapping
+
+(make-parsed-class-field-slot-accessor-mapping 
+ 'parsed-artist-record
+ '(("id"                . control-id-entity-num-artist)
+   ("bio"               . control-id-doc-num-artist)
+   ("display"           . control-id-display-artist)
+   ("used_for"          . naf-entity-artist-display-name-coref)
+   ("role"              . naf-entity-role-appearance-coref)
+   ("gender"            . naf-entity-gender-type)
+   ("lifespan"          . lifespan-date)
+   ("date_born"         . birth-date)
+   ("date_died"         . death-date)
+   ("birth_location"    . location-birth)
+   ("death_location"    . location-death)
+   ("nationality"       . location-nationality)
+   ("LOC_control"       . control-id-db-0)
+   ("ULAN_control"      . control-id-db-1)
+   ("also_author"       . naf-entity-author-coref) ;*
+   ("also_people"       . naf-entity-person-coref) ;*
+   ("appeared_in"       . naf-entity-publication-coref) ;*
+   ("ads_for"           . naf-entity-brand-coref) ;*
+   ("found_in"          . description-artist-note-general)
+   ("auction_records"   . description-artist-note-sale-appearance)
+   ("default_pic"       . image-default-id)
+   ("print_default_pic" . image-default-xref)
+   ("online"            . record-status-active)
+   ("user_name"         . edit-by)
+   ("naf_creator"       . edit-by-creator)
+   ("date_edit"         . edit-date-origin)
+   ("date_edt"          . edit-date)
+   ("cancel_num"        . ignorable-cancel-num)
+   ("special_note"      . ignorable-special-note)))
+
+
+;; :NOTE `set-parsed-inventory-record-slot-value' is defined in loadtime-bind.lisp
+;; (def-set-parsed-class-record-slot-value 
+;;      set-parsed-artist-record-slot-value
+;;      parsed-artist-record)
+;;
+;;; *big-parsed-class-field-slot-accessor-mapping-table*
+
+;; :NOTE Depreated use the macro'd version generated with `def-set-parsed-class-record-slot-value' instead. 
+;; (defun set-parsed-artist-record-slot-value (field-string field-value object)
+;;   (values 
+;;    (string-case:string-case (field-string)
+;;      ("id" (setf (control-id-entity-num-artist object) field-value))
+;;      ("bio" (setf (control-id-doc-num-artist object) field-value))
+;;      ("display" (setf (control-id-display-artist object) field-value))
+;;      ("used_for" (setf (naf-entity-artist-display-name-coref object) field-value))
+;;      ("role" (setf (naf-entity-role-appearance-coref object) field-value))
+;;      ("gender" (setf (naf-entity-gender-type object) field-value))
+;;      ("lifespan" (setf (lifespan-date object) field-value))
+;;      ("date_born" (setf (birth-date object) field-value))
+;;      ("date_died" (setf (death-date object) field-value))
+;;      ("birth_location" (setf (location-birth object) field-value))
+;;      ("death_location" (setf (location-death object) field-value))
+;;      ("nationality" (setf (location-nationality object) field-value))
+;;      ("LOC_control" (setf (control-id-db-0 object) field-value))
+;;      ("ULAN_control" (setf (control-id-db-1 object) field-value))
+;;      ("also_author" (setf (naf-entity-author-coref object) field-value))
+;;      ("also_people" (setf (naf-entity-person-coref object) field-value))
+;;      ("appeared_in" (setf (naf-entity-publication-coref object) field-value))
+;;      ("ads_for" (setf (naf-entity-brand-coref object) field-value))
+;;      ("found_in" (setf (description-artist-note-general object) field-value))
+;;      ("auction_records" (setf (description-artist-note-sale-appearance object) field-value))
+;;      ("default_pic" (setf (image-default-id object) field-value))
+;;      ("print_default_pic" (setf (image-default-xref object) field-value))
+;;      ("online" (setf (record-status-active object) field-value))
+;;      ("user_name" (setf (edit-by object) field-value))
+;;      ("naf_creator" (setf (edit-by-creator object) field-value))
+;;      ("date_edit" (setf (edit-date-origin object) field-value))
+;;      ("date_edt" (setf (edit-date object) field-value))
+;;      ("cancel_num" (setf (ignorable-cancel-num object) field-value))
+;;      ("special_note" (setf (ignorable-special-note object) field-value)))
+;;    object))
 
 
 ;;; ==============================

@@ -8,6 +8,7 @@
 ;; - base-media-entity       (base-entity)
 ;; -- media-entity-technique (base-media-entity)
 ;; -- media-entity-material  (base-media-entity)
+;; --- media-entity-paper    (media-entity-material)
 ;; -- media-entity-mount     (base-media-entity)
 ;; -- media-entity-color     (base-media-entity)
 
@@ -28,12 +29,23 @@ Possible (generalized) examples of a technique include:~% ~
   (:documentation
    #.(format nil 
 "Instances of this class used to describe materials used in the production of a particular type of media.~%~@
-Slot values might be used to indicate the type of material (ie.. paper, fabric,~%~
-cardstock) as well as various aspects of its composition, e.g. whether it is
-glazed, cold-rolled, 10mil, etc.~%~@
+Slot values might be used to indicate the type of material \(i.e. paper, fabric,
+plastic, etc.\) as well as various aspects of its composition, e.g. whether it
+is glazed, cold-rolled, 10mil, etc.~%~@
+:SEE-ALSO `description-media-entity-material-note', `base-media-entity',~%~
+`media-entity-technique', `media-entity-paper', `media-entity-mount',~%~
+`media-entity-color'.~%▶▶▶")))
+
+(defclass media-entity-paper (media-entity-material)
+  ()
+  (:documentation 
+   #.(format nil
+             "Instances of this class used to describe materials generally construed as being of the type \"paper\".
 :SEE-ALSO `description-media-entity-material-note', `base-media-entity',~%~
 `media-entity-technique', `media-entity-material', `media-entity-mount',~%~
 `media-entity-color'.~%▶▶▶")))
+
+;; ("paper"             . media-entity-paper) ; media-entity-material
 
 (defclass media-entity-mount (base-media-entity)
   ()

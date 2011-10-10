@@ -310,6 +310,7 @@ dbc-classes/dbc-class-entity.lisp
 -- base-media-entity       (base-entity)
 --- media-entity-technique (base-media-entity)
 --- media-entity-material  (base-media-entity)
+---- media-entity-paper    (media-entity-material)
 --- media-entity-mount     (base-media-entity)
 --- media-entity-color     (base-media-entity)
 

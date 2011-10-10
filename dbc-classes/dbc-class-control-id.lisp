@@ -91,7 +91,7 @@
 ---- control-id-doc-num-author           (control-id-doc-num)
 ---- control-id-doc-num-person           (control-id-doc-num)
 ---- control-id-doc-num-publication      (control-id-doc-num)
----- control-id-display-publication-full (control-id-doc-num)
+
 
 --- control-id-entity-num                (control-id-deprecated-record-id)
 ---- control-id-entity-num-artist        (control-id-entity-num)
@@ -101,7 +101,7 @@
 ---- control-id-entity-num-publication   (control-id-entity-num)
 
 
--- control-id-db                     (base-control-id)
+-- control-id-db                     (base-control-id)  ;; :NOTE we have fields `control-id-db-0' `control-id-db-1'
 --- control-id-db-loc                (control-id-db) ;; nb2007017414 | n 98028882 | no 99021790
 --- control-id-db-ulan               (control-id-db) ;; 500013504
 --- control-id-db-bnf                (control-id-db) ;; FRBNF40421659
