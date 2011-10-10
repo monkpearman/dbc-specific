@@ -36,8 +36,213 @@
 
 
 (defclass parsed-publication-record (parsed-naf-entity)
-  ()
-  )
+  ((control-id-doc-num-publication
+    :initarg :control-id-doc-num-publication
+    :accessor control-id-doc-num-publication
+    :documentation ":ORIGINAL-FIELD \"bio\"")
+
+   (control-id-entity-num-publication
+    :initarg :control-id-entity-num-publication
+    :accessor control-id-entity-num-publication
+    :documentation ":ORIGINAL-FIELD \"id\"")
+
+   (control-id-display-publication
+    :initarg :control-id-display-publication
+    :accessor control-id-display-publication
+    :documentation ":ORIGINAL-FIELD \"display\"")
+
+   (control-id-display-publication-full
+    :initarg :control-id-display-publication-full
+    :accessor control-id-display-publication-full
+    :documentation ":ORIGINAL-FIELD \"book_real\"")
+
+   (naf-entity-author-coref
+    :initarg :naf-entity-author-coref
+    :accessor naf-entity-author-coref
+    :documentation ":ORIGINAL-FIELD \"author\"")
+
+   (naf-entity-artist-coref
+    :initarg :naf-entity-artist-coref
+    :accessor naf-entity-artist-coref
+    :documentation ":ORIGINAL-FIELD \"illustrator\"")
+
+   (publication-date
+    :initarg :publication-date
+    :accessor publication-date
+    :documentation ":ORIGINAL-FIELD \"date_pub\"")
+
+   (publication-location
+    :initarg :publication-location
+    :accessor publication-location
+    :documentation ":ORIGINAL-FIELD \"loc_pub\"")
+
+   (publication-volumes
+    :initarg :publication-volumes
+    :accessor publication-volumes
+    :documentation ":ORIGINAL-FIELD \"volumes\"")
+
+   (publication-pages
+    :initarg :publication-pages
+    :accessor publication-pages
+    :documentation ":ORIGINAL-FIELD \"pages\"")
+
+   (publication-illustrations
+    :initarg :publication-illustrations
+    :accessor publication-illustrations
+    :documentation ":ORIGINAL-FIELD \"illustrations\"")
+
+   (ignorable-publication-subjects
+    :initarg :ignorable-publication-subjects
+    :accessor ignorable-publication-subjects
+    :documentation ":ORIGINAL-FIELD \"subjects\"")
+
+   (control-id-db-0
+    :initarg :control-id-db-0
+    :accessor control-id-db-0
+    :documentation ":ORIGINAL-FIELD \"lc_class\"")
+
+   ;; :NOTE case-sensitive
+   (control-id-db-1
+    :initarg :control-id-db-1
+    :accessor control-id-db-1
+    :documentation ":ORIGINAL-FIELD \"ULAN_control\"")
+
+   (description-publication-note-content
+    :initarg :description-publication-note-content
+    :accessor description-publication-note-content
+    :documentation ":ORIGINAL-FIELD \"content\"")
+
+   (description-publication-note-general
+    :initarg :description-publication-note-general
+    :accessor description-publication-note-general
+    :documentation ":ORIGINAL-FIELD \"notes\"")
+
+   (description-publication-note-special
+    :initarg :description-publication-note-special
+    :accessor description-publication-note-special
+    :documentation ":ORIGINAL-FIELD \"special_note\"")
+
+   (description-publication-note-sale-appearance
+    :initarg :description-publication-note-sale-appearance
+    :accessor description-publication-note-sale-appearance
+    :documentation ":ORIGINAL-FIELD \"auction_records\"")
+
+   (image-default-id
+    :initarg :image-default-id
+    :accessor image-default-id
+    :documentation ":ORIGINAL-FIELD \"default_pic\"")
+
+   (image-default-xref
+    :initarg :image-default-xref
+    :accessor image-default-xref
+    :documentation ":ORIGINAL-FIELD \"print_default_pic\"")
+
+   (record-status-active
+    :initarg :record-status-active
+    :accessor record-status-active
+    :documentation ":ORIGINAL-FIELD \"online\"")
+
+   (edit-date-origin
+    :initarg :edit-date-origin
+    :accessor edit-date-origin
+    :documentation ":ORIGINAL-FIELD \"date_edit\"")
+
+   (edit-date
+    :initarg :edit-date
+    :accessor edit-date
+    :documentation ":ORIGINAL-FIELD \"date_edt\"")
+
+
+   (edit-by
+    :initarg :edit-by
+    :accessor edit-by
+    :documentation ":ORIGINAL-FIELD \"user_name\"")
+
+   (edit-by-creator
+    :initarg :edit-by-creator
+    :accessor edit-by-creator
+    :documentation ":ORIGINAL-FIELD \"naf_creator\"")
+   )
+  (:documentation
+   #.(format nil
+             "Class for parsed dbc XML `publication-_infos` table.~%~@
+:EXAMPLE~%
+ \(mon:class-slot-list  'parsed-publication-record\)~%~@
+:SEE-ALSO `set-parsed-publication-record-slot-value', `load-sax-parsed-xml-file-to-parsed-class-hash',
+`write-sax-parsed-xml-refs-file', `set-parse-ref-slot-value', `parsed-inventory-record'.~%▶▶▶")))
+
+(make-parsed-class-field-slot-accessor-mapping 
+ 'parsed-publication-record
+ '(("bio"                . control-id-doc-num-publication)
+   ("id"                 . control-id-entity-num-publication)
+   ("display"            . control-id-display-publication)
+   ("book_real"          . control-id-display-publication-full)
+   ("author"             . naf-entity-author-coref)
+   ("illustrator"        . naf-entity-artist-coref)
+   ("date_pub"           . publication-date)
+   ("loc_pub"            . publication-location)
+   ("volumes"            . publication-volumes)
+   ("pages"              . publication-pages)
+   ("illustrations"      . publication-illustrations)
+   ("subjects"           . ignorable-publication-subjects)
+   ("lc_class"           . control-id-db-0)
+   ("ULAN_control"       . control-id-db-1)
+   ("content"            . description-publication-note-content)
+   ("notes"              . description-publication-note-general)
+   ("special_note"       . description-publication-note-special)
+   ("auction_records"    . description-publication-note-sale-appearance)
+   ("default_pic"        . image-default-id)
+   ("print_default_pic"  . image-default-xref)
+   ("online"             . record-status-active)
+   ("date_edit"          . edit-date-origin)
+   ("date_edt"           . edit-date)
+   ("user_name"          . edit-by)
+   ("naf_creator"        . edit-by-creator)))
+
+
+;; :NOTE `set-parsed-inventory-record-slot-value' is defined in loadtime-bind.lisp
+;; (def-set-parsed-class-record-slot-value 
+;;     set-parsed-publication-record-slot-value
+;;     parsed-publication-record)
+;;
+;;; *big-parsed-class-field-slot-accessor-mapping-table*
+;;
+;; :NOTE Depreated use the macro'd version generated with `def-set-parsed-class-record-slot-value' instead. 
+;; (defun set-parsed-publication-record-slot-value
+;;        (field-string field-value object)
+;;   (values
+;;    (string-case:string-case (field-string)
+;;      ("bio" (setf (control-id-doc-num-publication object) field-value))
+;;      ("id" (setf (control-id-entity-num-publication object) field-value))
+;;      ("display" (setf (control-id-display-publication object) field-value))
+;;      ("book_real"
+;;       (setf (control-id-display-publication-full object) field-value))
+;;      ("author" (setf (naf-entity-author-coref object) field-value))
+;;      ("illustrator" (setf (naf-entity-artist-coref object) field-value))
+;;      ("date_pub" (setf (publication-date object) field-value))
+;;      ("loc_pub" (setf (publication-location object) field-value))
+;;      ("volumes" (setf (publication-volumes object) field-value))
+;;      ("pages" (setf (publication-pages object) field-value))
+;;      ("illustrations" (setf (publication-illustrations object) field-value))
+;;      ("subjects" (setf (ignorable-publication-subjects object) field-value))
+;;      ("lc_class" (setf (control-id-db-0 object) field-value))
+;;      ("ULAN_control" (setf (control-id-db-1 object) field-value))
+;;      ("content"
+;;       (setf (description-publication-note-content object) field-value))
+;;      ("notes" (setf (description-publication-note-general object) field-value))
+;;      ("special_note"
+;;       (setf (description-publication-note-special object) field-value))
+;;      ("auction_records"
+;;       (setf (description-publication-note-sale-appearance object) field-value))
+;;      ("default_pic" (setf (image-default-id object) field-value))
+;;      ("print_default_pic" (setf (image-default-xref object) field-value))
+;;      ("online" (setf (record-status-active object) field-value))
+;;      ("date_edit" (setf (edit-date-origin object) field-value))
+;;      ("date_edt" (setf (edit-date object) field-value))
+;;      ("user_name" (setf (edit-by object) field-value))
+;;      ("naf_creator" (setf (edit-by-creator object) field-value)))
+;;    object))
+
 
 ;;; ==============================
 ;;  <FIELD>               <TRANSFORM>

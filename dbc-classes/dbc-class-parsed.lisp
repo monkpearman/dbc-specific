@@ -92,9 +92,6 @@
 (defgeneric edit-date (object))
 (defgeneric (setf edit-date) (date-value object))
 
-
-;;; ==============================
-
 (defgeneric naf-entity-gender-type (object))
 (defgeneric (setf naf-entity-gender-type) (-value object))
 
@@ -121,12 +118,6 @@
 
 (defgeneric control-id-db-1 (object))
 (defgeneric (setf control-id-db-1) (-value object))
-
-
-
-
-
-
 
 ;; :NOTE This is the base class from wich other converted dbc-classes inherit.
 ;;       The intent is that this class should allow auxillary :before :after :around
@@ -157,12 +148,14 @@
 ;; :EXAMPLE
 ;;  (accessor-to-field-table (make-instance 'parsed-inventory-record))
 ;;  (accessor-to-field-table (make-instance 'parsed-artist-record))
+;;  (accessor-to-field-table (make-instance 'parsed-technique-record))
 (defmethod accessor-to-field-table ((object parsed-class))
   (accessor-to-field-table (parsed-class-mapped object)))
 
 ;; :EXAMPLE
 ;;  (field-to-accessor-table (make-instance 'parsed-inventory-record))
 ;;  (field-to-accessor-table (make-instance 'parsed-artist-record))
+;;  (field-to-accessor-table (make-instance 'parsed-technique-record))
 (defmethod field-to-accessor-table ((object parsed-class))
   (field-to-accessor-table (parsed-class-mapped object)))
 

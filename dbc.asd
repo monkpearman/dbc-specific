@@ -115,10 +115,8 @@
              (:file "dbc-class-parsed-inventory-record")
              (:file "dbc-class-parsed-artist-record")
              (:file "dbc-class-parsed-technique-record")
-             ;; (:file "dbc-class-parsed-publication-record")
-             
-
-             ;;
+             (:file "dbc-class-parsed-publication-record")
+                          ;;
              ;; (:file "dbc-class-themes-convert")
              ;; (:file "dbc-tgm")))
              ;;

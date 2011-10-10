@@ -1,5 +1,5 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-01-07T13:22:46-05:00Z}#{11015} - by MON>
-;;; :FILE ../dbc-classes/dbc-class-parse-convert.lisp
+;;; :FILE ../dbc-classes/dbc-class-parsed-convert.lisp
 ;;; ==============================
 
 
@@ -11,8 +11,6 @@
 
 (in-package #:dbc)
 ;; *package*
-
-
 
 
 ;;; ==============================
