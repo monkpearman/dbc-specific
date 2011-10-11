@@ -145,4 +145,13 @@ e.g. \"Here there be dragons.\"
 
 
 ;;; ==============================
+
+
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; show-trailing-whitespace: t
+;; mode: lisp-interaction
+;; End:
+
+;;; ==============================
 ;;; EOF

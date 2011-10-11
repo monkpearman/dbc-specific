@@ -617,4 +617,13 @@ Likewise, such co-references may occur in both the same class and/or an entirely
 ;;; ==============================
 
 ;;; ==============================
+
+
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; show-trailing-whitespace: t
+;; mode: lisp-interaction
+;; End:
+
+;;; ==============================
 ;;; EOF
