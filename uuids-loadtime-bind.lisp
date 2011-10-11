@@ -97,6 +97,11 @@
   (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
                            :control-id '*control-id-display-material-namespace*))
 
+(defvar *control-id-display-paper-namespace*
+  ;; "0796d6e5-c83c-5aef-8617-5be908fe1ad2"
+  (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
+                           :control-id '*control-id-display-paper-namespace*))
+
 
 ;;; ==============================
 ;; naf-entity display namespaces
