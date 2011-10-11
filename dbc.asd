@@ -105,6 +105,7 @@
              (:file "dbc-class-edit")
              (:file "dbc-class-naf-entity")
              (:file "dbc-class-category-entity")
+             (:file "dbc-class-theme-entity")
              (:file "dbc-class-media-entity")
              (:file "dbc-class-location-entity")
              (:file "dbc-class-taxon-entity")
