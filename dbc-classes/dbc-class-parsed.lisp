@@ -36,6 +36,9 @@
 ;;
 
 ;; `control-id-display-name-for-entity-type' -> | `control-id-display-artist'       ; parsed-naf-entity
+;;                                              | `control-id-display-author'       ; parsed-naf-entity
+;;                                              | `control-id-display-person'       ; parsed-naf-entity
+;;                                              | `control-id-display-brand'        ; parsed-naf-entity
 ;;                                              | `control-id-display-publication'  ; parsed-naf-entity
 ;;                                              | `conrtol-id-display-technique'    ; parsed-class
 
@@ -47,10 +50,11 @@
 ;;                                    | `control-id-entity-num-publication' ; parsed-naf-entity
 
 ;; `control-id-doc-num'            -> | `control-id-doc-num-artist'         ; parsed-naf-entity
-;;                                    | `control-id-doc-num-publication'    ; parsed-naf-entity
-;;                                    | `control-id-doc-num-brand'          ; parsed-naf-entity
 ;;                                    | `control-id-doc-num-author'         ; parsed-naf-entity
 ;;                                    | `control-id-doc-num-person'         ; parsed-naf-entity
+;;                                    | `control-id-doc-num-brand'          ; parsed-naf-entity
+;;                                    | `control-id-doc-num-publication'    ; parsed-naf-entity
+
 
 ;; `description-artist-note-general'
 ;; `description-artist-note-sale-appearance'
@@ -93,31 +97,31 @@
 (defgeneric (setf edit-date) (date-value object))
 
 (defgeneric naf-entity-gender-type (object))
-(defgeneric (setf naf-entity-gender-type) (-value object))
+(defgeneric (setf naf-entity-gender-type) (gender-type object))
 
 (defgeneric lifespan-date (object))
-(defgeneric (setf lifespan-date) (-value object))
+(defgeneric (setf lifespan-date) (date-value object))
 
 (defgeneric birth-date (object))
-(defgeneric (setf birth-date) (-value object))
+(defgeneric (setf birth-date) (date-value object))
 
 (defgeneric death-date (object))
-(defgeneric (setf death-date) (-value object))
+(defgeneric (setf death-date) (date-value object))
 
 (defgeneric location-birth (object))
-(defgeneric (setf location-birth) (-value object))
+(defgeneric (setf location-birth) (location-value object))
 
 (defgeneric location-death (object))
-(defgeneric (setf location-death) (-value object))
+(defgeneric (setf location-death) (location-value object))
 
 (defgeneric location-nationality (object))
-(defgeneric (setf location-nationality) (-value object))
+(defgeneric (setf location-nationality) (nationality-value object))
 
 (defgeneric control-id-db-0 (object))
-(defgeneric (setf control-id-db-0) (-value object))
+(defgeneric (setf control-id-db-0) (db-id-value object))
 
 (defgeneric control-id-db-1 (object))
-(defgeneric (setf control-id-db-1) (-value object))
+(defgeneric (setf control-id-db-1) (db-id-value object))
 
 ;; :NOTE This is the base class from wich other converted dbc-classes inherit.
 ;;       The intent is that this class should allow auxillary :before :after :around
