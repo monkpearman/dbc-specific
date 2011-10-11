@@ -114,6 +114,9 @@
              (:file "dbc-class-parsed-convert")
              (:file "dbc-class-parsed-inventory-record")
              (:file "dbc-class-parsed-artist-record")
+             (:file "dbc-class-parsed-author-record")
+             (:file "dbc-class-parsed-person-record")
+             (:file "dbc-class-parsed-brand-record")
              (:file "dbc-class-parsed-technique-record")
              (:file "dbc-class-parsed-publication-record")
                           ;;

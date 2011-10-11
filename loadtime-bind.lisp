@@ -177,6 +177,18 @@
     set-parsed-technique-record-slot-value
     parsed-technique-record)
 
+(def-set-parsed-class-record-slot-value 
+    set-parsed-person-record-slot-value
+    parsed-person-record)
+
+(def-set-parsed-class-record-slot-value 
+    set-parsed-author-record-slot-value
+    parsed-author-record)
+
+;; (def-set-parsed-class-record-slot-value 
+;;      set-parsed-brand-record-slot-value
+;;      parsed-brand-record)
+
 
 ;;; ==============================
 ;;; :EOF
