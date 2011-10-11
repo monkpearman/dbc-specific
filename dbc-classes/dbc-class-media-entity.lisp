@@ -12,6 +12,19 @@
 ;; -- media-entity-mount     (base-media-entity)
 ;; -- media-entity-color     (base-media-entity)
 
+;; --- control-id-media-entity-type              (control-id-entity-type)
+;; ---- control-id-media-entity                  (control-id-media-entity-type) 
+;; ----- control-id-media-entity-display-name    (control-id-media-entity control-id-display-name-for-entity-type)
+;; ------ control-id-display-technique           (control-id-media-entity-display-name)
+;; ------ control-id-display-mount               (control-id-media-entity-display-name)
+;; ------ control-id-display-material            (control-id-media-entity-display-name)
+;; ****** control-id-display-color               (control-id-media-entity-display-name) ;; inactive
+
+;; *control-id-display-technique-namespace*
+;; *control-id-display-material-namespace*
+;; *control-id-display-mount-namespace*
+;; *control-id-display-color-namespace*
+
 (defclass media-entity-technique (base-media-entity)
   ()
   (:documentation 

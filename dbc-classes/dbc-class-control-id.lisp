@@ -55,20 +55,81 @@
 
  ; ==============================
 
+;;; CPL's 
+;; (control-id-entity-type control-id-type base-dbc)
+;; (control-id-display-name-for-entity-type control-id-display-name base-control-id base-dbc)
+
+;; ((class-entity-type :initform (find-class '<MOST-SPECIFIC-CLASS>)))
+
+;; class-entity-type
+- control-id-type                             (base-dbc)
+-- control-id-entity-type                     (control-id-type)
+                                             
+--- control-id-naf-entity-type                (control-id-entity-type)
+---- control-id-naf-entity                    (control-id-naf-entity-type)
+----- control-id-naf-entity-display-name      (control-id-naf-entity control-id-display-name-for-entity-type)
+------ control-id-display-artist              (control-id-naf-entity-display-name)
+------ control-id-display-author              (control-id-naf-entity-display-name)
+------ control-id-display-person              (control-id-naf-entity-display-name)
+------ control-id-display-brand               (control-id-naf-entity-display-name)
+------ control-id-display-publication         (control-id-naf-entity-display-name)
+
+--- control-id-location-entity-type           (control-id-entity-type)
+---- control-id-location-entity               (control-id-location-entity-type)
+----- control-id-location-entity-display-name (control-id-location-entity control-id-display-name-for-entity-type)
+------ control-id-display-location            (control-id-location-entity-display-name)
+
+--- control-id-category-entity-type           (control-id-entity-type) 
+---- control-id-category-entity               (control-id-category-entity-type)
+----- control-id-category-entity-display-name (control-id-category-entity control-id-display-name-for-entity-type)
+------ control-id-display-category            (control-id-category-entity-display-name)
+
+--- control-id-theme-entity-type              (control-id-entity-type)
+---- control-id-theme-entity                  (control-id-theme-entity-type)
+----- control-id-theme-entity-display-name    (control-id-theme-entity control-id-display-name-for-entity-type)
+------ control-id-display-theme               (control-id-theme-entity-display-name)
+
+--- control-id-media-entity-type              (control-id-entity-type)
+---- control-id-media-entity                  (control-id-media-entity-type) 
+----- control-id-media-entity-display-name    (control-id-media-entity control-id-display-name-for-entity-type)
+------ control-id-display-technique           (control-id-media-entity-display-name)
+------ control-id-display-mount               (control-id-media-entity-display-name)
+------ control-id-display-material            (control-id-media-entity-display-name)
+
+--- control-id-taxon-entity-type              (control-id-entity-type)
+---- control-id-taxon-entity                  (control-id-taxon-entity-type)
+----- control-id-taxon-entity-display-name    (control-id-taxon-entity control-id-display-name-for-entity-type)
+------ control-id-display-taxon               (control-id-taxon-entity-display-name)
+
+
 - base-control-id                           (base-dbc)
 -- control-id-display-name                  (base-control-id) ;; String based identity
 --- control-id-display-name-for-entity-type (control-id-display-name)
----- control-id-display-artist              (control-id-display-name-for-entity-type)
----- control-id-display-brand               (control-id-display-name-for-entity-type)
----- control-id-display-author              (control-id-display-name-for-entity-type)
----- control-id-display-person              (control-id-display-name-for-entity-type)
----- control-id-display-publication         (control-id-display-name-for-entity-type)
----- control-id-display-publication-full    (control-id-display-name-for-entity-type) ;; or control-id-display-publication??
----- control-id-display-technique           (control-id-display-name-for-entity-type)
----- control-id-display-material            (control-id-display-name-for-entity-type)
----- control-id-display-mount               (control-id-display-name-for-entity-type)
----- control-id-display-location            (control-id-display-name-for-entity-type)
----- control-id-display-taxon               (control-id-display-name-for-entity-type)
+
+----- control-id-naf-entity-display-name    (control-id-display-name-for-entity-type)  
+------ control-id-display-artist            (control-id-naf-entity-display-name)
+------ control-id-display-brand             (control-id-naf-entity-display-name)
+------ control-id-display-author            (control-id-naf-entity-display-name)
+------ control-id-display-person            (control-id-naf-entity-display-name)
+------ control-id-display-publication       (control-id-naf-entity-display-name)
+------ control-id-display-publication-full  (control-id-naf-entity-display-name) ;; or control-id-display-publication??
+
+----- control-id-media-entity-display-name  (control-id-display-name-for-entity-type)  
+------ control-id-display-technique         (control-id-media-entity-display-name)
+------ control-id-display-material          (control-id-media-entity-display-name)
+------ control-id-display-mount             (control-id-media-entity-display-name)
+
+----- control-id-location-entity-display-name (control-id-display-name-for-entity-type)
+------ control-id-display-location            (control-id-location-entity-display-name)
+
+-----  control-id-taxon-entity-display-name   (control-id-display-name-for-entity-type)
+------ control-id-display-taxon               (control-id-taxon-entity-display-name)
+
+----- control-id-theme-entity-display-name  (control-id-display-name-for-entity-type)
+------ control-id-display-theme             (control-id-theme-entity-display-name)
+
+;; pending
+----- control-id-display-category          (control-id-display-name-for-entity-type)
 
 
 ;; Item refs id-nums should be obfuscated with a UUID and are deprecated!
@@ -147,6 +208,47 @@
 ;; -- initialize-instance
 ;; --- shared-initialize  
 
+
+
+;;; ==============================
+;;; control-id entity types
+;;; ==============================
+
+;; :ABSTRACT-CLASS
+(defclass control-id-type (base-dbc)
+  ()
+  (:documentation
+   #.(format nil "The type of class represented by a subclasses of `base-control-id'.")))
+
+(defclass control-id-entity-type (control-id-type)
+  ;; base-entity
+  ((class-entity-type))
+  )
+
+(defclass control-id-naf-entity-type (control-id-entity-type)
+  ((class-entity-type :initform (find-class 'base-naf-entity)))
+  )
+
+(defclass control-id-location-entity-type (control-id-entity-type)
+  ((class-entity-type :initform (find-class 'base-location-entity)))
+  )
+
+(defclass control-id-category-entity-type (control-id-entity-type)
+  ((class-entity-type :initform (find-class 'base-category-entity)))
+  )
+
+(defclass control-id-theme-entity-type (control-id-entity-type)
+  ((class-entity-type :initform (find-class 'base-theme-entity)))
+   )
+
+(defclass control-id-media-entity-type (control-id-entity-type)
+  ((class-entity-type :initform (find-class 'base-media-entity)))
+  )
+
+(defclass control-id-taxon-entity-type (control-id-entity-type)
+  ((class-entity-type :initform (find-class 'base-taxon-entity)))
+  )
+
 ;;; ==============================
 
 ;; It is likely that touching some of these slots will need to trigger
@@ -160,7 +262,7 @@
 ;; control-id-class-uuid
 
 
-;; Abstract class
+;; :ABSTRACT-CLASS
 (defclass base-control-id  (base-dbc) ;; base-uuid
   ((control-id-uuid)    
    (control-id-namespace)
@@ -175,11 +277,11 @@
    ;; (control-id-of-instance)    ; -- bad idea
    ;;
    ;; The slot CONTROL-ID-INSTANCE-CLASS is a symbol designating a class object.~%~@
-   ;; (control-id-instance-class) ;-- bad idea
+   ;; (control-id-instance-class) ; -- bad idea
    ;;
    ;; The slot CONTROL-ID-CLASS-UUID is the UUID of class instance of the entity
    ;; identified (e.g. the entity's class-of).~%~@
-   ;; (control-id-class-uuid))    ;-- bad idea
+   ;; (control-id-class-uuid))    ; -- bad idea
    )
   (:documentation
    #.(format nil
@@ -193,7 +295,7 @@ The slot CONTROL-ID-NAMESPACE is a UUID namespace appropriate to the gerneration
 of a control-id-uuid slot-value applicable to a particlar object and it is used
 as the NAMESPACE arg used when generating the v5 UUIDs.~%~@
 The SLOT CONTROL-ID-IDENTIFIES is a string or symbol.~%~
-It is used as the NAME arg used when generating the the v5 UUID the slot-value.~%~
+It is used as the NAME arg used when generating the the v5 UUID the slot-value~%~
 for control-id-uuid.~%~@
 :EXAMPLE~% ~
  \(mon:class-subclasses \(find-class 'base-control-id\)\)~%~@
@@ -210,6 +312,7 @@ for control-id-uuid.~%~@
 ;; These types of things do not really have meaningfull names but they will
 ;; none-the-less require an interface that allows us to refer to them
 ;; independent of their UUID identity..
+;; :ABSTRACT-CLASS
 (defclass control-id-display-name (base-control-id) ;; base-uuid
   ;; control-id-uuid
   ;; control-id-namespace
@@ -256,6 +359,7 @@ which record displayable control-ids which identify a nameable thing.~%~@
 
 ;; (class-name (find-class 'control-id-display-name-for-entity-type))
 
+;; :ABSTRACT-CLASS
 (defclass control-id-display-name-for-entity-type (control-id-display-name)
   ;; control-id-uuid
   ;; control-id-namespace
@@ -294,60 +398,178 @@ Likewise, such co-references may occur in both the same class and/or an entirely
 ;; (defun make-control-id-display-artist (display-name entity-of-type)
 ;; DISPLAY-NAME is a string identifying entity ENTITY-OF-TYPE is the class of the entity.
 
+
+;;; ==============================
+;; media-entity display names
+;;; ==============================
 
-(defclass control-id-display-artist (control-id-display-name-for-entity-type)  
+(defclass control-id-media-entity (control-id-media-entity-type)
   ()
   )
 
-(defclass control-id-display-brand  (control-id-display-name-for-entity-type)
+;; :ABSTRACT-CLASS
+(defclass control-id-media-entity-display-name (control-id-media-entity control-id-display-name-for-entity-type)
   ()
   )
 
-(defclass control-id-display-author (control-id-display-name-for-entity-type)
+(defclass control-id-display-technique (control-id-media-entity-display-name)
+  ;; *control-id-display-technique-namespace*
+  ((class-entity-type :initform (find-class 'media-entity-technique)))
+  )
+
+(defclass control-id-display-material (control-id-media-entity-display-name)
+  ;; *control-id-display-material-namespace*
+  ((class-entity-type :initform (find-class 'media-entity-material)))
+  )
+
+(defclass control-id-display-mount (control-id-media-entity-display-name)
+  ;; *control-id-display-mount-namespace*
+  ((class-entity-type :initform (find-class 'media-entity-mount)))
+  )
+
+;; (defclass control-id-display-color (control-id-media-entity-display-name)
+;; ;; *control-id-display-color-namespace*
+;;  ((class-entity-type :initform (find-class 'media-entity-color)))
+;;   )
+
+
+;;; ==============================
+;;; category-entity display names
+;;; ==============================
+
+
+;; :NOTE What this is tricky because there may be multiple categories with the
+;; same display name each of which refer to a separate category entity, e.g.:
+;; 
+(defclass control-id-category-entity (control-id-category-entity-type)
   ()
   )
 
-(defclass control-id-display-person (control-id-display-name-for-entity-type)
+;; :ABSTRACT-CLASS
+(defclass control-id-category-entity-display-name (control-id-category-entity control-id-display-name-for-entity-type)
   ()
   )
 
-(defclass control-id-display-publication (control-id-display-name-for-entity-type)
+(defclass control-id-display-category (control-id-category-entity-display-name)
+  ;; *control-id-display-category-namespace*
   ()
+  )
+
+
+
+
+;;; ==============================
+;;; theme-entity display names
+;;; ==============================
+
+(defclass control-id-theme-entity (control-id-theme-entity-type)
+  ()
+  )
+
+;; :NOTE Should we treat MT, RT, BT, NT, USE, USED-FOR as distinct themes?
+;; :ABSTRACT-CLASS
+(defclass control-id-theme-entity-display-name (control-id-theme-entity control-id-display-name-for-entity-type)
+  ()
+  )
+
+(defclass control-id-display-theme (control-id-theme-entity-display-name)
+  ;; *control-id-display-theme-namespace*
+  ()
+  )
+
+
+;;; ==============================
+;; location-entity display names
+;;; ==============================
+
+
+(defclass control-id-location-entity   (control-id-location-entity-type)
+  ()
+  )
+
+;; :NOTE This is tricky because "New York" and "New York" refer to two separate
+;; location entities, e.g. one is a state the other is a city.
+;; :ABSTRACT-CLASS
+(defclass control-id-location-entity-display-name (control-id-location-entity control-id-display-name-for-entity-type)
+  ()
+  )
+
+(defclass control-id-display-location (control-id-location-entity-display-name)
+  ;; *control-id-display-location-namespace*
+  ;; ((class-entity-type :initform (find-class 'location-entity)))
+  ;; ((class-entity-type :initform (find-class 'location-entity-unverified)))
+  ;; ((class-entity-type :initform (find-class 'location-entity-verified)))
+  ;; ((class-entity-type :initform (find-class 'location-entity-imagined)))
+  ()
+  )
+
+
+;;; ==============================
+;; taxon-entity display names
+;;; ==============================
+
+;; :ABSTRACT-CLASS
+(defclass control-id-taxon-entity (control-id-taxon-entity-type)
+  ()
+  )
+
+;; :ABSTRACT-CLASS
+(defclass control-id-taxon-entity-display-name (control-id-taxon-entity control-id-display-name-for-entity-type)
+  ()
+  )
+
+(defclass control-id-display-taxon (control-id-taxon-entity-display-name)
+  ;; *control-id-display-taxon-namespace*  
+  ()
+  )
+
+
+;;; ==============================
+;; naf-entity display names
+;;; ==============================
+;;
+
+(defclass control-id-naf-entity (control-id-naf-entity-type)
+  ()
+  )
+
+;; :ABSTRACT-CLASS
+(defclass control-id-naf-entity-display-name (control-id-naf-entity control-id-display-name-for-entity-type)
+  ()
+  )
+
+(defclass control-id-display-artist (control-id-naf-entity-display-name)
+  ;; *control-id-display-artist-namespace*
+  ((class-entity-type :initform (find-class 'naf-entity-artist)))
+  )
+
+
+(defclass control-id-display-author (control-id-naf-entity-display-name)
+  ;; *control-id-display-author-namespace*
+  ((class-entity-type :initform (find-class 'naf-entity-author)))
+  )
+
+(defclass control-id-display-person (control-id-naf-entity-display-name)
+  ;; *control-id-display-person-namespace*
+  ((class-entity-type :initform (find-class 'naf-entity-person)))
+  )
+
+(defclass control-id-display-brand (control-id-naf-entity-display-name)
+  ;; *control-id-display-brand-namespace*
+  ((class-entity-type :initform (find-class 'naf-entity-brand)))
+  )
+
+(defclass control-id-display-publication (control-id-naf-entity-display-name)
+  ;; *control-id-display-publication-namespace*
+  ((class-entity-type :initform (find-class 'naf-entity-publication)))
   )
 
 ;; :NOTE or subclass control-id-display-publication
-;; (defclass control-id-display-publication-full (control-id-display-name-for-entity-type)
-;;   ()
-;;   )
-
-(defclass control-id-display-technique (control-id-display-name-for-entity-type)
-  ()
-  )
-
-(defclass control-id-display-material (control-id-display-name-for-entity-type)
-  ()
-  )
-
-(defclass control-id-display-mount (control-id-display-name-for-entity-type)
-  ()
-  )
-
-(defclass control-id-display-mount (control-id-display-name-for-entity-type)
-  ()
-  )
-
-;; (defclass control-id-display-color (control-id-display-name-for-entity-type)
+;; (defclass control-id-display-publication-full (control-id-naf-entity-display-name)
 ;;   ()
 ;;   )
 
 
-(defclass control-id-display-location (control-id-display-name-for-entity-type)
-  ()
-  )
-
-(defclass control-id-display-taxon (control-id-display-name-for-entity-type)
-  ()
-  )
 
 
 ;;; ==============================

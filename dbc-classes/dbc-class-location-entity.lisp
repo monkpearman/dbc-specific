@@ -3,31 +3,48 @@
 ;;; ==============================
 
 ;;; ==============================
-;;; :NOTES 
-;;; Class definitions, methods, variables for location entities
-;;;
-;;; base-dbc
-;;; - base-entity
-;;; -- base-location-entity
-;;; --- location-entity
-;;; ---- location-entity-verified
-;;; ---- location-entity-unverified
-;;; ---- location-entity-imagined
-;;;
-;;; Some form of the following is necessary, but it isn't yet clear where they go:
-;;; location-entity-nationality (location-entity-????)
-;;; location-entity-birth       (location-entity-????)
-;;; location-entity-death       (location-entity-????) 
-;;; location-entity-published   (location-entity-????)
-;;;
-;;; Are they: 
-;;;
-;;; - subclasses of base-entity
-;;; - subclasses of location-entity
-;;; - slot-values of location-entity
-;;; - slot-values/sub-classes of some naf-entity specific subclass of location-entity
-;;;   e.g. naf-location-entity
-;;;
+;; :NOTES 
+;; Class definitions, methods, variables for location entities
+;;
+;; base-dbc
+;; - base-entity
+;; -- base-location-entity
+;; --- location-entity
+;; ---- location-entity-verified
+;; ---- location-entity-unverified
+;; ---- location-entity-imagined
+;;
+;; *control-id-display-location-namespace*
+;; --- control-id-location-entity-type           (control-id-entity-type)
+;; ---- control-id-location-entity               (control-id-location-entity-type)
+;; ----- control-id-location-entity-display-name (control-id-location-entity control-id-display-name-for-entity-type)
+;; ------ control-id-display-location            (control-id-location-entity-display-name)
+;;
+;;
+;; Some form of the following is necessary, but it isn't yet clear where they go:
+;; location-entity-nationality (location-entity-????)
+;; location-entity-birth       (location-entity-????)
+;; location-entity-death       (location-entity-????) 
+;; location-entity-published   (location-entity-????)
+;;
+;; Are they: 
+;;
+;; - subclasses of base-entity
+;; - subclasses of location-entity
+;; - slot-values of location-entity
+;; - slot-values/sub-classes of some naf-entity specific subclass of location-entity
+;;   e.g. naf-location-entity
+;;
+;;
+;; :NOTE How do we partition Country, Region, Province, City, Street-address etc.?
+;; 
+;;
+;; Related classes:
+;; control-id-display-location (control-id-display-name-for-entity-type control-id-display-name base-control-id base-dbc)
+;; Slots
+;; `location-nation'       <- parsed-brand-record
+;; `location-nationality'  <- parsed-artist-record, parsed-author-record, parsed-person-record,
+
 ;;; ==============================
 ;;;
 ;;; :NOTE How to handle situations when an instance of
@@ -95,7 +112,7 @@ When non-nil slot-value is a [ <STRING> | <LIST-OF-STRINGS> ].~%~@
   (:default-initargs :display-name nil
                      :appellations-modern nil
                      :appellations-historic nil)
-  (:documentation 
+  (:documentation
   #.(format nil
             "Top-level from which location-entity~%~@
 :SEE-ALSO `<XREF>'.~%▶▶▶")))
@@ -105,14 +122,14 @@ When non-nil slot-value is a [ <STRING> | <LIST-OF-STRINGS> ].~%~@
 
 (defclass location-entity-verified (location-entity)
   ()
-  (:documentation 
+  (:documentation
    #.(format nil 
              "
 :SEE-ALSO `<XREF>'.~%▶▶▶")))
 
 (defclass location-entity-imagined (location-entity)
   ()
-  (:documentation 
+  (:documentation
    #.(format nil 
              "
 e.g. \"Here there be dragons.\"
@@ -121,7 +138,7 @@ e.g. \"Here there be dragons.\"
 
 (defclass location-entity-unverified (location-entity)
   ()
-  (:documentation 
+  (:documentation
    #.(format nil 
              "
 :SEE-ALSO `<XREF>'.~%▶▶▶")))

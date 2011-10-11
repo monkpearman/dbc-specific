@@ -221,6 +221,7 @@ dbc-classes/dbc-class-control-id.lisp
 ;;  involve complex interactions in the C-P-L around the
 ;;  `display-name-for-entity' and `display-name-for-entity-of-type' slot-values.
 
+;; *control-id-display-artist-namespace*
 ;; *control-id-display-author-namespace*
 ;; *control-id-display-brand-namespace*
 ;; *control-id-display-location-namespace*
@@ -240,23 +241,29 @@ dbc-classes/dbc-class-control-id.lisp
 ;; *control-id-display-description-namespace*
 ;; *control-id-display-image-namespace*
 
-
+- control-id-type                           (base-dbc)
+-- control-id-entity-type                   (control-id-type)
+--- control-id-naf-entity-type              (control-id-entity-type)
+--- control-id-location-entity-type         (control-id-entity-type)
+--- control-id-category-entity-type         (control-id-entity-type) 
+--- control-id-theme-entity-type            (control-id-entity-type)
+--- control-id-media-entity-type            (control-id-entity-type)
+--- control-id-taxon-entity-type            (control-id-entity-type)
 
 - base-control-id (base-dbc)
-
 -- control-id-display-name                  (base-control-id) ;; String based identity
---- control-id-display-name-for-entity-type (control-id-display-name)
----- control-id-display-artist              (control-id-display-name-for-entity-type)
----- control-id-display-brand               (control-id-display-name-for-entity-type)
----- control-id-display-author              (control-id-display-name-for-entity-type)
----- control-id-display-person              (control-id-display-name-for-entity-type)
----- control-id-display-publication         (control-id-display-name-for-entity-type)
----- control-id-display-publication-full    (control-id-display-publication) ;; !!!
----- control-id-display-location            (control-id-display-name-for-entity-type)
----- control-id-display-technique           (control-id-display-name-for-entity-type)
----- control-id-display-mount               (control-id-display-name-for-entity-type)
----- control-id-display-material            (control-id-display-name-for-entity-type)
----- control-id-display-taxon               (control-id-display-name-for-entity-type)
+----- control-id-naf-entity-display-name    (control-id-display-name-for-entity-type)  
+------ control-id-display-artist            (control-id-naf-entity-display-name)
+------ control-id-display-brand             (control-id-naf-entity-display-name)
+------ control-id-display-author            (control-id-naf-entity-display-name)
+------ control-id-display-person            (control-id-naf-entity-display-name)
+------ control-id-display-publication       (control-id-naf-entity-display-name)
+------ control-id-display-publication-full  (control-id-naf-entity-display-name) ;; or control-id-display-publication??
+------ control-id-display-technique         (control-id-naf-entity-display-name)
+------ control-id-display-material          (control-id-naf-entity-display-name)
+------ control-id-display-mount             (control-id-naf-entity-display-name)
+------ control-id-display-location          (control-id-naf-entity-display-name)
+------ control-id-display-taxon             (control-id-naf-entity-display-name)
 
 
 ;; Item refs id-nums should be obfuscated with a UUID and are deprecated!

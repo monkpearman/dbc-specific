@@ -131,8 +131,9 @@ And more specifically we are concerned with the mapping from:~%~% ~
              "Base class for referencing DBC system NAF entities.~%~@
               :EXAMPLE~% ~
                \(mon:class-subclasses \(find-class 'base-naf-entity\)\)
-             :SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp',~%~
-             `naf-entity-alt-name-regexp'.~%▶▶▶")))
+              :SEE-ALSO `control-id-naf-entity-type', `control-id-naf-entity',~%~
+              `control-id-naf-entity-display-name', `naf-entity-type-regexp',~%~
+              `naf-entity-control-name-regexp', `naf-entity-alt-name-regexp'.~%▶▶▶")))
 
 ;; base-entity               (base-dbc)
 ;; - base-media-entity       (base-entity)

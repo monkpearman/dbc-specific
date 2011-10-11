@@ -6,17 +6,28 @@
 (in-package #:dbc)
 ;; *package*
 
+
+;; :NOTE Some of these slot names aren't congruent with the other parsed naf-entity records:
+;; founded-date
+;; product-coref
+;; founded-date
+;; naf-entity-brand-slogan
+;; naf-entity-person-founder-coref
+
 (defclass parsed-brand-record (parsed-naf-entity)
-  ((control-id-doc-num-brand
+  (;; control-id-doc-num
+   (control-id-doc-num-brand
     :initarg :control-id-doc-num-brand
     :accessor control-id-doc-num-brand
     :documentation ":ORIGINAL-FIELD \"doc\"")
 
+   ;; control-id-entity-num
    (control-id-entity-num-brand
     :initarg :control-id-entity-num-brand
     :accessor control-id-entity-num-brand
     :documentation ":ORIGINAL-FIELD \"id\"")
 
+   ;; control-id-display-name ???
    (control-id-display-brand
     :initarg :control-id-display-brand
     :accessor control-id-display-brand
