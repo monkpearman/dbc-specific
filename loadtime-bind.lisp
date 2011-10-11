@@ -185,9 +185,9 @@
     set-parsed-author-record-slot-value
     parsed-author-record)
 
-;; (def-set-parsed-class-record-slot-value 
-;;      set-parsed-brand-record-slot-value
-;;      parsed-brand-record)
+(def-set-parsed-class-record-slot-value 
+    set-parsed-brand-record-slot-value
+    parsed-brand-record)
 
 
 ;;; ==============================
