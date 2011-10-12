@@ -13,24 +13,24 @@
 ;;; ==============================
 
 (defclass parsed-inventory-record (parsed-class)
-  ((item-number
-    :initarg :item-number
-    :accessor item-number
+  ((inventory-number
+    :initarg :inventory-number
+    :accessor inventory-number
     :documentation ":ORIGINAL-FIELD \"ref\"")
 
-   (description-item-title
-    :initarg :description-item-title
-    :accessor description-item-title
+   (description-inventory-title
+    :initarg :description-inventory-title
+    :accessor description-inventory-title
     :documentation  ":ORIGINAL-FIELD \"title\"")
 
-   (description-item-french ;; description-class
-    :initarg :description-item-french
-    :accessor description-item-french
+   (description-inventory-french ;; description-class
+    :initarg :description-inventory-french
+    :accessor description-inventory-french
     :documentation ":ORIGINAL-FIELD \"desc_fr\"")
 
-   (description-item-english ;; description-class
-    :initarg :description-item-english
-    :accessor description-item-english
+   (description-inventory-english ;; description-class
+    :initarg :description-inventory-english
+    :accessor description-inventory-english
     :documentation ":ORIGINAL-FIELD \"desc_en\"")
 
    (ignorable-history-french
@@ -43,14 +43,14 @@
     :accessor ignorable-history-english
     :documentation ":ORIGINAL-FIELD \"histo_en\"")
 
-   (description-item-quote
-    :initarg :description-item-quote
-    :accessor description-item-quote
+   (description-inventory-quote
+    :initarg :description-inventory-quote
+    :accessor description-inventory-quote
     :documentation ":ORIGINAL-FIELD \"text_quote\"")
 
-   (description-item-translation
-    :initarg  :description-item-translation
-    :accessor description-item-translation
+   (description-inventory-translation
+    :initarg  :description-inventory-translation
+    :accessor description-inventory-translation
     :documentation ":ORIGINAL-FIELD \"translation\"")
 
    (naf-entity-person-coref
@@ -221,9 +221,9 @@
     :accessor keywords-sequence
     :documentation ":ORIGINAL-FIELD \"keywords\"")
 
-   (description-item-condition ;; description-class
-    :initarg :description-item-condition
-    :accessor description-item-condition
+   (description-inventory-condition ;; description-class
+    :initarg :description-inventory-condition
+    :accessor description-inventory-condition
     :documentation ":ORIGINAL-FIELD \"condition\"")
 
    (media-entity-mount
@@ -261,14 +261,14 @@
     :accessor ignorable-number
     :documentation ":ORIGINAL-FIELD \"nbre\"")
 
-   (item-seller
-    :initarg :item-seller
-    :accessor item-seller
+   (inventory-seller
+    :initarg :inventory-seller
+    :accessor inventory-seller
     :documentation ":ORIGINAL-FIELD \"seller\"")
 
-   (item-bar-code
-    :initarg :item-bar-code
-    :accessor item-bar-code
+   (inventory-bar-code
+    :initarg :inventory-bar-code
+    :accessor inventory-bar-code
     :documentation ":ORIGINAL-FIELD \"bar_code\"")
 
    (unit-weight
@@ -301,9 +301,9 @@
     :accessor record-status-active
     :documentation ":ORIGINAL-FIELD \"online\"")
 
-   (item-uri
-    :initarg :item-uri
-    :accessor item-uri
+   (inventory-uri
+    :initarg :inventory-uri
+    :accessor inventory-uri
     :documentation ":ORIGINAL-FIELD \"uri\"")
 
    (ignorable-notes
@@ -316,9 +316,9 @@
     :accessor ignorable-keywords-type
     :documentation ":ORIGINAL-FIELD \"keywords_type\"")
 
-   (item-can-repro ;; IGNORABLE  
-    :initarg :item-can-repro
-    :accessor item-can-repro
+   (inventory-can-repro ;; IGNORABLE  
+    :initarg :inventory-can-repro
+    :accessor inventory-can-repro
     :documentation ":ORIGINAL-FIELD \"av_repro\"")
 
    (documentation-related
@@ -346,14 +346,14 @@
     :accessor control-id-ebay
     :documentation ":ORIGINAL-FIELD \"ebay_id\"")
 
-   (description-item-seo-title
-    :initarg :description-item-seo-title
-    :accessor description-item-seo-title
+   (description-inventory-seo-title
+    :initarg :description-inventory-seo-title
+    :accessor description-inventory-seo-title
     :documentation ":ORIGINAL-FIELD \"seo_title\"")
 
-   (description-item-seo
-    :initarg :description-item-seo
-    :accessor description-item-seo
+   (description-inventory-seo
+    :initarg :description-inventory-seo
+    :accessor description-inventory-seo
     :documentation ":ORIGINAL-FIELD \"description_seo\"")
 
    (keywords-seo
@@ -387,14 +387,14 @@
 
 (make-parsed-class-field-slot-accessor-mapping 
  'parsed-inventory-record
- '(("ref"               . item-number)
-   ("title"             . description-item-title)
-   ("desc_fr"           . description-item-french)
-   ("desc_en"           . description-item-english)
+ '(("ref"               . inventory-number)
+   ("title"             . description-inventory-title)
+   ("desc_fr"           . description-inventory-french)
+   ("desc_en"           . description-inventory-english)
    ("histo_fr"          . ignorable-history-french)
    ("histo_en"          . ignorable-history-english)
-   ("text_quote"        . description-item-quote)
-   ("translation"       . description-item-translation)
+   ("text_quote"        . description-inventory-quote)
+   ("translation"       . description-inventory-translation)
    ("people"            . naf-entity-person-coref)
    ("brand"             . naf-entity-brand-coref)
    ("composer"          . naf-entity-composer-coref)
@@ -428,7 +428,7 @@
    ("theme3"            . theme-entity-2-coref)
    ("price"             . price-ask)
    ("keywords"          . keywords-sequence)
-   ("condition"         . description-item-condition)
+   ("condition"         . description-inventory-condition)
    ("onlinen"           . media-entity-mount)
    ("technique"         . media-entity-technique)
    ("paper"             . media-entity-paper) ; media-entity-material
@@ -436,25 +436,25 @@
    ("w"                 . unit-width)
    ("h"                 . unit-height)
    ("nbre"              . ignorable-number)
-   ("seller"            . item-seller)
-   ("bar_code"          . item-bar-code)
+   ("seller"            . inventory-seller)
+   ("bar_code"          . inventory-bar-code)
    ("weight"            . unit-weight)
    ("user_name"         . edit-by-creator)
    ("done"              . job-complete)
    ("job_name"          . job-id)
    ("locked"            . job-locked) ;; or maybe ignorable-job-locked
    ("online"            . record-status-active)
-   ("uri"               . item-uri)
+   ("uri"               . inventory-uri)
    ("notes"             . ignorable-notes)
    ("keywords_type"     . ignorable-keywords-type)
-   ("av_repro"          . item-can-repro)
+   ("av_repro"          . inventory-can-repro)
    ("related_doc"       . documentation-related)
    ("ebay_final"        . price-sold-ebay)
    ("ebay_price"        . price-ask-ebay)
    ("ebay_title"        . title-ebay)
    ("ebay_id"           . control-id-ebay)
-   ("seo_title"         . description-item-seo-title)
-   ("description_seo"   . description-item-seo)
+   ("seo_title"         . description-inventory-seo-title)
+   ("description_seo"   . description-inventory-seo)
    ("keywords_seo"      . keywords-seo)
    ("date"              . edit-date-origin)
    ("date_edit"         . edit-date)
@@ -502,21 +502,21 @@
 ;;   (values 
 ;;    (string-case:string-case (field-string)
 ;;      ("ref" 
-;;       (setf (item-number object) field-value))
+;;       (setf (inventory-number object) field-value))
 ;;      ("title" 
-;;       (setf (description-item-title object) field-value))
+;;       (setf (description-inventory-title object) field-value))
 ;;      ("desc_fr" 
-;;       (setf (description-item-french object) field-value))
+;;       (setf (description-inventory-french object) field-value))
 ;;      ("desc_en" 
-;;       (setf (description-item-english object) field-value))
+;;       (setf (description-inventory-english object) field-value))
 ;;      ("histo_fr" 
 ;;       (setf (ignorable-history-french object) field-value))
 ;;      ("histo_en" 
 ;;       (setf (ignorable-history-english object) field-value))
 ;;      ("text_quote"
-;;       (setf (description-item-quote object) field-value))
+;;       (setf (description-inventory-quote object) field-value))
 ;;      ("translation"
-;;       (setf (description-item-translation object) field-value))
+;;       (setf (description-inventory-translation object) field-value))
 ;;      ("people"
 ;;       (setf (naf-entity-person-coref object) field-value))
 ;;      ("brand"
@@ -584,7 +584,7 @@
 ;;      ("keywords"
 ;;       (setf (keywords-sequence object) field-value))
 ;;      ("condition"
-;;       (setf (description-item-condition object) field-value))
+;;       (setf (description-inventory-condition object) field-value))
 ;;      ("onlinen"
 ;;       (setf (media-entity-mount object) field-value))
 ;;      ("technique"
@@ -600,9 +600,9 @@
 ;;      ("nbre"
 ;;       (setf (ignorable-number object) field-value))
 ;;      ("seller"
-;;       (setf (item-seller object) field-value))
+;;       (setf (inventory-seller object) field-value))
 ;;      ("bar_code"
-;;       (setf (item-bar-code object) field-value))
+;;       (setf (inventory-bar-code object) field-value))
 ;;      ("weight"
 ;;       (setf (unit-weight object) field-value))
 ;;      ("user_name"
@@ -616,13 +616,13 @@
 ;;      ("online"
 ;;       (setf (record-status-active object) field-value))
 ;;      ("uri"
-;;       (setf (item-uri object) field-value))
+;;       (setf (inventory-uri object) field-value))
 ;;      ("notes"
 ;;       (setf (ignorable-notes object) field-value))
 ;;      ("keywords_type"
 ;;       (setf (ignorable-keywords-type object) field-value))
 ;;      ("av_repro"
-;;       (setf (item-can-repro object) field-value))
+;;       (setf (inventory-can-repro object) field-value))
 ;;      ("related_doc"
 ;;       (setf (documentation-related object) field-value))
 ;;      ("ebay_final"
@@ -634,9 +634,9 @@
 ;;      ("ebay_id"
 ;;       (setf (control-id-ebay object) field-value))
 ;;      ("seo_title"
-;;       (setf (description-item-seo-title object) field-value))
+;;       (setf (description-inventory-seo-title object) field-value))
 ;;      ("description_seo"
-;;       (setf (description-item-seo object) field-value))
+;;       (setf (description-inventory-seo object) field-value))
 ;;      ("keywords_seo"
 ;;       (setf (keywords-seo object) field-value))
 ;;      ("date"
@@ -712,15 +712,15 @@
 ;;    <SLOT>  <TRANSFORM>  |  (<INIT> {INIT-PFX | INIT-SFX})  <ACCESSOR>  
 ;; '(
 ;;
-;;  "ref"              ;; item-number
+;;  "ref"              ;; inventory-number
 ;;
-;;  "title"            ;; description-item-title
-;;  "desc_fr"          ;; description-item-french     ;; description-class
-;;  "desc_en"          ;; description-item-english    ;; description-class
+;;  "title"            ;; description-inventory-title
+;;  "desc_fr"          ;; description-inventory-french     ;; description-class
+;;  "desc_en"          ;; description-inventory-english    ;; description-class
 ;;  "histo_fr"         ;; ignorable-history-french
 ;;  "histo_en"         ;; ignorable-history-english
-;;  "text_quote"       ;; description-item-quote
-;;  "translation"      ;; description-item-translation
+;;  "text_quote"       ;; description-inventory-quote
+;;  "translation"      ;; description-inventory-translation
 ;;
 ;;  "people"           ;; naf-entity-person-coref
 ;;  "brand"            ;; naf-entity-brand-coref
@@ -765,7 +765,7 @@
 ;;
 ;;  "keywords"         ;; keywords-sequence
 ;;
-;;  "condition"        ;; description-item-condition  ;; description-class
+;;  "condition"        ;; description-inventory-condition  ;; description-class
 ;;  "onlinen"          ;; media-entity-mount
 ;;  "technique"        ;; media-entity-technique
 ;;  "paper"            ;; media-entity-paper
@@ -778,8 +778,8 @@
 ;;
 ;;  "nbre"             ;; ignorable-number    ;; probably empty
 ;;
-;;  "seller"           ;; item-seller
-;;  "bar_code"         ;; item-bar-code
+;;  "seller"           ;; inventory-seller
+;;  "bar_code"         ;; inventory-bar-code
 ;;  "weight"           ;; unit-weight
 ;;  "user_name"        ;; edit-by-creator
 ;;  "done"             ;; job-complete
@@ -787,11 +787,11 @@
 ;;  "locked"           ;; job-locked   ;; IGNORABLE
 ;;  "online"           ;; record-status-active
 ;;
-;;  "uri"              ;; item-uri
+;;  "uri"              ;; inventory-uri
 
 ;;  "notes"            ;; ignorable-notes
 ;;  "keywords_type"    ;; ignorable-keywords-type
-;;  "av_repro"         ;; item-can-repro ;; IGNORABLE
+;;  "av_repro"         ;; inventory-can-repro ;; IGNORABLE
 
 ;;
 ;;  "related_doc"      ;; documentation-related
@@ -801,8 +801,8 @@
 ;;  "ebay_price"       ;; price-ask-ebay
 ;;  "ebay_title"       ;; title-ebay
 ;;  "ebay_id"          ;; id-ebay ??? uuid-ebay
-;;  "seo_title"        ;; description-item-seo-title
-;;  "description_seo"  ;; description-item-seo
+;;  "seo_title"        ;; description-inventory-seo-title
+;;  "description_seo"  ;; description-inventory-seo
 ;;  "keywords_seo"     ;; keywords-seo
 ;;
 ;;  "date"             ;; edit-date-origin  ;; IGNORABLE assuming date_edit is present and corresponds 
@@ -841,7 +841,7 @@
 
 
 ;;; ==============================
-;; :FIELD "ref" :TRANSFORM item-number
+;; :FIELD "ref" :TRANSFORM inventory-number
 ;;
 ;;         :TYPE "mediumint(8) unsigned"
 ;;         :NULL-P "NO"
@@ -879,7 +879,7 @@
 ;;; ==============================
 
 ;;; ==============================
-;; :FIELD "title" :TRANSFORM description-item-title :CLASS description-class
+;; :FIELD "title" :TRANSFORM description-inventory-title :CLASS description-class
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -906,7 +906,7 @@
 ;; 
 
 ;;; ==============================
-;; :FIELD "desc_fr" :TRANSFORM description-item-french  :CLASS description-class
+;; :FIELD "desc_fr" :TRANSFORM description-inventory-french  :CLASS description-class
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -921,7 +921,7 @@
 ;;   Use `field-convert-1-0-x'
 
 ;;; ==============================
-;; :FIELD "desc_en" :TRANSFORM description-item-english  :CLASS description-class
+;; :FIELD "desc_en" :TRANSFORM description-inventory-english  :CLASS description-class
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -948,7 +948,7 @@
 ;; - Remove "&quot;"
 
 ;;; ==============================
-;; :FIELD "translation" :TRANSFORM description-item-translation
+;; :FIELD "translation" :TRANSFORM description-inventory-translation
 ;;
 ;;         :TYPE "tinyint(3) unsigned"
 ;;         :NULL-P "NO"
@@ -1019,7 +1019,7 @@
 ;;   Use `field-convert-1-0-x'
 
 ;;; ==============================
-;; :FIELD "text_quote" :TRANSFORM description-item-quote
+;; :FIELD "text_quote" :TRANSFORM description-inventory-quote
 ;;
 ;;         :TYPE "varchar(100)"
 ;;         :NULL-P "NO"
@@ -1495,7 +1495,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "condition" :TRANSFORM description-item-condition
+;; :FIELD "condition" :TRANSFORM description-inventory-condition
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -1854,7 +1854,7 @@
 ;;; ==============================
 
 ;;; ==============================
-;; :FIELD "uri" :TRANSFORM item-uri
+;; :FIELD "uri" :TRANSFORM inventory-uri
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "YES"
@@ -1875,7 +1875,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "seo_title" :TRANSFORM description-item-seo-title
+;; :FIELD "seo_title" :TRANSFORM description-inventory-seo-title
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -1929,7 +1929,7 @@
 ;; - What fucking mess... 
 
 ;;; ==============================
-;; :FIELD "description_seo" :TRANSFORM description-item-seo :CLASS description-class
+;; :FIELD "description_seo" :TRANSFORM description-inventory-seo :CLASS description-class
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
@@ -2186,7 +2186,7 @@
 
 
 ;;; ==============================
-;; :FIELD "bar_code" :TRANSFORM item-bar-code
+;; :FIELD "bar_code" :TRANSFORM inventory-bar-code
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -2351,7 +2351,7 @@
 ;; - use `field-convert-1-0-x'
 
 ;;; ==============================
-;; :FIELD "av_repro" :TRANSFORM item-can-repro
+;; :FIELD "av_repro" :TRANSFORM inventory-can-repro
 ;;
 ;;         :TYPE "tinyint(3) unsigned"
 ;;         :NULL-P "NO"
@@ -2370,7 +2370,7 @@
 ;; - Can effictively be ignored.
 
 ;;; ==============================
-;; :FIELD "seller" :TRANSFORM item-seller
+;; :FIELD "seller" :TRANSFORM inventory-seller
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
