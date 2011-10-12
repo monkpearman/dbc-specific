@@ -232,7 +232,8 @@ dbc-classes/dbc-class-control-id.lisp
 ;; *control-id-display-theme-namespace*
 ;; *control-id-display-technique-namespace*
 ;; *control-id-display-mount-namespace*
-;; *control-id-display-meterial-namespace*
+;; *control-id-display-material-namespace*
+;; *control-id-display-paper-namespace*
 ;; *control-id-display-taxon-namespace*
 
 ;; :NOTE Not clear if these are more system type objects entity type objects:
@@ -241,30 +242,53 @@ dbc-classes/dbc-class-control-id.lisp
 ;; *control-id-display-description-namespace*
 ;; *control-id-display-image-namespace*
 
-- control-id-type                           (base-dbc)
--- control-id-entity-type                   (control-id-type)
---- control-id-naf-entity-type              (control-id-entity-type)
---- control-id-location-entity-type         (control-id-entity-type)
---- control-id-category-entity-type         (control-id-entity-type) 
---- control-id-theme-entity-type            (control-id-entity-type)
---- control-id-media-entity-type            (control-id-entity-type)
---- control-id-taxon-entity-type            (control-id-entity-type)
+- base-control-id                             (base-dbc)
+-- control-id-display-name                    (base-control-id) ;; String based identity
+--- control-id-display-name-for-entity-type   (control-id-display-name)
 
-- base-control-id (base-dbc)
--- control-id-display-name                  (base-control-id) ;; String based identity
------ control-id-naf-entity-display-name    (control-id-display-name-for-entity-type)  
------- control-id-display-artist            (control-id-naf-entity-display-name)
------- control-id-display-brand             (control-id-naf-entity-display-name)
------- control-id-display-author            (control-id-naf-entity-display-name)
------- control-id-display-person            (control-id-naf-entity-display-name)
------- control-id-display-publication       (control-id-naf-entity-display-name)
------- control-id-display-publication-full  (control-id-naf-entity-display-name) ;; or control-id-display-publication??
------- control-id-display-technique         (control-id-naf-entity-display-name)
------- control-id-display-material          (control-id-naf-entity-display-name)
------- control-id-display-mount             (control-id-naf-entity-display-name)
------- control-id-display-location          (control-id-naf-entity-display-name)
------- control-id-display-taxon             (control-id-naf-entity-display-name)
+- control-id-type                             (base-dbc)
 
+-- control-id-record-type                     (control-id-type)
+--- control-id-inventory-record-type          (control-id-record-type)
+
+-- control-id-entity-type                     (control-id-type)
+--- control-id-naf-entity-type                (control-id-entity-type)
+---- control-id-naf-entity                    (control-id-naf-entity-type)
+----- control-id-naf-entity-display-name      (control-id-naf-entity control-id-display-name-for-entity-type)
+------ control-id-display-artist              (control-id-naf-entity-display-name)
+------ control-id-display-author              (control-id-naf-entity-display-name)
+------ control-id-display-person              (control-id-naf-entity-display-name)
+------ control-id-display-brand               (control-id-naf-entity-display-name)
+------ control-id-display-publication         (control-id-naf-entity-display-name)
+
+--- control-id-location-entity-type           (control-id-entity-type)
+---- control-id-location-entity               (control-id-location-entity-type)
+----- control-id-location-entity-display-name (control-id-location-entity control-id-display-name-for-entity-type)
+------ control-id-display-location            (control-id-location-entity-display-name)
+
+--- control-id-category-entity-type           (control-id-entity-type) 
+---- control-id-category-entity               (control-id-category-entity-type)
+----- control-id-category-entity-display-name (control-id-category-entity control-id-display-name-for-entity-type)
+------ control-id-display-category            (control-id-category-entity-display-name)
+
+--- control-id-theme-entity-type              (control-id-entity-type)
+---- control-id-theme-entity                  (control-id-theme-entity-type)
+----- control-id-theme-entity-display-name    (control-id-theme-entity control-id-display-name-for-entity-type)
+------ control-id-display-theme               (control-id-theme-entity-display-name)
+
+--- control-id-media-entity-type              (control-id-entity-type)
+---- control-id-media-entity                  (control-id-media-entity-type) 
+----- control-id-media-entity-display-name    (control-id-media-entity control-id-display-name-for-entity-type)
+------ control-id-display-technique           (control-id-media-entity-display-name)
+------ control-id-display-mount               (control-id-media-entity-display-name)
+------ control-id-display-material            (control-id-media-entity-display-name)
+------- control-id-display-paper              (control-id-media-material)
+****** control-id-display-color               (control-id-media-entity-display-name) ;; inactive
+
+--- control-id-taxon-entity-type              (control-id-entity-type)
+---- control-id-taxon-entity                  (control-id-taxon-entity-type)
+----- control-id-taxon-entity-display-name    (control-id-taxon-entity control-id-display-name-for-entity-type)
+------ control-id-display-taxon               (control-id-taxon-entity-display-name)
 
 ;; Item refs id-nums should be obfuscated with a UUID and are deprecated!
 ;; Entity id-nums may occure congruently and are deprecated!
@@ -424,7 +448,7 @@ base-documenation (base-dbc)
 
 
 
-dbc-classes/dbc-class-parse-convert.lisp
+dbc-classes/dbc-class-parsed.lisp
 
 parsed-class
 parsed-naf-entity    (parsed-class)
@@ -437,6 +461,18 @@ parsed-inventory-record (parsed-class)
 
 dbc-classes/dbc-class-parsed-artist-record.lisp
 parsed-artist-record (parsed-naf-entity)
+
+
+dbc-classes/dbc-class-parsed-author-record.lisp
+parsed-author-record (parsed-naf-entity)
+
+
+dbc-classes/dbc-class-parsed-person-record.lisp
+parsed-person-record (parsed-naf-entity)
+
+
+dbc-classes/dbc-class-parsed-brand-record.lisp
+parsed-brand-record (parsed-naf-entity)
 
 
 dbc-classes/dbc-class-parsed-publication-record.lisp

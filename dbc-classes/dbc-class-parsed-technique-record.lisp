@@ -10,6 +10,56 @@
 ;;; :NOTE This entire table is essentially a "class-heirarchy" with record
 ;;;        entitled "Printing Techniques" as the root of the tree.
 ;;;
+
+;;; ==============================
+;; :NOTE following from dbc-specific/notes-versioned/dbc-xml-categs-as-lisp/xml-files/doc.xml
+;; <c1 name="Printing Techniques">
+;; <c2 name="Glossary of Printing and Printmaking Terminology"/>
+;; <c2 name="Relief Techniques">
+;; <c3>Woodblock</c3>
+;; <c3>Wood Engraving</c3>
+;; <c3>Linocut</c3>
+;; <c3>Mezzotint</c3>
+;; </c2>
+;;
+;; <c2 name="Intaglio Techniques">
+;; <c3 name="Line Engraving - Metal">
+;; <c4>Copper Engraving</c4>
+;; <c4>Steel Engraving</c4></c3>
+;; <c3 name="Etching">
+;; <c4 name="Etching - Mechanical">
+;; <c5>Dry Point</c5>
+;; <c5>Stipple - Crayon Manner</c5>
+;; </c4>
+;; <c4 name="Etching - Chemical">
+;; <c5>Aquatint</c5>
+;; <c5>Etching - Hard Ground</c5>
+;; <c5>Etching - Soft Ground</c5>
+;; </c4>
+;; </c3>
+;; </c2>
+;;
+;; <c2 name="Photomechanical Techniques">
+;; <c3>Halftone gravure</c3>
+;; <c3>Relief Halftone</c3>
+;; <c3>Line Block</c3>
+;; <c3>Chromotypograph</c3>
+;; </c2>
+;;
+;; <c2 name ="Planographic and Process Techniques">
+;;
+;; <c3 name="Lithography">
+;; <c4>Offset</c4>
+;; <c4>Zincograph</c4>
+;; <c4>Stone Lithograph</c4>
+;; <c4>Collotype</c4>
+;; </c3>
+;;
+;; <c3 name="Silkscreen - Serigraph"></c3>
+;; <c3 name="Pochoir"></c3>
+;; </c2>
+;; </c1>
+
 ;;; ==============================
 
 (in-package #:dbc)
