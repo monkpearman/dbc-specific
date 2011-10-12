@@ -100,6 +100,8 @@
              (:file "dbc-class-paths")
              (:file "dbc-class-uuid")
              (:file "dbc-class-system-object-uuid")
+             (:file "dbc-class-record")
+             (:file "dbc-class-authority-record")
              (:file "dbc-class-entity")
              (:file "dbc-class-control-id")
              (:file "dbc-class-edit")
