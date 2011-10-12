@@ -442,7 +442,7 @@
    ("user_name"         . edit-by-creator)
    ("done"              . job-complete)
    ("job_name"          . job-id)
-   ("locked"            . job-locked)
+   ("locked"            . job-locked) ;; or maybe ignorable-job-locked
    ("online"            . record-status-active)
    ("uri"               . item-uri)
    ("notes"             . ignorable-notes)
@@ -460,6 +460,7 @@
    ("date_edit"         . edit-date)
    ("edit_history"      . edit-history))
  )
+
 
 
 ;; :NOTE `set-parsed-inventory-record-slot-value' is defined in loadtime-bind.lisp
