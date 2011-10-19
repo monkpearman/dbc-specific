@@ -17,8 +17,8 @@
 ;; `location-birth'                -> `location-birth'
 ;; `location-death'                -> `location-death'
 ;; `location-nationality'          -> `location-nationality'
-;; `control-id-db-0'               -> `control-id-db-0'
-;; `control-id-db-1'               -> `control-id-db-1'
+;; `control-id-authority-0'        -> `control-id-authority-0'
+;; `control-id-authority-1'        -> `control-id-authority-1'
 ;;
 ;; These are common to class `parsed-class' and its subclasses
 ;; `naf-entity-author-coref'       -> `naf-entity-author-coref'      ; parsed-class
@@ -117,11 +117,11 @@
 (defgeneric location-nationality (object))
 (defgeneric (setf location-nationality) (nationality-value object))
 
-(defgeneric control-id-db-0 (object))
-(defgeneric (setf control-id-db-0) (db-id-value object))
+(defgeneric control-id-authority-0 (object))
+(defgeneric (setf control-id-authority-0) (db-id-value object))
 
-(defgeneric control-id-db-1 (object))
-(defgeneric (setf control-id-db-1) (db-id-value object))
+(defgeneric control-id-authority-1 (object))
+(defgeneric (setf control-id-authority-1) (db-id-value object))
 
 ;; :NOTE This is the base class from wich other converted dbc-classes inherit.
 ;;       The intent is that this class should allow auxillary :before :after :around

@@ -93,15 +93,15 @@
     :documentation ":ORIGINAL-FIELD \"nationality\"")
 
    ;; shares-generic
-   (control-id-db-0 ;; LOC 
-    :initarg :control-id-db-0
-    :accessor control-id-db-0
+   (control-id-authority-0 ;; LOC 
+    :initarg :control-id-authority-0
+    :accessor control-id-authority-0
     :documentation ":ORIGINAL-FIELD \"LOC_control\"")
 
    ;; shares-generic
-   (control-id-db-1 ;; ULAN
-    :initarg :control-id-db-1
-    :accessor control-id-db-1
+   (control-id-authority-1 ;; ULAN
+    :initarg :control-id-authority-1
+    :accessor control-id-authority-1
     :documentation ":ORIGINAL-FIELD \"ULAN_control\"")
 
    ;; shares-generic
@@ -214,8 +214,8 @@
    ("birth_location"    . location-birth)
    ("death_location"    . location-death)
    ("nationality"       . location-nationality)
-   ("LOC_control"       . control-id-db-0)
-   ("ULAN_control"      . control-id-db-1)
+   ("LOC_control"       . control-id-authority-0)
+   ("ULAN_control"      . control-id-authority-1)
    ("also_author"       . naf-entity-author-coref) ;*
    ("also_people"       . naf-entity-person-coref) ;*
    ("appeared_in"       . naf-entity-publication-coref) ;*
@@ -256,8 +256,8 @@
 ;;      ("birth_location" (setf (location-birth object) field-value))
 ;;      ("death_location" (setf (location-death object) field-value))
 ;;      ("nationality" (setf (location-nationality object) field-value))
-;;      ("LOC_control" (setf (control-id-db-0 object) field-value))
-;;      ("ULAN_control" (setf (control-id-db-1 object) field-value))
+;;      ("LOC_control" (setf (control-id-authority-0 object) field-value))
+;;      ("ULAN_control" (setf (control-id-authority-1 object) field-value))
 ;;      ("also_author" (setf (naf-entity-author-coref object) field-value))
 ;;      ("also_people" (setf (naf-entity-person-coref object) field-value))
 ;;      ("appeared_in" (setf (naf-entity-publication-coref object) field-value))
@@ -337,8 +337,8 @@
 ;;    (location-birth                               . "birth_location")
 ;;    (location-death                               . "death_location")
 ;;    (location-nationality                         . "nationality")
-;;    (control-id-db-0                              . "LOC_control") ;; LOC
-;;    (control-id-db-1                              . "ULAN_control") ;; ULAN
+;;    (control-id-authority-0                              . "LOC_control") ;; LOC
+;;    (control-id-authority-1                              . "ULAN_control") ;; ULAN
 ;;    (naf-entity-author-coref                      . "also_author")
 ;;    (naf-entity-person-coref                      . "also_people")
 ;;    (naf-entity-publication-coref                . "appeared_in")
@@ -380,8 +380,8 @@
 ;; "death_location"    ;; "location-death"
 ;; "nationality"       ;; "location-nationality"
 ;;
-;; "LOC_control"       ;; "control-id-db-0" ;; LOC
-;; "ULAN_control"      ;; "control-id-db-1" ;; ULAN
+;; "LOC_control"       ;; "control-id-authority-0" ;; LOC
+;; "ULAN_control"      ;; "control-id-authority-1" ;; ULAN
 ;;
 ;; "also_author"       ;; "naf-entity-author-coref"
 ;; "also_people"       ;; "naf-entity-person-coref"
@@ -616,7 +616,7 @@
 ;;  - co-refs `dbc:naf-entity-location'
 
 ;;; ==============================
-;;  :FIELD "LOC_control" :TRANSFORM "control-id-db-0"
+;;  :FIELD "LOC_control" :TRANSFORM "control-id-authority-0"
 ;; :TYPE "varchar(15)"
 ;;
 ;; :EXAMPLE-VALUES 
@@ -633,7 +633,7 @@
 ;; 
 
 ;;; ==============================
-;; :FIELD "ULAN_control" :TRANSFORM "control-id-db-1"
+;; :FIELD "ULAN_control" :TRANSFORM "control-id-authority-1"
 ;; :TYPE "varchar(15)"
 ;;
 ;; :EXAMPLE-VALUES 

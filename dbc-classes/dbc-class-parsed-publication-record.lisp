@@ -96,15 +96,15 @@
     :accessor ignorable-publication-subjects
     :documentation ":ORIGINAL-FIELD \"subjects\"")
 
-   (control-id-db-0
-    :initarg :control-id-db-0
-    :accessor control-id-db-0
+   (control-id-authority-0
+    :initarg :control-id-authority-0
+    :accessor control-id-authority-0
     :documentation ":ORIGINAL-FIELD \"lc_class\"")
 
    ;; :NOTE case-sensitive
-   (control-id-db-1
-    :initarg :control-id-db-1
-    :accessor control-id-db-1
+   (control-id-authority-1
+    :initarg :control-id-authority-1
+    :accessor control-id-authority-1
     :documentation ":ORIGINAL-FIELD \"ULAN_control\"")
 
    (description-publication-note-content
@@ -185,8 +185,8 @@
    ("pages"              . publication-pages)
    ("illustrations"      . publication-illustrations)
    ("subjects"           . ignorable-publication-subjects)
-   ("lc_class"           . control-id-db-0)
-   ("ULAN_control"       . control-id-db-1)
+   ("lc_class"           . control-id-authority-0)
+   ("ULAN_control"       . control-id-authority-1)
    ("content"            . description-publication-note-content)
    ("notes"              . description-publication-note-general)
    ("special_note"       . description-publication-note-special)
@@ -225,8 +225,8 @@
 ;;      ("pages" (setf (publication-pages object) field-value))
 ;;      ("illustrations" (setf (publication-illustrations object) field-value))
 ;;      ("subjects" (setf (ignorable-publication-subjects object) field-value))
-;;      ("lc_class" (setf (control-id-db-0 object) field-value))
-;;      ("ULAN_control" (setf (control-id-db-1 object) field-value))
+;;      ("lc_class" (setf (control-id-authority-0 object) field-value))
+;;      ("ULAN_control" (setf (control-id-authority-1 object) field-value))
 ;;      ("content"
 ;;       (setf (description-publication-note-content object) field-value))
 ;;      ("notes" (setf (description-publication-note-general object) field-value))
@@ -263,8 +263,8 @@
 ;; "illustrations"        ;; "publication-illustrations"
 ;; "subjects"             ;; "ignorable-publication-subjects" ;; IGNORABLE, but verify that this is so
 ;;
-;; "lc_class"             ;; "control-id-db-0" ;; LOC
-;; "ULAN_control"         ;; "control-id-db-1" ;; ULAN
+;; "lc_class"             ;; "control-id-authority-0" ;; LOC
+;; "ULAN_control"         ;; "control-id-authority-1" ;; ULAN
 ;;
 ;; "content"              ;; "description-publication-note-content"
 ;; "notes"                ;; "description-publication-note-general"
@@ -494,7 +494,7 @@
 ;; (search-forward-regexp "name=\"pages\">[^<].*</field" nil t)
 
 ;;; ==============================
-;; :FIELD "ULAN_control" :TRANSFORM control-id-db-1
+;; :FIELD "ULAN_control" :TRANSFORM control-id-authority-1
 ;;
 ;;         :TYPE "varchar(20)"
 ;;         :NULL-P "YES"
@@ -509,7 +509,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "lc_class" :TRANSFORM control-id-db-0
+;; :FIELD "lc_class" :TRANSFORM control-id-authority-0
 ;;
 ;;         :TYPE "varchar(20)"
 ;;         :NULL-P "YES"

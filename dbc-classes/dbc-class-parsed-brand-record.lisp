@@ -67,9 +67,9 @@
     :accessor naf-entity-brand-slogan
     :documentation ":ORIGINAL-FIELD \"slogans\"")
 
-   (control-id-db-0
-    :initarg :control-id-db-0
-    :accessor control-id-db-0
+   (control-id-authority-0
+    :initarg :control-id-authority-0
+    :accessor control-id-authority-0
     :documentation ":ORIGINAL-FIELD \"LOC_control\"")
 
    (naf-entity-artist-coref
@@ -140,7 +140,7 @@
    ("date_founded"       . founded-date)
    ("founded_by"         . naf-entity-person-founder-coref)
    ("slogans"            . naf-entity-brand-slogan)
-   ("LOC_control"        . control-id-db-0)
+   ("LOC_control"        . control-id-authority-0)
    ("artists_assoc"      . naf-entity-artist-coref)
    ("appeared_in"        . naf-entity-publication-coref)
    ("notes"              . description-brand-note-general)

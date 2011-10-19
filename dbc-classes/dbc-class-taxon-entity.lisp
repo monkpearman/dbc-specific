@@ -38,6 +38,11 @@
 ;;; ==============================
 (in-package #:dbc)
 
+
+(defclass taxon-entity (base-taxon-entity)
+  ()
+  )
+
 ;; *package*
 
 ;; taxon-display-name

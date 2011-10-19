@@ -55,14 +55,14 @@
     :accessor naf-entity-gender-type
     :documentation ":ORIGINAL-FIELD \"gender\"")
 
-   (control-id-db-0
-    :initarg :control-id-db-0
-    :accessor control-id-db-0
+   (control-id-authority-0
+    :initarg :control-id-authority-0
+    :accessor control-id-authority-0
     :documentation ":ORIGINAL-FIELD \"LOC_control\"")
 
-   (control-id-db-1
-    :initarg :control-id-db-1
-    :accessor control-id-db-1
+   (control-id-authority-1
+    :initarg :control-id-authority-1
+    :accessor control-id-authority-1
     :documentation ":ORIGINAL-FIELD \"other_control\"")
 
    (naf-entity-publication-coref
@@ -133,8 +133,8 @@
    ("display"           . control-id-display-author)
    ("nationality"       . location-nationality)
    ("lifespan"          . lifespan-date)
-   ("LOC_control"       . control-id-db-0)
-   ("other_control"     . control-id-db-1)
+   ("LOC_control"       . control-id-authority-0)
+   ("other_control"     . control-id-authority-1)
    ("used_for"          . naf-entity-author-display-name-coref)
    ("birth_location"    . location-birth)
    ("death_location"    . location-death)

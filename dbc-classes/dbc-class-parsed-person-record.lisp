@@ -30,9 +30,9 @@
     :documentation ":ORIGINAL-FIELD \"used_for\"")
 
    ;; field name is case-sensitive
-   (control-id-db-0
-    :initarg :control-id-db-0
-    :accessor control-id-db-0
+   (control-id-authority-0
+    :initarg :control-id-authority-0
+    :accessor control-id-authority-0
     :documentation ":ORIGINAL-FIELD \"LOC_control\"")
 
    (location-nationality
@@ -128,7 +128,7 @@
    ("display"           . control-id-display-person)
    ("nationality"       . location-nationality)
    ("lifespan"          . lifespan-date)
-   ("LOC_control"       . control-id-db-0)
+   ("LOC_control"       . control-id-authority-0)
    ("birth_location"    . location-birth)
    ("death_location"    . location-death)
    ("role"              . naf-entity-role-appearance-coref)
@@ -148,7 +148,7 @@
 ;; :NOTE fields appearing in class `parsed-artist-record' but not in class `parsed-person-record'
 ;; ("date_born"         . birth-date)
 ;; ("date_died"         . death-date)
-;; ("ULAN_control"      . control-id-db-1)
+;; ("ULAN_control"      . control-id-authority-1)
 ;; ("appeared_in"       . naf-entity-publication-coref)
 ;; ("ads_for"           . naf-entity-brand-coref)
 ;; ("auction_records"   . description-<FOO>-note-sale-appearance)
@@ -170,7 +170,7 @@
 ;;      ("display" (setf (control-id-display-person object) field-value))
 ;;      ("nationality" (setf (location-nationality object) field-value))
 ;;      ("lifespan" (setf (lifespan-date object) field-value))
-;;      ("loc_control" (setf (control-id-db-0 object) field-value))
+;;      ("loc_control" (setf (control-id-authority-0 object) field-value))
 ;;      ("birth_location" (setf (location-birth object) field-value))
 ;;      ("death_location" (setf (location-death object) field-value))
 ;;      ("role" (setf (naf-entity-role-appearance-coref object) field-value))

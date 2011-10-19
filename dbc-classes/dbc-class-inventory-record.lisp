@@ -5,7 +5,7 @@
 (in-package #:dbc)
 ;; *package*
 
-(defclass base-inventory-record (base-dbc)
+(defclass base-inventory-record (base-record)
   ()
   )
 
@@ -17,8 +17,6 @@
 ;; show-trailing-whitespace: t
 ;; mode: lisp-interaction
 ;; End:
-
-
 
 ;;; ==============================
 ;;; EOF

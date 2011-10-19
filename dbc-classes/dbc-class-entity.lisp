@@ -2,6 +2,20 @@
 ;;; :FILE dbc-classes/dbc-class-entity.lisp
 ;;; ==============================
 
+;; Clarke's Third Law:
+;; "Any sufficiently advanced technology is indistinguishable from magic."
+;;
+;;
+;; An "entity" is something we want to treat as uniquely identifiable.
+;; An entity is distinct from a "record".
+;; Both an entity and a record are uniquely identifiable, the difference being
+;; that where a record might uniquely identify some _thing_, the thing so
+;; identified will not have an identity commonly recognized outside the context
+;; of the thing it identifies.
+;; For example, instances which subcclass `base-inventory-record' will identify
+;; an inventory item, wheras instances of `base-theme-entity' will identify a
+;; theme. A theme is knowable outside the context of the dbc system an inventory
+;; item not so much so.
 
 ;;; ==============================
 ;; :NOTE C-P-L for DBC entities
@@ -73,7 +87,8 @@ An object is not abstract if it represents an object knowable outside the~%~
 context of the DBC system.~%~@
 For an object to be characterized as of this type it should be a known~%~
 referenceable in common nomenclature or the nomenclature of its primary
-external domain.~%
+external domain.~%~@
+The inverse corollary to the class `base-entity' is the class `base-record'.~%~@
 :EXAMPLE~% ~
  \(mon:class-subclasses \(find-class 'base-entity\)\)~%~@
 :SEE-ALSO .~%▶▶▶")))

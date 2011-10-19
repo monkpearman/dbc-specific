@@ -1,5 +1,5 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-05-21T18:53:41-04:00Z}#{11206} - by MON>
-;;; :FILE dbc-specific/uuids-loadtime-bind.lisp
+;;; :FILE dbc-specific/dbc-classes/dbc-class-uuid-vars.lisp
 ;;; ==============================
 
 
@@ -48,89 +48,89 @@
 ;; `control-id-db'
 ;;
 ;; :NOTE Not clear if these are more system type objects entity type objects:
-;; *control-id-display-user-namespace*
-;; *control-id-display-documentation-namespace*
-;; *control-id-display-description-namespace*
-;; *control-id-display-image-namespace*
+;; *control-id-user-namespace*
+;; *control-id-description-namespace*
+;; *control-id-image-namespace*
 
-(defvar *control-id-display-taxon-namespace*
-  ;; "91103f04-b8b8-52b2-821b-eaa83d3c6cc7"
+(defvar *control-id-inventory-namespace*
   (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
-                           :control-id '*control-id-display-taxon-namespace*))
+                           :control-id '*control-id-inventory-namespace*))
 
-(defvar *control-id-display-category-namespace*
-  ;; "847b4603-59f6-5213-87f1-a9ac281960e9"
+(defvar *control-id-documentation-namespace*
   (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
-                           :control-id '*control-id-display-category-namespace*))
+                           :control-id '*control-id-documentation-namespace*))
 
-(defvar *control-id-display-theme-namespace*
-  ;; "f7d30217-43c6-5fa8-8411-3b22f1bda8a9"
+(defvar *control-id-authority-namespace*
   (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
-                           :control-id '*control-id-display-theme-namespace*))
+                           :control-id '*control-id-authority-namespace*))
 
-;; (find-class (class-name (class-of *control-id-display-location-namespace*)))
-(defvar *control-id-display-location-namespace*
-  ;; "232e5c3e-aaf4-523c-9b61-e525a85e2c07"
+(defvar *control-id-category-namespace*
   (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
-                           :control-id '*control-id-display-location-namespace*))
+                           :control-id '*control-id-category-namespace*))
+
+(defvar *control-id-theme-namespace*
+  (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
+                           :control-id '*control-id-theme-namespace*))
+
+;; (find-class (class-name (class-of *control-id-location-namespace*)))
+(defvar *control-id-location-namespace*
+  (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
+                           :control-id '*control-id-location-namespace*))
+
+(defvar *control-id-taxon-namespace*
+  (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
+                           :control-id '*control-id-taxon-namespace*))
 
 
 ;;; ==============================
-;; media-entity display namespaces
+;; media-entity namespaces
 ;;; ==============================
-(defvar *control-id-display-technique-namespace*
-  ;; "68b3c894-17af-5e47-ac77-88555d0accd1"
+(defvar *control-id-technique-namespace*
   (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
-                           :control-id '*control-id-display-technique-namespace*))
+                           :control-id '*control-id-technique-namespace*))
 
-;; (defvar *control-id-display-color-namespace*
+;; (defvar *control-id-color-namespace*
 ;;   (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
-;;                            :control-id '*control-id-display-color-namespace*))
+;;                            :control-id '*control-id-color-namespace*))
 
-(defvar *control-id-display-mount-namespace*
-  ;; "07756ef9-021b-56fc-83e3-435d8552cc8e"
+(defvar *control-id-mount-namespace*
   (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
-                           :control-id '*control-id-display-mount-namespace*))
+                           :control-id '*control-id-mount-namespace*))
 
-(defvar *control-id-display-material-namespace*
-  ;; "18b38b5f-974e-512f-b280-e965e9b98a22"
+(defvar *control-id-material-namespace*
   (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
-                           :control-id '*control-id-display-material-namespace*))
+                           :control-id '*control-id-material-namespace*))
 
-(defvar *control-id-display-paper-namespace*
-  ;; "0796d6e5-c83c-5aef-8617-5be908fe1ad2"
+(defvar *control-id-paper-namespace*
   (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
-                           :control-id '*control-id-display-paper-namespace*))
+                           :control-id '*control-id-paper-namespace*))
 
 
 ;;; ==============================
-;; naf-entity display namespaces
+;; naf-entity namespaces
 ;;; ==============================
-(defvar *control-id-display-artist-namespace*
-  ;; "a9289f54-133a-5c0d-8478-651f8ebbf23a"
-  (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
-                           :control-id '*control-id-display-artist-namespace*))
+;; system-object-uuid *control-id-display-artist-namespace*
 
-(defvar *control-id-display-brand-namespace*
-  ;; "eb8c3f24-1016-5c40-bedf-3aeab3d52723"
+(defvar *control-id-artist-namespace*
   (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
-                           :control-id '*control-id-display-brand-namespace*))
+                           :control-id '*control-id-artist-namespace*))
 
-(defvar *control-id-display-author-namespace*
-  ;; "32255517-b15e-5b99-b887-59e02109cb2b"
+(defvar *control-id-brand-namespace*
   (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
-                           :control-id '*control-id-display-author-namespace*))
+                           :control-id '*control-id-brand-namespace*))
 
-(defvar *control-id-display-person-namespace*
-  ;; "2416f575-1c49-54ac-a641-04f3a147c280"
+(defvar *control-id-author-namespace*
   (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
-                           :control-id '*control-id-display-person-namespace*))
+                           :control-id '*control-id-author-namespace*))
+
+(defvar *control-id-person-namespace*
+  (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
+                           :control-id '*control-id-person-namespace*))
 
 ;; :NOTE what to do about `control-id-display-publication-full'???
-(defvar *control-id-display-publication-namespace*
-  ;; "01fa791e-7a39-5b8e-9f97-f70dc48d8fc3"
+(defvar *control-id-publication-namespace*
   (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
-                           :control-id '*control-id-display-publication-namespace*))
+                           :control-id '*control-id-publication-namespace*))
 
 
 ;;; ==============================

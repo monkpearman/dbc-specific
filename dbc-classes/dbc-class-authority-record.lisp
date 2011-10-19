@@ -2,6 +2,9 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-authority-record.lisp
 ;;; ==============================
 
+;; - base-record (base-dbc)
+;; -- base-authority-record (base-record)
+
 ;; *control-id-authority-namespace*
 ;; -- control-id-authority-record          (base-control-id)  ;; :NOTE we have fields `control-id-authority-0' `control-id-authority-1'
 ;; --- control-id-authority-loc            (control-id-authority-record) ;; nb2007017414 | n 98028882 | no 99021790

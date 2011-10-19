@@ -221,26 +221,28 @@ dbc-classes/dbc-class-control-id.lisp
 ;;  involve complex interactions in the C-P-L around the
 ;;  `display-name-for-entity' and `display-name-for-entity-of-type' slot-values.
 
-;; *control-id-display-artist-namespace*
-;; *control-id-display-author-namespace*
-;; *control-id-display-brand-namespace*
-;; *control-id-display-location-namespace*
-;; *control-id-display-person-namespace*
-;; *control-id-display-publication-namespace*
+;; *control-id-artist-namespace*
+;; *control-id-author-namespace*
+;; *control-id-brand-namespace*
+;; *control-id-location-namespace*
+;; *control-id-person-namespace*
+;; *control-id-publication-namespace*
 
-;; *control-id-display-category-namespace*
-;; *control-id-display-theme-namespace*
-;; *control-id-display-technique-namespace*
-;; *control-id-display-mount-namespace*
-;; *control-id-display-material-namespace*
-;; *control-id-display-paper-namespace*
-;; *control-id-display-taxon-namespace*
+;; *control-id-category-namespace*
+;; *control-id-inventory-namespace*
+;; *control-id-documentation-namespace*
+;; *control-id-authority-namespace*
+;; *control-id-theme-namespace*
+;; *control-id-technique-namespace*
+;; *control-id-mount-namespace*
+;; *control-id-material-namespace*
+;; *control-id-paper-namespace*
+;; *control-id-taxon-namespace*
 
 ;; :NOTE Not clear if these are more system type objects entity type objects:
-;; *control-id-display-user-namespace*
-;; *control-id-display-documentation-namespace*
-;; *control-id-display-description-namespace*
-;; *control-id-display-image-namespace*
+;; *control-id-user-namespace*
+;; *control-id-description-namespace*
+;; *control-id-image-namespace*
 
 - base-control-id                             (base-dbc)
 -- control-id-display-name                    (base-control-id) ;; String based identity
@@ -322,14 +324,24 @@ control-id-doc-num
 ---- control-id-entity-num-technique     (control-id-entity-num)
 
 ;; These will need a dispatch on a string match. because we currently have
-;; slot-names control-id-db-0 and control-id-db-1 for the classes `naf-entity-<FOO>'
+;; slot-names control-id-authority-0 and control-id-authority-1 for the classes `naf-entity-<FOO>'
 ;; This is because we can't (at first) be sure from which db the control-id is derived.
--- control-id-db                     (base-control-id)
---- control-id-db-loc                (control-id-db) ;; nb2007017414 | n 98028882 | no 99021790
---- control-id-db-ulan               (control-id-db) ;; 500013504
---- control-id-db-bnf                (control-id-db) ;; FRBNF40421659
---- control-id-db-oclc               (control-id-db) ;; 
+-- control-id-authority-record          (base-control-id)
+--- control-id-authority-loc            (control-id-authority-record) ;; nb2007017414 | n 98028882 | no 99021790
+--- control-id-authority-ulan           (control-id-authority-record) ;; 500013504
+--- control-id-authority-bnf            (control-id-authority-record) ;; FRBNF40421659
+--- control-id-authority-oclc           (control-id-authority-record) ;; 
 
+dbc-classes/dbc-class-record.lisp
+- base-record (base-dbc)
+
+dbc-classes/dbc-class-authority-record.lisp
+- base-record (base-dbc)
+-- base-authority-record (base-record)
+
+dbc-classes/dbc-class-inventory-record.lisp
+- base-record (base-dbc)
+-- base-inventory-record (base-record)
 
 
 dbc-classes/dbc-class-entity.lisp

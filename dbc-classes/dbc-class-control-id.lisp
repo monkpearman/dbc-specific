@@ -50,7 +50,7 @@
  So, the basic idea is to store our context identities to a hash-table index
  and resolve non-controlled identies against the indexes:
 
- (make-v5-uuid *artist-namespace*             "Chanel (Gabrielle, \"Coco\"))
+ (make-v5-uuid *control-id-artist-namespace*  "Chanel (Gabrielle, \"Coco\"))
  (make-v5-uuid *fashion-designer-namespace*   "Chanel (Gabrielle, \"Coco\"))
 
  ; ==============================
@@ -66,7 +66,9 @@
 - control-id-type                             (base-dbc)
 -- control-id-record-type                     (control-id-type)
 --- control-id-inventory-record-type          (control-id-record-type)
+---- control-id-inventory-record              (control-id-inventory-record-type)
 --- control-id-documentation-record-type      (control-id-record-type)
+---- control-id-documentation-record          (control-id-inventory-record-type)
 
 ;; control-id-documentation-record-num    ;; reference to the id of the meta-doc
 ;; control-id-documentation-record-sub-num
@@ -123,33 +125,42 @@
 ;; e.g. "control-id-doc-num-artist"    -> "control-id-doc-uuid"
 ;; e.g. "control-id-entity-num-artist" -> "control-id-entity-uuid"
 
-;; control-id-deprecated-record-id
+- control-id-indexed-number             (base-control-id)    
+-- control-id-deprecated-indexed-number (control-id-indexed-number)
+---- control-id-inventory-num            (control-id-deprecated-indexed-number)
+---- control-id-doc-num                  (control-id-deprecated-indexed-number)
+----- control-id-doc-num-artist          (control-id-doc-num)
+----- control-id-doc-num-brand           (control-id-doc-num)
+----- control-id-doc-num-author          (control-id-doc-num)
+----- control-id-doc-num-person          (control-id-doc-num)
+----- control-id-doc-num-publication     (control-id-doc-num)
 
--- control-id-deprecated-record-id       (base-control-id)
-
---- control-id-item-num                  (control-id-deprecated-record-id)
-
---- control-id-doc-num                   (control-id-deprecated-record-id)
----- control-id-doc-num-artist           (control-id-doc-num)
----- control-id-doc-num-brand            (control-id-doc-num)
----- control-id-doc-num-author           (control-id-doc-num)
----- control-id-doc-num-person           (control-id-doc-num)
----- control-id-doc-num-publication      (control-id-doc-num)
-
-
---- control-id-entity-num                (control-id-deprecated-record-id)
+--- control-id-entity-num                (control-id-deprecated-indexed-number)
 ---- control-id-entity-num-artist        (control-id-entity-num)
 ---- control-id-entity-num-author        (control-id-entity-num)
 ---- control-id-entity-num-brand         (control-id-entity-num)
 ---- control-id-entity-num-person        (control-id-entity-num)
 ---- control-id-entity-num-publication   (control-id-entity-num)
 
+;; *control-id-authority-namespace*
+-- control-id-authority-record          (base-control-id)  ;; :NOTE we have fields `control-id-authority-0' `control-id-authority-1'
+--- control-id-authority-loc            (control-id-authority-record) ;; nb2007017414 | n 98028882 | no 99021790
+--- control-id-authority-ulan           (control-id-authority-record) ;; 500013504
+--- control-id-authority-bnf            (control-id-authority-record) ;; FRBNF40421659
+--- control-id-authority--oclc          (control-id-authority-record) ;; 
 
--- control-id-db                     (base-control-id)  ;; :NOTE we have fields `control-id-db-0' `control-id-db-1'
---- control-id-db-loc                (control-id-db) ;; nb2007017414 | n 98028882 | no 99021790
---- control-id-db-ulan               (control-id-db) ;; 500013504
---- control-id-db-bnf                (control-id-db) ;; FRBNF40421659
---- control-id-db-oclc               (control-id-db) ;; 
+
+;; (URL `http://groups.google.com/group/comp.lang.lisp/msg/addeedd997199097')
+(defun get-control-id-table (object)
+  (gethash (class-name (class-of object))
+           (slot-value object 'control-id-table))) 
+
+;; (mon:where-is "class-prototype")
+
+;; (sb-mop:class-prototype  (find-class 'control-id-type))
+;; (sb-mop:class-prototype  (find-class 'control-id-naf-entity-artist))
+
+
 
 |#
 ;;; ==============================
@@ -175,12 +186,6 @@
 ;; "Return non-nil when object requires a valid UUID namespace upon initialization.
 ;; :SEE-ALSO `<XREF>'.~%")
 ;;
-
-(defgeneric control-id-namespace (object))
-
-;; (generic-doc #'control-id-namespace
-;; "Get the namespace associted with OBJECT.
-;; :SEE-ALSO `<XREF>'.~%")
 ;;
 ;; ;; :NOTE Not sure yet if we should expose this or not.
 ;; (defgeneric (setf control-id-namespace) (namespace object))
@@ -194,108 +199,113 @@
 ;; --- shared-initialize  
 
 
+;; slot-missing (class instance slot-name operation &optional new-value)
+;; `slot-boundp', `slot-makunbound', `slot-value', (setf slot-value),
+;; (defmethod slot-missing (class (object <CLASS-OF-OBJECT>) (slot (eql '<SLOT>)) <OPERATION> &optional <NEW-VALUE>)
+;; You may choose to provide specialized methods for each operation with
+;; (eql 'slot-boundp)
+;; Or, one method for all operations, if you want e.g.: 
+;;  (defmethod slot-missing ((c..) (i..) (s..) operation))
+;; The one-method-for all the relevant protion of the signature is:
+;; (operation t)
+;; But, following is enough, b/c T specializer is implied
+;;  (defmethod slot-missing ((c..) (i..) (s..) operation)) 
+(defgeneric control-id-slot-missing-error (class object slot operation)) ;; &optional new-value)
+
+(defgeneric control-id-slot-unbound-error (class object slot))
+(defgeneric control-id-slot-value-null-error (object slot))
+
+(defgeneric control-id-of-class-type-null-error (object))
+(defgeneric control-id-of-class-type (class-symbol))
+
+(defgeneric control-id-namespace-null-error (object))  
+(defgeneric control-id-namespace  (object))
+
+(defgeneric control-id-identifies-null-error (object))
+(defgeneric control-id-identifies (object))
+
+(defgeneric control-id-uuid-null-error (object))
+(defgeneric control-id-uuid       (object))
+
+
+;; (generic-doc #'control-id-namespace
+;; "Get the namespace associted with OBJECT.
+;; :SEE-ALSO `<XREF>'.~%")
+
+(defun %find-control-id-class-or-lose (class-symbol)
+  (if (find-class class-symbol)
+      class-symbol
+      (error "Could not cl:find-class for arg CLASS-SYMBOL, got: ~S" class-symbol)))
+
+;; (fundoc 'dbc-class-with-slot-unbound-error
+;; Generalized procedure for signaling dbc-related `cl:slot-unbound' errors.~%~@
+;; Arg CLASS is a class-object as per return return value of either `cl:find-class'/`cl:class-of'.~%~@
+;; Arg OBJECT is an instance of class-object CLASS.~%~@
+;; Arg slot is a symbol designating the unbound slot of OBJECT.~%~@
+;; :EXAMPLE~%
+;;  \(let* \(\(obj \(make-instance 'control-id-type\)\)
+;;         \(obj-class \(class-of obj\)\)\)
+;;    \(dbc-class-with-slot-unbound-error obj-class obj 'control-id-of-class-type\)\)~%~@
+;; :SEE-ALSO `dbc-class-with-slot-value-null-error'.~%▶▶▶")
+(defun dbc-class-with-slot-unbound-error (class object slot)
+  (error "Instance of class: ~S~%with unbound slot: ~S~%in the object:~,,V,@S~%"
+         (class-name class) slot 5 object))
+
+;; (fundoc 'dbc-class-with-slot-value-null-error
+;; Generalized procedure for signaling dbc-class related errors when cl:slot-value is null.~%~@
+;; Arg OBJECT is an instance of class-object CLASS.~%~@
+;; Arg slot is a symbol designating the unbound slot of OBJECT.~%~@
+;; :EXAMPLE~%
+;;  \(let \(\(obj \(make-instance 'control-id-type\)\)\)
+;;    \(dbc-class-with-slot-value-null-error  obj 'control-id-of-class-type\)\)~%
+;; :SEE-ALSO `dbc-class-with-slot-unbound-error'.~%▶▶▶"))
+(defun dbc-class-with-slot-value-null-error (object slot)
+  (error "Slot ~S with null cl:slot-value~%Instance of class: ~S~%in the object:~,,V,@S~%"
+         slot (class-name (class-of object)) 5 object))
+
+(defun dbc-class-with-slot-missing-error (class object slot operation)
+  (error "Slot operation:  ~S~%on missing slot: ~S~%for the class:   ~S~%in the object:   ~S~%"
+         operation slot (class-name class) object))
+
 
 ;;; ==============================
-;;; control-id entity types
+;;; control-id types
 ;;; ==============================
-
-;; :TODO Need an inverse specialization on `class-record-type' and `class-entity-type'
-;; such that each of the following return sensibly:
-;;  (class-entity-type <CONTROL-ID-RECORD-TYPE-OBJECT>)
-;;  (class-record-type <CONTROL-ID-ENTITY-TYPE-OBJECT>)
-(defgeneric class-record-type (class-symbol))
-(defgeneric class-entity-type (class-symbol))
-
 
 ;; :ABSTRACT-CLASS
 (defclass control-id-type (base-dbc)
-  ()
+  ((control-id-of-class-type))
   (:documentation
    #.(format nil "The type of class represented by a subclasses of `base-control-id'.")))
 
-(defclass control-id-record-type (control-id-type)
-  ((class-record-type
-    :documentation
-    #.(format nil
-              "A class object identified by the subclasses of class `base-control-id'.~%~@
-:NOTE This slot is informally class-allocated e.g. it should be treated as if~%~
-the following were specified:~%~% ~
- \(class-record-type :allocation :class\) ~%~%~
-Its slot-value should not be instantiated via an initarg, nor should it be~%~
-specialized by a setf accessor form.~%")))
-  (:documentation
-   #.(format nil ":ABSTRACT-CLASS~%~@
-A mixin for subclasses of which identify classes containing \"record\" like data, e.g.:
- `base-inventory-record'
-;; `base-edit
-")))
+(defmethod control-id-slot-missing-error (class (object control-id-type) (slot (eql 'control-id-of-class-type)) operation)
+  (dbc-class-with-slot-missing-error class object slot operation))
 
-(defclass control-id-inventory-record-type (control-id-record-type)
-  ((class-record-type :initform (find-class 'base-inventory-record)))
-  )
+(defmethod slot-missing (class (object control-id-type) (slot (eql 'control-id-of-class-type)) operation &optional new-value)
+  (declare (ignore new-value))
+  (control-id-slot-missing-error class object slot operation))
 
-;; `parsed-doc-record'
-;; control-id-documentation-record-num, control-id-documentation-record-sub-num
-(defclass control-id-documentation-record-type (control-id-record-type)
-  ((class-record-type :initform (find-class 'base-documentation-record)))
-  )
-              
-(defclass control-id-entity-type (control-id-type)
-  ;; (class-entity-type :initform (find-class 'base-entity))
-  ((class-entity-type
-    :documentation 
-    #.(format nil
-              "A class object identified by the subclasses of class `base-control-id'.~%~@
-:NOTE This slot is informally class-allocated e.g. it should be treated as if~%~
-the following were specified:~%~% ~
- \(class-entity-type :allocation :class\) ~%~%~
-Its slot-value should not be instantiated via an initarg, nor should it be~%~
-specialized by a setf accessor form.~%")))
-  (:documentation
-   #.(format nil ":ABSTRACT-CLASS~%~@
-A mixin for subclasses of classes with symbol-names of the form:~%~% ~
-control-id-<FOO>-entity-type~%~%")))
+(defmethod control-id-slot-unbound-error (class
+                                          (object control-id-type)
+                                          (slot (eql 'control-id-of-class-type)))
+  (dbc-class-with-slot-unbound-error class slot object))
 
-(defclass control-id-naf-entity-type (control-id-entity-type)
-  ((class-entity-type :initform (find-class 'base-naf-entity)))
-  )
+(defmethod slot-unbound (class (object control-id-type) (slot (eql 'control-id-of-class-type)))
+  (control-id-slot-unbound-error class object slot))
 
-(defclass control-id-location-entity-type (control-id-entity-type)
-  ((class-entity-type :initform (find-class 'base-location-entity)))
-  )
+(defmethod control-id-slot-value-null-error ((object control-id-type)
+                                             (slot (eql 'control-id-of-class-type)))
+  (dbc-class-with-slot-value-null-error object slot))
 
-(defclass control-id-category-entity-type (control-id-entity-type)
-  ((class-entity-type :initform (find-class 'base-category-entity)))
-  )
 
-(defclass control-id-theme-entity-type (control-id-entity-type)
-  ((class-entity-type :initform (find-class 'base-theme-entity)))
-   )
+;; :NOTE not sure if this is right and/or at the right place
+(defmethod control-id-of-class-type ((object control-id-type))
+  (find-class
+   (or (and (slot-value object 'control-id-of-class-type))
+       (control-id-of-class-type-null-error object))))
 
-(defclass control-id-media-entity-type (control-id-entity-type)
-  ((class-entity-type :initform (find-class 'base-media-entity)))
-  )
-
-(defclass control-id-taxon-entity-type (control-id-entity-type)
-  ((class-entity-type :initform (find-class 'base-taxon-entity)))
-  )
-
-;; (defclass control-id-enumerated-type (control-id-type)
-;; control-id-item-num
-;; control-id-doc-num
-;; control-id-entity-num
-;; control-id-inventory-record
-
-;; (defclass control-id-db-type (control-id-type)
-;;   ()
-;;   )
-
-;; (defclass control-id-image-type (control-id-type)
-;;   ()
-;;   )
 
 ;;; ==============================
-
 ;; It is likely that touching some of these slots will need to trigger
 ;; specialized auxiliary methods:
 ;;
@@ -343,17 +353,245 @@ The SLOT CONTROL-ID-IDENTIFIES is a string or symbol.~%~
 It is used as the NAME arg used when generating the the v5 UUID the slot-value~%~
 for control-id-uuid.~%~@
 :EXAMPLE~% ~
- \(mon:class-subclasses \(find-class 'base-control-id\)\)~%~@
+ \(mon:class-subclasses \(%find-control-id-class-or-lose 'base-control-id\)\)~%~@
 :NOTE subclasses of `base-control-id' are distinct from those of the class
 `base-uuid' which defines _canonical_ identities for dbc system objects
 \(as distinct from the values they are contained of\).~%~@
 :SEE-ALSO .~%▶▶▶")))
 
-;; (defclass control-id- (base-control-id))
+(defmethod control-id-slot-unbound-error (class
+                                          (object base-control-id)
+                                          slot)
+  (dbc-class-with-slot-unbound-error class object slot))
+
+(defmethod control-id-slot-value-null-error ((object base-control-id)
+                                             slot)
+  (dbc-class-with-slot-value-null-error object slot))
+
+(defmethod control-id-slot-missing-error (class (object base-control-id) (slot (eql 'control-id-namespace)) operation)
+  (dbc-class-with-slot-missing-error class object slot operation))
+
+(defmethod slot-missing (class (object base-control-id) (slot (eql 'control-id-namespace)) operation &optional new-value)
+  (declare (ignore new-value))
+  (control-id-slot-missing-error class object slot operation))
+
+(defmethod slot-unbound (class (object base-control-id) (slot (eql 'control-id-namespace)))
+  (control-id-slot-unbound-error class object slot))
+
+(defmethod control-id-namespace-null-error  ((object base-control-id))
+  (control-id-slot-value-null-error object 'control-id-namespace))
+
+(defmethod control-id-namespace ((object base-control-id))
+  (slot-value object 'control-id-namespace))
+
+;;; control-id-uuid
+(defmethod control-id-slot-missing-error (class (object base-control-id) (slot (eql 'control-id-uuid)) operation)
+  (dbc-class-with-slot-missing-error class object slot operation))
+;;
+(defmethod slot-missing (class (object base-control-id) (slot (eql 'control-id-uuid)) operation &optional new-value)
+  (declare (ignore new-value))
+  (control-id-slot-missing-error class object slot operation))
+;;
+(defmethod slot-unbound (class (object base-control-id) (slot (eql 'control-id-uuid)))
+  (control-id-slot-unbound-error class object slot))
+;;
+(defmethod control-id-uuid-null-error ((object base-control-id))
+  (control-id-slot-value-null-error object 'control-id-uuid))
+;;
+(defmethod control-id-uuid ((object base-control-id))
+  (slot-value object 'control-id-uuid))
+
+;;; control-id-identifies
+(defmethod control-id-slot-missing-error (class (object base-control-id) (slot (eql 'control-id-identifies)) operation)
+  (dbc-class-with-slot-missing-error class object slot operation))
+;;
+(defmethod slot-missing (class (object base-control-id) (slot (eql 'control-id-control-identifies)) operation &optional new-value)
+  (declare (ignore new-value))
+  (control-id-slot-missing-error class object slot operation))
+;;
+(defmethod slot-unbound (class (object base-control-id) (slot (eql 'control-id-identifies)))
+  (control-id-slot-unbound-error class object slot))
+;;
+(defmethod control-id-identifies-null-error  ((object base-control-id))
+  (control-id-slot-value-null-error object 'control-id-identifies))
+;;
+(defmethod control-id-identifies ((object base-control-id))
+  (slot-value object 'control-id-identifies))
+
+
+;; :ABSTRACT-CLASS
+(defclass control-id-indexed-number (base-control-id)
+  ()
+  (:documentation 
+   #.(format nil
+             "The class `control-id-indexed-number' is an abstract-class.~%~@
+Its subclasses distinguish different types of controlled identities which use
+\(or did use\) a positive fixnum as an indexed identifier.~%~@
+:NOTE Use of this class is deprecated. It is intended that subclassing instances
+will instantiate this class where retention of an original indexed number is
+important but where we expect and eventual migration to a more sophisticated
+approach.~%~@
+:SEE-ALSO `<XREF>'.~%▶▶▶")))
+
+;; (control-id-uuid)
+;; (control-id-namespace)
+;; (control-id-identifies)
+
+;; :ABSTRACT-CLASS
+;; (defclass control-id-deprecated-indexed-number (base-control-id)
+;;   ()
+;;   )
+
+;; - control-id-indexed-number             (base-control-id)    
+;; ---- control-id-inventory-num            (control-id-indexed-number)
+;; ---- control-id-doc-num                  (control-id-indexed-number)
+;; ----- control-id-doc-num-artist          (control-id-doc-num)
+;; ----- control-id-doc-num-brand           (control-id-doc-num)
+;; ----- control-id-doc-num-author          (control-id-doc-num)
+;; ----- control-id-doc-num-person          (control-id-doc-num)
+;; ----- control-id-doc-num-publication     (control-id-doc-num)
+
+;; --- control-id-entity-num                (control-id-indexed-number)
+;; ---- control-id-entity-num-artist        (control-id-entity-num)
+;; ---- control-id-entity-num-author        (control-id-entity-num)
+;; ---- control-id-entity-num-brand         (control-id-entity-num)
+;; ---- control-id-entity-num-person        (control-id-entity-num)
+;; ---- control-id-entity-num-publication   (control-id-entity-num)
 
 ;; (defclass control-id-enitity-doc-num (base-control-id))
 ;; (defclass control-id-entity-num      (base-control-id))
 
+;; control-id-documentation-record-num
+;; control-id-documentation-record-sub-num
+
+;; (defclass control-id-indexed-type (control-id-type)
+;; control-id-inventory-num
+;; control-id-doc-num
+;; control-id-entity-num
+;; control-id-inventory-record
+
+;;; ==============================
+;; controlled record types
+;;; ==============================
+;; :NOTE Where a class record is one defined in files with names of the form:
+;;  dbc-class-<FOO>-record.lisp
+;; as distinct from thos with names of the form:
+;; dbc-class-parsed-<FOO>-record.lisp
+;;
+(defclass control-id-record-type (control-id-type)
+  ((control-id-of-class-type
+    :documentation
+    #.(format nil
+              "A class object identified by the subclasses of class `base-control-id'.~%~@
+:NOTE This slot is informally class-allocated e.g. it should be treated as if~%~
+the following were specified:~%~% ~
+ \(control-id-of-class-type :allocation :class\) ~%~%~
+Its slot-value should not be instantiated via an initarg, nor should it be~%~
+specialized by a setf accessor form.~%")))
+  (:documentation
+   #.(format nil ":ABSTRACT-CLASS~%~@
+A mixin for subclasses of which identify classes containing \"record\" like data, e.g.:
+ `base-inventory-record', `base-authority-record', etc.")))
+
+(defclass control-id-inventory-record-type (control-id-record-type)
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'base-inventory-record))))
+
+;; `parsed-doc-record' 
+;; control-id-documentation-record-num, control-id-documentation-record-sub-num
+(defclass control-id-documentation-record-type (control-id-record-type)
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'base-documentation-record))))
+
+;; control-id-authority-0, control-id-authority-1, 
+;; control-id-db-loc, control-id-db-ulan, control-id-db-bnf, control-id-db-oclc,
+;; (defclass control-id-db-record-type (control-id-type)
+;;   ())
+;;   
+
+;; (defclass control-id-image-type (control-id-type)
+;;   ())
+;;   
+
+
+;;; ==============================
+;; controlled entity types
+;;; ==============================
+              
+(defclass control-id-entity-type (control-id-type)
+  ;; (control-id-of-class-type  :initform (%find-control-id-class-or-lose 'base-entity))
+  ((control-id-of-class-type 
+    :documentation 
+    #.(format nil
+              "A class object identified by the subclasses of class `base-control-id'.~%~@
+:NOTE This slot is informally class-allocated e.g. it should be treated as if~%~
+the following were specified:~%~% ~
+ \(control-id-of-class-type  :allocation :class\) ~%~%~
+Its slot-value should not be instantiated via an initarg, nor should it be~%~
+specialized by a setf accessor form.~%")))
+  (:documentation
+   #.(format nil ":ABSTRACT-CLASS~%~@
+A mixin for subclasses of classes with symbol-names of the form:~%~% ~
+control-id-<FOO>-entity-type~%~%")))
+
+(defclass control-id-naf-entity-type (control-id-entity-type)
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'base-naf-entity))))
+
+(defclass control-id-location-entity-type (control-id-entity-type)
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'base-location-entity))))
+
+(defclass control-id-category-entity-type (control-id-entity-type)
+  ((control-id-of-class-type 
+    :initform (%find-control-id-class-or-lose 'base-category-entity))))
+
+(defclass control-id-theme-entity-type (control-id-entity-type)
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'base-theme-entity))))
+
+(defclass control-id-media-entity-type (control-id-entity-type)
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'base-media-entity))))
+
+(defclass control-id-taxon-entity-type (control-id-entity-type)
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'base-taxon-entity))))
+
+
+;;; ==============================
+;; inventory-record 
+;;; ==============================
+
+;; :NOTE it is not likely that instances of this class will share a subclass
+;; `control-id-display-name-for-entity-type'
+(defclass control-id-inventory-record (control-id-inventory-record-type)
+  ;; *control-id-inventory-namespace*
+  ()
+  )
+
+;; :ABSTRACT-CLASS
+(defclass control-id-inventory-record-indexed-number (control-id-inventory-record control-id-indexed-number)
+  ()
+  )
+
+;;; ==============================
+;; documentation-record
+;;; ==============================
+
+;; :NOTE it is not likely that instances of this class will share a subclass
+;; of `control-id-display-name-for-entity-type'
+(defclass control-id-documentation-record (control-id-documentation-record-type)
+  ;; *control-id-inventory-namespace*
+  ()
+  )
+
+
+
+
+;;; ==============================
+;;; display-names
+;;; ==============================
 
 ;; We've extended `control-id-display-name-for-entity-type' because the domain
 ;; of typed entites is mostly known e.g.:
@@ -378,7 +616,7 @@ for control-id-uuid.~%~@
 which record displayable control-ids which identify a nameable thing.~%~@
 :NOTE A nameable thing is not necessarily an entity.~%~@
 :EXAMPLE~%
- \(mon:class-subclasses \(find-class 'control-id-display-name\)\)~%~@
+ \(mon:class-subclasses \(%find-control-id-class-or-lose 'control-id-display-name\)\)~%~@
 :SEE-ALSO `<XREF>'.~%▶▶▶")))
 
 ;; (defclass control-id-display-name-for-class (control-id-display-name)
@@ -408,7 +646,7 @@ which record displayable control-ids which identify a nameable thing.~%~@
 ;; (generic-doc #'display-name-for-entity-of-type
 ;; "Get the entity-type of ENTITY-OBJECT."
 
-;; (class-name (find-class 'control-id-display-name-for-entity-type))
+;; (class-name (%find-control-id-class-or-lose 'control-id-display-name-for-entity-type))
 
 ;; :ABSTRACT-CLASS
 (defclass control-id-display-name-for-entity-type (control-id-display-name)
@@ -421,18 +659,18 @@ which record displayable control-ids which identify a nameable thing.~%~@
              "Instances of this class hold information about an entities displayable name.~%~@
 The slot CONTROL-ID-INSTANCE-CLASS is a symbol indicating the class of the entity identified by the slot-value CONTROL-ID-IDENTIFIES.~%~@
 This slot should be instantiated to a class-object suitable for use as an~%~@
-argument to `cl:find-class' and which returns a class or subclass which is a~%~@
+argument to `cl:%find-control-id-class-or-lose' and which returns a class or subclass which is a~%~@
 member in the set of class-names returned by the following forms \(or their expansions\):~% ~
- \(mon:class-subclasses \(find-class 'base-entity\)\)~% ~
- \(member \(class-name \(find-class 'base-naf-entity\)\)
-         \(mon:class-subclasses \(find-class 'base-entity\)\)\)~% ~
+ \(mon:class-subclasses \(%find-control-id-class-or-lose 'base-entity\)\)~% ~
+ \(member \(class-name \(%find-control-id-class-or-lose 'base-naf-entity\)\)
+         \(mon:class-subclasses \(%find-control-id-class-or-lose 'base-entity\)\)\)~% ~
 :NOTE There may be multiple different entities with a CONTROL-ID-IDENTIFIES slot-value which are `cl:string='.~%~@
 Likewise, such co-references may occur in both the same class and/or an entirely different class.
 :EXAMPLE~% ~
- \(mon:class-subclasses \(find-class 'control-id-display-name-for-entity-type\)\)~%~@
+ \(mon:class-subclasses \(%find-control-id-class-or-lose 'control-id-display-name-for-entity-type\)\)~%~@
 :SEE-ALSO `<XREF>'.~%▶▶▶")))
 
-;; (find-class (class-name (class-of *control-id-display-artist-namespace*)))
+;; (%find-control-id-class-or-lose (class-name (class-of *control-id-artist-namespace*)))
 
 ;; control-id-display-artist-namespace
 
@@ -442,7 +680,7 @@ Likewise, such co-references may occur in both the same class and/or an entirely
 ;;   ((control-id-namespace 
 ;;     :initarg :control-id-namespace
 ;;     :allocation :class))
-;;   (:default-initargs :control-id-namespace (symbol-value '*control-id-display-artist-namespace*)))
+;;   (:default-initargs :control-id-namespace (symbol-value '*control-id-artist-namespace*)))
 
 ;; (defmethod initialize-instance 
 
@@ -451,182 +689,255 @@ Likewise, such co-references may occur in both the same class and/or an entirely
 
 
 ;;; ==============================
-;; media-entity display names
+;; media-entity
 ;;; ==============================
 
-(defclass control-id-media-entity (control-id-media-entity-type)
-  ()
-  )
+(defclass control-id-media-entity (control-id-media-entity-type base-control-id)
+  ())
 
 ;; :ABSTRACT-CLASS
-(defclass control-id-media-entity-display-name (control-id-media-entity control-id-display-name-for-entity-type)
-  ()
-  )
+(defclass control-id-media-entity-display-name (control-id-display-name-for-entity-type)
+  ())
+(defclass control-id-media-entity-indexed-number (control-id-indexed-number)
+  ())
 
-(defclass control-id-display-technique (control-id-media-entity-display-name)
-  ;; *control-id-display-technique-namespace*
-  ((class-entity-type :initform (find-class 'media-entity-technique))
-  )
+(defclass control-id-technique (control-id-media-entity)
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'media-entity-technique))
+   (control-id-namespace 
+    :initform  (system-identity-uuid *control-id-technique-namespace*))))
 
-(defclass control-id-display-material (control-id-media-entity-display-name)
-  ;; *control-id-display-material-namespace*
-  ((class-entity-type :initform (find-class 'media-entity-material)))
-  )
+(defclass control-id-display-technique (control-id-technique control-id-media-entity-display-name)
+  ())
 
-(defclass control-id-display-paper (control-id-media-material)
-  ;; *control-id-display-paper-namespace*
-  ((class-entity-type :initform (find-class 'media-entity-paper)))
-  )
+(defclass control-id-indexed-technique (control-id-technique control-id-media-entity-indexed-number)
+  ())
 
+(defclass control-id-material (control-id-media-entity)
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'media-entity-material))
+   (control-id-namespace 
+    :initform  (system-identity-uuid *control-id-material-namespace*))))
 
-(defclass control-id-display-mount (control-id-media-entity-display-name)
-  ;; *control-id-display-mount-namespace*
-  ((class-entity-type :initform (find-class 'media-entity-mount)))
-  )
+(defclass control-id-display-material (control-id-material control-id-media-entity-display-name)
+  ())
 
-;; (defclass control-id-display-color (control-id-media-entity-display-name)
-;; ;; *control-id-display-color-namespace*
-;;  ((class-entity-type :initform (find-class 'media-entity-color)))
-;;   )
+(defclass control-id-indexed-material (control-id-material control-id-media-entity-indexed-number)
+  ())
+
+(defclass control-id-paper (control-id-material)
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'media-entity-paper))
+   (control-id-namespace 
+    :initform  (system-identity-uuid *control-id-paper-namespace*))))
+
+(defclass control-id-display-paper (control-id-display-material)
+  ())
+
+(defclass control-id-indexed-paper (control-id-indexed-material)
+  ())
+
+(defclass control-id-mount (control-id-media-entity)
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'media-entity-mount))
+   (control-id-namespace 
+    :initform  (system-identity-uuid *control-id-mount-namespace*))))
+
+(defclass control-id-display-mount (control-id-mount control-id-media-entity-display-name)
+  ())
+(defclass control-id-indexed-mount  (control-id-mount control-id-media-entity-indexed-number)
+  ())
+
+;; (defclass control-id-color (control-id-media-entity)
+;;   ((control-id-of-class-type
+;;     :initform (%find-control-id-class-or-lose 'media-entity-color))
+;;    (control-id-namespace 
+;;     :initform  (system-identity-uuid *control-id-color-namespace*))))
+;;
+;; (defclass control-id-display-color (control-id-color control-id-media-entity-display-name)
+;;   ())
+;; (defclass control-id-indexed-color (control-id-color control-id-media-entity-indexed-number)
+;;   ())
+
 
 
 ;;; ==============================
-;;; category-entity display names
+;;; category-entity
 ;;; ==============================
 
+(defgeneric control-id-display-category (object)
+  (:documentation "This method should be specialized by subclasses of `category-entity-top-level'.~%"))
 
 ;; :NOTE What this is tricky because there may be multiple categories with the
 ;; same display name each of which refer to a separate category entity, e.g.:
 ;; 
 (defclass control-id-category-entity (control-id-category-entity-type)
-  ()
-  )
+  ())
 
 ;; :ABSTRACT-CLASS
 (defclass control-id-category-entity-display-name (control-id-category-entity control-id-display-name-for-entity-type)
-  ()
-  )
+  ())
+
+(defclass control-id-category-entity-indexed-number  (control-id-category-entity control-id-indexed-number)
+  ())
 
 (defclass control-id-display-category (control-id-category-entity-display-name)
-  ((class-entity-type :initform (find-class 'category-entity-top-level))
-   (control-id-namespace :initform (system-identity-uuid *control-id-display-category-namespace*)))
-  )
+  ;; control-id-uuid
+  ;; control-id-identifies
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'category-entity-top-level))
+   (control-id-namespace 
+    :initform (system-identity-uuid *control-id-category-namespace*))))
 
+;; (%find-control-id-class-or-lose
+;;  (%find-control-id-class-or-lose 'category-entity-top-level))
+;; (defparameter *tt--cida* (make-instance 'control-id-display-category))
 (defmethod initialize-instance :after ((object control-id-display-category) &key)
-  (unless (eql (class-of object) 'control-id-display-category)
+  ;; (unless (eql (class-name (class-of object)) 'control-id-display-category)
+  (unless (eql (control-id-of-class-type object) 'control-id-display-category)
     (setf (slot-value object 'control-id-namespace)
           (make-v5-uuid (slot-value object 'control-id-namespace)
-                        (class-name (find-class (slot-value object class-entity-type))))
-          )))
+                        (string (class-name (find-class (slot-value object 'control-id-of-class-type))))))))
 
+;; :NOTE categories have corresponding document numbers so we _do_ want this
+;; class (as opposed to location-entity where we don't)
+(defclass control-id-indexed-category (control-id-category-entity-indexed-number)
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'category-entity-top-level))
+   (control-id-namespace 
+    :initform (system-identity-uuid *control-id-category-namespace*))))
+
+(defmethod initialize-instance :after ((object control-id-indexed-category) &key)
+  (unless (eql (control-id-of-class-type object) 'control-id-indexed-category)
+    (setf (slot-value object 'control-id-namespace)
+          (make-v5-uuid (slot-value object 'control-id-namespace)
+                        (string (class-name (find-class (slot-value object 'control-id-of-class-type))))))))
+                        
 (defclass category-id-display-advertising-and-graphics (control-id-display-category)
-  ((class-entity-type     :initform (find-class 'category-entity-advertising-and-graphics))
-   ;; (control-id-namespace :initform (make-v5-uuid (system-identity-uuid *control-id-display-category-namespace*)
-   ;;                                               (class-name (find-class 'category-entity-advertising-and-graphics))))
-   )
-  )
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'category-entity-advertising-and-graphics))))
 
 (defclass category-id-display-architecture-and-design (control-id-display-category)
-  ((class-entity-type :initform (find-class 'category-entity-architecture-and-design))
-   ;; (control-id-namespace :initform (make-v5-uuid (system-identity-uuid *control-id-display-category-namespace*)
-   ;;                                               (class-name (find-class 'category-entity-architecture-and-design))))
-   )
-  )
+  ((control-id-of-class-type 
+    :initform (%find-control-id-class-or-lose 'category-entity-architecture-and-design))))
 
 (defclass category-id-display-books-and-publications (control-id-display-category)
-  ((class-entity-type :initform (find-class 'category-entity-books-and-publications))
-   ;; (control-id-namespace :initform (make-v5-uuid (system-identity-uuid *control-id-display-category-namespace*)
-   ;;                                               (class-name (find-class 'category-entity-books-and-publications))))
-   )
-  )
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'category-entity-books-and-publications))))
 
 (defclass category-id-display-geography (control-id-display-category)
-  ((class-entity-type :initform (find-class 'category-entity-geography))
-   ;; (control-id-namespace :initform (make-v5-uuid (system-identity-uuid *control-id-display-category-namespace*)
-   ;;                                               (class-name (find-class 'category-entity-geography))))
-   )
-  )
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'category-entity-geography))))
 
 (defclass category-id-display-historical-life-and-scenes (control-id-display-category)
-  ((class-entity-type :initform (find-class 'category-entity-historical-life-and-scenes))
-   ;; (control-id-namespace :initform (make-v5-uuid (system-identity-uuid *control-id-display-category-namespace*)
-   ;;                                               (class-name (find-class 'category-entity-historical-life-and-scenes))))
-   )
-  )
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'category-entity-historical-life-and-scenes))))
 
 (defclass category-id-display-natural-history (control-id-display-category)
-  ((class-entity-type :initform (find-class 'category-entity-natural-history))
-   ;; (control-id-namespace :initform (make-v5-uuid (system-identity-uuid *control-id-display-category-namespace*)
-   ;;                                               (class-name (find-class 'category-entity-natural-history))))
-   )
-  )
+  ((control-id-of-class-type 
+    :initform (%find-control-id-class-or-lose 'category-entity-natural-history))))
 
+;; (control-id-uuid)
+;; (control-id-namespace)
+;; (control-id-identifies)
+
+;; (slot-value (make-instance 'category-id-display-natural-history) 'control-id-namespace)
+
+;; (control-id-of-class-type (make-instance 'category-id-display-natural-history))
+;; (slot-value (make-instance 'category-id-display-natural-history) 'control-id-of-class-type)
 
 
 ;;; ==============================
 ;;; theme-entity display names
 ;;; ==============================
 
-(defclass control-id-theme-entity (control-id-theme-entity-type)
-  ()
-  )
-
 ;; :NOTE Should we treat MT, RT, BT, NT, USE, USED-FOR as distinct themes?
-;; :ABSTRACT-CLASS
-(defclass control-id-theme-entity-display-name (control-id-theme-entity control-id-display-name-for-entity-type)
-  ()
-  )
+(defclass control-id-theme-entity (control-id-theme-entity-type base-control-id)
+  ())
 
-(defclass control-id-display-theme (control-id-theme-entity-display-name)
-  ;; *control-id-display-theme-namespace*
-  ()
-  )
+;; ;; :ABSTRACT-CLASS
+(defclass control-id-theme-entity-display-name (control-id-theme-entity control-id-display-name-for-entity-type)
+  ())
+(defclass control-id-theme-entity-indexed-number (control-id-theme-entity control-id-indexed-number)
+  ())
+
+(defclass control-id-theme (control-id-theme-entity)
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'theme-entity))
+   (control-id-namespace 
+    :initform  (system-identity-uuid *control-id-theme-namespace*))))
+
+(defclass control-id-display-theme (control-id-theme control-id-theme-entity-display-name)
+  ())
+
+(defclass control-id-indexeding-theme (control-id-theme control-id-theme-entity-indexed-number)
+  ())
 
 
 ;;; ==============================
-;; location-entity display names
+;; taxon-entity
 ;;; ==============================
 
+;; :ABSTRACT-CLASS
+(defclass control-id-taxon-entity (control-id-taxon-entity-type base-control-id)
+  ())
 
-(defclass control-id-location-entity   (control-id-location-entity-type)
-  ()
-  )
+;; ;; :ABSTRACT-CLASS
+(defclass control-id-taxon-entity-display-name (control-id-taxon-entity control-id-display-name-for-entity-type)
+  ())
+(defclass control-id-taxon-entity-indexed-number (control-id-taxon-entity control-id-indexed-number)
+  ())
+
+(defclass control-id-taxon (control-id-taxon-entity)
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'taxon-entity))
+   (control-id-namespace  
+    :initform  (system-identity-uuid *control-id-taxon-namespace*))))
+
+(defclass control-id-display-taxon (control-id-taxon control-id-taxon-entity-display-name)
+  ())
+
+(defclass control-id-indexed-taxon (control-id-taxon control-id-taxon-entity-indexed-number)
+  ())
+
+
+;;; ==============================
+;; location-entity
+;;; ==============================
+
+;; (make-instance 'control-id-location-entity)
+
+(defclass control-id-location-entity (control-id-location-entity-type base-control-id)
+  ((control-id-namespace  
+    :initform  (system-identity-uuid *control-id-location-namespace*))))
 
 ;; :NOTE This is tricky because "New York" and "New York" refer to two separate
 ;; location entities, e.g. one is a state the other is a city.
 ;; :ABSTRACT-CLASS
 (defclass control-id-location-entity-display-name (control-id-location-entity control-id-display-name-for-entity-type)
-  ()
-  )
-
-(defclass control-id-display-location (control-id-location-entity-display-name)
-  ;; *control-id-display-location-namespace*
-  ;; ((class-entity-type :initform (find-class 'location-entity)))
-  ;; ((class-entity-type :initform (find-class 'location-entity-unverified)))
-  ;; ((class-entity-type :initform (find-class 'location-entity-verified)))
-  ;; ((class-entity-type :initform (find-class 'location-entity-imagined)))
-  ()
-  )
-
-
-;;; ==============================
-;; taxon-entity display names
-;;; ==============================
-
+   ())
+;;   
 ;; :ABSTRACT-CLASS
-(defclass control-id-taxon-entity (control-id-taxon-entity-type)
+(defclass control-id-location-entity-indexed-number (control-id-location-entity control-id-indexed-number)
+  ())
+
+;; :TODO finish the subclasses
+(defclass control-id-display-location (control-id-location-entity control-id-display-name-for-entity-type)
+  ;; *control-id-location-namespace*
+  ;; ((control-id-of-class-type  :initform (%find-control-id-class-or-lose 'location-entity)))
+  ;; ((control-id-of-class-type  :initform (%find-control-id-class-or-lose 'location-entity-unverified)))
+  ;; ((control-id-of-class-type  :initform (%find-control-id-class-or-lose 'location-entity-verified)))
+  ;; ((control-id-of-class-type  :initform (%find-control-id-class-or-lose 'location-entity-imagined)))
   ()
   )
 
-;; :ABSTRACT-CLASS
-(defclass control-id-taxon-entity-display-name (control-id-taxon-entity control-id-display-name-for-entity-type)
-  ()
-  )
+;; :NOTE The location class is new so we realy don't need this class and should add it unless needed.
+;; (defclass control-id-indexed-location (control-id-location-entity control-id-indexed-number)
+;;   ())
 
-(defclass control-id-display-taxon (control-id-taxon-entity-display-name)
-  ;; *control-id-display-taxon-namespace*  
-  ()
-  )
+;; ((control-id-of-class-type
+;;   :initform (%find-control-id-class-or-lose 'location-entity-verified)))
+
 
 
 ;;; ==============================
@@ -634,48 +945,79 @@ Likewise, such co-references may occur in both the same class and/or an entirely
 ;;; ==============================
 ;;
 
-(defclass control-id-naf-entity (control-id-naf-entity-type)
-  ()
-  )
+(defclass control-id-naf-entity (control-id-naf-entity-type base-control-id)
+  ())
 
 ;; :ABSTRACT-CLASS
 (defclass control-id-naf-entity-display-name (control-id-naf-entity control-id-display-name-for-entity-type)
-  ()
-  )
+  ())
+(defclass control-id-naf-entity-indexed-number (control-id-naf-entity control-id-indexed-number)
+  ())
 
-(defclass control-id-display-artist (control-id-naf-entity-display-name)
-  ;; *control-id-display-artist-namespace*
-  ((class-entity-type :initform (find-class 'naf-entity-artist)))
-  )
+(defclass control-id-naf-entity-artist (control-id-naf-entity)
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'naf-entity-artist))
+   (control-id-namespace  
+    :initform  (system-identity-uuid *control-id-artist-namespace*))))
 
+(defclass control-id-display-artist (control-id-naf-entity-artist control-id-naf-entity-display-name)
+  ())
 
-(defclass control-id-display-author (control-id-naf-entity-display-name)
-  ;; *control-id-display-author-namespace*
-  ((class-entity-type :initform (find-class 'naf-entity-author)))
-  )
+(defclass control-id-indexed-artist (control-id-naf-entity-artist control-id-naf-entity-indexed-number)
+  ())
 
-(defclass control-id-display-person (control-id-naf-entity-display-name)
-  ;; *control-id-display-person-namespace*
-  ((class-entity-type :initform (find-class 'naf-entity-person)))
-  )
+(defclass control-id-naf-entity-author (control-id-naf-entity)
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'naf-entity-author))
+   (control-id-namespace  
+    :initform  (system-identity-uuid *control-id-author-namespace*))))
 
-(defclass control-id-display-brand (control-id-naf-entity-display-name)
-  ;; *control-id-display-brand-namespace*
-  ((class-entity-type :initform (find-class 'naf-entity-brand)))
-  )
+(defclass control-id-display-author (control-id-naf-entity-author control-id-naf-entity-display-name)
+  ())
 
-(defclass control-id-display-publication (control-id-naf-entity-display-name)
-  ;; *control-id-display-publication-namespace*
-  ((class-entity-type :initform (find-class 'naf-entity-publication)))
-  )
+(defclass control-id-indexed-author (control-id-naf-entity-author control-id-naf-entity-indexed-number)
+  ())
+
+(defclass control-id-naf-entity-person (control-id-naf-entity)
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'naf-entity-person))
+   (control-id-namespace  
+    :initform  (system-identity-uuid *control-id-person-namespace*))))
+
+(defclass control-id-display-person (control-id-naf-entity-person control-id-naf-entity-display-name)
+  ())
+
+(defclass control-id-indexed-person (control-id-naf-entity-person control-id-naf-entity-indexed-number)
+  ())
+
+(defclass control-id-naf-entity-brand (control-id-naf-entity)
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'naf-entity-brand))
+   (control-id-namespace  
+    :initform  (system-identity-uuid *control-id-brand-namespace*))))
+
+(defclass control-id-display-brand (control-id-naf-entity-brand control-id-naf-entity-display-name)
+  ())
+
+(defclass control-id-indexed-brand (control-id-naf-entity-brand control-id-naf-entity-indexed-number)
+  ())
+
+(defclass control-id-naf-entity-publication (control-id-naf-entity)
+  ((control-id-of-class-type
+    :initform (%find-control-id-class-or-lose 'naf-entity-publication))
+   (control-id-namespace  
+    :initform  (system-identity-uuid *control-id-publication-namespace*))))
+
+(defclass control-id-display-publication (control-id-naf-entity-publication control-id-naf-entity-display-name)
+  ())
+
+(defclass control-id-indexed-publication (control-id-naf-entity-publication control-id-naf-entity-indexed-number)
+  ())
 
 ;; :NOTE or subclass control-id-display-publication
 ;; (defclass control-id-display-publication-full (control-id-naf-entity-display-name)
 ;;   ()
 ;;   )
-
-
-
 
 ;;; ==============================
 ;;
