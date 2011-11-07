@@ -160,6 +160,12 @@
 ;;
 ;; control-id-uuid
 ;; control-id-identifies
+
+;; We need to register the UUID of every class in uuid hash-table `*category-entity-hash*' at initialize-instance time.
+;; for subclasses we need to check if object's NODE-NAME is already in the CPL and if not push it onto the CPL.
+;; if child-node-name is non-null then we find the parent-classes CPL with
+;; `sb-mop:class-direct-superclasses' else we compute it with
+;; `sb-mop:compute-class-precedence-list'
 (defmethod initialize-instance :after ((object category-entity-top-level) &key)
   (unless (eql (control-id-of-class-type object) 'category-entity-top-level)
     ;; (setf (slot-value object 'control-id-namespace)
@@ -168,58 +174,66 @@
     (let ((cnn (slot-value object 'child-node-name))
           (nn  (slot-value object 'node-name)))
       (if (null cnn)
-          ;; we need to make a cpl from node-name 
+          ;; We need to make a CPL from the node-name slot-value
           (let* ((class-of-object (class-of object))
                  (computed-cpl (sb-mop:compute-class-precedence-list (class-of object)))
                  (position-root (position (find-class 'category-entity-top-level) computed-cpl))
                  (relevant-cpl (subseq computed-cpl 0 position-root)))
-            (if (null relevant-cpl)
-                ;; its a top level category
-                (let ((object-metadata (control-id-display-category object))
-                      (nmspc (control-id-namespace object-metadata)))
-                  (setf (gethash 
-                         (setf (slot-value object-metadata (control-id-uuid object-metadata))
-                               (unicly:make-v5-uuid nmspc
-                                                    (setf (slot-value object-metadata 'control-id-identifies)
-                                                          nn)))
-                         *category-entity-hash*)
-                        class-of-object))
-                ;; do stuff here
-                ))))
+            (if  (or (null relevant-cpl)
+                     (eql class-of-object (car relevant-cpl)))
+                 ;; :NOTE This portion works -- carefull when merging.
+                 ;; its a top level category
+                 (let* ((object-metadata (control-id-display-category object))
+                        (nmspc (control-id-namespace object-metadata)))
+                 
+                   (setf (gethash 
+                          (setf (slot-value object-metadata 'control-id-uuid)
+                                (unicly:make-v5-uuid nmspc
+                                                     (setf (slot-value object-metadata 'control-id-identifies)
+                                                           nn)
+                                                     ))
+                          *category-entity-hash*)
+                         class-of-object))
+                 ;; ... do stuff here when 
+                 ))))
     ))
 
-(let ((object (make-instance 'category-entity-advertising-and-graphics)))
-  (let ((cnn (slot-value object 'child-node-name))
-        (nn  (slot-value object 'node-name)))
-    (if (null cnn)
-        ;; we need to make a cpl from node-name 
-        (let* ((class-of-object (class-of object))
-               (computed-cpl (sb-mop:compute-class-precedence-list (class-of object)))
-               (position-root (position (find-class 'category-entity-top-level) computed-cpl))
-               (relevant-cpl (subseq computed-cpl 0 position-root)))
-          (if  (or (null relevant-cpl)
-                   (eql class-of-object (car relevant-cpl)))
-               ;; its a top level category
-               (let ((object-metadata (control-id-display-category object))
-                     (nmspc (control-id-namespace object-metadata)))
-                 (setf (gethash 
-                        (setf (slot-value object-metadata (control-id-uuid object-metadata))
-                              (unicly:make-v5-uuid nmspc
-                                                   (setf (slot-value object-metadata 'control-id-identifies)
-                                                         nn)))
-                        *category-entity-hash*)
-                       class-of-object))
-               ;; do stuff here
-               ))))
-  )
+;; 
 
+;; (make-instance 'category-entity-advertising-and-graphics)
+;; (make-instance 'category-entity-natural-history)
+;; *category-entity-hash*
+
+;; (let ((object (make-instance 'category-entity-advertising-and-graphics)))
+;;   (let ((cnn (slot-value object 'child-node-name))
+;;         (nn  (slot-value object 'node-name)))
+;;     (if (null cnn)
+;;         ;; we need to make a cpl from node-name 
+;;         (let* ((class-of-object (class-of object))
+;;                (computed-cpl (sb-mop:compute-class-precedence-list (class-of object)))
+;;                (position-root (position (find-class 'category-entity-top-level) computed-cpl))
+;;                (relevant-cpl (subseq computed-cpl 0 position-root)))
+;;           (if  (or (null relevant-cpl)
+;;                    (eql class-of-object (car relevant-cpl)))
+;;                ;; its a top level category
+;;                (let* ((object-metadata (control-id-display-category object))
+;;                      (nmspc (control-id-namespace object-metadata)))
+;;                 
+;;                  (setf (gethash 
+;;                         (setf (slot-value object-metadata 'control-id-uuid)
+;;                               (unicly:make-v5-uuid nmspc
+;;                                                    (setf (slot-value object-metadata 'control-id-identifies)
+;;                                                          nn)
+;;                                                    ))
+;;                         *category-entity-hash*)
+;;                        class-of-object))
+;;                ;; do stuff here
+;;                ))))
+;;   )
+;;
 ;; ))
 
-;; we need to register the UUID of every class in uuid hash-table `*category-entity-hash*' at initialize-instance time.
-;; for subclasses we need to check if object's NODE-NAME is already in the CPL and if not push it onto the CPL.
-;; if child-node-name is non-null then we find the parent-classes CPL with
-;; `sb-mop:class-direct-superclasses' else we compute it with
-;; `sb-mop:compute-class-precedence-list'
+
 ;; (let ((computed-cop (FIND-CPL OBJECT)))
 ;;   (unless (member (node-name OBJECT) computed-cop)
 ;;     (setf computed-cop 
