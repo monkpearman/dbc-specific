@@ -6,16 +6,10 @@
 ;; *package*
 (defparameter *tt--parse-table* (make-hash-table :test 'equal))
 
-(defun %ensure-dated-parsed-directory (&key directory-prefix)
-  (declare (type mon:string-not-empty directory-prefix))
-  (ensure-directories-exist
-   (merge-pathnames 
-    (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*) 
-                                          ,(format nil "~A-~A"
-                                                   (string-trim #(#\- #\space) directory-prefix)
-                                                   (mon:time-string-yyyy-mm-dd))))
-    (system-path *system-path*))))
-
+;; :NOTE :FUNCTION `%ensure-dated-parsed-directory' defined in
+;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-convert.lisp
+;; :NOTE `%make-pathname-parsed-sax-dump-file' superseded by functionallity of
+;; `write-sax-parsed-slots-to-file'.
 (defun %make-pathname-parsed-sax-dump-file (&key parse-file-prefix)
   (merge-pathnames 
    (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*))
@@ -26,23 +20,28 @@
    (system-path *system-path*)))
 
 (let ((parsed-sax-file (%make-pathname-parsed-sax-dump-file :parse-file-prefix "sax-refs-test")))
-  (write-sax-parsed-xml-to-file
+  (write-sax-parsed-xml-to-file 
    :input-file  (merge-pathnames (make-pathname :name "dump-refs-DUMPING")
                                  (sub-path *xml-input-dir*))
    :output-file parsed-sax-file)
-  (load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-inventory-record  
-                                                 :input-file parsed-sax-file
-                                                 :hash-table  *tt--parse-table*
-                                                 :key-accessor  #'item-number
-                                                 :slot-dispatch-function #'set-parsed-inventory-record-slot-value))
+  (load-sax-parsed-xml-file-to-parsed-class-hash
+   :parsed-class 'parsed-inventory-record  
+   :input-file parsed-sax-file
+   :hash-table  *tt--parse-table*
+   ;; :key-accessor  #'item-number
+   :key-accessor  #'inventory-number
+   :slot-dispatch-function #'set-parsed-inventory-record-slot-value))
 
 ;; This will write all 8979 hash-table values to an individual file.
-(write-sax-parsed-class-hash-to-files
+(write-sax-parsed-class-hash-to-files 
  *tt--parse-table*
  :parsed-class 'parsed-inventory-record
- :slot-for-file-name 'item-number
- :prefix-for-file-name "item-number"
+ :slot-for-file-name 'inventory-number
+ :prefix-for-file-name "inventory-number"
  :output-directory (%ensure-dated-parsed-directory :directory-prefix "individual-parse-refs"))
+
+
+;; :slot-dispatch-function #'set-parsed-artist-record-slot-value
  
 ;;
 ;; On SLAPPY writing the 8979 files took 8.601 seconds which is ~1000 files per second:
@@ -56,8 +55,9 @@
 ;;   428,620,536 bytes consed
 
 
+(clrhash *tt--parse-table*)
 (write-sax-parsed-xml-to-file
- :input-file  (merge-pathnames (make-pathname :name "dump-artist-infos-xml")
+:input-file  (merge-pathnames (make-pathname :name "dump-artist-infos-xml")
                                (sub-path *xml-input-dir*))
  :output-file (%make-pathname-parsed-sax-dump-file :parse-file-prefix "sax-artist-test"))
 

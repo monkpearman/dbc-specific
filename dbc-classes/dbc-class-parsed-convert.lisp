@@ -12,6 +12,17 @@
 (in-package #:dbc)
 ;; *package*
 
+;; :NOTE for use with examples defined in 
+;; :FILE dbc-specific/dbc-classes/dbc-class-parse-EXAMPLE.lisp
+(defun %ensure-dated-parsed-directory (&key directory-prefix)
+  (declare (type mon:string-not-empty directory-prefix))
+  (ensure-directories-exist
+   (merge-pathnames 
+    (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*) 
+                                          ,(format nil "~A-~A"
+                                                   (string-trim #(#\- #\space) directory-prefix)
+                                                   (mon:time-string-yyyy-mm-dd))))
+    (system-path *system-path*))))
 
 ;;; ==============================
 ;; :NOTE `load-sax-parsed-xml-file-to-parsed-class-hash' now has parameter
@@ -37,43 +48,13 @@
 ;;              finally (setf (gethash ref hash-table) obj))
 ;;        finally (return (values hash-table (hash-table-count hash-table))))))
 ;;
-(defun load-sax-parsed-xml-file-to-parsed-class-hash (&key parsed-class input-file hash-table key-accessor slot-dispatch-function)
-  ;; Arg PARSED-CLASS a symbol designating the class we are parsing.
-  ;; Arg INPUT-FILE the file containing field/value consed pairs.
-  ;; Arg HASH-TABLE the hash-table to insert the class object to. 
-  ;; Its `cl:hash-table-test' should be appropriate for use with the type of
-  ;; return value of KEY-ACCESSOR, e.g. if KEY-ACCESSOR returns a string the
-  ;; `cl:hash-table-test' should be `cl:equal' or `cl:equalp'. whereas if
-  ;; KEY-ACCESSOR returns a symbol then `cl:eql' will suffice.
-  ;; Arg KEY-ACCESSOR names an accessor function which returns the primary key for the parsed table
-  ;; it return value will becomes a hash-table KEY associating PARSED-CLASS in HASH-TABLE.
-  ;; As such, it should return always return a non-null value. If not the results are undefined.
-  ;; Arg SLOT-DISPATCH-FUNCTION is a function utilizing
-  ;; `string-case:string-case' to map strings to an appropriate accesor
-  ;; e.g. `set-parsed-artist-record-slot-value', `set-parsed-inventory-record-slot-value', etc.
-  ;; :EXAMPLE
-  ;; (defparameter *tt--parse-table* (make-hash-table :test 'equal))
-  ;; (let ((parsed-sax-file (merge-pathnames 
-  ;;                         (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*))
-  ;;                                        :name (concatenate 'string "sax-refs-test-" (mon:time-string-yyyy-mm-dd))
-  ;;                                        :type "lisp")
-  ;;                         (system-path *system-path*))))
-  ;;   (write-sax-parsed-xml-to-file
-  ;;    :input-file  (merge-pathnames (make-pathname :name "dump-refs-DUMPING")
-  ;;                                  (sub-path *xml-input-dir*))
-  ;;    :output-file parsed-sax-file)
-  ;;   (load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-inventory-record  
-  ;;                                                  :input-file parsed-sax-file
-  ;;                                                  :hash-table  *tt--parse-table*
-  ;;                                                  :key-accessor  #'item-number
-  ;;                                                  :slot-dispatch-function #'set-parse-ref-slot-value))
-  ;;                        
-  ;; ;; => #<HASH-TABLE  ... >, 8969
-  ;; (clrhash *tt--parse-table*)
-  ;; :NOTE For use with output of `write-sax-parsed-xml-refs-file'.
-  ;; `write-sax-parsed-xml-refs-file'
-  ;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
-  ;; `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
+;;
+;; :NOTE documented in dbc-specific/dbc-docs.lisp
+(defun load-sax-parsed-xml-file-to-parsed-class-hash (&key parsed-class
+                                                           input-file
+                                                           hash-table
+                                                           key-accessor
+                                                           slot-dispatch-function)
   (with-open-file (fl input-file
                       :direction :input 
                       :element-type 'character
@@ -88,14 +69,7 @@
              finally (setf (gethash (funcall key-accessor obj) hash-table) obj))
        finally (return (values hash-table (hash-table-count hash-table))))))
 
-;; Return a format-control string for printing the slots of OBJECT with
-;; padding adjusted according to the longest symbol-name of its slots.
-;; Helper function for use with:
-;; `print-sax-parsed-slots'
-;; `write-sax-parsed-slots-to-file', 
-;; `write-sax-parsed-class-hash-to-files'
-;; :EXAMPLE
-;;  (print-sax-parsed-slots-padding-format-control (make-instance 'parsed-inventory-record))
+;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun print-sax-parsed-slots-padding-format-control (object)
   (format nil "~~&(~~{~~{:~~~D:A~~S~~}~~^~~%~~})" 
           (+ (reduce #'max 
@@ -107,15 +81,10 @@
 ;; interface for printing sax parsed slots it is not specific to the class
 ;; `parsed-inventory-record'.
 ;;
-;; (fundoc 'print-sax-parsed-slots
-;; Keyword PRINT-UNBOUND is a boolean.
-;; When t (the default) and a slot of OJBECT's is not `cl:slot-boundp' print its slot-value as "#<UNBOUND>".
-;; When null and OJBECT's a slot is not `cl:slot-boundp' print its slot-value as NIL. 
-;; The later is useful when serializing an object to a file b/c the de-serialzed
-;; OBJECT will have its slot :initarg intialized to nil which is what we've done elswhere for this class
-;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
-;; `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
-(defun print-sax-parsed-slots (object &key stream (print-unbound t) (pre-padded-format-control nil))
+;; :NOTE documented in dbc-specific/dbc-docs.lisp
+(defun print-sax-parsed-slots (object &key stream
+                                           (print-unbound t)
+                                           (pre-padded-format-control nil))
   (declare (type parsed-class object)
            (type (or string null) pre-padded-format-control)
            (type boolean print-unbound))
@@ -133,23 +102,7 @@
                nconc (list (list slot-chk unbound)) into rtn
                finally (return rtn)))))
 
-;; (fundoc 'write-sax-parsed-slots-to-file
-;; Write a list of the slot/value pairs of OBJECT to a file in OUTPUT-DIRECTORY.
-;; Each slot/value pair is written in such a way that the list may be read and
-;; passed to `cl:make-instance' to re-instantiate the instance.
-;; Arg SLOT-FOR-FILE-NAME is a symbol, e.g. 'item-number, 'control-id-entity-num-artist, etc.
-;; If it satisfies `cl:slot-exists-p', `cl:slot-boundp' and `cl:slot-value' its
-;; value is used as the suffix for a file name, if not an error is signaled.
-;; Arg PREFIX-FOR-FILE-NAME is a string, e.g. "item-number", "artist-enity-num", etc.
-;; It is combined with `cl:slot-value' of SLOT-FOR-FILE-NAME when makeing a pathname to write OBJECT to. 
-;; When a string is provided it should not contain a trailing #\-.
-;; If PREFIX-FOR-FILE-NAME is null the `cl:string' representation of SLOT-FOR-FILE-NAME is used instead.
-;; :EXAMPLE
-;; (write-sax-parsed-slots-to-file 
-;;  *tt--item* 'item-number \"item-number\"
-;;  :output-directory (merge-pathnames #P"individual-parse-refs-2011-10-01/" (sub-path *xml-output-dir*)))
-;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
-;; `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
+;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun write-sax-parsed-slots-to-file (object &key slot-for-file-name 
                                                    prefix-for-file-name
                                                    output-directory 
@@ -198,13 +151,7 @@
           (warn "~%Something wrong with arg OBJECT, declining to dump to file~%")
           nil))))
 
-;; (fundoc 'write-sax-parsed-class-hash-to-files
-;; :EXAMPLE
-;; (write-sax-parsed-class-hash-to-files 
-;;  <HASH-TABLE> :parse-class <PARSED-CLASS> :slot-for-file-name 'item-number :prefix-for-file-name "item-number"
-;;  :output-directory (merge-pathnames #P"individual-parse-refs-2011-10-01/" (sub-path *xml-output-dir*)))
-;; :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
-;; `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
+;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun write-sax-parsed-class-hash-to-files (hash-table &key parsed-class
                                                              slot-for-file-name
                                                              prefix-for-file-name

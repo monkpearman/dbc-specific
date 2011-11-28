@@ -745,7 +745,172 @@ Return value when source is closed. is as if by the form: (values) e.g.:~%
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `<XREF>'.~%▶▶▶")
 
+
+;;; ==============================
+;; dbc-specific/dbc-parse/dbc-xml-parse-sax.lisp
+;;; ==============================
 
+(vardoc '*parsed-data-current-row*
+  "Holds an instance of class `dbc-sax-parsing-class' while parsing an XML row field.~%~@
+:SEE-ALSO `*parsed-data-current-row*', `*parsed-data-output-path*',
+`*parsed-data-output-stream*', `*xml-input-dir*', `*xml-output-dir*'.~%▶▶▶")
+
+(vardoc '*parsed-data-output-stream*
+  "Output stream current while parsing the XML data of *parsed-data-output-path*
+Opend on entry to `write-sax-parsed-xml-to-file' and closed on exit.
+:SEE-ALSO `*parsed-data-current-row*', `*parsed-data-output-path*',
+`*parsed-data-output-stream*', `*xml-input-dir*', `*xml-output-dir*'.~%▶▶▶")
+
+(fundoc 'write-sax-parsed-delimiter 
+"Write a commented delimiter line to OUTPUT-STREAM.
+Commented delimiter is written as a `cl:fresh-line' followed by a string of
+68 #\\; characters followed by a newline.
+:SEE-ALSO `dbc-sax-current-chars-clear', `dbc-sax-current-chars-reset',
+`dbc-sax-current-chars', `dbc-sax-handler', `write-sax-parsed-delimiter',
+`write-sax-parsed-xml-row-to-file', `load-sax-parsed-xml-file-to-parsed-class-hash',
+`*parsed-data-current-row*', `*parsed-data-output-path*',
+`*parsed-data-output-stream*', `*xml-input-dir*', `*xml-output-dir*'.~%▶▶▶")
+
+(fundoc 'write-sax-parsed-xml-to-file
+        "Parse the dbc XML refs in INPUT-FILE and write thier lispy counterparts to OUTPUT-FILE.~%~@
+For duration of body the variable `*parsed-data-output-stream*' is bound to an open output-stream.~%~@
+INPUT-FILE defaults to `*xml-input-refs-name*'.~%~@
+OUTPUT-FILE defaults to `*parsed-data-output-path*'.~%~@
+:EXAMPLE~%
+ \(write-sax-parsed-xml-to-file\)~%
+ \(write-sax-parsed-xml-to-file
+  :input-file  \(merge-pathnames \(make-pathname :name \"dump-themes-DUMPING\"\)
+                                \(sub-path *xml-input-dir*\)\)
+  :output-file \(merge-pathnames 
+                \(make-pathname :directory `\(:relative ,(sub-name *xml-output-dir*\)\)
+                               :name \(concatenate 'string \"sax-themes-test-\" \(mon:time-string-yyyy-mm-dd\)\)
+                               :type \"lisp\"\)
+                \(system-path *system-path*\)\)\)~%~@
+The parsed file can be loaded into a hash-table with `load-sax-parsed-xml-file-to-parsed-class-hash'.~%~@
+:SEE-ALSO `write-sax-parsed-slots-to-file',
+`write-sax-parsed-class-hash-to-files', `print-sax-parsed-slots',
+`load-sax-parsed-xml-file-to-parsed-class-hash',
+`%ensure-dated-parsed-directory', `write-sax-parsed-xml-row-to-file'.")
+
+(fundoc 'write-sax-parsed-xml-row-to-file
+        "Write current XML row data of slot-value FIELD-DATA of class `dbc-sax-parsing-class' to OUTPUT-STREAM.~%~@
+Current XML row data is comprised of all the <field> elements data encounered
+inside an XML <row> element where a <row> has the form:~%~
+ <row>
+ <field name=\"<NAME>\"><FIELD-VALUE></field>
+  ... 
+ <field name=\"<NAME>\"><FIELD-VALUE></field>
+ </row>~%~@
+While parsing the current instance of class `dbc-sax-parsing-class' is held by
+variable `*parsed-data-current-row*'.~%~@
+:SEE-ALSO `dbc-sax-current-chars-clear', `dbc-sax-current-chars-reset',
+`dbc-sax-current-chars', `dbc-sax-handler', `write-sax-parsed-delimiter',
+`write-sax-parsed-xml-row-to-file', `write-sax-parsed-slots-to-file',
+`write-sax-parsed-class-hash-to-files', `print-sax-parsed-slots',
+`load-sax-parsed-xml-file-to-parsed-class-hash',
+`%ensure-dated-parsed-directory', `*parsed-data-current-row*',
+`*parsed-data-output-path*', `*parsed-data-output-stream*', `*xml-input-dir*',
+`*xml-output-dir*'.~%▶▶▶")
+
+
+
+;;; ==============================
+;; dbc-specific/dbc-classes/dbc-class-parsed-convert.lisp
+;;; ==============================
+
+(fundoc 'load-sax-parsed-xml-file-to-parsed-class-hash
+"Arg PARSED-CLASS a symbol designating the class we are parsing.~%~@
+Arg INPUT-FILE the file containing field/value consed pairs.~%
+Arg HASH-TABLE the hash-table to insert the class object to.
+Its `cl:hash-table-test' should be appropriate for use with the type of
+return value of KEY-ACCESSOR, e.g. if KEY-ACCESSOR returns a string the
+`cl:hash-table-test' should be `cl:equal' or `cl:equalp'. Whereas, if
+KEY-ACCESSOR returns a symbol then `cl:eql' will suffice.~%~@
+Arg KEY-ACCESSOR names an accessor function which returns the primary key for
+the parsed table it return value will becomes a hash-table KEY associating
+PARSED-CLASS in HASH-TABLE.  As such, it should return always return a non-null
+value.  The results are undefined if not.~%~@
+Arg SLOT-DISPATCH-FUNCTION is a function utilizing `string-case:string-case'
+to map strings to an appropriate accesor e.g. `set-parsed-artist-record-slot-value',
+`set-parsed-inventory-record-slot-value', etc.~%~@
+:EXAMPLE~%
+ \(defparameter *tt--parse-table* \(make-hash-table :test 'equal\)\)~%
+ \(let \(\(parsed-sax-file \(merge-pathnames 
+                        \(make-pathname :directory `\(:relative ,\(sub-name *xml-output-dir*\)\)
+                                       :name \(concatenate 'string \"sax-refs-test-\" \(mon:time-string-yyyy-mm-dd\)\)
+                                       :type \"lisp\"\)
+                        \(system-path *system-path*\)\)\)\)
+  \(write-sax-parsed-xml-to-file
+   :input-file  \(merge-pathnames \(make-pathname :name \"dump-refs-DUMPING\"\)
+                                 \(sub-path *xml-input-dir*\)\)
+   :output-file parsed-sax-file\)
+  \(load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-inventory-record  
+                                                 :input-file parsed-sax-file
+                                                 :hash-table  *tt--parse-table*
+                                                 :key-accessor  #'item-number
+                                                 :slot-dispatch-function #'set-parse-ref-slot-value\)\)~%
+ ;; => #<HASH-TABLE  ... >, 8969~%
+ \(clrhash *tt--parse-table*\)~%
+:NOTE For use with output of `write-sax-parsed-xml-refs-file'.~%~@
+:SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
+`write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
+
+(fundoc 'print-sax-parsed-slots-padding-format-control
+"Return a format-control string for printing the slots of OBJECT with
+padding adjusted according to the longest symbol-name of its slots.~%~@
+Helper function for use with `print-sax-parsed-slots',
+`write-sax-parsed-slots-to-file', and `write-sax-parsed-class-hash-to-files'.~%~@
+:EXAMPLE~%
+ \(print-sax-parsed-slots-padding-format-control \(make-instance 'parsed-inventory-record\)\)~%~@
+:SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
+`write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
+
+(fundoc 'print-sax-parsed-slots
+"Keyword PRINT-UNBOUND is a boolean.~%~@
+When t \(the default\) and a slot of OJBECT's is not `cl:slot-boundp' print its
+slot-value as \"#<UNBOUND>\".~%~@
+When null and OJBECT's a slot is not `cl:slot-boundp' print its slot-value as NIL.~%~@
+:NOTE The later is useful when serializing an object to a file b/c the
+de-serialzed OBJECT will have its slot :initarg intialized to nil which is what
+we've done elswhere for this class.~%~@
+:SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
+`write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
+
+(fundoc 'write-sax-parsed-slots-to-file
+"Write a list of the slot/value pairs of OBJECT to a file in OUTPUT-DIRECTORY.~%~@
+Each slot/value pair is written in such a way that the list may be read and
+passed to `cl:make-instance' to re-instantiate the instance.~%~@
+Arg SLOT-FOR-FILE-NAME is a symbol, e.g. 'item-number, 'control-id-entity-num-artist, etc.
+If it satisfies `cl:slot-exists-p', `cl:slot-boundp' and `cl:slot-value', it's
+value is used as the suffix for a file name otherwise an error is signaled.~%~@
+Arg PREFIX-FOR-FILE-NAME is a string, e.g. \\\"item-number\\\", \\\"artist-enity-num\\\",
+etc.  It is combined with `cl:slot-value' of SLOT-FOR-FILE-NAME when makeing a
+pathname to write OBJECT to.  When a string is provided it should not contain a
+trailing #\\\\-. If PREFIX-FOR-FILE-NAME is null the `cl:string' representation of
+SLOT-FOR-FILE-NAME is used instead.~%~@
+Keyword arg PRE-PADDED-FORMAT-CONTROL if supplied is used in lieu of return
+value of `print-sax-parsed-slots-padding-format-control' with OBJECT as its argument.~%~@
+:EXAMPLE~%
+ \(write-sax-parsed-slots-to-file 
+  *tt--item* 
+  :slot-for-file-name 'inventory-number 
+  :prefix-for-file-name \"inventory-number\"
+  :output-directory \(merge-pathnames #P\"individual-parse-refs-2011-10-01/\" \(sub-path *xml-output-dir*\)\)\)~%~@
+:SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
+`write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
+
+(fundoc 'write-sax-parsed-class-hash-to-files
+"Write the sax-parsed class of HASH-TABLE to a file in OUTPUT-DIRECTORY.~%~@
+:EXAMPLE~%
+ \(write-sax-parsed-class-hash-to-files 
+  <HASH-TABLE> 
+  :parse-class 'parsed-inventory-record
+  :slot-for-file-name 'inventory-number 
+  :prefix-for-file-name \"inventory-number\"
+  :output-directory \(merge-pathnames #P\"individual-parse-refs-2011-10-01/\" 
+                                     \(sub-path *xml-output-dir*\)\)\)~%~@
+:SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
+`write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
 
 ;;; ==============================
 
