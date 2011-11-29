@@ -5,18 +5,9 @@
 (in-package #:dbc)
 ;; *package*
 
-
-;;; ==============================
-;; :SOURCE cl-ace-6_5/util.lisp
+;; :SOURCE cl-ace-6_5/util.lis
+;; :NOTE documented in :FILE dbc-specific/dbc-docs.lisp
 (defmacro with-namespaces (bindings &body body)
-  "Evalute BODY form with the namespace BINDINGS provided.~%~@
-convenience macro to reduce nesting of CXML:WITH-NAMESPACE forms.~%~@
-:SYNTAX~%
- with-namespaces \({\(<PREFIX> <URI>\)}*\) <FORM>* => <RESULT>~%
- - <PREFIX> -- a namespace prefix \(a string\)
- - <URI>    -- a string denoting a URI
- - <FORM>   -- a form \(evaluated at runtime\)
- - <RESULT> -- the result of evaluating forms"
   (if (endp bindings) `(progn ,@body)
     (destructuring-bind ((prefix uri) &rest bindings) bindings
       (if (endp bindings)
@@ -26,42 +17,10 @@ convenience macro to reduce nesting of CXML:WITH-NAMESPACE forms.~%~@
            (with-namespaces ,bindings
              ,@body))))))
 
-;; :NOTE This macro kept here for example purposes:
 ;; :SOURCE cl-ace-6_5/util.lisp
+;; :NOTE This macro kept here for example purposes.
+;; :NOTE documented in :FILE dbc-specific/dbc-docs.lisp
 (defmacro with-soap-envelope ((prefix &rest bindings) &body body)
-  "Evalute BODY forms within the wrapped context of `cxml:with-xml-output' with XML SOAP namespaces bindings active.
-PREFIX is bound to the SOAP envelope prefix i.e.:~%
- \"http://schemas.xmlsoap.org/soap/envelope/\"~%~@
-Any other namespace BINDINGS provided are also in effect.~%~@
-BODY forms are evaluated within two `cxml:with-element's wrapping forms, these are:~%
- - SOAP \"Envelope\"
- - SOAP \"Body\"~%~@
-Return valuu is a `cxml:rod' \(probably a string\).~%~@
-:SYNTAX~%~@
- with-soap-envelope (<SOAP-PREFIX> {(<PREFIX> <URI>)}*) <BODY>* => <ENVELOPE>
- - <SOAP-PREFIX>, <prefix> -- namespace abbreviations/prefixes
- - <URI> --- string denoting a URI
- - <BODY> --- body forms
- - <ENVELOPE> --- a CXML:ROD \(probably a string\)~%~@
-:EXAMPLE
- (with-soap-envelope
-     (\"env\" (\"foo\" \"http://foo.example.org\")
-            (\"bar\" \"http://bar.example.org\"))
-   (cxml:with-element* (\"foo\" \"a\")
-     (cxml:with-element* (\"bar\" \"b\")
-       (cxml:text \"Text Content\"))))
- => 
- \"<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-  <env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\"
-                xmlns:foo=\"http://foo.example.org\"
-                xmlns:bar=\"http://bar.example.org\">
-    <env:Body>
-      <foo:a>
-        <bar:b>Text Content</bar:b>
-      </foo:a>
-    </env:Body>
-  </env:Envelope>\"
-"
   (let ((pre (gensym (string '#:prefix-))))
     `(let ((,pre ,prefix))
        (cxml:with-xml-output (cxml:make-rod-sink)
@@ -70,6 +29,8 @@ Return valuu is a `cxml:rod' \(probably a string\).~%~@
              (cxml:with-element* (,pre "Envelope")
                (cxml:with-element* (,pre "Body")
                  ,@body))))))))
+
+
 
 ;; :SOURCE cl-rdfxml-20110418-svn/rdfxml.lisp
 (defun peek-skipping-comments (source)
@@ -207,23 +168,17 @@ Return valuu is a `cxml:rod' \(probably a string\).~%~@
 
 ;; (defun (field-parse-attribs-if (source if-element-local if-attrib-local
 
+;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun start-element-p (source)
-  ;; Whether current-event is :END-ELEMENT.
-  ;; Return as if by `cl:values':
-  ;;  - <BOOLEAN>
-  ;;  - the current element (if any)
   (let ((peek-key (klacks:peek source)))
     (values (eql peek-key :start-element)  peek-key)))
 
+;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun end-element-p (source)
-  ;; Whether current-event is :END-ELEMENT.
-  ;; Return as if by `cl:values':
-  ;;  - <BOOLEAN>
-  ;;  - the current element (if any)
   (let ((peek-key (klacks:peek source)))
     (values (eql peek-key :end-element) peek-key)))
 
-
+;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun end-element-and-local-present-p (source &key (element-expect "row"))
   (declare (string element-expect))
   (when (end-element-p  source)
@@ -233,13 +188,7 @@ Return valuu is a `cxml:rod' \(probably a string\).~%~@
            chk-local))))
 
 
-(fundoc 'end-element-and-local-present-p
-"Whether current-event is :END-ELEMENT and its lname is `cl:string=' ELEMENT-EXPECT.~%~@
-ELEMENT-EXPECT is a string. Default is \"row\".~%~@
-:EXAMPLE~%
- \(end-element-and-local-present-p <SOURCE>\)
- \(end-element-and-local-present-p *tt-source* :element-expect \"field\"\)
-:SEE-ALSO `<XREF>'.~%▶▶▶")
+
 
 ;; (klacks:with-open-source (s (cxml:make-source "<row name=\"row\">row data</row>"))
 ;;   (let ((gthr '()))
@@ -279,14 +228,8 @@ ELEMENT-EXPECT is a string. Default is \"row\".~%~@
 
 ;; *xml-refs-match-list*
 ;; (declare (special *xml-refs-match-list*))
+;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun field-attribs-find (src &key attrib-names)
-  ;; Return => ":YEAR"
-  ;; Keyword ATTRIB-NAMES is an object holding a string(s) each of which is a
-  ;; valid value for an element's name attribute, e.g.:
-  ;;  <field name="<ATTRIB-NAME>"> ... STUFF ... </field>
-  ;; 
-  ;; :NOTE Keyword ATTRIB-NAMES is normalized with `field-attribs-find-normalize-names'.
-  ;; :SEE-ALSO `klacks:list-attributes', `klacks:get-attribute'."
   (declare ((or list vector hash-table) attrib-names)
            (inline field-attribs-find-normalize-names)
            (optimize (speed 3)))
@@ -311,9 +254,9 @@ ELEMENT-EXPECT is a string. Default is \"row\".~%~@
              ;; :WAS (setf attrib-val (substitute #\- #\_ (format nil ":~:@(~A~)" attrib-val))) ))) 
              (setf attrib-val (field-name-underscore-to-dash attrib-val t)) )))))
 
+;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun field-attribs-consume-if (src &key attrib-names)
   ;; Return => (":YEAR" . "August, 10, 1895")
-  ;; 
   (let* ((get-if (field-attribs-find src))
          (consume-it (and get-if (klacks:consume src)))
          (chars-if (and (eql consume-it :start-element) 
@@ -326,10 +269,7 @@ ELEMENT-EXPECT is a string. Default is \"row\".~%~@
 	 ;;               (... dispatch to cleaning function 
 	 ;;               (funcall cln-if chars-if  ...)))
 	 )
-
     (and chars-if (setf chars-if (cons get-if chars-if)))))
-
-
 
 (defun end-document-find-and-close (source)
   ;; (typep *tt-source* 'cxml::cxml-source)
@@ -424,6 +364,7 @@ ELEMENT-EXPECT is a string. Default is \"row\".~%~@
 	       (klacks:consume s))
 	    (prog1 (setf ous-out (get-output-stream-string ous))
 		(close ous))))))
+
 
 ;;; ==============================
 

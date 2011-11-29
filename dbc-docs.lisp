@@ -883,16 +883,16 @@ passed to `cl:make-instance' to re-instantiate the instance.~%~@
 Arg SLOT-FOR-FILE-NAME is a symbol, e.g. 'item-number, 'control-id-entity-num-artist, etc.
 If it satisfies `cl:slot-exists-p', `cl:slot-boundp' and `cl:slot-value', it's
 value is used as the suffix for a file name otherwise an error is signaled.~%~@
-Arg PREFIX-FOR-FILE-NAME is a string, e.g. \\\"item-number\\\", \\\"artist-enity-num\\\",
+Arg PREFIX-FOR-FILE-NAME is a string, e.g. \"item-number\", \"artist-enity-num\",
 etc.  It is combined with `cl:slot-value' of SLOT-FOR-FILE-NAME when makeing a
 pathname to write OBJECT to.  When a string is provided it should not contain a
-trailing #\\\\-. If PREFIX-FOR-FILE-NAME is null the `cl:string' representation of
+trailing #\\-. If PREFIX-FOR-FILE-NAME is null the `cl:string' representation of
 SLOT-FOR-FILE-NAME is used instead.~%~@
-Keyword arg PRE-PADDED-FORMAT-CONTROL if supplied is used in lieu of return
-value of `print-sax-parsed-slots-padding-format-control' with OBJECT as its argument.~%~@
+Keyword arg PRE-PADDED-FORMAT-CONTROL, if supplied, is used in lieu of return
+value of `print-sax-parsed-slots-padding-format-control' with OBJECT as argument.~%~@
 :EXAMPLE~%
  \(write-sax-parsed-slots-to-file 
-  *tt--item* 
+  <OBJECT>
   :slot-for-file-name 'inventory-number 
   :prefix-for-file-name \"inventory-number\"
   :output-directory \(merge-pathnames #P\"individual-parse-refs-2011-10-01/\" \(sub-path *xml-output-dir*\)\)\)~%~@
@@ -911,6 +911,95 @@ value of `print-sax-parsed-slots-padding-format-control' with OBJECT as its argu
                                      \(sub-path *xml-output-dir*\)\)\)~%~@
 :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
 `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
+
+
+;;; ==============================
+;;; :DOCUMENTATION dbc-specific/dbc-parse/dbc-xml-sql-parse.lisp
+;;; ==============================
+
+(fundoc 'with-namespaces
+"Evalute BODY form with the namespace BINDINGS provided.~%~@
+convenience macro to reduce nesting of CXML:WITH-NAMESPACE forms.~%~@
+:SYNTAX~%
+ with-namespaces \({\(<PREFIX> <URI>\)}*\) <FORM>* => <RESULT>~%
+ - <PREFIX> -- a namespace prefix \(a string\)
+ - <URI>    -- a string denoting a URI
+ - <FORM>   -- a form \(evaluated at runtime\)
+ - <RESULT> -- the result of evaluating forms~%~@
+:EXAMPLE~%~@
+ { ... <EXAMPLE> ... } ~%~@
+:SEE-ALSO `with-soap-envelope'.~%▶▶▶")
+
+(fundoc 'with-soap-envelope
+  ":NOTE This macro is defined as an example implementation and exists for example purposes only.~%~@
+Evalute BODY forms within the wrapped context of `cxml:with-xml-output' with XML SOAP namespaces bindings active.~%~@
+PREFIX is bound to the SOAP envelope prefix i.e.:~%
+ \"http://schemas.xmlsoap.org/soap/envelope/\"~%~@
+Any other namespace BINDINGS provided are also in effect.~%~@
+BODY forms are evaluated within two `cxml:with-element's wrapping forms, these are:~%
+ - SOAP \"Envelope\"
+ - SOAP \"Body\"~%~@
+Return valuu is a `cxml:rod' \(probably a string\).~%~@
+:SYNTAX~%~@
+ with-soap-envelope (<SOAP-PREFIX> {(<PREFIX> <URI>)}*) <BODY>* => <ENVELOPE>
+ - <SOAP-PREFIX>, <prefix> -- namespace abbreviations/prefixes
+ - <URI> --- string denoting a URI
+ - <BODY> --- body forms
+ - <ENVELOPE> --- a CXML:ROD \(probably a string\)~%~@
+:EXAMPLE~%
+ \(with-soap-envelope
+     \(\"env\" \(\"foo\" \"http://foo.example.org\"\)
+            \(\"bar\" \"http://bar.example.org\"\)\)
+   \(cxml:with-element* \(\"foo\" \"a\"\)
+     \(cxml:with-element* \(\"bar\" \"b\"\)
+       \(cxml:text \"Text Content\"\)\)\)\)
+ |=> \"<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+ |     <env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\"
+ |                   xmlns:foo=\"http://foo.example.org\"
+ |                   xmlns:bar=\"http://bar.example.org\">
+ |       <env:Body>
+ |         <foo:a>
+ |           <bar:b>Text Content</bar:b>
+ |         </foo:a>
+ |       </env:Body>
+ |     </env:Envelope>\"~%~@
+:SEE-ALSO `with-namespaces'.~%▶▶▶")
+
+(fundoc 'start-element-p
+        "Whether current-event is :END-ELEMENT.~%~@
+ Return as if by `cl:values':~%
+  - <BOOLEAN>
+  - the current element \(if any\)~%~@
+ :SEE-ALSO `end-element-p', `end-element-and-local-present-p'.~%▶▶▶")
+
+(fundoc 'end-element-p
+"Whether current-event is :END-ELEMENT.~%~@
+Return as if by `cl:values':~%
+ - <BOOLEAN>
+ - the current element \(if any\)~%~@
+:SEE-ALSO `end-element-and-local-present-p', `start-element-p'.~%▶▶▶")
+
+(fundoc 'end-element-and-local-present-p
+"Whether current-event is :END-ELEMENT and its lname is `cl:string=' ELEMENT-EXPECT.~%~@
+ELEMENT-EXPECT is a string. Default is \"row\".~%~@
+:EXAMPLE~%
+ \(end-element-and-local-present-p <SOURCE>\)
+ \(end-element-and-local-present-p *tt-source* :element-expect \"field\"\)~%~@
+:SEE-ALSO `<XREF>'.~%▶▶▶")
+
+(fundoc 'field-attribs-find
+"Return => \":YEAR\"~%~@
+Keyword ATTRIB-NAMES is an object holding a string(s) each of which is a valid
+value for an element's name attribute, e.g.:~%
+ <field name=\"<ATTRIB-NAME>\"> ... STUFF ... </field>~%~@
+:NOTE Keyword ATTRIB-NAMES is normalized with `field-attribs-find-normalize-names'.~%~@
+:SEE-ALSO `field-attribs-consume-if', `klacks:list-attributes', `klacks:get-attribute'.")
+
+(fundoc 'field-attribs-consume-if
+"Return => \(\":YEAR\" . \"August, 10, 1895\"\)~%~@
+:EXAMPLE~%~@
+ { ... <EXAMPLE> ... } ~%~@
+:SEE-ALSO `field-attribs-find'.~%▶▶▶")
 
 ;;; ==============================
 
