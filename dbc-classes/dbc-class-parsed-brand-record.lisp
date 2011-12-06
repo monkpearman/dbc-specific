@@ -159,7 +159,7 @@
 ;;      set-parsed-brand-record-slot-value
 ;;      parsed-brand-record)
 ;;
-;;; *big-parsed-class-field-slot-accessor-mapping-table*
+;;; *parsed-class-field-slot-accessor-mapping-table*
 
 ;;; ==============================
 ;;

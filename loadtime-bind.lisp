@@ -5,8 +5,12 @@
 
 (format nil "~%~%load-time-value pathname: ~S~%~%" (load-time-value *default-pathname-defaults*))
 
+;; :SEE dbc-specific/dbc-parse/dbc-xml-refs-parse-work-scratch-2011-05-15.lisp
+;; *xml-refs-match-table*
+;; *xml-refs-match-list*
 ;; (setf *xml-refs-match-table* (make-ref-lookup-table *xml-refs-match-list*))
 
+;; (field-to-accessor-table (gethash 'parsed-inventory-record *parsed-class-field-slot-accessor-mapping-table*))
 
 ;;; ==============================
 
@@ -122,12 +126,12 @@
 ;;        ;; <--- INPUT
 ;;        (and chk-sfr-if (setf *xml-input-refs-name* chk-sfr-if))
 ;;        (and chk-nts-if (setf *xml-input-refs-name-temp* chk-nts-if))))
-
-(setf *parsed-data-output-path*
-      (merge-pathnames (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*))
-                                      :name (concatenate 'string "sax-refs-test-" (mon:time-string-yyyy-mm-dd))
-                                      :type "lisp")
-                       (system-base-path *system-path*)))
+;;
+;; (setf *parsed-data-output-path*
+;;       (merge-pathnames (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*))
+;;                                       :name (concatenate 'string "sax-refs-test-" (mon:time-string-yyyy-mm-dd))
+;;                                       :type "lisp")
+;;                        (system-base-path *system-path*)))
 
 ;;; ==============================
 ;; XML Parsing INPUT/OUTUPT paths and paths names
@@ -163,7 +167,7 @@
 ;; (let ((obj (make-instance 'parsed-inventory-record)))
 ;;   (accessor-to-field-table obj))
 ;;
-;;; *big-parsed-class-field-slot-accessor-mapping-table*
+;;; *parsed-class-field-slot-accessor-mapping-table*
 
 (def-set-parsed-class-record-slot-value 
     set-parsed-inventory-record-slot-value

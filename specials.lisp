@@ -44,9 +44,9 @@
 
 ;;; ==============================
 
-(defvar *big-parsed-class-field-slot-accessor-mapping-table* (make-hash-table))
+(defvar *parsed-class-field-slot-accessor-mapping-table* (make-hash-table))
 
-(vardoc '*big-parsed-class-field-slot-accessor-mapping-table*
+(vardoc '*parsed-class-field-slot-accessor-mapping-table*
 "Big table of mapping parsed-class symbols to instances of class `parsed-class-field-slot-accessor-mapping'.
 Its keys name object instances which subclass the class `parsed-class'.
 Its values are an instance of three slots:~%~%  ~
@@ -54,10 +54,8 @@ Its values are an instance of three slots:~%~%  ~
  field-to-accessor-table -- is a hash-table mapping field-names to slot-accessors~% ~
  accessor-to-field-table -- is a hash-table mapping slot-accessors to field-names~%~@
 For use with the macro `def-set-parsed-class-record-slot-value' which is used to
-define functions which map setf slot-value forms for use with
-`string-case:string-case'.
+define functions which map setf slot-value forms for use with `string-case:string-case'.
 :SEE-ALSO `make-parsed-class-field-slot-accessor-mapping'.~%▶▶▶")
-
 
 ;;; ==============================
 

@@ -55,7 +55,7 @@
 ;;      set-parsed-doc-record-slot-value
 ;;      parsed-doc-record)
 ;;
-;;; *big-parsed-class-field-slot-accessor-mapping-table*
+;;; *parsed-class-field-slot-accessor-mapping-table*
 
 
 

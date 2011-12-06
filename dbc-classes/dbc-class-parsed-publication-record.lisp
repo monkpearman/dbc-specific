@@ -205,7 +205,7 @@
 ;;     set-parsed-publication-record-slot-value
 ;;     parsed-publication-record)
 ;;
-;;; *big-parsed-class-field-slot-accessor-mapping-table*
+;;; *parsed-class-field-slot-accessor-mapping-table*
 ;;
 ;; :NOTE Depreated use the macro'd version generated with `def-set-parsed-class-record-slot-value' instead. 
 ;; (defun set-parsed-publication-record-slot-value

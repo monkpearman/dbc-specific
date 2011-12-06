@@ -162,7 +162,7 @@
 ;;     set-parsed-technique-record-slot-value
 ;;     parsed-technique-record)
 ;;
-;;; *big-parsed-class-field-slot-accessor-mapping-table*
+;;; *parsed-class-field-slot-accessor-mapping-table*
 
 ;; :NOTE Depreated use the macro'd version generated with `def-set-parsed-class-record-slot-value' instead.
 ;; (defun set-parsed-technique-record-slot-value (field-string field-value object)

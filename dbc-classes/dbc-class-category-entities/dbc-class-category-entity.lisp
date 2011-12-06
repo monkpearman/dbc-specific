@@ -2,7 +2,9 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-category-entity.lisp
 ;;; ==============================
 
-;; *control-id-display-category-namespace*
+;; *category-entity-hash*
+;; *control-id-category-namespace*
+
 ;; --- control-id-category-entity-type           (control-id-entity-type) 
 ;; ---- control-id-category-entity               (control-id-category-entity-type)
 ;; ----- control-id-category-entity-display-name (control-id-category-entity control-id-display-name-for-entity-type)
@@ -83,7 +85,7 @@
   (or (and (slot-value object 'control-id-display-category))
       (control-id-slot-value-null-error object 'control-id-display-category)))
 
-;; :NOTE In following methods specialized on category-entity-top-level:
+;; :NOTE In following methods specialized on the class category-entity-top-level:
 ;;  control-id-of-class-type, control-id-namespace
 ;;  control-id-identifies, control-id-uuid
 ;; When a local slot is unbound in then taking its slot-value will signal a
@@ -162,9 +164,9 @@
 ;; control-id-identifies
 
 ;; We need to register the UUID of every class in uuid hash-table `*category-entity-hash*' at initialize-instance time.
-;; for subclasses we need to check if object's NODE-NAME is already in the CPL and if not push it onto the CPL.
-;; if child-node-name is non-null then we find the parent-classes CPL with
-;; `sb-mop:class-direct-superclasses' else we compute it with
+;; For subclasses we need to check if object's NODE-NAME is already in the CPL and if not push it onto the CPL.
+;; If child-node-name is non-null then we find the parent-classes CPL with
+;; `sb-mop:class-direct-superclasses', else we compute it with
 ;; `sb-mop:compute-class-precedence-list'
 (defmethod initialize-instance :after ((object category-entity-top-level) &key)
   (unless (eql (control-id-of-class-type object) 'category-entity-top-level)

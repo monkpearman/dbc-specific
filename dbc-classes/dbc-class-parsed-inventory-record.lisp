@@ -468,7 +468,7 @@
 ;;     set-parsed-inventory-record-slot-value
 ;;     parsed-inventory-record)
 
-;;; *big-parsed-class-field-slot-accessor-mapping-table*
+;;; *parsed-class-field-slot-accessor-mapping-table*
 
 ;;; ==============================
 ;; :NOTE Depreated use the macro'd version generated with `def-set-parsed-class-record-slot-value' instead. 
@@ -944,8 +944,13 @@
 ;;
 ;; - Remove all occurences of "rare!"
 ;;
-;; - Remove "&lt;br&gt"
-;; - Remove "&quot;"
+;; - Remove occurences of "<br>"
+;; - Remove occurences of "&lt;br&gt"
+;; - Replace occurences of "&quot; -> #\" e.g.:
+;;   (let ((str "&quot;The Arabians called it the 'Column of Columns'... 88 ft tall and 8 ft
+;; in Diameter...&quot; it was located in Alexandria Egypt. Vol VI No. 39."))
+;;     (setf str (cl-ppcre:regex-replace-all "&quot;" str "\"")) 
+;;     (print str))
 
 ;;; ==============================
 ;; :FIELD "translation" :TRANSFORM description-inventory-translation
@@ -996,9 +1001,9 @@
 ;; - Strip "x"
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
-
+;;
 ;; (search-forward-regexp "histo_fr\">[^<0x].*<" nil t)
-
+;;
 ;; 90796533
 
 ;;; ==============================
@@ -1090,9 +1095,10 @@
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
+;; "LXII"
 ;;
 ;; :NOTE we've chosen to use the plural form `publication-volumes' for
-;; congruence with clss `parsed-publication-record' -- 2011-10-04
+;; congruence with class `parsed-publication-record' -- 2011-10-04
 
 ;;; ==============================
 ;; :FIELD "edition" :TRANSFORM publication-edition
@@ -1519,8 +1525,7 @@
 ;;  "[8+]  Very light offsetting."
 ;;  "[7 ] Light age toning. Very light offsetting."
 ;; "[9]Age toning, Strong plate mark. Please see Zoom In for details."
-;;
-;;
+;;  "... For details, see zoom scan."
 ;;
 ;;
 ;; - Separate out the `[<N>]` values when present.
@@ -1543,9 +1548,11 @@
 ;;
 ;; - string-left-trim
 ;;
-;; - remove trailing period 
-;; (string-right-trim "#\." <FIELD>)
+;; - remove trailing period, e.g.: (string-right-trim "#\." <FIELD>)
 ;;
+;; - remove occurences of string: "For details, see zoom scan."
+;;
+;; - remove occurences of  "Please see Zoom In for details."
 
 ;;; ==============================
 ;; :FIELD "w" :TRANSFORM unit-width
@@ -1618,6 +1625,7 @@
 ;; :EXAMPLE-VALUES 
 ;;   1 | 0 
 ;;
+;; - 1 indicates the item is linenbacked, 0 indicates that it isn't
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
 ;;

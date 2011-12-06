@@ -76,7 +76,8 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
 ;;     (field-to-accessor-table example-object))
 ;;    (parsed-class-mapped example-object)))
 ;;
-;; :NOTE As above, the are GLOBAL-HASH-TABLE-VAR will always be `*big-parsed-class-field-slot-accessor-mapping-table*'
+;; :NOTE As above, the are GLOBAL-HASH-TABLE-VAR will always be `*parsed-class-field-slot-accessor-mapping-table*'
+;; *parsed-class-field-slot-accessor-mapping-table*
 (defun make-parsed-class-field-slot-accessor-mapping (parsed-class-mapped field-to-accessor-alist); global-hash-table-var)
   (unless (and (not (typep parsed-class-mapped 'boolean))
                (subtypep (find-class parsed-class-mapped) (find-class 'parsed-class)))
@@ -97,26 +98,26 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
     ;; If PARSED-CLASS-MAPPED is already in our big global table we remove it as
     ;; it may non longer be current.
     (remhash (setf (slot-value mapping 'parsed-class-mapped) parsed-class-mapped)
-             *big-parsed-class-field-slot-accessor-mapping-table*)
+             *parsed-class-field-slot-accessor-mapping-table*)
     ;;(setf (gethash parsed-class-mapped global-hash-table-var) mapping)))
-    (setf (gethash parsed-class-mapped *big-parsed-class-field-slot-accessor-mapping-table*) mapping)))
+    (setf (gethash parsed-class-mapped *parsed-class-field-slot-accessor-mapping-table*) mapping)))
 
 
-;; :NOTE Arg HASH-TABLE will always be `*big-parsed-class-field-slot-accessor-mapping-table*'
+;; :NOTE Arg HASH-TABLE will always be `*parsed-class-field-slot-accessor-mapping-table*'
 ;; But, lets not hardwire a global variable just in case!
 ;; :EXAMPLE
-;; (%parsed-class-record-setf-slot-value-forms 'parsed-inventory-record *big-parsed-class-field-slot-accessor-mapping-table*)
+;; (%parsed-class-record-setf-slot-value-forms 'parsed-inventory-record *parsed-class-field-slot-accessor-mapping-table*)
 (defun %parsed-class-record-setf-slot-value-forms (parsed-class-lookup); hash-table)
     ;; :NOTE This version with explicit call to HASH-TABLE and with backquoted template.
     ;; (let ((setf-forms ()))
     ;;   (maphash #'(lambda (k v) (push `(,k (setf (,v object) field-value)) setf-forms ))
-    ;;            (field-to-accessor-table (gethash parsed-class-lookup *big-parsed-class-field-slot-accessor-mapping-table*)))
+    ;;            (field-to-accessor-table (gethash parsed-class-lookup *parsed-class-field-slot-accessor-mapping-table*)))
     ;;   (setf setf-forms (nreverse setf-forms))))
     (let ((setf-forms ()))  
       (maphash #'(lambda (k v)
                    (push (list k (list (quote setf) (list v (quote object)) (quote field-value))) setf-forms))
                (field-to-accessor-table (gethash parsed-class-lookup 
-                                                 *big-parsed-class-field-slot-accessor-mapping-table*)))
+                                                 *parsed-class-field-slot-accessor-mapping-table*)))
                                                  ;; hash-table)))
       (setf setf-forms (nreverse setf-forms))))
 
@@ -126,7 +127,7 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
 ;; (def-set-parsed-class-record-slot-value
 ;;     set-parsed-inventory-record-slot-value              ; FUN-NAME
 ;;     parsed-inventory-record                             ; PARSED-CLASS 
-;;   *big-parsed-class-field-slot-accessor-mapping-table*) ; GLOBAL-HASH-TABLE-VAR
+;;   *parsed-class-field-slot-accessor-mapping-table*) ; GLOBAL-HASH-TABLE-VAR
 ;;
 ;; :TODO incorporate original fundoc of `set-parsed-inventory-record-slot-value' with new macro.
 ;;

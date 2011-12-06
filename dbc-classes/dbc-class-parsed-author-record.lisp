@@ -156,7 +156,7 @@
 ;;      set-parsed-author-record-slot-value
 ;;      parsed-author-record)
 ;;
-;;; *big-parsed-class-field-slot-accessor-mapping-table*
+;;; *parsed-class-field-slot-accessor-mapping-table*
 
 
 ;; (length '("bio" "id" "display" "nationality" "lifespan" "LOC_control" "other_control"

@@ -160,7 +160,7 @@
 ;;      set-parsed-person-record-slot-value
 ;;      parsed-person-record)
 ;;
-;;; *big-parsed-class-field-slot-accessor-mapping-table*
+;;; *parsed-class-field-slot-accessor-mapping-table*
 ;;
 ;; (defun set-parsed-person-record-slot-value (field-string field-value object)
 ;;   (values

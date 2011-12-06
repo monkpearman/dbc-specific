@@ -139,7 +139,7 @@
   ;;                            (error "OBJECT must be a subclass `parsed-class'"))))
   ;;   (and subclass-check 
   ;;        (setf subclass-check (class-name subclass-check)))
-  ;;   (gethash subclass-check *big-parsed-class-field-slot-accessor-mapping-table*)
+  ;;   (gethash subclass-check *parsed-class-field-slot-accessor-mapping-table*)
   ;;   )
   (let* ((the-class-parsed-class (find-class 'parsed-class))
          (objects-class  (class-of object))
@@ -147,7 +147,7 @@
                                   (subtypep objects-class (find-class 'parsed-class))
                                   (class-name objects-class))
                              (error "OBJECT must be a subclass `parsed-class' and not an instance of `parsed-class'"))))
-    (gethash subclass-check *big-parsed-class-field-slot-accessor-mapping-table*)))
+    (gethash subclass-check *parsed-class-field-slot-accessor-mapping-table*)))
 
 ;; :EXAMPLE
 ;;  (accessor-to-field-table (make-instance 'parsed-inventory-record))

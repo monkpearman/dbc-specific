@@ -162,7 +162,7 @@
 ;; :NOTE Prefer `field-convert-1-0-x-empty' over `field-convert-1-0-x' which is
 ;; essentially a helper function.
 (declaim (inline field-convert-1-0-x))
-(defun field-convert-1-0-x (convert-field)
+(defun field-convert-1-0-x (convert-field) ;
   (declare (optimize (speed 3)))
   (unless (typecase convert-field
             (string t)
