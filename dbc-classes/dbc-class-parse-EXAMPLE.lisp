@@ -7,19 +7,8 @@
 (defparameter *tt--parse-table* (make-hash-table :test 'equal))
 
 ;; :NOTE :FUNCTION `%ensure-dated-parsed-directory' defined in
-;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-convert.lisp
-;; :NOTE `%make-pathname-parsed-sax-dump-file' superseded by functionallity of
-;; `write-sax-parsed-slots-to-file'.
-(defun %make-pathname-parsed-sax-dump-file (&key parse-file-prefix)
-  (merge-pathnames 
-   (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*))
-                  :name (format nil "~A-~A"
-                                (string-trim #(#\- #\space) parse-file-prefix)
-                                (mon:time-string-yyyy-mm-dd))
-                  :type "lisp")
-   (system-path *system-path*)))
 
-(let ((parsed-sax-file (%make-pathname-parsed-sax-dump-file :parse-file-prefix "sax-refs-test")))
+(let ((parsed-sax-file (make-default-sax-parsed-xml-output-pathname :pathname-name "sax-refs-test")))
   (write-sax-parsed-xml-to-file 
    :input-file  (merge-pathnames (make-pathname :name "dump-refs-DUMPING")
                                  (sub-path *xml-input-dir*))
@@ -41,6 +30,9 @@
  :output-directory (%ensure-dated-parsed-directory :directory-prefix "individual-parse-refs"))
 
 
+;; (sub-path *xml-input-dir*)
+
+
 ;; :slot-dispatch-function #'set-parsed-artist-record-slot-value
  
 ;;
@@ -56,17 +48,27 @@
 
 
 (clrhash *tt--parse-table*)
+
+(write-sax-parsed-xml-to-file 
+  :input-file (make-pathname :directory (pathname-directory (sub-path *xml-input-dir*))
+                             :name "dump-artist-infos-xml")
+  :output-file (list :pathname-name "artist-dump-test" 
+                     :pathname-sub-directory (list (sub-name *xml-output-dir*) "new-sax-parser" )))
+
 (write-sax-parsed-xml-to-file
 :input-file  (merge-pathnames (make-pathname :name "dump-artist-infos-xml")
                                (sub-path *xml-input-dir*))
- :output-file (%make-pathname-parsed-sax-dump-file :parse-file-prefix "sax-artist-test"))
+ :output-file (make-default-sax-parsed-xml-output-pathname :pathname-name "sax-artist-test"))
 
 (load-sax-parsed-xml-file-to-parsed-class-hash
  :parsed-class 'parsed-artist-record
- :input-file (%make-pathname-parsed-sax-dump-file :parse-file-prefix "sax-artist-test")
+ :input-file (make-default-sax-parsed-xml-output-pathname :parse-file-prefix "sax-artist-test")
  :hash-table *tt--parse-artist-table*
  :key-accessor #'control-id-entity-num-artist
  :slot-dispatch-function #'set-parsed-artist-record-slot-value)
+
+;; (make-default-sax-parsed-xml-output-pathname :pathname-name (make-default-sax-parsed-xml-output-pathname :pathname-name
+;; #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/xml-class-dump-dir/sax-artist-test-2011-11-29.lisp"
 
 (write-sax-parsed-class-hash-to-files 
  *tt--parse-artist-table*

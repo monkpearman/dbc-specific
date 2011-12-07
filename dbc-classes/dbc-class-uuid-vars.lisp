@@ -2,6 +2,24 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-uuid-vars.lisp
 ;;; ==============================
 
+;; *system-object-uuid-base-namespace*
+;; *control-id-inventory-namespace*
+;; *control-id-documentation-namespace*
+;; *control-id-authority-namespace*
+;; *control-id-category-namespace*
+;; *control-id-theme-namespace*
+;; *control-id-location-namespace*
+;; *control-id-taxon-namespace*
+;; *control-id-technique-namespace*
+;; *control-id-mount-namespace*
+;; *control-id-material-namespace*
+;; *control-id-paper-namespace*
+;; *control-id-artist-namespace*
+;; *control-id-brand-namespace*
+;; *control-id-author-namespace*
+;; *control-id-person-namespace*
+;; *control-id-publication-namespace*
+
 
 (in-package #:dbc)
 ;; *package*
@@ -41,7 +59,7 @@
 ;;; ==============================
 ;;
 ;; :TODO The namespace objects below need to be encapsulated to a uuid hash-table for lookup purposes.
-;; Likewise, we will need a class to represent the various types of control-ids per namespace-type, e.g.
+;; Likewise, we will need a class to represent the various types of control-ids per namespace-type, e.g.:
 ;; `control-id-display-name'
 ;; `control-id-doc-num'
 ;; `control-id-entity-num'

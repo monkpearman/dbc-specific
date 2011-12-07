@@ -6,7 +6,6 @@
 ;; *package*
 
 ;; :SOURCE cl-ace-6_5/util.lis
-;; :NOTE documented in :FILE dbc-specific/dbc-docs.lisp
 (defmacro with-namespaces (bindings &body body)
   (if (endp bindings) `(progn ,@body)
     (destructuring-bind ((prefix uri) &rest bindings) bindings
@@ -31,10 +30,9 @@
                  ,@body))))))))
 
 
-
 ;; :SOURCE cl-rdfxml-20110418-svn/rdfxml.lisp
+;; with comment "thanks to Red Daly, reddaly@gmail.com"
 (defun peek-skipping-comments (source)
-  ;; thanks to Red Daly, reddaly@gmail.com
   (loop
      while (eq :comment (klacks:peek source))
      do (klacks:consume source)
@@ -122,9 +120,7 @@
 ;;;           klacks:get-attribute klacks:current-lname
 ;;;           klacks:current-characters klacks:consume
 ;;;           cxml:make-source
-;;; :CHANGESET 1
 ;;; :CREATED <Timestamp: #{2010-09-02T20:38:51-04:00Z}#{10354} - by MON>
-;;; 
 ;; 
 ;; (mon:ref-bind fep
 ;;     (fad:file-exists-p 
@@ -168,17 +164,14 @@
 
 ;; (defun (field-parse-attribs-if (source if-element-local if-attrib-local
 
-;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun start-element-p (source)
   (let ((peek-key (klacks:peek source)))
     (values (eql peek-key :start-element)  peek-key)))
 
-;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun end-element-p (source)
   (let ((peek-key (klacks:peek source)))
     (values (eql peek-key :end-element) peek-key)))
 
-;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun end-element-and-local-present-p (source &key (element-expect "row"))
   (declare (string element-expect))
   (when (end-element-p  source)
@@ -186,9 +179,6 @@
       (and chk-local ;; (stringp chk-local) ???
            (string= chk-local element-expect)
            chk-local))))
-
-
-
 
 ;; (klacks:with-open-source (s (cxml:make-source "<row name=\"row\">row data</row>"))
 ;;   (let ((gthr '()))
@@ -225,10 +215,8 @@
     (declare (list rtn-nrmlzd))
     (remove-if-not #'mon:string-not-null-empty-or-all-whitespace-p rtn-nrmlzd)))
 
-
 ;; *xml-refs-match-list*
 ;; (declare (special *xml-refs-match-list*))
-;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun field-attribs-find (src &key attrib-names)
   (declare ((or list vector hash-table) attrib-names)
            (inline field-attribs-find-normalize-names)
@@ -254,7 +242,6 @@
              ;; :WAS (setf attrib-val (substitute #\- #\_ (format nil ":~:@(~A~)" attrib-val))) ))) 
              (setf attrib-val (field-name-underscore-to-dash attrib-val t)) )))))
 
-;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun field-attribs-consume-if (src &key attrib-names)
   ;; Return => (":YEAR" . "August, 10, 1895")
   (let* ((get-if (field-attribs-find src))

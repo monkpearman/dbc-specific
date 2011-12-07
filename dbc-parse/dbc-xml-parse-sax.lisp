@@ -8,15 +8,146 @@
 ;;   - See comments for `sax:start-element' method specialized on the class `dbc-sax-handler'.
 ;;; ==============================
 
+;; (elt (cons 'a 'b) 0)
+
 
 (in-package #:dbc)
 
-(defparameter *parsed-data-current-row* '())
 
-(defparameter *parsed-data-output-path* nil)
+;; :NOTE The following parameters`*parsed-data-current-row*',
+;; `*parsed-data-output-path*', `*parsed-data-output-stream*' were reduced to a
+;; single symbol `*parsed-data-state*' when we abstracted to class
+;; `%parsed-data-state' and provided appropriate accessors...
+;;
+(defparameter *parsed-data-current-state* nil)
 
-(defparameter *parsed-data-output-stream* nil)
+(defgeneric %parsed-data-current-parent (object)
+  (:documentation "The current row being parsed."))
+(defgeneric (setf %parsed-data-current-parent) (row object)
+  (:documentation "Set the current row being parsed."))
 
+(defgeneric %parsed-data-output-path (object)
+  (:documentation "The current path to write parsed data values to."))
+(defgeneric (setf %parsed-data-output-path) (path object)
+  (:documentation "Set the current path to write parsed data values to."))
+
+(defgeneric %parsed-data-input-path (object)
+  (:documentation "The current path being parsed."))
+(defgeneric (setf %parsed-data-input-path) (path object)
+  (:documentation "Set the current path being parsed."))
+
+(defgeneric %parsed-data-output-stream (object)
+  (:documentation "The current stream to write parsed data values to."))
+(defgeneric (setf %parsed-data-output-stream) (stream object)
+  (:documentation "Set the current stream to write parsed data values to."))
+
+(defgeneric %parsed-data-match-parent-element (object)
+  (:documentation 
+   #.(format nil "Return current XML parent element we are trying to match.~%~@
+Its children will contain attribute/value pairs which correspond to the slot-name/slot-values we want to parse.")))
+(defgeneric (setf %parsed-data-match-parent-element) (parent-element-name object))
+
+(defgeneric %parsed-data-match-attribute-pair (object))
+(defgeneric (setf %parsed-data-match-attribute-pair) (match-attribute-pair object))
+
+(defclass %parsed-data-state ()  
+  ;; :NOTE We used to explicitly provide a string the parent XML element we were matching, e.g. "row".
+  ;; :matching-start-element-parent "row"
+  ;; :collect-element-and-attribute-pair ("field" . "name"))
+  ((%parsed-data-match-parent-element
+     ;; :%parsed-data-match-parent-element
+     :initarg :%parsed-data-match-parent-element ;; e.g. "row"
+     :accessor %parsed-data-match-parent-element)
+    (%parsed-data-match-attribute-pair
+     ;; :initarg :%parsed-data-match-attribute-pair ;; e.g. ("field" . "name")
+     :accessor :%parsed-data-match-attribute-pair)
+    (%parsed-data-current-parent
+    :initform '()
+    :accessor %parsed-data-current-parent
+    :documentation "Holds an instance of class `dbc-sax-parsing-class' while parsing an XML row field.")
+    (%parsed-data-input-path
+    :initform '()
+    :accessor %parsed-data-input-path
+    :documentation "The path to current file being parsed.")
+    (%parsed-data-output-path
+    :initform '()
+    :accessor %parsed-data-output-path
+    :documentation #.(format nil "Output path to use while parsing the XML data of pathname designated by slot %parsed-data-input-path.~@
+                                  A stream to this file is opened on entry to `write-sax-parsed-xml-to-file' and closed on exit."))
+   (%parsed-data-output-stream 
+    :initform '()    
+    :accessor %parsed-data-output-stream
+    :documentation #.(format nil "Output stream current while parsing the XML data of pathname designated by slot %parsed-data-input-path.~@
+                                  Opened on entry to `write-sax-parsed-xml-to-file' and closed on exit."))))
+
+(defmethod %parsed-data-match-parent-element ((object %parsed-data-state))
+  (slot-value object '%parsed-data-match-parent-element))
+;;
+(defmethod (setf %parsed-data-match-parent-element) (parent-element-name (object %parsed-data-state))
+  (declare (string parent-element-name))
+  (setf (slot-value object '%parsed-data-match-parent-element) parent-element-name))
+
+(defmethod %parsed-data-match-attribute-pair ((object %parsed-data-state))
+  (slot-value object '%parsed-data-match-attribute-pair))
+;;
+(defmethod (setf %parsed-data-match-attribute-pair) (match-attribute-pair (object %parsed-data-state))
+  (declare (cons match-attribute-pair))
+  (assert (and (stringp (car x))
+               (stringp (cdr x))))
+  (setf (slot-value object '%parsed-data-match-attribute-pair) match-attribute-pair))
+
+(defmethod %parsed-data-current-parent ((object %parsed-data-state))
+  (slot-value object '%parsed-data-current-parent))
+;;
+(defmethod (setf %parsed-data-current-parent) (row (object %parsed-data-state))
+  (setf (slot-value object '%parsed-data-current-parent) row))
+
+(defmethod %parsed-data-input-path ((object %parsed-data-state))
+  (slot-value  object '%parsed-data-input-path))
+;;
+(defmethod (setf %parsed-data-input-path) (path (object %parsed-data-state))
+  (setf (slot-value object '%parsed-data-input-path) path))
+
+(defmethod %parsed-data-output-path ((object %parsed-data-state))
+  (slot-value  object '%parsed-data-output-path))
+;;
+(defmethod (setf %parsed-data-output-path) (path (object %parsed-data-state))
+  (setf (slot-value object '%parsed-data-output-path) path))
+
+(defmethod %parsed-data-output-stream ((object %parsed-data-state))
+  (slot-value object '%parsed-data-output-stream))
+;;
+(defmethod (setf %parsed-data-output-stream) (stream (object %parsed-data-state))
+  (setf (slot-value object '%parsed-data-output-stream) stream))
+
+;; :TESTING
+;; (assert (typep (setf *parsed-data-current-state* 88)
+;;                (%make-parsed-data-current-state)
+;;                '%parsed-data-state))
+;;
+;; (assert (typep (progn (setf *parsed-data-current-state* 88)
+;;                       (%make-parsed-data-current-state))
+;;                '%parsed-data-state))
+(defun %ensure-parsed-data-current-state-boundp ()
+  (if (boundp (quote *parsed-data-current-state*))
+      (if (typep *parsed-data-current-state* '%parsed-data-state)
+          *parsed-data-current-state*
+        (setq *parsed-data-current-state* '()))
+      (set (quote *parsed-data-current-state*) '())))
+
+(defun %make-parsed-data-current-state ()
+  (%ensure-parsed-data-current-state-boundp)
+  (set (quote *parsed-data-current-state*)
+       (make-instance '%parsed-data-state)
+       ))
+
+(defun %parsed-state-current-row-check-type ()
+  (and (typep *parsed-data-current-state* '%parsed-data-state)
+       (typep (%parsed-data-current-parent *parsed-data-current-state*) 
+              'dbc-sax-parsing-class)))
+
+;;; ==============================
+;;; :NOTE we can't easily combine classes `dbc-sax-parsing-class' and  sax:start-element
 (defclass dbc-sax-parsing-class ()
   ((field-data
     ;; :initform '() ;; 
@@ -37,8 +168,7 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
 :SEE-ALSO `dbc-sax-current-chars-clear', `dbc-sax-current-chars-reset',
 `dbc-sax-current-chars', `dbc-sax-handler', `write-sax-parsed-delimiter',
 `write-sax-parsed-xml-row-to-file', `load-sax-parsed-xml-file-to-parsed-class-hash',
-`*parsed-data-current-row*', `*parsed-data-output-path*',
-`*parsed-data-output-stream*', `*xml-input-dir*', `*xml-output-dir*'.~%▶▶▶")))
+`*parsed-data-current-state*', `*xml-input-dir*', `*xml-output-dir*'.~%▶▶▶")))
 
 (defgeneric dbc-sax-current-chars-clear (object)
   ;; (find-method #'dbc-sax-current-chars-clear nil '(dbc-sax-parsing-class))
@@ -81,116 +211,78 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
   ;;  :accessor field-and-names))
   ())
 
-;; (defmethod sax:start-document  ((handler dbc-sax-handler))
-;;   (when *parsed-data-current-row*
-;;     (setf *parsed-data-current-row* nil)))
-;;
-;; (defmethod sax:start-element ((handler dbc-sax-handler)
-;;                               uri local-name qname attributes)
-;;   (when (string-equal local-name "row")
-;;     (setf *parsed-data-current-row* (make-instance 'dbc-sax-parsing-class))
-;;     (return-from sax:start-element))
-;;   (flet ((collect (elt attrib)
-;;            (when (string-equal elt local-name)
-;;              (let ((attrib
-;;                     (find attrib attributes
-;;                           :key #'sax:attribute-local-name
-;;                           :test #'string-equal)))
-;;                (if attrib 
-;;                    (setf (current-elt *parsed-data-current-row*) (sax:attribute-value attrib))
-;;                    (setf (current-elt *parsed-data-current-row*) nil))))))
-;;     ;;       <ELT> <ATTRIB>
-;;     ;; <a href= | img src=
-;;     (collect  "field"   "name")))
-;;
-;; (defmethod sax:characters  ((handler dbc-sax-handler) data)
-;;   (when (and *parsed-data-current-row* 
-;;              (current-elt *parsed-data-current-row*))
-;;     (vector-push-extend (list (current-elt *parsed-data-current-row*)
-;;                               data)
-;;                         (field-data *parsed-data-current-row*))
-;;     (setf (current-elt *parsed-data-current-row*) nil)))
-;;
-;; (defmethod sax:end-element  ((handler dbc-sax-handler)
-;;                              uri local-name qname)
-;;   (when (and *parsed-data-current-row* 
-;;              (current-elt *parsed-data-current-row*))
-;;     (vector-push-extend (list (current-elt *parsed-data-current-row*))
-;;                         (field-data *parsed-data-current-row*))
-;;     (setf (current-elt *parsed-data-current-row*) nil))
-;;   (when (string-equal local-name "row")
-;;     ;; (print (field-data *parsed-data-current-row*))
-;;     (write-sax-parsed-xml-row-to-file :output-stream *parsed-data-output-stream*)
-;;     (and (current-elt *parsed-data-current-row*)
-;;          (setf (current-elt *parsed-data-current-row*) nil))))
-;;
-;; (defmethod sax:end-document  ((handler dbc-sax-handler))
-;;   (when *parsed-data-current-row*
-;;     (setf *parsed-data-current-row* nil)))
+(defun make-dbc-sax-handler ()
+  (%make-parsed-data-current-state)
+  (make-instance 'dbc-sax-handler))
 
 (defmethod sax:start-document  ((handler dbc-sax-handler))
-  (when *parsed-data-current-row*
-    (when (typep *parsed-data-current-row* 'dbc-sax-parsing-class)
-      (dbc-sax-current-chars-clear *parsed-data-current-row*))
-    (setf *parsed-data-current-row* nil)
-    ;; (setf *parsed-data-current-row* (make-instance 'dbc-sax-parsing-class))
-    ))
+  (when (%parsed-data-current-parent  *parsed-data-current-state*)
+    (when (%parsed-state-current-row-check-type)
+      (dbc-sax-current-chars-clear (%parsed-data-current-parent *parsed-data-current-state*)))
+    (setf (%parsed-data-current-parent  *parsed-data-current-state*) nil)))
 
 (defmethod sax:start-element ((handler dbc-sax-handler)
                               uri local-name qname attributes)
   ;; :TODO we _really_ need to be checking against a list of known field-names instead of against "row"
   (when (string-equal local-name "row")
-    (setf *parsed-data-current-row* (make-instance 'dbc-sax-parsing-class))
+    (setf (%parsed-data-current-parent *parsed-data-current-state*) (make-instance 'dbc-sax-parsing-class))
     (return-from sax:start-element))
   ;; (unless (typep *parsed-data-current-row* 'dbc-sax-parsing-class)
   ;;   (setf *parsed-data-current-row* (make-instance 'dbc-sax-parsing-class)))
   (flet ((collect (elt attrib)
            (when (string-equal elt local-name)
-             (let ((attrib
-                    (find attrib attributes
-                          :key #'sax:attribute-local-name
-                          :test #'string-equal)))
+             (let ((attrib (find attrib attributes :key #'sax:attribute-local-name :test #'string-equal)))
                (if attrib 
-                   (setf (current-elt *parsed-data-current-row*) (sax:attribute-value attrib))
+                   (setf (current-elt (%parsed-data-current-parent *parsed-data-current-state*))
+                         (sax:attribute-value attrib))
                    (progn
-                     (dbc-sax-current-chars-reset *parsed-data-current-row*)
-                     (setf (current-elt *parsed-data-current-row*) nil)
-                       ))))))
+                     (dbc-sax-current-chars-reset (%parsed-data-current-parent *parsed-data-current-state*))
+                     (setf (current-elt (%parsed-data-current-parent *parsed-data-current-state*)) nil)))))))
+                     
     ;;       <ELT> <ATTRIB>
     ;; <a href= | img src=
     (collect  "field"   "name")))
 
 (defmethod sax:characters  ((handler dbc-sax-handler) data)
-  (when (typep *parsed-data-current-row* 'dbc-sax-parsing-class)
-    (if (current-elt *parsed-data-current-row*)
-        (setf (dbc-sax-current-chars *parsed-data-current-row*) data)
+  (when (%parsed-state-current-row-check-type)
+    (let ((current-parent-element (%parsed-data-current-parent *parsed-data-current-state*)))
+    (if (current-elt current-parent-element)
+        (setf (dbc-sax-current-chars current-parent-element) data)
         (progn
-          (dbc-sax-current-chars-reset *parsed-data-current-row*)
-          (setf (current-elt *parsed-data-current-row*) nil)))))
+          (dbc-sax-current-chars-reset current-parent-element)
+          (setf (current-elt current-parent-element) nil))))))
 
 (defmethod sax:end-element  ((handler dbc-sax-handler)
                              uri local-name qname)
-  (when (and (typep *parsed-data-current-row* 'dbc-sax-parsing-class)
-             (current-elt *parsed-data-current-row*))
-    (let ((chk-chars (dbc-sax-current-chars *parsed-data-current-row*)))
+  (when (and (%parsed-state-current-row-check-type)
+             (current-elt (%parsed-data-current-parent *parsed-data-current-state*)))
+    (let* ((current-parent-element (%parsed-data-current-parent *parsed-data-current-state*))
+           (chk-chars (dbc-sax-current-chars current-parent-element)))
       (if (mon:string-null-empty-or-all-whitespace-p chk-chars)
-          (vector-push-extend (list (current-elt *parsed-data-current-row*))
-                              (field-data *parsed-data-current-row*))
-          (vector-push-extend (cons (current-elt *parsed-data-current-row*)
-                                    chk-chars)
-                              (field-data *parsed-data-current-row*))))
-    (setf (current-elt *parsed-data-current-row*) nil)
-    (dbc-sax-current-chars-reset *parsed-data-current-row*))
+          (vector-push-extend (list (current-elt current-parent-element))
+                              (field-data current-parent-element))
+          (vector-push-extend (cons (current-elt current-parent-element) chk-chars)
+                              (field-data current-parent-element)))
+      (setf (current-elt current-parent-element) nil)
+      (dbc-sax-current-chars-reset current-parent-element)))
   (when (string-equal local-name "row")
-    ;; (print (field-data *parsed-data-current-row*))
-    (write-sax-parsed-xml-row-to-file :output-stream *parsed-data-output-stream*)
-    (when (current-elt *parsed-data-current-row*)
-      (dbc-sax-current-chars-clear *parsed-data-current-row*)
-      (setf (current-elt *parsed-data-current-row*) nil))))
+    ;; (print (field-data (%parsed-data-current-parent *parsed-data-current-state*)))
+    (write-sax-parsed-xml-row-to-file :output-stream (%parsed-data-output-stream *parsed-data-current-state*))
+    (when (current-elt (%parsed-data-current-parent *parsed-data-current-state*))
+      (let ((current-parent-element (%parsed-data-current-parent *parsed-data-current-state*)))
+        (dbc-sax-current-chars-clear current-parent-element)
+        (setf (current-elt current-parent-element) nil)))))
 
 (defmethod sax:end-document  ((handler dbc-sax-handler))
-  (when *parsed-data-current-row*
-    (setf *parsed-data-current-row* nil)))
+  (when (%parsed-data-current-parent *parsed-data-current-state*)
+    (setf (%parsed-data-current-parent *parsed-data-current-state*) nil))
+  (values t
+          (list
+           :input-file  (%parsed-data-input-path *parsed-data-current-state*)
+           :output-file (%parsed-data-output-path *parsed-data-current-state*)
+           ;; :NOTE This may potentially leave a reference to an otherwise dead fd-stream...
+           ;; :output-stream (%parsed-data-output-stream *parsed-data-current-state*)
+           )))
 
 (defun write-sax-parsed-delimiter (&key output-stream)
   ;; :NOTE consider using `cl:write-line' instead.
@@ -199,26 +291,99 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
 
 (defun write-sax-parsed-xml-row-to-file (&key output-stream)
   (write-sax-parsed-delimiter :output-stream output-stream)
-  (write (coerce (field-data *parsed-data-current-row*) 'list) :stream output-stream))
+  (write (coerce (field-data (%parsed-data-current-parent *parsed-data-current-state*)) 'list)
+       :stream output-stream))
+
+;; (%make-parsed-output-trimmed-pathname " _-bubba _-") => "bubba"
+;; (%make-parsed-output-trimmed-pathname " _-bubba _-" :w-delim t) => "bubba-"
+(defun %make-parsed-output-trimmed-pathname (trimming-pathname &key (w-delim nil))
+  (declare (string trimming-pathname)
+           (boolean w-delim))
+  (let* ((strip-chars (list #\space  #\_ #\-)) ; #\- must be last elt of list!
+         (trimmed  (string-right-trim strip-chars (string-left-trim strip-chars trimming-pathname))))
+    (if w-delim
+        (concatenate 'string trimmed (last strip-chars))
+        trimmed)))
+
+;; (%make-dated-parse-output-prefix-for-pathname" _-bubba _-") => "bubba-2011-11-29"
+(defun %make-dated-parse-output-prefix-for-pathname (prefix)
+  (declare (string prefix))
+  (concatenate 'string (%make-parsed-output-trimmed-pathname prefix :w-delim t)
+               (mon:time-string-yyyy-mm-dd)))
+
+(defun make-default-sax-parsed-xml-output-pathname (&key (pathname-name "parsed-xml")
+                                                         (pathname-name-dated-p t)
+                                                         (pathname-type "lisp")
+                                                         (pathname-sub-directory  (sub-name *xml-output-dir*))
+                                                         (pathname-base-directory (system-base-path *system-path*)))
+  (declare ((or string list) pathname-sub-directory)
+           (string pathname-name)
+           (mon:pathname-or-namestring pathname-base-directory))
+  (let* ((base-dir-if
+            (or (osicat:directory-exists-p pathname-base-directory)
+                (error "Arg PATHNAME-BASE-DIRECTORY does not name an existing directory.~% got: ~A"
+                       pathname-base-directory)))
+           (sub-dir-ensured
+            (ensure-directories-exist 
+             (merge-pathnames
+              (make-pathname :directory 
+                             (append (list :relative) (alexandria:ensure-list pathname-sub-directory)))
+              base-dir-if))))
+      (merge-pathnames (make-pathname :name (if pathname-name-dated-p 
+                                                (%make-dated-parse-output-prefix-for-pathname pathname-name)
+                                                (%make-parsed-output-trimmed-pathname pathname-name))
+                                      :type pathname-type)
+                       sub-dir-ensured)))
 
 (defun write-sax-parsed-xml-to-file (&key input-file output-file)
-  (unless input-file 
-    (setf input-file *xml-input-refs-name*))
-  (unless output-file
-    (setf output-file *parsed-data-output-path*))
-  (unwind-protect
-       (progn
-         (setf *parsed-data-output-stream* (open output-file
-                                                 :direction :output
-                                                 :element-type 'character
-                                                 :external-format :utf-8
-                                                 :if-exists :supersede
-                                                 :if-does-not-exist :create))
-         ;;(klacks:with-open-source (refs-in input-file)
-         (cxml:parse input-file (make-instance 'dbc-sax-handler))) ;)
-    (progn
-      (close *parsed-data-output-stream*)
-      (setf *parsed-data-output-stream* nil))))
+  (declare (mon:pathname-or-namestring input-file)
+           ((or mon:pathname-or-namestring list) output-file))
+  (unless (probe-file input-file)
+    (error "Arg INPUT-FILE does not exist.~% got: ~A" input-file))
+  (let ((dump-file
+         (if (mon:pathname-or-namestring-p output-file)
+             (if (mon:pathname-or-namestring-not-empty-dotted-or-wild-p output-file)
+                 output-file
+                 (error "Arg OUTPUT-FILE did not satisfy `mon:pathname-or-namestring-not-empty-dotted-or-wild-p'"))
+             (apply #'make-default-sax-parsed-xml-output-pathname output-file)))
+        (current-handler-instance (make-dbc-sax-handler))
+        (current-handler-stream '()))
+    (setf 
+     (%parsed-data-input-path *parsed-data-current-state*) input-file
+     (%parsed-data-output-path *parsed-data-current-state*) dump-file
+     current-handler-stream (open (%parsed-data-output-path *parsed-data-current-state*)
+                                       :direction :output
+                                       :element-type 'character
+                                       :external-format :utf-8
+                                       :if-exists :supersede
+                                       :if-does-not-exist :create)
+          (%parsed-data-output-stream *parsed-data-current-state*) current-handler-stream)
+    (unwind-protect
+         (cxml:parse input-file current-handler-instance)
+      (progn
+        (when (and (streamp current-handler-stream)
+                   (open-stream-p current-handler-stream))
+          (close current-handler-stream))
+        (if (typep *parsed-data-current-state* '%parsed-data-state)
+            (setf (%parsed-data-output-stream *parsed-data-current-state*) nil
+                  (%parsed-data-output-path *parsed-data-current-state*) nil
+                  (%parsed-data-current-parent *parsed-data-current-state*) nil
+                  *parsed-data-current-state* nil))))))
+
+#|
+
+ (write-sax-parsed-xml-to-file 
+  :input-file (make-pathname :directory (pathname-directory (sub-path *xml-input-dir*)) :name "dump-artist-infos-xml")
+  :output-file (list :pathname-name "artist-dump-test" :pathname-sub-directory (list (sub-name *xml-output-dir*) "new-sax-parser" )))
+
+ (write-sax-parsed-xml-to-file 
+  :input-file (make-pathname :directory (pathname-directory (sub-path *xml-input-dir*)) :name "dump-refs-DUMPING") 
+  :output-file (list :pathname-name "inventory-dump-test" :pathname-sub-directory (list (sub-name *xml-output-dir*) "new-sax-parser" )))
+
+(make-default-sax-parsed-xml-output-pathname
+ :pathname-name "artist-dump-test" :pathname-sub-directory "new-sax-parser")
+
+|#
 
 
 
