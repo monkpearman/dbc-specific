@@ -550,6 +550,7 @@ KNOWN-FIELD-HASHTABLE.~%~@
  \(field-convert-1-0-x-empty-known \"\" *xml-refs-match-table*\)~%
  \(field-convert-1-0-x-empty-known \"   \" *xml-refs-match-table*\)~%
  \(field-convert-1-0-x-empty-known 8 *xml-refs-match-table*\)~%
+
  \(field-convert-1-0-x-empty-known \"x\" *xml-refs-match-table*\)~%
  \(field-convert-1-0-x-empty-known \"1\" *xml-refs-match-table*\)~%
  \(field-convert-1-0-x-empty-known \"0\" *xml-refs-match-table*\)~%~@
@@ -592,6 +593,93 @@ FIELD-VALUE is some sort of object.
 ;;; :DBC-XML-SQL-PARSE-DOCUMENTATION
 ;;;  dbc-parse/dbc-xml-sql-parse.lisp
 ;;; ==============================
+
+(fundoc 'with-namespaces
+"Evalute BODY form with the namespace BINDINGS provided.~%~@
+Convenience macro to reduce nesting of CXML:WITH-NAMESPACE forms.~%~@
+:SYNTAX~%
+ with-namespaces \({\(<PREFIX> <URI>\)}*\) <FORM>* => <RESULT>~%
+ - <PREFIX> -- a namespace prefix \(a string\)
+ - <URI>    -- a string denoting a URI
+ - <FORM>   -- a form \(evaluated at runtime\)
+ - <RESULT> -- the result of evaluating forms~%~@
+:EXAMPLE~%~@
+ { ... <EXAMPLE> ... } ~%~@
+:SEE-ALSO `with-soap-envelope'.~%▶▶▶")
+
+(fundoc 'with-soap-envelope
+  ":NOTE This macro is defined as an example implementation and exists for example purposes only.~%~@
+Evalute BODY forms within the wrapped context of `cxml:with-xml-output' with XML SOAP namespaces bindings active.~%~@
+PREFIX is bound to the SOAP envelope prefix i.e.:~%
+ \"http://schemas.xmlsoap.org/soap/envelope/\"~%~@
+Any other namespace BINDINGS provided are also in effect.~%~@
+BODY forms are evaluated within two `cxml:with-element's wrapping forms, these are:~%
+ - SOAP \"Envelope\"
+ - SOAP \"Body\"~%~@
+Return valuu is a `cxml:rod' \(probably a string\).~%~@
+:SYNTAX~%
+ with-soap-envelope (<SOAP-PREFIX> {(<PREFIX> <URI>)}*) <BODY>* => <ENVELOPE>
+ - <SOAP-PREFIX>, <prefix> -- namespace abbreviations/prefixes
+ - <URI> --- string denoting a URI
+ - <BODY> --- body forms
+ - <ENVELOPE> --- a CXML:ROD \(probably a string\)~%~@
+:EXAMPLE~%
+ \(with-soap-envelope
+     \(\"env\" \(\"foo\" \"http://foo.example.org\"\)
+            \(\"bar\" \"http://bar.example.org\"\)\)
+   \(cxml:with-element* \(\"foo\" \"a\"\)
+     \(cxml:with-element* \(\"bar\" \"b\"\)
+       \(cxml:text \"Text Content\"\)\)\)\)~%
+ |=> \"<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+ |     <env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\"
+ |                   xmlns:foo=\"http://foo.example.org\"
+ |                   xmlns:bar=\"http://bar.example.org\">
+ |       <env:Body>
+ |         <foo:a>
+ |           <bar:b>Text Content</bar:b>
+ |         </foo:a>
+ |       </env:Body>
+ |     </env:Envelope>\"~%~@
+:SEE-ALSO `with-namespaces'.~%▶▶▶")
+
+(fundoc 'start-element-p
+        "Whether current-event is :END-ELEMENT.~%~@
+ Return as if by `cl:values':~%
+  - <BOOLEAN>
+  - the current element \(if any\)~%~@
+:SEE-ALSO `start-element-and-attribute-value-present-p', `end-element-p',
+`end-element-and-local-present-p'.~%▶▶▶")
+
+(fundoc 'end-element-p
+"Whether current-event is :END-ELEMENT.~%~@
+Return as if by `cl:values':~%
+ - <BOOLEAN>
+ - the current element \(if any\)~%~@
+:SEE-ALSO `end-element-and-local-present-p',
+`start-element-and-attribute-value-present-p', `start-element-p'.~%▶▶▶")
+
+(fundoc 'end-element-and-local-present-p
+"Whether current-event is :END-ELEMENT and its lname is `cl:string=' ELEMENT-EXPECT.~%~@
+ELEMENT-EXPECT is a string. Default is \"row\".~%~@
+:EXAMPLE~%
+ \(end-element-and-local-present-p <SOURCE>\)
+ \(end-element-and-local-present-p *tt-source* :element-expect \"field\"\)~%~@
+:SEE-ALSO `end-element-p', `start-element-p',
+`start-element-and-attribute-value-present-p'.~%▶▶▶")
+
+(fundoc 'field-attribs-find
+"Return => \":YEAR\"~%~@
+Keyword ATTRIB-NAMES is an object holding a string(s) each of which is a valid
+value for an element's name attribute, e.g.:~%
+ <field name=\"<ATTRIB-NAME>\"> ... STUFF ... </field>~%~@
+:NOTE Keyword ATTRIB-NAMES is normalized with `field-attribs-find-normalize-names'.~%~@
+:SEE-ALSO `field-attribs-consume-if', `klacks:list-attributes', `klacks:get-attribute'.")
+
+(fundoc 'field-attribs-consume-if
+"Return => \(\":YEAR\" . \"August, 10, 1895\"\)~%~@
+:EXAMPLE~%~@
+ { ... <EXAMPLE> ... } ~%~@
+:SEE-ALSO `field-attribs-find'.~%▶▶▶")
 
 (fundoc 'peek-skipping-comments
  "Like `klacks:peek' except that if next event from source is :COMMENTS, the event is consumed.~%~@
@@ -734,7 +822,6 @@ Keyword ATTRIB-EXPECT is a string naming an attribute value expected.~%~@
 ;;                                           :attrib-expect \"not-ref\"\)\)~%
 ;; :SEE-ALSO `<XREF>'.~%▶▶▶")
 
-
 (fundoc 'end-document-find-and-close
 "Find SOURCE's :end-document event (if any) with `klacks:find-event'.~%~@
 If event is found consume it with `klacks:consume' and evaluate
@@ -750,16 +837,10 @@ Return value when source is closed. is as if by the form: (values) e.g.:~%
 ;; dbc-specific/dbc-parse/dbc-xml-parse-sax.lisp
 ;;; ==============================
 
-(vardoc '*parsed-data-current-row*
-  "Holds an instance of class `dbc-sax-parsing-class' while parsing an XML row field.~%~@
-:SEE-ALSO `*parsed-data-current-row*', `*parsed-data-output-path*',
-`*parsed-data-output-stream*', `*xml-input-dir*', `*xml-output-dir*'.~%▶▶▶")
-
-(vardoc '*parsed-data-output-stream*
-  "Output stream current while parsing the XML data of *parsed-data-output-path*
-Opend on entry to `write-sax-parsed-xml-to-file' and closed on exit.
-:SEE-ALSO `*parsed-data-current-row*', `*parsed-data-output-path*',
-`*parsed-data-output-stream*', `*xml-input-dir*', `*xml-output-dir*'.~%▶▶▶")
+(vardoc '*parsed-data-current-state*
+"Holds the current parsing state related to the parse of an XML document.~%~@
+State held by instances of class `%parsed-data-state'.~%~@
+:SEE-ALSO `<XREF>'.~%▶▶▶")
 
 (fundoc 'write-sax-parsed-delimiter 
 "Write a commented delimiter line to OUTPUT-STREAM.
@@ -768,14 +849,39 @@ Commented delimiter is written as a `cl:fresh-line' followed by a string of
 :SEE-ALSO `dbc-sax-current-chars-clear', `dbc-sax-current-chars-reset',
 `dbc-sax-current-chars', `dbc-sax-handler', `write-sax-parsed-delimiter',
 `write-sax-parsed-xml-row-to-file', `load-sax-parsed-xml-file-to-parsed-class-hash',
-`*parsed-data-current-row*', `*parsed-data-output-path*',
-`*parsed-data-output-stream*', `*xml-input-dir*', `*xml-output-dir*'.~%▶▶▶")
+`*parsed-data-current-state*', `*xml-input-dir*', `*xml-output-dir*'.~%▶▶▶")
+
+(fundoc 'make-default-sax-parsed-xml-output-pathname
+"Return a pathname suitable for use as the OUTPUT-FILE arg to `write-sax-parsed-xml-to-file'.~%~@
+Any directory components specified by PATHNAME-SUB-DIRECTORY which do not exist
+relative to PATHNAME-BASE-DIRECTORY will be created as if by `cl:ensure-directories-exist'.~%~@
+Keyword arg PATHNAME-NAME is a string designating a cl:pathname-name.
+Default is \"parsed-xml\".~%~@
+Keyword arg PATHNAME-NAME-DATED-P is a boolean indicating whether to append a date to PATHNAME-NAME.
+The default is to append a timestamp as per `mon:time-string-yyyy-mm-dd'.~%~@
+Keyword arg PATHNAME-TYPE <TYPE> - A cl:pathname-type. Default is \"lisp\".~%~@
+Keyword arg PATHNAME-SUB-DIRECTORY A string or list of strings designating a subdir pathname relative to PATHNAME-BASE-DIRECTORY.~%~@
+Defalut is return value of of:~% \(sub-name *xml-output-dir*\)~%~@
+Keyword arg PATHNAME-BASE-DIRECTORY is a an object of type `mon:pathname-or-namestring'.
+It should name an existing directory, an error is signaled if not.~%~@
+:EXAMPLE~%
+ \(%make-default-parsed-output-pathname :pathname-name \"bubba\" \)~%
+ \(%make-default-parsed-output-pathname :pathname-name \"bubba\" :pathname-name-dated-p nil\)~%
+:SEE-ALSO `<XREF>'.~%▶▶▶")
 
 (fundoc 'write-sax-parsed-xml-to-file
         "Parse the dbc XML refs in INPUT-FILE and write thier lispy counterparts to OUTPUT-FILE.~%~@
 For duration of body the variable `*parsed-data-output-stream*' is bound to an open output-stream.~%~@
-INPUT-FILE defaults to `*xml-input-refs-name*'.~%~@
-OUTPUT-FILE defaults to `*parsed-data-output-path*'.~%~@
+INPUT-FILE is a is a pathspec satisfying `mon:pathname-or-namestring' and should name an existing file.~%~@
+OUTPUT-FILE to write parsed XML data to. When keyword arg OUTPUT-FILE is of
+pathname or namestring it should satisfy `mon:pathname-or-namestring-not-empty-dotted-or-wild-p',
+an error is signaled if not. When keyword arg OUTPUT-FILE is a list is has the form:~%
+ \(:pathname-name <NAME>
+  :pathname-name-dated-p <BOOLEAN>
+  :pathname-type <TYPE>
+  :pathname-sub-directory [<STRING> | <LIST OF STRINGS>]
+  :pathname-base-directory [<PATHNAME> | <NAMESTRING>]\)~%~@
+where each property of list is a keyword/value argument to `make-default-sax-parsed-xml-output-pathname'.~%~@
 :EXAMPLE~%
  \(write-sax-parsed-xml-to-file\)~%
  \(write-sax-parsed-xml-to-file
@@ -808,8 +914,7 @@ variable `*parsed-data-current-row*'.~%~@
 `write-sax-parsed-xml-row-to-file', `write-sax-parsed-slots-to-file',
 `write-sax-parsed-class-hash-to-files', `print-sax-parsed-slots',
 `load-sax-parsed-xml-file-to-parsed-class-hash',
-`%ensure-dated-parsed-directory', `*parsed-data-current-row*',
-`*parsed-data-output-path*', `*parsed-data-output-stream*', `*xml-input-dir*',
+`%ensure-dated-parsed-directory', `*parsed-data-current-state*', `*xml-input-dir*',
 `*xml-output-dir*'.~%▶▶▶")
 
 
@@ -914,92 +1019,240 @@ value of `print-sax-parsed-slots-padding-format-control' with OBJECT as argument
 
 
 ;;; ==============================
-;;; :DOCUMENTATION dbc-specific/dbc-parse/dbc-xml-sql-parse.lisp
+;; dbc-specific/dbc-classes/dbc-class-parsed-field-slot-mapping.lisp
 ;;; ==============================
 
-(fundoc 'with-namespaces
-"Evalute BODY form with the namespace BINDINGS provided.~%~@
-convenience macro to reduce nesting of CXML:WITH-NAMESPACE forms.~%~@
-:SYNTAX~%
- with-namespaces \({\(<PREFIX> <URI>\)}*\) <FORM>* => <RESULT>~%
- - <PREFIX> -- a namespace prefix \(a string\)
- - <URI>    -- a string denoting a URI
- - <FORM>   -- a form \(evaluated at runtime\)
- - <RESULT> -- the result of evaluating forms~%~@
-:EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `with-soap-envelope'.~%▶▶▶")
-
-(fundoc 'with-soap-envelope
-  ":NOTE This macro is defined as an example implementation and exists for example purposes only.~%~@
-Evalute BODY forms within the wrapped context of `cxml:with-xml-output' with XML SOAP namespaces bindings active.~%~@
-PREFIX is bound to the SOAP envelope prefix i.e.:~%
- \"http://schemas.xmlsoap.org/soap/envelope/\"~%~@
-Any other namespace BINDINGS provided are also in effect.~%~@
-BODY forms are evaluated within two `cxml:with-element's wrapping forms, these are:~%
- - SOAP \"Envelope\"
- - SOAP \"Body\"~%~@
-Return valuu is a `cxml:rod' \(probably a string\).~%~@
-:SYNTAX~%~@
- with-soap-envelope (<SOAP-PREFIX> {(<PREFIX> <URI>)}*) <BODY>* => <ENVELOPE>
- - <SOAP-PREFIX>, <prefix> -- namespace abbreviations/prefixes
- - <URI> --- string denoting a URI
- - <BODY> --- body forms
- - <ENVELOPE> --- a CXML:ROD \(probably a string\)~%~@
+(fundoc '%parsed-class-mapped-with-known-key-helper
+"Return hash-table value for key PARSED-CLASS-SYMBOL in hash-table
+`*parsed-class-field-slot-accessor-mapping-table*'.~%
+Signal an error if PARSED-CLASS-SYMBOL is not present in hash-table.~%
 :EXAMPLE~%
- \(with-soap-envelope
-     \(\"env\" \(\"foo\" \"http://foo.example.org\"\)
-            \(\"bar\" \"http://bar.example.org\"\)\)
-   \(cxml:with-element* \(\"foo\" \"a\"\)
-     \(cxml:with-element* \(\"bar\" \"b\"\)
-       \(cxml:text \"Text Content\"\)\)\)\)
- |=> \"<?xml version=\"1.0\" encoding=\"UTF-8\"?>
- |     <env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\"
- |                   xmlns:foo=\"http://foo.example.org\"
- |                   xmlns:bar=\"http://bar.example.org\">
- |       <env:Body>
- |         <foo:a>
- |           <bar:b>Text Content</bar:b>
- |         </foo:a>
- |       </env:Body>
- |     </env:Envelope>\"~%~@
-:SEE-ALSO `with-namespaces'.~%▶▶▶")
+ \(%parsed-class-mapped-with-known-key-helper 'parsed-inventory-record\)~%
+ \(%parsed-class-mapped-with-known-key-helper 'parsed-foo-record\)~%
+ \(%parsed-class-mapped-with-known-key-helper \(%parsed-class-subtype-check 'parsed-inventory-record\)\)~%
+ \(%parsed-class-mapped-with-known-key-helper \(%parsed-class-subtype-check \(make-instance 'parsed-inventory-record\)\)\)~%
+:SEE-ALSO `accessor-to-field-mapping', `field-to-accessor-mapping',
+`field-to-accessor-table', `accessor-to-field-table', `parsed-class-mapped',
+`make-parsed-class-field-slot-accessor-mapping',
+`def-set-parsed-class-record-slot-value'.~%")
 
-(fundoc 'start-element-p
-        "Whether current-event is :END-ELEMENT.~%~@
- Return as if by `cl:values':~%
-  - <BOOLEAN>
-  - the current element \(if any\)~%~@
- :SEE-ALSO `end-element-p', `end-element-and-local-present-p'.~%▶▶▶")
+(generic-doc #'%parsed-class-subtype-check
+"Ensure arg PARSED-CLASS-OBJECT dereferences to a subclass of class `parsed-class'.~%~@
+:SEE-ALSO `accessor-to-field-mapping', `field-to-accessor-mapping',
+`field-to-accessor-table', `accessor-to-field-table', `parsed-class-mapped',
+`make-parsed-class-field-slot-accessor-mapping',
+`def-set-parsed-class-record-slot-value'.~%")
 
-(fundoc 'end-element-p
-"Whether current-event is :END-ELEMENT.~%~@
-Return as if by `cl:values':~%
- - <BOOLEAN>
- - the current element \(if any\)~%~@
-:SEE-ALSO `end-element-and-local-present-p', `start-element-p'.~%▶▶▶")
+(method-doc #'%parsed-class-subtype-check nil '((eql parsed-class))
+"~%:EXAMPLE~%
+ \(%parsed-class-subtype-check 'parsed-inventory-record\)~%
+Fails successfully:~%
+ (%parsed-class-subtype-check  'parsed-class)~%")
 
-(fundoc 'end-element-and-local-present-p
-"Whether current-event is :END-ELEMENT and its lname is `cl:string=' ELEMENT-EXPECT.~%~@
-ELEMENT-EXPECT is a string. Default is \"row\".~%~@
+(method-doc #'%parsed-class-subtype-check nil '(symbol)
+"~%:EXAMPLE~%
+ \(%parsed-class-subtype-check  'parsed-inventory-record\)~%
+Fails successfully:~%
+ \(%parsed-class-subtype-check  'parsed-foo-record\)~%")
+
+(method-doc #'%parsed-class-subtype-check nil '(parsed-class)
+"~%:EXAMPLE~%
+ \(%parsed-class-subtype-check \(make-instance 'parsed-inventory-record\)\)~%
+Fails successfully:~%
+ \(%parsed-class-subtype-check \(make-instance 'parsed-class\)\)~%")
+
+(generic-doc #'field-to-accessor-table
+"Return a hash-table mapping original SQL field strings to accessors of OBJECT's class.~%~@
+:SEE-ALSO `accessor-to-field-mapping', `field-to-accessor-mapping',
+`field-to-accessor-table', `accessor-to-field-table', `parsed-class-mapped',
+`make-parsed-class-field-slot-accessor-mapping',
+`def-set-parsed-class-record-slot-value'.~%")
+
+(method-doc #'field-to-accessor-table nil '(parsed-class)
+"~%:EXAMPLE~%
+ \(field-to-accessor-table \(make-instance 'parsed-inventory-record\)\)~%
+ \(field-to-accessor-table \(make-instance 'parsed-artist-record\)\)~%
+ \(field-to-accessor-table \(make-instance 'parsed-technique-record\)\)~%")
+
+(generic-doc #'accessor-to-field-table
+"Return a hash-table mapping accessors of OBJECT's class to their original SQL field strings.~%~@
+:SEE-ALSO `accessor-to-field-mapping', `field-to-accessor-mapping',
+`field-to-accessor-table', `accessor-to-field-table', `parsed-class-mapped',
+`make-parsed-class-field-slot-accessor-mapping',
+`def-set-parsed-class-record-slot-value'.~%")
+
+(method-doc #'accessor-to-field-table nil '(parsed-class)
+"~%:EXAMPLE~%
+ \(accessor-to-field-table \(make-instance 'parsed-inventory-record\)\)~%
+ \(accessor-to-field-table \(make-instance 'parsed-artist-record\)\)~%
+ \(accessor-to-field-table \(make-instance 'parsed-technique-record\)\)~%")
+
+(generic-doc #'parsed-class-mapped
+ "
+:SEE-ALSO `accessor-to-field-mapping', `field-to-accessor-mapping',
+`field-to-accessor-table', `accessor-to-field-table', `parsed-class-mapped',
+`make-parsed-class-field-slot-accessor-mapping',
+`def-set-parsed-class-record-slot-value'.~%")
+
+(method-doc #'parsed-class-mapped nil '(symbol)
+ "Return an instance of class `parsed-class-field-slot-accessor-mapping'.~%
+Signal an error if OBJECT is not a symbol designating a subclass of `parsed-class'.~%
 :EXAMPLE~%
- \(end-element-and-local-present-p <SOURCE>\)
- \(end-element-and-local-present-p *tt-source* :element-expect \"field\"\)~%~@
-:SEE-ALSO `<XREF>'.~%▶▶▶")
+ \(parsed-class-mapped \(make-instance 'parsed-inventory-record\)\)~%")
 
-(fundoc 'field-attribs-find
-"Return => \":YEAR\"~%~@
-Keyword ATTRIB-NAMES is an object holding a string(s) each of which is a valid
-value for an element's name attribute, e.g.:~%
- <field name=\"<ATTRIB-NAME>\"> ... STUFF ... </field>~%~@
-:NOTE Keyword ATTRIB-NAMES is normalized with `field-attribs-find-normalize-names'.~%~@
-:SEE-ALSO `field-attribs-consume-if', `klacks:list-attributes', `klacks:get-attribute'.")
+(method-doc #'parsed-class-mapped nil '(parsed-class)
+            "Return an instance of class `parsed-class-field-slot-accessor-mapping'.~%
+:EXAMPLE~%
+ \(parsed-class-mapped \(parsed-class-mapped \(make-instance 'parsed-inventory-record\)\)\)~%")
 
-(fundoc 'field-attribs-consume-if
-"Return => \(\":YEAR\" . \"August, 10, 1895\"\)~%~@
-:EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `field-attribs-find'.~%▶▶▶")
+(method-doc #'parsed-class-mapped nil '(parsed-class-field-slot-accessor-mapping)
+            "Return an instance of class `parsed-class-field-slot-accessor-mapping'.
+:EXAMPLE~%
+ \(parsed-class-mapped \(parsed-class-mapped \(make-instance 'parsed-inventory-record\)\)\)~%")
+
+(generic-doc #'accessor-to-field-mapping
+"Return the accessor associated with string FIELD for OBJECT.~%~@
+:SEE-ALSO `accessor-to-field-mapping', `field-to-accessor-mapping',
+`field-to-accessor-table', `accessor-to-field-table', `parsed-class-mapped',
+`make-parsed-class-field-slot-accessor-mapping',`def-set-parsed-class-record-slot-value'.~%")
+
+(method-doc #'accessor-to-field-mapping nil '(t parsed-class)
+"OBJECT should be an instance of class PARSED-CLASS and present as a key in
+hash-table `*parsed-class-field-slot-accessor-mapping-table', an error is signaled if not.~%~@
+:EXAMPLE~%
+ \(accessor-to-field-mapping 'inventory-bar-code \(make-instance 'parsed-inventory-record\)\)~%
+ \(let \(\(obj \(make-instance 'parsed-inventory-record\)\)\)
+   \(field-to-accessor-mapping \(accessor-to-field-mapping 'inventory-number obj\) obj\)\)~%")
+
+(method-doc #'accessor-to-field-mapping nil '(T  parsed-class-field-slot-accessor-mapping)
+"~%:EXAMPLE~%
+ \(accessor-to-field-mapping 'inventory-number 'parsed-inventory-record\)~%
+ \(null \(accessor-to-field-mapping 'inventory-number 'parsed-artist-record\)\)~%
+fails successfully:~%
+ \(accessor-to-field-mapping 'inventory-number 'foo\)~%
+ \(accessor-to-field-mapping 'inventory-number \(make-instance 'parsed-class-field-slot-accessor-mapping\)\)~%")
+
+(generic-doc #'field-to-accessor-mapping
+"Return the \"field string\" associated with ACCESSOR for OBJECT.~%~@
+:SEE-ALSO `accessor-to-field-mapping', `field-to-accessor-mapping',
+`field-to-accessor-table', `accessor-to-field-table', `parsed-class-mapped',
+`make-parsed-class-field-slot-accessor-mapping',
+`def-set-parsed-class-record-slot-value'.~%")
+
+(method-doc #'field-to-accessor-mapping nil '(t parsed-class)
+"Return as if by `cl:values' the \"field string\" associated with ACCESSOR for OBJECT and a boolean as per `cl:gethash'.~%~@
+When non-nil the  `cl:nth-value' 0 corresponds to an parsed SQL/XML field from the original dbc database dump.~%~@
+ACCESSOR is a symbol naming an accessor method defined for OBJECT.~%~@
+OBJECT should be an instance of class PARSED-CLASS and present as a key in
+hash-table `*parsed-class-field-slot-accessor-mapping-table*', an error is signaled if not.~%~@
+:EXAMPLE~%
+ \(field-to-accessor-mapping \"bar_code\" \(make-instance 'parsed-inventory-record\)\)~%")
+
+(method-doc #'field-to-accessor-mapping nil '(T  parsed-class-field-slot-accessor-mapping)
+"~%:EXAMPLE~%
+   \(field-to-accessor-mapping \"ref\" 'parsed-inventory-record\)~%
+   \(null \(field-to-accessor-mapping \"ref\" 'parsed-artist-record\)\)~%
+ fails successfully:~%
+  \(field-to-accessor-mapping \"ref\" 'foo\)~%
+  \(field-to-accessor-mapping \"ref\" \(make-instance 'parsed-class-field-slot-accessor-mapping\)\)~%")
+
+(generic-doc #'fields-of-parsed-class
+"Return a list of all field strings associated with an accessor for OBJECT.~%~@
+OBJECT should dereference a subclass of class `parsed-class'.~%
+:SEE-ALSO `accessor-to-field-mapping', `field-to-accessor-mapping',
+`field-to-accessor-table', `accessor-to-field-table', `parsed-class-mapped',
+`make-parsed-class-field-slot-accessor-mapping',
+`def-set-parsed-class-record-slot-value'.~%")
+
+(method-doc #'fields-of-parsed-class nil '(parsed-class)
+"~%:EXAMPLE~%
+ \(fields-of-parsed-class \(make-instance 'parsed-inventory-record\)\)~%")
+
+(method-doc #'fields-of-parsed-class nil '(parsed-class-field-slot-accessor-mapping)
+"~%:EXAMPLE~%
+ \(fields-of-parsed-class \(gethash 'parsed-inventory-record *parsed-class-field-slot-accessor-mapping-table*\)\)~%")
+
+(method-doc #'fields-of-parsed-class nil '(symbol)
+"~%:EXAMPLE~%
+ \(fields-of-parsed-class 'parsed-inventory-record\)~%")
+
+(generic-doc #'accessors-of-parsed-class
+"Return a list of all accessor symbols associated with a field string for OBJECT.~%~@
+OBJECT should dereference a subclass of class `parsed-class'.~%
+:SEE-ALSO `accessor-to-field-mapping', `field-to-accessor-mapping',
+`field-to-accessor-table', `accessor-to-field-table', `parsed-class-mapped',
+`make-parsed-class-field-slot-accessor-mapping',
+`def-set-parsed-class-record-slot-value'.~%")
+
+(method-doc #'accessors-of-parsed-class nil '(parsed-class)
+"~%:EXAMPLE~%
+ \(accessors-of-parsed-class \(make-instance 'parsed-inventory-record\)\)~%")
+
+(method-doc #'accessors-of-parsed-class nil '(parsed-class-field-slot-accessor-mapping)
+"~%:EXAMPLE~%
+ \(accessors-of-parsed-class \(gethash 'parsed-inventory-record *parsed-class-field-slot-accessor-mapping-table*\)\)~%")
+
+(method-doc #'accessors-of-parsed-class nil '(symbol)
+"~%:EXAMPLE~%
+ \(accessors-of-parsed-class 'parsed-inventory-record\)~%")
+
+
+
+(fundoc 'make-parsed-class-field-slot-accessor-mapping
+"Return an instance of class `parsed-class-field-slot-accessor-mapping'.~%~@
+Arg PARSED-CLASS-SUBCLASS is a symbol designating a class which subclasses `parsed-class'.
+Arg FIELD-TO-ACCESSOR-ALIST is an alist used to map the hash-tables of slots
+field-to-accessor-table and accessor-to-field-table.
+The car of each elt of FIELD-TO-ACCESSOR-ALIST is a string designating a field-name.
+The cdr is a symbol designating an slot-accessor of class PARSED-CLASS-SUBCLASS.~%~@
+:EXAMPLE~%
+ \(let \(\(example-object \(make-parsed-class-field-slot-accessor-mapping
+                        'parsed-naf-entity
+                        '\(\(\"categ\" . category-entity-0-coref\)\)\)\)\)
+   \(values
+    \(gethash
+     \(gethash \"categ\" \(field-to-accessor-table example-object\)\)
+     \(accessor-to-field-table example-object\)\)
+    \(gethash
+     \(gethash 'category-entity-0-coref \(accessor-to-field-table example-object\)\)
+     \(field-to-accessor-table example-object\)\)
+    \(parsed-class-mapped example-object\)\)\)~%~@
+:SEE-ALSO `accessor-to-field-mapping', `field-to-accessor-mapping',
+`field-to-accessor-table', `accessor-to-field-table', `parsed-class-mapped',
+`make-parsed-class-field-slot-accessor-mapping',
+`def-set-parsed-class-record-slot-value'.~%▶▶▶")
+
+(fundoc 'def-set-parsed-class-record-slot-value
+"Define a function with FUN-NAME which maps the fields/value paris of orginal
+SQL tables to FOR-PARSED-CLASS's CLOS equivalent.~%~@
+Arg FUN-NAME is an unquoted symbol
+Arg FOR-PARSED-CLASS is an unquoted symbol designating a subclass of class `parsed-class'.~%~@
+Arguments to returned function are FIELD-STRING, FIELD-VALUE, and OBJECT.
+Its return value is as if by `cl:values':~%
+ - nth-value 0 is the setf'd FIELD-VALUE as set with slot accessor corresponding to FIELD-STRING.
+ - nth-value 1 is OBJECT~%~@
+Its arg FIELD-STRING is a string from the original SQL data and should have a
+direct association with a slot-accessor for OBJECT.~%~@
+OJBECT is an instance of a class which subclasses `parsed-class'.~%~@
+Original FIELD-STRING is the car of the the consed key/value pairs in one of the alists 
+written to an output file by `write-sax-parsed-xml-refs-file'
+FIELD VALUE is the corresponding cdr of the consed key/value pair.~%~@
+:EXAMPLE~%
+ \(def-set-parsed-class-record-slot-value set-parsed-inventory-record-slot-value parsed-inventory-record\)~%
+ \(let* \(\(object \(make-instance 'parsed-inventory-record\)\)
+        \(field-string \"ref\"\)
+        \(field-value \"13000\"\)
+        \(accessor-symbol \(field-to-accessor-mapping field-string object\)\)
+        \(accessor-method
+         \(find-method \(fdefinition accessor-symbol\) nil `\(,\(class-of object\)\)\)\)\)
+   \(set-parsed-inventory-record-slot-value field-string field-value object\)
+   \(values
+    \(apply \(symbol-function accessor-symbol\) \(list object\)\)
+    accessor-symbol
+    accessor-method\)\)~%~@
+:SEE-ALSO `accessor-to-field-mapping', `field-to-accessor-mapping',
+`field-to-accessor-table', `accessor-to-field-table', `parsed-class-mapped',
+`make-parsed-class-field-slot-accessor-mapping'.~%▶▶▶")
 
 ;;; ==============================
 

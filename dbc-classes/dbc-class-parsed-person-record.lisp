@@ -109,6 +109,7 @@
     :initarg :edit-by-creator
     :accessor edit-by-creator
     :documentation ":ORIGINAL-FIELD \"naf_creator\"")
+
    (edit-date
     :initarg :edit-date
     :accessor edit-date

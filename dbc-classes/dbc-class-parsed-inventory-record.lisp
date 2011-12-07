@@ -1194,7 +1194,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "year" :TRANSFORM publication-date-year
+;; :FIELD "year" :TRANSFORM publication-date
 ;;
 ;;         :TYPE "varchar(100)"
 ;;         :NULL-P "NO"
@@ -1210,6 +1210,7 @@
 ;;  "0 , 0 , 1820"
 ;;  "0 , 0 , 1900"
 ;;  "0 , 0 , 1896"
+;;  "December , 0 , 1933"     ;; 10984
 ;;  "1832-1837"               ;; Should this have been in year_year? See `ref` 8652
 ;;  "1749-1783"               ;; ref 427 has year_year as 1749
 ;;  "1837-1839"               ;; ref 399,400 year_year as 1837

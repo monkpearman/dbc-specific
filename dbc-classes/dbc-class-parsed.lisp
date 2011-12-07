@@ -62,6 +62,26 @@
 
 (in-package #:dbc)
 
+(defgeneric %parsed-class-subtype-check (parsed-class-object))
+
+(defgeneric field-to-accessor-table (object))
+
+(defgeneric (setf field-to-accessor-table) (hash-table object))
+
+(defgeneric accessor-to-field-table (object))
+(defgeneric (setf accessor-to-field-table) (hash-table object))
+
+(defgeneric parsed-class-mapped (object))
+(defgeneric (setf parsed-class-mapped) (parsed-class-symbol parsed-class-mapped))
+
+(defgeneric accessor-to-field-mapping (accessor object))
+
+(defgeneric field-to-accessor-mapping (field object))
+
+(defgeneric fields-of-parsed-class (object))
+
+(defgeneric accessors-of-parsed-class (object))
+
 ;; These are common to class `parsed-class' and its subclasses
 (defgeneric naf-entity-author-coref (object))
 (defgeneric (setf naf-entity-author-coref) (coref-value object))
@@ -132,45 +152,132 @@
   ()
   (:documentation "Base dbc parsed class."))
 
-;; (remove-method #'parsed-class-mapped (find-method #'parsed-class-mapped nil '(parsed-class)))
-(defmethod parsed-class-mapped ((object parsed-class))
-  ;; (let* ((objects-class  (class-of object))
-  ;;        (subclass-check (or (subtypep objects-class (find-class 'parsed-class))
-  ;;                            (error "OBJECT must be a subclass `parsed-class'"))))
-  ;;   (and subclass-check 
-  ;;        (setf subclass-check (class-name subclass-check)))
-  ;;   (gethash subclass-check *parsed-class-field-slot-accessor-mapping-table*)
-  ;;   )
-  (let* ((the-class-parsed-class (find-class 'parsed-class))
-         (objects-class  (class-of object))
-         (subclass-check (or (and (not (eq the-class-parsed-class objects-class))
-                                  (subtypep objects-class (find-class 'parsed-class))
-                                  (class-name objects-class))
-                             (error "OBJECT must be a subclass `parsed-class' and not an instance of `parsed-class'"))))
-    (gethash subclass-check *parsed-class-field-slot-accessor-mapping-table*)))
-
-;; :EXAMPLE
-;;  (accessor-to-field-table (make-instance 'parsed-inventory-record))
-;;  (accessor-to-field-table (make-instance 'parsed-artist-record))
-;;  (accessor-to-field-table (make-instance 'parsed-technique-record))
-(defmethod accessor-to-field-table ((object parsed-class))
-  (accessor-to-field-table (parsed-class-mapped object)))
-
-;; :EXAMPLE
-;;  (field-to-accessor-table (make-instance 'parsed-inventory-record))
-;;  (field-to-accessor-table (make-instance 'parsed-artist-record))
-;;  (field-to-accessor-table (make-instance 'parsed-technique-record))
-(defmethod field-to-accessor-table ((object parsed-class))
-  (field-to-accessor-table (parsed-class-mapped object)))
-
 (defclass parsed-naf-entity (parsed-class)
   ()
   (:documentation #.(format nil "Base class for parsing naf-entity records.~%~@
 :SEE-ALSO `parsed-artist-record', `parsed-author-record',~%~
 `parsed-person-record', `parsed-brand-record', `parsed-publication-record'.~%▶▶▶")))
 
+(defun %parsed-class-mapped-with-known-key-helper (parsed-class-symbol)
+  ;; (declare (symbol parsed-class-symbol))
+  (when (eql parsed-class-symbol 'parsed-class)
+    (error "Arg PARSED-CLASS-SYMBOL is cl:eql the symbol PARSED-CLASS.~% ~
+          Arg must be a symbol designating a subclass of `parsed-class'~%"))
+  (multiple-value-bind (key-val key-present) (gethash parsed-class-symbol *parsed-class-field-slot-accessor-mapping-table*)
+    (if key-present
+        (if (typep key-val 'parsed-class-field-slot-accessor-mapping)
+            key-val
+            (error ":FUNCTION `%parsed-class-mapped-with-known-key-helper'~% ~
+                    Arg PARSED-CLASS-SYMBOL is a present hash-table-key with non-valid value in hash-table `~A'~% ~
+                    hash-table-key: ~S~% ~
+                    hash-table-value: ~S~%"
+                   '*parsed-class-field-slot-accessor-mapping-table*
+                   parsed-class-symbol key-val))
+        (error ":FUNCTION `%parsed-class-mapped-with-known-key-helper'~% ~
+                 Arg PARSED-CLASS-SYMBOL not a present hash-table-key in hash-table `~A'~% ~
+                 hash-table-key: ~S~%"
+               '*parsed-class-field-slot-accessor-mapping-table*
+               parsed-class-symbol))))
 
+(defmethod %parsed-class-subtype-check ((parsed-class-object (eql 'parsed-class)))
+  (error "Arg PARSED-CLASS-OBJECT is cl:eql the symbol PARSED-CLASS.~% ~
+          Arg must be a symbol designating a subclass of `parsed-class'~%"))
 
+(defmethod %parsed-class-subtype-check ((parsed-class-object symbol))
+  (let* (;;(the-class-parsed-class (find-class 'parsed-class))
+         (the-class-of-parsed-class-object
+          (or (find-class parsed-class-object nil)
+              (error "Arg PARSED-CLASS-SYMBOL must be a symbol designating a subclass of `parsed-class'~% ~
+                    got: ~S" parsed-class-object)))
+         (subclass-check (if (subtypep the-class-of-parsed-class-object (find-class 'parsed-class))
+                             parsed-class-object
+                             (error ":METHOD `%parsed-class-subtype-check'~% ~
+                                      PARSED-CLASS-OBJECT must be a subclass `parsed-class'~% got: ~S~% class-of: ~S~%"
+                                    parsed-class-object (class-name the-class-of-parsed-class-object)))))
+    subclass-check))
+
+(defmethod %parsed-class-subtype-check ((parsed-class-object parsed-class))
+  (let* ((the-class-parsed-class (find-class 'parsed-class))
+         (objects-class  (class-of parsed-class-object))
+         (subclass-check (cond ((eql the-class-parsed-class objects-class)
+                                (error "The cl:class-of of arg PARSED-CLASS-OBJECT is cl:eq the class PARSED-CLASS.~% ~
+                                        Arg must be a subclass of `parsed-class' or or symbol designating one~%"))
+                               ((subtypep objects-class (find-class 'parsed-class))
+                                (class-name objects-class))
+                               (t
+                                (error ":METHOD `%parsed-class-subtype-check'~% ~
+                                         PARSED-CLASS-OBJECT must be a subclass `parsed-class' and not an instance of `parsed-class'~% ~
+                                         got: ~S~% class-of: ~S~%" parsed-class-object (class-name objects-class))))))
+    subclass-check))
+
+;; (parsed-class-mapped (make-instance 'parsed-inventory-record))
+;;
+;; fails successfully:
+;; (parsed-class-mapped (make-instance 'parsed-foo-record))
+;; (parsed-class-mapped (make-instance 'parsed-class))
+;;
+;; (remove-method #'parsed-class-mapped (find-method #'parsed-class-mapped nil '(parsed-class)))
+(defmethod parsed-class-mapped ((object parsed-class))
+  (%parsed-class-mapped-with-known-key-helper
+   (%parsed-class-subtype-check object)))
+
+;; (parsed-class-mapped 'parsed-inventory-record)
+;; (parsed-class-mapped 'parsed-foo-record)
+(defmethod parsed-class-mapped ((object symbol))
+  (%parsed-class-mapped-with-known-key-helper
+   (%parsed-class-subtype-check object)))
+
+;; (%parsed-class-mapped-with-known-key-helper
+;;  (%parsed-class-subtype-check (make-instance 'parsed-inventory-record)))
+
+;; (accessor-to-field-table (parsed-class-mapped 'parsed-inventory-record))
+(defmethod accessor-to-field-table ((object parsed-class))
+  (accessor-to-field-table (parsed-class-mapped object)))
+
+;; (field-to-accessor-table 'parsed-inventory-record)
+;; fails successfully:
+;; (field-to-accessor-table 'parsed-class)
+;; (field-to-accessor-table 'parsed-foo-record)
+(defmethod field-to-accessor-table ((object symbol))
+  (field-to-accessor-table (parsed-class-mapped object)))
+
+;; (accessor-to-field-table 'parsed-inventory-record)
+;; fails successfully:
+;; (accessor-to-field-table 'parsed-class)
+;; (accessor-to-field-table 'parsed-foo-record)
+(defmethod accessor-to-field-table ((object symbol))
+  (accessor-to-field-table (parsed-class-mapped object)))
+
+;; (field-to-accessor-mapping "ref" (make-instance 'parsed-inventory-record))
+;; (field-to-accessor-mapping "id" (make-instance 'parsed-artist-record))
+(defmethod field-to-accessor-mapping (field (object parsed-class))
+  (gethash field (field-to-accessor-table  object)))
+
+;; (field-to-accessor-mapping "id" 'parsed-artist-record)
+(defmethod field-to-accessor-mapping (field (object symbol))
+  (gethash field (field-to-accessor-table  object)))
+
+;; (accessor-to-field-mapping 'inventory-number (make-instance 'parsed-inventory-record))
+(defmethod accessor-to-field-mapping (accessor (object parsed-class))
+  (gethash accessor (accessor-to-field-table  object)))
+
+;; (accessor-to-field-mapping 'inventory-number 'parsed-inventory-record)
+(defmethod accessor-to-field-mapping (accessor (object symbol))
+  (gethash accessor (accessor-to-field-table object)))
+
+(defmethod fields-of-parsed-class ((object symbol))
+  (alexandria:hash-table-keys (field-to-accessor-table object)))
+
+(defmethod fields-of-parsed-class ((object parsed-class))
+  (alexandria:hash-table-keys (field-to-accessor-table object)))
+
+(defmethod accessors-of-parsed-class ((object symbol))
+  (alexandria:hash-table-keys (accessor-to-field-table object)))
+
+(defmethod accessors-of-parsed-class ((object parsed-class))
+  (alexandria:hash-table-keys (accessor-to-field-table object)))
+
+    
 ;;; ==============================
 
 
