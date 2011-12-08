@@ -1,13 +1,11 @@
-;;-*- Mode: LISP; Syntax: COMMON-LISP; Base: 10 -*-
-;;; ======================================================
-;;; This is mon-tgm.lisp
-;;; 
-;;; FILE-CREATED:
-;;; <Timestamp: #{2010-02-06T22:12:47-05:00Z}#{10056} - by MON>
-;;; ================================================================
-;;; Copyright © 2010 MON KEY 
+;;; :FILE-CREATED <Timestamp: #{2011-12-08T14:14:32-05:00Z}#{11494} - by MON>
+;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-classes/dbc-tgm.lisp
 ;;; ==============================
-;;; CODE:
+
+;; :NOTE there is a per them XML file from the old dcp here:
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/tgm.tar
+
+
 (in-package #:dbc)
 
 ;; (defpackage #:mon-tgm

@@ -2,14 +2,128 @@
 ;;; :FILE dbc-classes/dbc-class-themes-convert.lisp
 ;;; ==============================
 
+;; :NOTE there is a per them XML file from db's php parse from the old dcp here:
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/tgm.tar
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/xslt/tgm_htm_details.php
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/xslt/tgm_htm_details.xslt
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/xslt/tgm_htm_feb_06.xslt
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/xslt/tgm_htm_results.xslt
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/xslt/tgm_htm.xslt
+;;
+;; Also, for a later Lisp parse see: 
+;; :FILE dbc-specific/dbc-classes/dbc-tgm.lisp
+;;
+;; The current TGM entity schema is here:
+;; :FILE dbc-specific/dbc-classes/dbc-class-theme-entity.lisp
 
-(merge-pathname
- (make-pathname :directory `(:relative ,*xml-output-dir*)
-                :name "sax-themes-test"
-                :type "lisp")
- (system-path *system-path*))
+;; (merge-pathname
+;;  (make-pathname :directory `(:relative ,*xml-output-dir*)
+;;                 :name "sax-themes-test"
+;;                 :type "lisp")
+;;  (system-path *system-path*))
+;;
+;;
+;; :TODO What about the stuff in the XML files dump-themes_fr-xml and dump-themes_active-xml ???
+;;  
 
+
 (in-package #:dbc)
+
+(defclass parsed-theme-record (parsed-class)
+  (;; control-id-entity-num
+   (conrtol-id-entity-num-technique
+    :initarg :conrtol-id-entity-num-technique
+    :accessor conrtol-id-entity-num-technique
+    :documentation ":ORIGINAL-FIELD \"id\"")
+
+   (
+    conrtol-id-display-theme
+    :initarg :conrtol-id-display-theme
+    :accessor conrtol-id-display-theme
+    :documentation ":ORIGINAL-FIELD \"theme\"")
+
+   ;; shares-generic
+   (record-status-active
+    :initarg :record-status-active
+    :accessor record-status-active
+    :documentation ":ORIGINAL-FIELD \"active\"")
+
+   ;; shares-generic
+   (image-default-xref
+    :initarg :image-default-xref
+    :accessor image-default-xref
+    :documentation ":ORIGINAL-FIELD \"display_pic\"")
+
+   (image-coref
+    :initarg :image-coref
+    :accessor image-coref
+    :documentation ":ORIGINAL-FIELD \"related_pic_num\"")
+
+   ;; shares-generic
+   (edit-date
+    :initarg :edit-date
+    :accessor edit-date
+    :documentation ":ORIGINAL-FIELD \"date_edit\"")
+
+   (ignorable-subdivision-number
+    :initarg :ignorable-subdivision-number
+    :accessor ignorable-subdivision-number
+    :documentation ":ORIGINAL-FIELD \"subdivision_number\"")
+
+   (ignorable-range
+    :initarg :ignorable-range
+    :accessor ignorable-range
+    :documentation ":ORIGINAL-FIELD \"range\"")
+
+   ;; :NOTE the rt, bt, nt, us, uf are potentiall a type of `entity-display-name-coref'
+
+   (ignorable-rt ;; theme-entity-rt-coref
+    :initarg :ignorable-rt
+    :accessor ignorable-rt
+    :documentation ":ORIGINAL-FIELD \"RT\"")
+
+   (ignorable-bt ;; theme-entity-bt-coref
+    :initarg :ignorable-bt
+    :accessor ignorable-bt
+    :documentation ":ORIGINAL-FIELD \"BT\"")
+
+   (ignorable-us ;; theme-entity-us-coref
+    :initarg :ignorable-us
+    :accessor ignorable-us
+    :documentation ":ORIGINAL-FIELD \"US\"")
+
+   (ignorable-uf ;; theme-entity-uf-coref
+    :initarg :ignorable-uf
+    :accessor ignorable-uf
+    :documentation ":ORIGINAL-FIELD \"UF\"")
+
+   (ignorable-nt ;; theme-entity-nt-coref
+    :initarg :ignorable-nt
+    :accessor ignorable-nt
+    :documentation ":ORIGINAL-FIELD \"NT\""))
+  (:documentation
+    #.(format nil
+              "Class for parsed dbc XML `themes` table.~%~@
+  :SEE-ALSO `parsed-artist-record', `parsed-author-record',~%~@
+  `parsed-person-record', `parsed-brand-record', `parsed-publication-record'.~%▶▶▶")))
+
+
+(make-parsed-class-field-slot-accessor-mapping 
+ 'parsed-theme-record
+ '(("id"                 . control-id-entity-num-theme)
+   ("theme"              . control-id-display-theme)
+   ("active"             . record-status-active)
+   ("display_pic"        . image-default-xref)
+   ("related_pic_num"    . image-coref)
+   ("date_edit"          . edit-date)
+   ("subdivision_number" . ignorable-subdivision-number)
+   ("range"              . ignorable-range)
+   ("RT"                 . ignorable-rt) ;; theme-entity-rt-coref
+   ("BT"                 . ignorable-bt) ;; theme-entity-bt-coref
+   ("US"                 . ignorable-us) ;; theme-entity-use-coref
+   ("UF"                 . ignorable-uf) ;; theme-entity-uf-coref
+   ("NT"                 . ignorable-nt)) ;; theme-entity-nt-coref
+ )
 
 ;; "id"                 :TRANSFORM "control-id-entity-num-theme"
 ;; "theme"              :TRANSFORM "control-id-display-theme"
@@ -57,6 +171,7 @@
 ;;  "Marble quarrying"
 ;;  "Marines (Military personnel)"
 ;;  "Mechanics (Persons)"
+;;  "Antennas (Electronics)"
 ;;  "Merchants' exchanges"
 ;;  "Public affairs radio programs"
 ;;
@@ -104,6 +219,7 @@
 ;;   "1" indicates active
 ;;    When "0" value of `related_pic_num` and `display_pic` will also be "0" and  value of `date_edit` will be "0000-00-00 00:00:00"
 ;;    When "1" value of `related_pic_num` and `display_pic` should contain item references.
+;;
 
 
 ;;; ==============================
@@ -156,9 +272,12 @@
 ;; :EXAMPLE-VALUES 
 ;;  "2008-09-20 22:33:51"
 ;;  "0000-00-00 00:00:00"
+;;  "2008-09-20 22:30:25" ; 7156
 ;;
 ;; - When present this value indicates the last time the db was updated with relation data.
 ;;   When value is "0000-00-00 00:00:00" the `active`, `display_pic`, `related_pic_num` should be "0"
+;; 
+;; - (search-forward-regexp "date_edit\">[^<0].*<" nil t)
 
 ;;; ==============================
 ;; :FIELD "subdivision_number" :TRANSFORM

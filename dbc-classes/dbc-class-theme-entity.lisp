@@ -2,6 +2,15 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-theme-entity.lisp
 ;;; ==============================
 
+;; :NOTE there is a per them XML file from db's php parse from the old dbc here:
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/tgm.tar
+;;
+;; Also, for a later Lisp parse see: 
+;; :FILE dbc-specific/dbc-classes/dbc-tgm.lisp
+;;
+;; The newest TGM parse of the existing dbc related sql data is here:
+;; dbc-specific/dbc-classes/dbc-class-parsed-theme-record.lisp
+
 ;;; ==============================
 ;;
 ;; *control-id-display-theme-namespace*
@@ -13,6 +22,7 @@
 ;;
 ;;; ==============================
 
+
 (in-package #:dbc)
 
 ;; :NOTE Should we treat MT, RT, BT, NT, USE, USED-FOR as distinct instances of a theme?

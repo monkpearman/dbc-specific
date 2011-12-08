@@ -130,8 +130,7 @@
              (:file "dbc-class-parsed-brand-record")
              (:file "dbc-class-parsed-technique-record")
              (:file "dbc-class-parsed-publication-record")
-                          ;;
-             ;; (:file "dbc-class-themes-convert")
+             (:file "dbc-class-parsed-theme-record")
              ;; (:file "dbc-tgm")))
              ;;
              ;; (:file "dbc-class-symbol-construct-deprecated")

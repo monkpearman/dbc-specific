@@ -41,11 +41,13 @@
 ;;                                              | `control-id-display-brand'        ; parsed-naf-entity
 ;;                                              | `control-id-display-publication'  ; parsed-naf-entity
 ;;                                              | `conrtol-id-display-technique'    ; parsed-class
+;;                                              | `conrtol-id-display-theme'        ; parsed-class
 
 ;; this ia a used_for
 ;; `entity-display-name-coref'     -> | `technique-entity-display-name-coref'  ; parsed-class
 ;;                                    | `naf-entity-artist-display-name-coref' ; parsed-naf-entity
-
+;;                                    |  theme-entity-display-name-coref       ; parsed-theme-record ???
+;; 
 ;; `control-id-entity-num'         -> | `conrtol-id-entity-num-technique'   ; parsed-class
 ;;                                    | `control-id-entity-num-publication' ; parsed-naf-entity
 
