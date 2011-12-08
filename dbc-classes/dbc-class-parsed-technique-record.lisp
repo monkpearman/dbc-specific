@@ -137,6 +137,9 @@
              "Class for parsed dbc XML `technique_infos` table.~%~@
 :EXAMPLE~%
  \(mon:class-slot-list  'parsed-technique-record\)~%~@
+:NOTE the accessor `control-id-entity-num-technique' should be used as value for the
+KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
+:SEE-ALSO `set-parsed-publication-record-slot-value', `load-sax-parsed-xml-file-to-parsed-class-hash',
 :SEE-ALSO `media-entity-technique',
 `load-sax-parsed-xml-file-to-parsed-class-hash',
 `write-sax-parsed-xml-refs-file', `set-parse-ref-slot-value'.~%▶▶▶")))

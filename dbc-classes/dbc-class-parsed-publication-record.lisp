@@ -168,6 +168,8 @@
              "Class for parsed dbc XML `publication-_infos` table.~%~@
 :EXAMPLE~%
  \(mon:class-slot-list  'parsed-publication-record\)~%~@
+:NOTE the accessor `control-id-entity-num-publication' should be used as value for the
+KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 :SEE-ALSO `set-parsed-publication-record-slot-value', `load-sax-parsed-xml-file-to-parsed-class-hash',
 `write-sax-parsed-xml-refs-file', `set-parse-ref-slot-value', `parsed-inventory-record'.~%▶▶▶")))
 

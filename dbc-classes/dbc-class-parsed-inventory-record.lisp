@@ -382,8 +382,12 @@
              "Class for parsed dbc xml `refs` table.~%~@
 :EXAMPLE ~%
  \(mon:class-slot-list  'parsed-inventory-record\)~%~@
+:NOTE the accessor `inventory-number' should be used as value for the
+KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash',
 `write-sax-parsed-xml-refs-file', `set-parsed-inventory-record-slot-value'.~%▶▶▶")))
+
+;; control-id-entity-num-artist
 
 (make-parsed-class-field-slot-accessor-mapping 
  'parsed-inventory-record
@@ -461,12 +465,12 @@
    ("edit_history"      . edit-history))
  )
 
-
-
 ;; :NOTE `set-parsed-inventory-record-slot-value' is defined in loadtime-bind.lisp
 ;; (def-set-parsed-class-record-slot-value 
 ;;     set-parsed-inventory-record-slot-value
 ;;     parsed-inventory-record)
+
+;; (set-parsed-inventory-record-slot-value 
 
 ;;; *parsed-class-field-slot-accessor-mapping-table*
 

@@ -125,8 +125,8 @@
   (:documentation
    #.(format nil
              "
-:EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
+:NOTE the accessor `control-id-entity-num-brand' should be used as value for the
+KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 :SEE-ALSO `<XREF>'.~%▶▶▶")))
 
 (make-parsed-class-field-slot-accessor-mapping 

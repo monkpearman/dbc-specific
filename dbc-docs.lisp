@@ -851,6 +851,15 @@ Commented delimiter is written as a `cl:fresh-line' followed by a string of
 `write-sax-parsed-xml-row-to-file', `load-sax-parsed-xml-file-to-parsed-class-hash',
 `*parsed-data-current-state*', `*xml-input-dir*', `*xml-output-dir*'.~%▶▶▶")
 
+(fundoc 'make-default-sax-parsed-xml-output-pathname-directory
+"Return a directory for use when outputting parsed xml files.~%
+If PATHNAME-SUB-DIRECTORY does not exist in PATHNAME-BASE-DIRECTORY it is created as if by `cl:ensure-directories-exist'.~%
+If PATHNAME-BASE-DIRECTORY does not satisfy `osicat:directory-exists-p' an error is signaled.~%
+:EXAMPLE~%
+ \(make-default-sax-parsed-xml-output-pathname-directory :pathname-sub-directory \"new-sax-parser\" 
+                                                        :pathname-base-directory \(sub-path *xml-output-dir*\)\)~%
+:SEE-ALSO `make-default-sax-parsed-xml-output-pathname-directory'.~%▶▶▶")
+
 (fundoc 'make-default-sax-parsed-xml-output-pathname
 "Return a pathname suitable for use as the OUTPUT-FILE arg to `write-sax-parsed-xml-to-file'.~%~@
 Any directory components specified by PATHNAME-SUB-DIRECTORY which do not exist
@@ -867,7 +876,7 @@ It should name an existing directory, an error is signaled if not.~%~@
 :EXAMPLE~%
  \(%make-default-parsed-output-pathname :pathname-name \"bubba\" \)~%
  \(%make-default-parsed-output-pathname :pathname-name \"bubba\" :pathname-name-dated-p nil\)~%
-:SEE-ALSO `<XREF>'.~%▶▶▶")
+:SEE-ALSO `make-default-sax-parsed-xml-output-pathname-directory'.~%▶▶▶")
 
 (fundoc 'write-sax-parsed-xml-to-file
         "Parse the dbc XML refs in INPUT-FILE and write thier lispy counterparts to OUTPUT-FILE.~%~@
@@ -923,6 +932,11 @@ variable `*parsed-data-current-row*'.~%~@
 ;; dbc-specific/dbc-classes/dbc-class-parsed-convert.lisp
 ;;; ==============================
 
+;; Finding the appropriate SLOT-DISPATCH-FUNCTION:
+;; (let ((obj (make-instance 'parsed-inventory-record)))
+;;   (setf (inventory-number obj) "88")
+;;   (funcall (fdefinition (field-to-accessor-mapping "ref" 'parsed-inventory-record)) obj))
+;;
 (fundoc 'load-sax-parsed-xml-file-to-parsed-class-hash
 "Arg PARSED-CLASS a symbol designating the class we are parsing.~%~@
 Arg INPUT-FILE the file containing field/value consed pairs.~%
@@ -937,7 +951,10 @@ PARSED-CLASS in HASH-TABLE.  As such, it should return always return a non-null
 value.  The results are undefined if not.~%~@
 Arg SLOT-DISPATCH-FUNCTION is a function utilizing `string-case:string-case'
 to map strings to an appropriate accesor e.g. `set-parsed-artist-record-slot-value',
-`set-parsed-inventory-record-slot-value', etc.~%~@
+`set-parsed-inventory-record-slot-value', etc.~%
+The SLOT-DISPATCH-FUNCTION functions are normally defined at loadtime with
+the `def-set-parsed-class-record-slot-value' macro, e.g. with:~%
+ \(def-set-parsed-class-record-slot-value set-parsed-inventory-record-slot-value parsed-inventory-record\)~%~@
 :EXAMPLE~%
  \(defparameter *tt--parse-table* \(make-hash-table :test 'equal\)\)~%
  \(let \(\(parsed-sax-file \(merge-pathnames 
@@ -953,7 +970,7 @@ to map strings to an appropriate accesor e.g. `set-parsed-artist-record-slot-val
                                                  :input-file parsed-sax-file
                                                  :hash-table  *tt--parse-table*
                                                  :key-accessor  #'item-number
-                                                 :slot-dispatch-function #'set-parse-ref-slot-value\)\)~%
+                                                 :slot-dispatch-function #'set-parsed-inventory-record-slot-value\)\)~%
  ;; => #<HASH-TABLE  ... >, 8969~%
  \(clrhash *tt--parse-table*\)~%
 :NOTE For use with output of `write-sax-parsed-xml-refs-file'.~%~@
@@ -1134,6 +1151,10 @@ fails successfully:~%
 
 (generic-doc #'field-to-accessor-mapping
 "Return the \"field string\" associated with ACCESSOR for OBJECT.~%~@
+:EXAMPLE~%
+ \(let \(\(obj \(make-instance 'parsed-artist-record\)\)\)
+  \(setf \(inventory-number obj\) \"88\"\)
+  \(funcall \(fdefinition \(field-to-accessor-mapping \"ref\" 'parsed-inventory-record\)\) obj\)\)~%
 :SEE-ALSO `accessor-to-field-mapping', `field-to-accessor-mapping',
 `field-to-accessor-table', `accessor-to-field-table', `parsed-class-mapped',
 `make-parsed-class-field-slot-accessor-mapping',

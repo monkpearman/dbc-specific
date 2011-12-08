@@ -69,18 +69,31 @@
              finally (setf (gethash (funcall key-accessor obj) hash-table) obj))
        finally (return (values hash-table (hash-table-count hash-table))))))
 
-;; :NOTE documented in dbc-specific/dbc-docs.lisp
-(defun print-sax-parsed-slots-padding-format-control (object)
-  (format nil "~~&(~~{~~{:~~~D:A~~S~~}~~^~~%~~})" 
-          (+ (reduce #'max 
-                     (map 'list #'(lambda (x) (length (string x)))
-                          (mon:class-slot-list object)))
-             4)))
+(defun %print-sax-parsed-slots-calculate-padding-for-format-control (object &key (value-column-overage 4))
+  (declare (overage (unsigned-byte 4)))
+  (+ (reduce #'max 
+             (map 'list #'(lambda (x) (length (string x)))
+                  ;; :NOTE could prob. use this as well:
+                  ;; (accessors-of-parsed-class object)
+                  (mon:class-slot-list object))) 
+     value-column-overage))
 
-;; :NOTE There is nothing preventing us from making this the generalized
-;; interface for printing sax parsed slots it is not specific to the class
-;; `parsed-inventory-record'.
-;;
+;; (let ((object 'parsed-inventory-record))
+;;   (list (+ (reduce #'max (map 'list #'(lambda (x) (length (string x))) (mon:class-slot-list (find-class object)))) 4)
+;;         (+ (reduce #'max (map 'list #'(lambda (x) (length (string x))) (accessors-of-parsed-class object))) 4)))
+
+
+;; :NOTE documented in dbc-specific/dbc-docs.lisp
+(defun print-sax-parsed-slots-padding-format-control (object &key (value-column-overage 4))
+  (format nil "~~&(~~{~~{:~~~D:A~~S~~}~~^~~%~~})" 
+          ;; (+ (reduce #'max 
+          ;;            (map 'list #'(lambda (x) (length (string x)))
+          ;;                 (mon:class-slot-list object)))
+          ;;    value-column-overage)
+          (%print-sax-parsed-slots-calculate-padding-for-format-control 
+           object 
+           :value-column-overage value-column-overage)))
+
 ;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun print-sax-parsed-slots (object &key stream
                                            (print-unbound t)
@@ -93,7 +106,7 @@
                                (print-sax-parsed-slots-padding-format-control object))))
     (format stream calculate-padding 
             (loop 
-               with unbound = (when print-unbound "#<UNBOUND>")
+               with unbound = (when print-unbound "#<UNBOUND>") ;(if print-unbound "#<UNBOUND>" "; #<UNBOUND>")
                for slot-chk in (mon:class-slot-list object)
                for x = (slot-boundp object slot-chk)
                if x
@@ -102,9 +115,20 @@
                nconc (list (list slot-chk unbound)) into rtn
                finally (return rtn)))))
 
+(defun %write-sax-parsed-slots-to-file-dumping-header (object &key
+                                                       stream
+                                                       slot-for-file-name
+                                                       slot-for-file-name-value)
+  (format stream ";;; :CLASS `~A' :~A ~A ~%;;; :FILE-CREATED  ~A~%~%"
+          (string-downcase (class-name (class-of object)))
+          slot-for-file-name
+          slot-for-file-name-value
+          (mon:timestamp-for-file)))
+
 ;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun write-sax-parsed-slots-to-file (object &key slot-for-file-name 
                                                    prefix-for-file-name
+                                                   (pathname-type "lisp")
                                                    output-directory 
                                                    (directory-exists-check t)
                                                    (pre-padded-format-control nil))
@@ -122,14 +146,17 @@
                             (slot-value    object slot-for-file-name)))
         (slot-value-if-stringp (or (and slot-value-if
                                         (stringp slot-value-if)
-                                        slot-value-if)))
+                                        slot-value-if)
+                                   (and slot-value-if 
+                                        (format nil "~S" slot-value-if))))
         (slot-value-to-file-name (and slot-value-if-stringp
                                       (merge-pathnames 
                                        (make-pathname :name (concatenate 'string 
                                                                          (or prefix-for-file-name
                                                                              (string slot-for-file-name))
                                                                          "-"
-                                                                         slot-value-if-stringp))
+                                                                         slot-value-if-stringp)
+                                                      :type pathname-type)
                                        output-directory)))
         (calculate-padding (if pre-padded-format-control
                                pre-padded-format-control
@@ -140,12 +167,19 @@
                             :if-does-not-exist :create
                             :if-exists :supersede
                             :external-format :UTF-8)
-          (format nil ";;; :CLASS `~A'' ~A ~A ~%;;; :FILE-CREATED  ~A~%"
-                  (string-downcase (class-name (class-of object)))
-                  slot-for-file-name
-                  slot-value-if-stringp
-                  (mon:timestamp-for-file))
+          ;; :WAS
+          ;; (format fl ";;; :CLASS `~A' ~A ~A ~%;;; :FILE-CREATED  ~A~%~%"
+          ;;         (string-downcase (class-name (class-of object)))
+          ;;         slot-for-file-name
+          ;;         slot-value-if-stringp
+          ;;         (mon:timestamp-for-file))
+          (%write-sax-parsed-slots-to-file-dumping-header
+           object
+           :stream fl 
+           :slot-for-file-name slot-for-file-name 
+           :slot-for-file-name-value slot-value-if-stringp)
           (print-sax-parsed-slots object :stream fl :print-unbound nil :pre-padded-format-control calculate-padding)
+          (write-char #\Newline fl)
           slot-value-to-file-name)
         (progn
           (warn "~%Something wrong with arg OBJECT, declining to dump to file~%")
@@ -155,7 +189,9 @@
 (defun write-sax-parsed-class-hash-to-files (hash-table &key parsed-class
                                                              slot-for-file-name
                                                              prefix-for-file-name
+                                                             (pathname-type "lisp")
                                                              output-directory)
+                                             
   (declare (type hash-table hash-table)
            (type (and symbol (mon::not-null)) slot-for-file-name parsed-class)
            (type (or mon:string-not-empty null) prefix-for-file-name))
