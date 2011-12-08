@@ -2,6 +2,75 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-image.lisp
 ;;; ==============================
 
+;; Following directories are current through March 2009. 
+;; We may want to xref these with anything that may have been recovered.
+;; 
+;; :ITEM-IMAGES
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/photos/
+;; ./big
+;; ./ebay
+;; ./frame
+;; ./nafs
+;; ./small
+;; ./zoom_size
+;;
+;; :ITEM-HEADER-IMAGES
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/images/backgrounds/headers
+;;
+;; :ITEM-FLASH-IMAGES
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/flash_home/gallery
+;;
+;; Each category based subdir of ./gallery contains the following two subdirs:
+;; ./large and ./tn e.g. ./advert/large/ and ./advert/tn
+;; 
+;; ./advert
+;; ./archi
+;; ./books
+;; ./categ1
+;; ./categ2
+;; ./categ3
+;; ./categ4
+;; ./geo
+;; ./historical
+;; ./natural
+;; 
+;; :NAF-ENTITY-IMAGES
+;;
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/photos/nafs/
+;; ./artist
+;; ./author
+;; ./book
+;; ./brand
+;; ./people
+;; ./technique
+;;
+;;
+
+;;; ==============================
+;;
+;;
+;; Quick and dirty idiom renaming of files with `translate-pathname':
+;; (if (pathname-match-p <PATHNAME> <WILDNAME>)
+;;     (rename-file <FILE> (translate-pathname <FILE> <FROM-WILD> <TO-WILD>))
+;;     (LOG-NON-MATCHING-PATHNAME <STREAM>))
+;;
+;;
+;; (pathname-match-p #P"/backgrounds/headers/10627.jpg" "*.jpg") => t
+;; (pathname-match-p #P"/backgrounds/headers/10627.jpg" "/backgrounds/**/*.jpg") => t
+;; (pathname-match-p #P"/backgrounds/headers/10627-jpg.jpg" "*.jpk") => nil
+;; (pathname-match-p #P"/backgrounds/headers/10627.jpg" "/backgrounds/**/*.jpg") => t
+;; (pathname-match-p #P"/backgrounds/headers/10627.jpg" "/backgrounds/**/bar/*.jpg") => nil
+;;
+;; (translate-pathname
+;;  #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/images/backgrounds/headers/10627.jpg" 
+;;  "*.jpg" "*-h.jpg")
+;;
+;; (translate-pathname 
+;;  #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/images/backgrounds/headers/10849-Vogue-May-16-1934.jpg" 
+;;  "*.jpg" "*-h.jpg")
+;;
+;; (translate-pathname #P"/backgrounds/headers/10627.jpg" "/backgrounds/**/*.jpg" "/backgrounds/NEW-HEADERS/foo.jpg")
+
 
 ;;; ==============================
 ;; :SOURCE #lisp slyrux regarding opticl :DATE 2011-06-22T21:00:20-04:00Z 

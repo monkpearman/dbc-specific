@@ -1530,7 +1530,8 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;;  "[8+]  Very light offsetting."
 ;;  "[7 ] Light age toning. Very light offsetting."
 ;; "[9]Age toning, Strong plate mark. Please see Zoom In for details."
-;;  "... For details, see zoom scan."
+;; "... For details, see zoom scan."
+;; "... Please see Zoom In for details"
 ;;
 ;;
 ;; - Separate out the `[<N>]` values when present.

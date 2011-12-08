@@ -2,11 +2,27 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-parse-EXAMPLE.lisp
 ;;; ==============================
 
+;; :NOTE This file is a template for file/based persistence of the parsed XML files.
+;; 
+;; :TODO 
+;;  - The time to dump/undump the parsed records can be significant and
+;;    should happen in a dedicated thread.
+;;
+;; - function to build dedicated directory tree per record:
+;;    parsed-record-dump-YYYY-MM-DD
+;;    + individual-parsed-refs
+;;    + individual-parsed-artists
+;;    + individual-parsed-brands
+;;    + ....
+;;
+;; - wrapper function around:
+;;   `write-sax-parsed-xml-to-file', 
+;;   `load-sax-parsed-xml-file-to-parsed-class-hash'
+;;   `write-sax-parsed-class-hash-to-files'
+
 (in-package #:dbc)
 ;; *package*
 (defparameter *tt--parse-table* (make-hash-table :test 'equal))
-
-;; :NOTE :FUNCTION `%ensure-dated-parsed-directory' defined in
 
 (let ((parsed-sax-file (make-default-sax-parsed-xml-output-pathname :pathname-name "sax-refs-test")))
   (write-sax-parsed-xml-to-file 
@@ -17,7 +33,6 @@
    :parsed-class 'parsed-inventory-record  
    :input-file parsed-sax-file
    :hash-table  *tt--parse-table*
-   ;; :key-accessor  #'item-number
    :key-accessor  #'inventory-number
    :slot-dispatch-function #'set-parsed-inventory-record-slot-value))
 
@@ -27,7 +42,12 @@
  :parsed-class 'parsed-inventory-record
  :slot-for-file-name 'inventory-number
  :prefix-for-file-name "inventory-number"
- :output-directory (%ensure-dated-parsed-directory :directory-prefix "individual-parse-refs"))
+ :output-directory (make-default-sax-parsed-xml-output-pathname-directory 
+                    :pathname-sub-directory (list (sub-name *xml-output-dir*) "individual-parse-refs")
+                    :pathname-base-directory (system-base-path *xml-output-dir*)
+                    :pathname-dated-p t))
+
+
 
 
 ;; (sub-path *xml-input-dir*)
@@ -109,11 +129,13 @@
 ;; :pre-padded-format-control "~&(make-instance 'parsed-artist-record~%~&~{~{:~43:A~S~}~^~%~})")
 )
 
-
+
 ;;; ==============================
+
+;; notes on reading back individual parsed records:
+
 (defparameter *tt--read* nil)
 
- 
 (control-id-entity-num-artist *tt--read*)
 (let ((read-forms '()))
   (with-open-file (f #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/xml-class-dump-dir/individual-parse-artists-2011-12-07/artist-id-number-1471"
@@ -137,8 +159,28 @@
 
 (print-sax-parsed-slots-padding-format-control *tt--read*)
 
+(translate-pathname #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/images/backgrounds/headers/10627.jpg" "*.jpg" "*-h.jpg")
+
+(translate-pathname "/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/images/backgrounds/headers/10849-Vogue-May-16-1934.jpg" 
+                    "*.jpg" "*-h.jpg")
+
 ;;; ==============================
 ;; trying to understand cl:make-load-form/cl:make-load-form-saving-slots
+
+cl-ppcre:regex-replace-all
+(with-open-file (f #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/xml-class-dump-dir/individual-parse-artists-2011-12-07/artist-id-number-1471-load-form"
+                   :direction :output
+                   :if-exists :supersede
+                   :if-does-not-exist :create))
+
+;; :NOTE closure-html has some examples of using `make-load-form' see 
+;; :FILE (translate-logical-pathname "QL-SOFTS:closure-html-20110619-git;src;parse;sgml-dtd.lisp")
+
+;; (fdefinition (SGML::COMMENT-TOKEN)
+
+;; (defmethod make-load-form ((object parsed-artist-record) &optional environment)
+;;   (make-load-form-saving-slots object :environment environment))
+
 (make-load-form *tt--read*)
 
 (multiple-value-bind (instance load-form)
@@ -146,15 +188,6 @@
 
 (make-load-form *tt--read*)
 (ALLOCATE-INSTANCE (FIND-CLASS 'PARSED-ARTIST-RECORD))
-(with-open-file (f #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/xml-class-dump-dir/individual-parse-artists-2011-12-07/artist-id-number-1471-load-form"
-                   :direction :output
-                   :if-exists :supersede
-                   :if-does-not-exist :create))
-
-;; (fdefinition (SGML::COMMENT-TOKEN)
-;; (defmethod make-load-form ((object parsed-artist-record) &optional environment)
-;;   (make-load-form-saving-slots object :environment environment))
-
 
 ;;; ==============================
 ;;; EOF
