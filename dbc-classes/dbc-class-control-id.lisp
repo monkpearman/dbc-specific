@@ -461,15 +461,6 @@ approach.~%~@
 ;; (defclass control-id-enitity-doc-num (base-control-id))
 ;; (defclass control-id-entity-num      (base-control-id))
 
-;; control-id-documentation-record-num
-;; control-id-documentation-record-sub-num
-
-;; (defclass control-id-indexed-type (control-id-type)
-;; control-id-inventory-num
-;; control-id-doc-num
-;; control-id-entity-num
-;; control-id-inventory-record
-
 ;;; ==============================
 ;; controlled record types
 ;;; ==============================
