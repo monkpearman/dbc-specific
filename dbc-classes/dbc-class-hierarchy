@@ -322,6 +322,7 @@ control-id-doc-num
 ---- control-id-entity-num-person        (control-id-entity-num)
 ---- control-id-entity-num-publication   (control-id-entity-num)
 ---- control-id-entity-num-technique     (control-id-entity-num)
+---- control-id-entity-numtheme          (control-id-entity-num)
 
 ;; These will need a dispatch on a string match. because we currently have
 ;; slot-names control-id-authority-0 and control-id-authority-1 for the classes `naf-entity-<FOO>'
@@ -463,7 +464,9 @@ base-documenation (base-dbc)
 dbc-classes/dbc-class-parsed.lisp
 
 parsed-class
-parsed-naf-entity    (parsed-class)
+parsed-inventory-record    (parsed-class)
+parsed-theme-record        (parsed-class)
+parsed-naf-entity          (parsed-class)
 
 
            

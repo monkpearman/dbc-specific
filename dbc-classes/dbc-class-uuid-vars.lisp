@@ -150,6 +150,29 @@
   (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
                            :control-id '*control-id-publication-namespace*))
 
+;;; ==============================
+
+(defvar *control-id-namespace-table* (make-hash-table-uuid)
+  "Maps the the system-identity-uuid's of *control-id-<FOO>namespaces* to their respective uuid-hash-tables.")
+
+(dolist (namspace (list *control-id-inventory-namespace*
+                        *control-id-documentation-namespace* *control-id-authority-namespace*
+                        *control-id-category-namespace* *control-id-theme-namespace*
+                        *control-id-location-namespace* *control-id-taxon-namespace*
+                        *control-id-technique-namespace* *control-id-mount-namespace*
+                        *control-id-material-namespace* *control-id-paper-namespace*
+                        *control-id-artist-namespace* *control-id-brand-namespace*
+                        *control-id-author-namespace* *control-id-person-namespace*
+                        *control-id-publication-namespace*
+                        ;; *system-object-uuid-base-namespace*
+                        ))
+  (multiple-value-bind (val found)
+      (gethash (system-identity-uuid namspace) *control-id-namespace-table*)
+    (unless (and val found)
+      (setf (gethash (system-identity-uuid namspace) *control-id-namespace-table*)
+            (make-hash-table-uuid)))))
+
+
 
 ;;; ==============================
 ;;; EOF

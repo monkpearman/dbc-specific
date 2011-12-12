@@ -46,11 +46,15 @@
 
 ;; *package*
 
+;; base-documentation-record (base-record)
+;; documentation-record-sitedoc (base-documentation-record)
+
 ;; `parsed-doc-record'
-(defclass base-documentation-record (base-dbc)
+(defclass base-documentation-record (base-record)
   ()
   (:documentation 
-   #.(format nil "Base class for referencing documents in the dbc-system.")))
+   #.(format nil "Base class for referencing documents in the dbc-system.
+:NOTE The inverse corollary to the class `base-record' is the class `base-entity'.~%~@")))
 
 
 (defclass documentation-record-sitedoc (base-documentation-record)

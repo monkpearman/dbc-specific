@@ -13,7 +13,7 @@
 ;;; ==============================
 
 (defclass parsed-inventory-record (parsed-class)
-  ((inventory-number
+  ((inventory-number  ;; control-id-indexed-inventory-record
     :initarg :inventory-number
     :accessor inventory-number
     :documentation ":ORIGINAL-FIELD \"ref\"")

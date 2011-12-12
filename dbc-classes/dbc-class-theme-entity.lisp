@@ -13,7 +13,9 @@
 
 ;;; ==============================
 ;;
-;; *control-id-display-theme-namespace*
+;; base-theme-entity (base-entity)
+;;
+;; *control-id-theme-namespace*
 ;;
 ;; --- control-id-theme-entity-type              (control-id-entity-type)
 ;; ---- control-id-theme-entity                  (control-id-theme-entity-type)
@@ -26,6 +28,8 @@
 (in-package #:dbc)
 
 ;; :NOTE Should we treat MT, RT, BT, NT, USE, USED-FOR as distinct instances of a theme?
+;;  Also, what about translated theme display names?
+;; 
 (defclass theme-entity (base-theme-entity)
   ()
   )

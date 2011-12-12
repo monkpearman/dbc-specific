@@ -26,12 +26,15 @@
 ;; :TODO What about the stuff in the XML files dump-themes_fr-xml and dump-themes_active-xml ???
 ;;  
 
+;;
+;; base-theme-entity (base-entity)
+
 
 (in-package #:dbc)
 
 (defclass parsed-theme-record (parsed-class)
   (;; control-id-entity-num
-   (conrtol-id-entity-num-technique
+   (conrtol-id-entity-num-
     :initarg :conrtol-id-entity-num-technique
     :accessor conrtol-id-entity-num-technique
     :documentation ":ORIGINAL-FIELD \"id\"")

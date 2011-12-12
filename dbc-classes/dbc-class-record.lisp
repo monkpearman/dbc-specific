@@ -5,6 +5,13 @@
 ;; The inverse corollary to Clarke's Third Law:
 ;; "Any technology distinguishable from magic is insufficiently advanced."
 
+;;
+;; base-record (base-dbc)
+;; base-inventory-record        (base-record)
+;; base-authority-record        (base-record)
+;; base-documentation-record    (base-record)
+;; documentation-record-sitedoc (base-documentation-record)
+
 (in-package #:dbc)
 
 (defclass base-record (base-dbc)

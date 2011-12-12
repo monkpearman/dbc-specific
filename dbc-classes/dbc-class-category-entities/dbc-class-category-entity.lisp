@@ -19,6 +19,9 @@
 ;; category-entity-historical-life-and-scenes
 ;; category-entity-natural-history
 
+;; :NOTE See bknr-datastore/src/indices/category-index.lisp which implements
+;; something similar an prob. better....
+
 (in-package #:dbc)
 
 (defgeneric category-precedence-list (object))
@@ -340,6 +343,30 @@
 
 ;; (defparameter *tt--cida* ;; (unintern '*tt--cida*) 
 ;;     (make-instance 'category-entity-natural-history-albin  :child-node-name "Natural History of Birds"))
+;;
+;; (node-name *tt--cida*)
+;; (control-id-display-category *tt--cida*)
+;; => #<CATEGORY-ID-DISPLAY-NATURAL-HISTORY {D23DA41}>
+
+;; (control-id-namespace (control-id-display-category *tt--cida*))
+;; => 7425ce80-a88d-5d0f-94c8-4a1b7af27078
+
+;; (control-id-uuid (control-id-display-category *tt--cida*))
+;; 
+;; (control-id-of-class-type (control-id-display-category *tt--cida*))
+;  => #<STANDARD-CLASS CATEGORY-ENTITY-NATURAL-HISTORY>
+
+;; (child-node-name  *tt--cida*)
+;; => "Natural History of Birds"
+
+;; (node-name  *tt--cida*)
+;; => "Albin"
+
+
+;; CATEGORY-ENTITY-NATURAL-HISTORY
+;; *category-entity-hash*
+;; b6b30254-62bf-58c0-b1d5-6e4ec19e485d
+;;
 
 (defclass category-entity-natural-history-audubon (category-entity-natural-history-ornithology)
   ((node-name :initform "Audubon"))  
@@ -348,6 +375,8 @@
 (defclass category-entity-natural-history-audubon-birds-of-america (category-entity-natural-history-audubon)
   ((node-name :initform "Birds of America"))
   )
+
+;; (make-instance 'category-entity-natural-history) *category-entity-hash*
 
 ;; (make-instance 'category-entity-natural-history-audubon-birds-of-america 
 ;;                :child-node-name "Havell - Elephant Folio - DEF")

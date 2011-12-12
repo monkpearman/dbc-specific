@@ -2,12 +2,24 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-inventory-record.lisp
 ;;; ==============================
 
+;; base-record (base-dbc)
+;; base-inventory-record (base-record)
+;;
+;; :NOTE The inverse corollary to the class `base-record' is the class `base-entity'.
+
+;; *control-id-inventory-namespace*
+;; control-id-inventory-record                (control-id-inventory-record-type)
+;; control-id-inventory-record-indexed-number (control-id-inventory-record control-id-indexed-number)
+;;
+
 (in-package #:dbc)
 ;; *package*
 
+
+
 (defclass base-inventory-record (base-record)
   ()
-  )
+  (:documentation ":NOTE The inverse corollary to the class `base-record' is the class `base-entity'."))
 
 ;;; ==============================
 
