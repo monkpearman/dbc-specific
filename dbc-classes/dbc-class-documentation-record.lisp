@@ -54,8 +54,7 @@
   ()
   (:documentation 
    #.(format nil "Base class for referencing documents in the dbc-system.
-:NOTE The inverse corollary to the class `base-record' is the class `base-entity'.~%~@")))
-
+:NOTE The inverse corollary to the class `base-record' is the class `base-entity'.~%")))
 
 (defclass documentation-record-sitedoc (base-documentation-record)
   ;; ("name"              :document-name)
