@@ -185,6 +185,28 @@ image-dimension-x   {:type postive-integer}
 image-dimension-y   {:type postive-integer}
                    ;; The images y axis 
 
+
+:NOTE Following orientation related methods specialized on persistent-class bknr.images:store-image
+
+   bknr.images:store-image-width
+   bknr.images:store-image-height
+
+   (defmethod store-image-aspect-ratio ((image store-image))
+     (/ (store-image-width image) (store-image-height image)))
+
+   (defmethod store-image-landscape-p ((image store-image))
+     (< 1 (store-image-aspect-ratio image)))
+
+   (defmethod store-image-portrait-p ((image store-image))
+     (> 1 (store-image-aspect-ratio image)))
+
+Maybe consider adding slots/methods with names:
+
+ image-aspect-ratio
+ image-landscape-p
+ image-portrait-p
+
+;;; ---------------
 :NOTE following are mixins:
      image-thumb  (dbc-image)
      image-big    (dbc-image)
