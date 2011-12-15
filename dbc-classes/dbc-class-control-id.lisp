@@ -59,6 +59,9 @@
 ;; (control-id-entity-type control-id-type base-dbc)
 ;; (control-id-display-name-for-entity-type control-id-display-name base-control-id base-dbc)
 
+base-uuid                                     (base-dbc)
+- system-object-uuid                          (base-uuid)
+
 - base-control-id                             (base-dbc)
 -- control-id-display-name                    (base-control-id) ;; String based identity
 --- control-id-display-name-for-entity-type   (control-id-display-name)

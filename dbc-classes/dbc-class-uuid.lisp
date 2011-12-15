@@ -18,6 +18,19 @@
 ;; This value is basically the same thing couchDB/chillax return!
 ;; (print-bytes nil (make-uuid-from-string "6ba7b814-9dad-11d1-80b4-00c04fd430c8"))
 
+;; (base-dbc)
+;; - base-uuid (base-dbc)
+;; -- system-object-uuid (base-uuid)
+;;
+;;    Base objects of system identified by UUID:
+;;     base-dbc
+;;     base-regexp
+;;     base-entity
+;;     base-control-id
+;;     system-object-uuid
+
+
+
 
 (in-package #:dbc)
 

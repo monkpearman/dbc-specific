@@ -98,6 +98,18 @@
 ;;
 ;;; ==============================
 
+;; (base-dbc)
+;; - base-uuid (base-dbc)
+;; -- system-object-uuid (base-uuid)
+;;
+;;    system-objects identified by UUID:
+;;     base-dbc
+;;     base-regexp
+;;     base-entity
+;;     base-control-id
+;;     system-object-uuid
+
+
 
 (in-package #:dbc)
 ;; *package*
@@ -646,6 +658,10 @@
 
 
 ;; (find-method #'system-object-uuid-description nil '(system-object-uuid))
+;; (let ((q (with-output-to-string (s) (system-object-uuid-description *control-id-artist-namespace* :stream s :verbose t)))
+;;       (y '())) 
+;;   (declare (ignore q))
+;;   y)
 (defmethod system-object-uuid-description ((sys-object system-object-uuid) &key stream verbose)
   (declare (type boolean verbose))
   (if (not verbose)
@@ -733,6 +749,11 @@
           (princ format-description stream)))))
 
 
+;; (describe-object *control-id-artist-namespace* nil)
+;; (let ((q (with-output-to-string (s) (describe-object *control-id-artist-namespace* s)))
+;;       (y '())) 
+;;   (declare (ignore q))
+;;   y)
 (defmethod describe-object ((sys-object system-object-uuid) stream)
   (print (type-of sys-object) stream)
   (system-object-uuid-description sys-object :stream stream :verbose t))
@@ -857,6 +878,17 @@ When keyword VERBOSE is non-nil return value print all slot-values of SYS-OBJECT
 else print only the system-identity and system-identity-uuid slot-values.~%~@
 The :VERBOSE t form is used with `cl:describe' method, the nil form is used with
 `cl:print-object' method specialized on class system-identity-uuid.~%~@
+:EXAMPLE~%
+ \(system-object-uuid-description *control-id-artist-namespace* 
+                                 :stream s 
+                                 :verbose t\)~%
+ \(let \(\(q \(with-output-to-string \(s\) 
+            \(system-object-uuid-description *control-id-artist-namespace* 
+                                            :stream s 
+                                            :verbose t\)\)\)
+       \(y '\(\)\)\) 
+   \(declare \(ignore q\)\)
+   y\)~%~@
 :SEE-ALSO `make-system-object-uuid', `update-system-object-uuid',
 `system-identity', `system-identity-parent-uuid',
 `system-identity-uuid', `system-identity-uuid-byte-array',
