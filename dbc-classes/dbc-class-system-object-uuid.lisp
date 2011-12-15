@@ -126,7 +126,7 @@
 ;; for the sub-classes in the dbc-system (e.g. those inheritng from `base-dbc')
 ;; For example the class and sub-classes of `control-id-display-name' need a
 ;; control-id namespaces from which their instances will derive UUIDs.
-;;
+;; 
 (defclass system-object-uuid (base-uuid)
   ((system-identity
     :documentation  
@@ -143,8 +143,9 @@
     :documentation  
     #.(format nil
               "An object of type `unicly:unique-universal-identifier'.~%~@
+               It dereferences the symbol stored in the system-identity slot designating a UUID namespace.~%~@
                Value of this slot is suitable for use as a namespace argument to~%~@
-               `unicly:make-v*-uuid'."))
+               `unicly:make-v*-uuid'."))   
    (system-identity-uuid-byte-array
     :documentation  
     #.(format nil
@@ -360,7 +361,7 @@
   ;; may chase upwardly the class uuid's their namespaces and the parent
   ;; namespaces they descend from. To get the NAME into the slot-value of
   ;; system-identity we run an :around method which attempts to rollback in the
-  ;; event of a failure (e.g. when the UUID representation for an arg ispoorly
+  ;; event of a failure (e.g. when the UUID representation for an arg is poorly
   ;; configurued or otherwise illegitimate.
   (:method :around
     ((namespace-and-identity t) (sys-object system-object-uuid))
@@ -424,11 +425,17 @@
               (if (and old-base-namespace old-id-slot)
                   (progn
                     (setf (system-identity-parent-uuid sys-object) old-base-namespace)
-                    ;; We set the slot-value explicitly instead of using the method
-                    ;; specialized because it would land us right back here!
-                    (setf (slot-value sys-object 'system-object-uuid-identity) old-id-slot))
+                    ;; We set the slot-value explicitly instead of using the
+                    ;; method specialized because it would land us right back
+                    ;; here!  
+                    ;; The slot system-object-uuid-identity no longer exists or its name has changed.
+                    ;; It became either system-identity or system-identity-uuid.
+                    ;; I'm pretty sure it is `system-identity' and the following change reflects that assumption.
+                    ;; :WAS (setf (slot-value sys-object 'system-object-uuid-identity) old-id-slot))
+                    (setf (slot-value sys-object 'system-identity) old-id-slot))
+                  ;;
                   ;; If either the control-identity or base-namespace slots is
-                  ;; null or unbound the the other should be as well.
+                  ;; null or unbound then the other should be as well.
                   (progn 
                     (when (and (slot-exists-p sys-object 'system-identity-parent-uuid) 
                                (slot-boundp sys-object   'system-identity-parent-uuid))
@@ -436,6 +443,9 @@
                     (when (and (slot-exists-p sys-object 'system-identity) 
                                (slot-boundp sys-object   'system-identity))
                       (slot-makunbound sys-object 'system-identity)))))))))))
+
+
+
 
 (defgeneric system-identity-uuid (sys-object)
   (:method  ((sys-object system-object-uuid))
