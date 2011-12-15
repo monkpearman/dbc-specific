@@ -3,6 +3,18 @@
 ;;; ==============================
 
 ;;; ==============================
+;;; :NOTE This file was fenamed from  dbc-class-uuid-namespace-for-control-id.lisp -> dbc-class-system-object-uuid.lisp
+;;; @ git commit 0d7a67ea3dbf8a9a433cfb3656dfb09bc351a2e2
+;;; ==============================
+
+;;; ==============================
+;;; :NOTE danlentz's templeton provides an example of using the class
+;;; SYSTEM-OBJECT-UUID but with the old name CONTEXTUAL-OBJECT-UUID
+;;; :SEE :FILE templeton/contrib/index/namespace.lisp
+;;; :SEE (URL `http://github.com/danlentz/templeton/blob/master/contribindex/namespace.lisp')
+;;; ==============================
+
+;;; ==============================
 ;;
 ;; (defparameter *tt--system-obj-uuid* 
 ;;   (make-system-object-uuid :base-namespace unicly:*uuid-namespace-dns*
