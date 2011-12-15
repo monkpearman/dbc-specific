@@ -762,139 +762,16 @@
   (print-unreadable-object (sys-object stream :type t) ;; :identity t)
     (system-object-uuid-description sys-object :stream  stream)))
 
+
+;;; ==============================
+
 
-;;; ==============================
-;;; :DOCUMENTATION
-;;; ==============================
-
-(generic-doc #'system-identity-uuid-bit-vector
-"Get SYSTEM-OBJECTs uuid namespace representation as an object of type `unicly::uuid-bit-vector-128'.")
-
-(generic-doc #'(setf system-identity-uuid-bit-vector)
- "Set SYS-OBJECT's UUID namespace bit-vector representation with BV.~%~@
-BV is an sys-object of type `unicly:uuid-bit-vector-128'.~%~@
-Do not call methods directly use the interface functions:~%~@
- `make-system-object-uuid' and `update-system-object-uuid'~%~@
-:SEE-ALSO `system-identity', `system-identity-parent-uuid',
-`system-identity-uuid', `system-identity-uuid-byte-array',
-`system-identity-uuid-bit-vector', `system-identity-uuid-integer',
-`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶")
-
-(generic-doc #'system-identity-uuid-integer
- "Get SYS-OBJECT's system-identity-uuid-integer slot-value.~%~@
-When `cl:slot-boundp' return value is an object of type `unicly::uuid-integer-128', else nil.")
-
-(generic-doc #'(setf system-identity-uuid-integer)
-"Set SYS-OBJECT's 128bit integer representation with UUID-INTEGER-128.~%~@
-Do not call methods directly use the interface functions:~%~@
- `make-system-object-uuid' and `update-system-object-uuid'~%~@
-:SEE-ALSO `system-identity', `system-identity-parent-uuid',
-`system-identity-uuid', `system-identity-uuid-byte-array',
-`system-identity-uuid-bit-vector', `system-identity-uuid-integer',
-`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶")
-
-(generic-doc #'system-identity-uuid-string-36
-"Get SYS-OBJECT's system-identity-uuid-string-36 slot-value.
-When `cl:slot-boundp' return value is an object of type `unicly::uuid-hex-string-36', else nil.")
-
-(generic-doc #'(setf system-identity-uuid-string-36)
- "Set SYS-OBJECT's `unicly::uuid-hex-string-36' representation with UUID-HEX-STRING-36.~%~@
-Do not call methods directly use the interface functions:~%
- `make-system-object-uuid' and `update-system-object-uuid'~%~@
-:SEE-ALSO `system-identity', `system-identity-parent-uuid',
-`system-identity-uuid', `system-identity-uuid-byte-array',
-`system-identity-uuid-bit-vector', `system-identity-uuid-integer',
-`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶")
-
-(generic-doc #'system-identity-uuid-version
- "Get SYS-OBJECT's system-identity-uuid-version slot-value.~%~@
-When `cl:slot-boundp' return value is an object of type `unicly::uuid-version-int', else nil.")
-
-(generic-doc #'system-identity-parent-uuid
- "Return the base-namespace UUID for SYS-OBJECT'S system-identity-parent-uuid slot-value.")
-
-(generic-doc #'(setf system-identity-parent-uuid)
- "Set UUID as SYS-OBJECT's system-identity-parent-uuid slot-value.
-Do not call methods directly use the interface functions:~%
- `make-system-object-uuid' and `update-system-object-uuid'~%~@
-:SEE-ALSO `system-identity', `system-identity-parent-uuid',
-`system-identity-uuid', `system-identity-uuid-byte-array',
-`system-identity-uuid-bit-vector', `system-identity-uuid-integer',
-`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶")
-
-(generic-doc #'system-identity-uuid-byte-array 
- "Set SYS-OBJECT's system-identity-uuid-byte-array slot-value.")
-
-(generic-doc #'(setf system-identity-uuid-byte-array)
- "Set SYS-OBJECT's UUID namespace byte-array representation with BYTE-ARRAY.~%~@
-BYTE-ARRAY is an sys-object of type `unicly:uuid-byte-array-16'.~%~@
-Do not call methods directly use the interface functions:~%
- `make-system-object-uuid' and `update-system-object-uuid'~%~@
-:SEE-ALSO `system-identity', `system-identity-parent-uuid',
-`system-identity-uuid', `system-identity-uuid-byte-array',
-`system-identity-uuid-bit-vector', `system-identity-uuid-integer',
-`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶")
-
-(generic-doc #'(setf system-identity-uuid-version)
-"Set SYS-OBJECT's uuid version with BV-OR-STRING.~%~@
-BV-OR-STRING is either a object of type `unicly:uuid-bit-vector-128' or an
-integer of type `unicly::uuid-version-int'.~%~@
-Do not call methods directly use the interface functions:~%
- `make-system-object-uuid' and `update-system-object-uuid'~%~@
-:SEE-ALSO `system-identity', `system-identity-parent-uuid',
-`system-identity-uuid', `system-identity-uuid-byte-array',
-`system-identity-uuid-bit-vector', `system-identity-uuid-integer',
-`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶")
-
-(generic-doc #'system-identity
- "Get SYS-OBJECT's system-identity slot-value.")
-
-(generic-doc #'(setf system-identity)
- "Set SYS-OBJECT's system-identity slot-value to IDENTITY.~%~@
-Do not call methods directly use the interface functions:~%
- `make-system-object-uuid' and `update-system-object-uuid'~%~@
-:SEE-ALSO `system-identity', `system-identity-parent-uuid',
-`system-identity-uuid', `system-identity-uuid-byte-array',
-`system-identity-uuid-bit-vector', `system-identity-uuid-integer',
-`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶")
-
-(generic-doc #'system-identity-uuid
- "Get SYS-OBJECT's system-identity-uuid slot-value.")
-
-(generic-doc #'(setf system-identity-uuid)
- "Set UUID namespace for SYS-OBJECT with COERCABLE-UUID.~%~@
-COERCABLE-UUID is a representation of a Unicly UUID in some form, e.g.:~%
- hex-string-36, byte-array-16, bit-vector-128, unique-universal-identifier~%~@
-Do not call methods directly use the interface functions:~%
- `make-system-object-uuid' and `update-system-object-uuid'~%~@
-:SEE-ALSO `system-identity', `system-identity-parent-uuid',
-`system-identity-uuid', `system-identity-uuid-byte-array',
-`system-identity-uuid-bit-vector', `system-identity-uuid-integer',
-`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶")
-
-(generic-doc #'system-object-uuid-description
- "Print slot-values of SYS-OBJECT to STREAM.~%~@
-When keyword VERBOSE is non-nil return value print all slot-values of SYS-OBJECT
-else print only the system-identity and system-identity-uuid slot-values.~%~@
-The :VERBOSE t form is used with `cl:describe' method, the nil form is used with
-`cl:print-object' method specialized on class system-identity-uuid.~%~@
-:EXAMPLE~%
- \(system-object-uuid-description *control-id-artist-namespace* 
-                                 :stream s 
-                                 :verbose t\)~%
- \(let \(\(q \(with-output-to-string \(s\) 
-            \(system-object-uuid-description *control-id-artist-namespace* 
-                                            :stream s 
-                                            :verbose t\)\)\)
-       \(y '\(\)\)\) 
-   \(declare \(ignore q\)\)
-   y\)~%~@
-:SEE-ALSO `make-system-object-uuid', `update-system-object-uuid',
-`system-identity', `system-identity-parent-uuid',
-`system-identity-uuid', `system-identity-uuid-byte-array',
-`system-identity-uuid-bit-vector', `system-identity-uuid-integer',
-`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶")
-
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; show-trailing-whitespace: t
+;; mode: lisp-interaction
+;; package: dbc
+;; End:
 
 ;;; ==============================
 ;;; EOF
