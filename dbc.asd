@@ -155,13 +155,17 @@
    ))
 
 (defmethod asdf:perform :after ((op asdf:load-op) (system (eql (asdf:find-system :dbc))))
-  (pushnew :dbc cl:*features*)
-  (let ((chk-if 
+  ;; (pushnew :dbc cl:*features*)
+  (let* ((chk-if 
          #-:is-mon (fad:file-exists-p 
                     (merge-pathnames (make-pathname :name "loadtime-bind" :type "lisp")
                                      (mon:pathname-directory-system :dbc)))
-         #+:is-mon (probe-file (translate-logical-pathname "MON:DBC-SPECIFIC;loadtime-bind.lisp"))))
-    (and chk-if (load  chk-if)))
+         #+:is-mon (probe-file (translate-logical-pathname "MON:DBC-SPECIFIC;loadtime-bind.lisp")))
+         (chk-existing-feature (member :dbc *features*))
+         (dbc::*dbc-reloading-system* (or (and chk-existing-feature t) dbc::*dbc-reloading-system*)))
+    (and chk-if 
+      (load  chk-if)))
+  (pushnew :dbc cl:*features*)
   (asdf:operate 'asdf:load-op 'dbc-test))
 
 ;; (member :DBC cl:*features*)

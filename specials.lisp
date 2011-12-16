@@ -10,6 +10,7 @@
 ;;; ==============================
 ;;; :SPECIALS
 ;;; ==============================
+(defvar *dbc-reloading-system* nil)
 
 (defparameter *system-path* nil)
 

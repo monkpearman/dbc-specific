@@ -268,34 +268,36 @@ subclassed instances. It is not intendend that this slot be directly setfable!~%
 	  (warn ":FUNCTION `system-path-xml-dump-dir-ensure' failed to initialize")))))
 
 ;; :TODO Needs to be renamed system-subdir-init-w-var -> 
+;; This needs to have a restart that won't signal when we're simply reloading the system.
 (defun system-subdir-init-w-var (w-var &key sub-name parent-path)  
-  (and (or (and (not (symbolp w-var))
-                (eql (class-of w-var)
-                     (find-class 'system-subdir)))
-           (and (symbolp w-var)
-                (eql (class-of (symbol-value w-var))
-                     (find-class 'system-subdir))))
-       (mon:simple-error-mon :w-sym 'system-subdir-init-w-var
-                             :w-type 'function
-                             :w-spec '("W-VAR already instance of class SYSTEM-SUBDIR~%"
-                                       "got-object: ~S~%object-specs:~%~A")
-                             :w-args (let ((w-var-frobd (or (and (symbolp w-var)
-                                                                 (symbol-value w-var))
-                                                            w-var)))
-                                       (list w-var-frobd
-                                             (with-output-to-string (s)
-                                               (system-described w-var-frobd s))))
-                             :signal-or-only nil))
-  (let ((tmp-ob (make-instance 'system-subdir
-                               :sub-name (or sub-name (symbol-value w-var))
-                               :parent-path parent-path
-                               :var-name (cons (symbol-name (identity w-var))
-                                               (identity w-var))))) 
-    (and 
-     (system-path-if tmp-ob)
-     (setf (symbol-value w-var) tmp-ob)
-     (prog1 (symbol-value w-var)
-       (system-described (symbol-value w-var) t)))))
+  (unless *dbc-reloading-system*
+    (and (or (and (not (symbolp w-var))
+                  (eql (class-of w-var)
+                       (find-class 'system-subdir)))
+             (and (symbolp w-var)
+                  (eql (class-of (symbol-value w-var))
+                       (find-class 'system-subdir))))       
+         (mon:simple-error-mon :w-sym 'system-subdir-init-w-var
+                               :w-type 'function
+                               :w-spec '("W-VAR already instance of class SYSTEM-SUBDIR~%"
+                                         "got-object: ~S~%object-specs:~%~A")
+                               :w-args (let ((w-var-frobd (or (and (symbolp w-var)
+                                                                   (symbol-value w-var))
+                                                              w-var)))
+                                         (list w-var-frobd
+                                               (with-output-to-string (s)
+                                                 (system-described w-var-frobd s))))
+                               :signal-or-only nil))
+    (let ((tmp-ob (make-instance 'system-subdir
+                                 :sub-name (or sub-name (symbol-value w-var))
+                                 :parent-path parent-path
+                                 :var-name (cons (symbol-name (identity w-var))
+                                                 (identity w-var))))) 
+      (and 
+       (system-path-if tmp-ob)
+       (setf (symbol-value w-var) tmp-ob)
+       (prog1 (symbol-value w-var)
+         (system-described (symbol-value w-var) t))))))
 
 
 ;;; ==============================
