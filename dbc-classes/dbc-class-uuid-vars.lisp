@@ -150,6 +150,11 @@
   (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
                            :control-id '*control-id-publication-namespace*))
 
+;; is this needed?
+(defvar *control-id-image-namespace*
+  (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
+                           :control-id '*system-object-uuid-base-namespace*))
+
 ;;; ==============================
 
 (defvar *control-id-namespace-table* (make-hash-table-uuid)
@@ -164,6 +169,7 @@
                         *control-id-artist-namespace* *control-id-brand-namespace*
                         *control-id-author-namespace* *control-id-person-namespace*
                         *control-id-publication-namespace*
+                        *control-id-image-namespace*
                         ;; *system-object-uuid-base-namespace*
                         ))
   (multiple-value-bind (val found)

@@ -135,6 +135,8 @@
              ;;
              ;; (:file "dbc-class-symbol-construct-deprecated")
              ;;
+             (:file "dbc-class-image")
+             (:file "dbc-class-image-path-convert")
              ))
    (:module "dbc-parse"
 	    :components

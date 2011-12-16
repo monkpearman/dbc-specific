@@ -820,6 +820,7 @@ Likewise, such co-references may occur in both the same class and/or an entirely
 ;;   ())
 ;;   
 
+;; *control-id-image-namespace*
 ;; (defclass control-id-image-type (control-id-type)
 ;;   ())
 ;;   

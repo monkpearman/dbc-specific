@@ -2,6 +2,9 @@
 ;;; :FILE dbc-classes/dbc-class-parsed-inventory-record.lisp
 ;;; ==============================
 
+;; NOTE Our largest item-ref from the xml/sql parse is 12416 our largest picture
+;; in httpd/photos/big is 12415
+
 
 (in-package #:dbc)
 ;; *package*
