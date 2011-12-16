@@ -66,7 +66,7 @@
 ;;
 (defmethod control-id-slot-unbound-error (class (object category-entity-top-level) slot)
   (dbc-class-with-slot-unbound-error class slot object))
-;;
+;; (control-id-slot-value-null-error 
 (defmethod control-id-slot-value-null-error ((object category-entity-top-level) slot)
   (dbc-class-with-slot-value-null-error object slot))
 
@@ -82,7 +82,7 @@
   (control-id-slot-unbound-error class object slot))
 ;;
 (defmethod control-id-slot-value-null-error ((object category-entity-top-level) (slot (eql 'control-id-display-category)))
-  (control-id-slot-value-null-error ojbect 'control-id-display-category))
+  (control-id-slot-value-null-error object 'control-id-display-category))
 ;;
 (defmethod control-id-display-category ((object category-entity-top-level))
   (or (and (slot-value object 'control-id-display-category))
@@ -121,7 +121,7 @@
   (control-id-slot-unbound-error class slot object))
 ;;
 (defmethod control-id-slot-value-null-error ((object category-entity-top-level) (slot (eql 'category-precedence-list)))
-  (control-id-slot-value-null-error ojbect 'category-precedence-list))
+  (control-id-slot-value-null-error object 'category-precedence-list))
 ;;
 (defmethod category-precedence-list ((object category-entity-top-level))
   (unless (eql (control-id-of-class-type object) 'category-entity-top-level)
