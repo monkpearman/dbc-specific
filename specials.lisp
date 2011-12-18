@@ -10,7 +10,7 @@
 ;;; ==============================
 ;;; :SPECIALS
 ;;; ==============================
-(defvar *dbc-reloading-system* nil)
+;; (defvar *dbc-reloading-system* nil)
 
 (defparameter *system-path* nil)
 
@@ -44,6 +44,21 @@
 
 
 ;;; ==============================
+
+(defvar *dbc-item-number-string-mapping-old-image-path-table* nil)
+
+(defvar *dbc-item-number-path-source-destination-vector* nil
+  "Vector mapping item-numbers to to their original source paths and their
+  directory under pathname named by `*dbc-base-item-number-image-pathname*'.
+When CL:BOUNDP the tector is 1 indexed such that the object it indexes
+corresponds to an item number e.g.:
+ (aref *dbc-item-number-path-source-destination-vector* 8999) maps to item-number \"8999\".")
+
+;; :NOTE we currently hardwire this as the default base-pathname for all dbc images.
+;; This should maybe be some variant instance of class `system-path' but it
+;; currently exists outside the dbc-specific source directory and is likely to remain so.
+(defvar *dbc-base-item-number-image-pathname*  #P"/mnt/NEF-DRV-A/DBC-ITEM-IMAGES/"
+        "Default base pathname for under which dbc images are located.")
 
 (defvar *parsed-class-field-slot-accessor-mapping-table* (make-hash-table))
 

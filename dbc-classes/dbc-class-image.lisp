@@ -15,7 +15,7 @@
 ;;                        :force-binary t)))
 ;;; ==============================                                         
 
-;; (defparameter dbc-image-
+
 ;;; ==============================
 ;;; :NOTE
 ;;; There should be a UUID for image-directory namespaces.
