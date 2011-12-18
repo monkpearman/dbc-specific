@@ -270,7 +270,7 @@ subclassed instances. It is not intendend that this slot be directly setfable!~%
 ;; :TODO Needs to be renamed system-subdir-init-w-var -> 
 ;; This needs to have a restart that won't signal when we're simply reloading the system.
 (defun system-subdir-init-w-var (w-var &key sub-name parent-path)  
-  (unless *dbc-reloading-system*
+  (unless dbc-build-system::*dbc-build-system-reloading-system*
     (and (or (and (not (symbolp w-var))
                   (eql (class-of w-var)
                        (find-class 'system-subdir)))

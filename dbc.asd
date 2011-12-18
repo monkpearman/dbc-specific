@@ -47,6 +47,8 @@
 
 (in-package #:dbc-build-system)
 
+(defvar *dbc-build-system-reloading-system* nil)
+
 (defsystem #:dbc
   ;; :name ""
   :author  "MON KEY"
@@ -162,7 +164,9 @@
                                      (mon:pathname-directory-system :dbc)))
          #+:is-mon (probe-file (translate-logical-pathname "MON:DBC-SPECIFIC;loadtime-bind.lisp")))
          (chk-existing-feature (member :dbc *features*))
-         (dbc::*dbc-reloading-system* (or (and chk-existing-feature t) dbc::*dbc-reloading-system*)))
+         (dbc-build-system::*dbc-build-system-reloading-system* 
+          (or (and chk-existing-feature t) 
+              dbc-build-system::*dbc-build-system-reloading-system*)))
     (and chk-if 
       (load  chk-if)))
   (pushnew :dbc cl:*features*)
