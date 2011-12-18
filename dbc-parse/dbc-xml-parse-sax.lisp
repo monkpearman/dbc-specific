@@ -92,8 +92,8 @@ Its children will contain attribute/value pairs which correspond to the slot-nam
 ;;
 (defmethod (setf %parsed-data-match-attribute-pair) (match-attribute-pair (object %parsed-data-state))
   (declare (cons match-attribute-pair))
-  (assert (and (stringp (car x))
-               (stringp (cdr x))))
+  (assert (and (stringp (car match-attribute-pair))
+               (stringp (cdr match-attribute-pair))))
   (setf (slot-value object '%parsed-data-match-attribute-pair) match-attribute-pair))
 
 (defmethod %parsed-data-current-parent ((object %parsed-data-state))
