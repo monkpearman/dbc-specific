@@ -125,54 +125,96 @@
           slot-for-file-name-value
           (mon:timestamp-for-file)))
 
+;; (write-sax-parsed-slots-to-file (gethash "12393" *tt--parse-table*)
+;;                                 ;;:prefix-for-file-name "bubba"
+;;                                 ;; :slot-for-file-name 'naf-entity-artist-coref ;warns and bails
+;;                                 :slot-for-file-name 'inventory-number
+;;                                 :slot-for-file-name-zero-padded t
+;;                                 :output-directory (sub-path *xml-output-dir*))
+;;
 ;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun write-sax-parsed-slots-to-file (object &key slot-for-file-name 
                                                    prefix-for-file-name
+                                                   (slot-for-file-name-zero-padded nil)
                                                    (pathname-type "lisp")
                                                    output-directory 
                                                    (directory-exists-check t)
                                                    (pre-padded-format-control nil))
   (declare  (parsed-class object)
             (type (and symbol (mon::not-null)) slot-for-file-name)
-            (type (or mon:string-not-empty null) prefix-for-file-name)
+            (type (or string null) prefix-for-file-name)
+            (mon:pathname-or-namestring output-directory)
             (boolean directory-exists-check))
   (when directory-exists-check
-   (unless (equal output-directory
-                  (make-pathname :directory (pathname-directory (probe-file output-directory))))
-     (error "arg OUTPUT-DIRECTORY does not designate a valid directory~% got: ~S~%"
-            output-directory)))
-  (let* ((slot-value-if (and (slot-exists-p object slot-for-file-name) ;; 'item-number
-                            (slot-boundp   object slot-for-file-name)
-                            (slot-value    object slot-for-file-name)))
-        (slot-value-if-stringp (or (and slot-value-if
-                                        (stringp slot-value-if)
-                                        slot-value-if)
-                                   (and slot-value-if 
-                                        (format nil "~S" slot-value-if))))
-        (slot-value-to-file-name (and slot-value-if-stringp
-                                      (merge-pathnames 
-                                       (make-pathname :name (concatenate 'string 
-                                                                         (or prefix-for-file-name
-                                                                             (string slot-for-file-name))
-                                                                         "-"
-                                                                         slot-value-if-stringp)
-                                                      :type pathname-type)
-                                       output-directory)))
-        (calculate-padding (if pre-padded-format-control
-                               pre-padded-format-control
-                               (print-sax-parsed-slots-padding-format-control object))))
+    (unless (equal (pathname output-directory)
+                   (make-pathname :directory (pathname-directory (probe-file output-directory))))
+      (error ":FUNCTION `write-sax-parsed-slots-to-file' -- arg OUTPUT-DIRECTORY does not designate a valid directory~% got: ~S~%"
+             output-directory)))
+  (let* ((slot-value-if 
+          (or (and (slot-exists-p object slot-for-file-name) ;; 'item-number
+                   (slot-boundp   object slot-for-file-name)
+                   (slot-value    object slot-for-file-name))
+              (progn
+                (warn                   ;error 
+                 "~%:FUNCTION `write-sax-parsed-slots-to-file'~% ~
+                  arg SLOT-FOR-FILE-NAME either non-existent slot-unbound or null~% slot:~S~% object: ~S~%"
+                 slot-for-file-name object)
+                (warn "~%Something wrong with arg OBJECT, declining to dump to file~%")
+                (return-from write-sax-parsed-slots-to-file))))
+         (slot-value-if-stringp 
+          (or (and slot-value-if
+                   (stringp slot-value-if)                                         
+                   slot-value-if)
+              (and slot-value-if 
+                   (format nil "~S" slot-value-if))))
+         (maybe-zero-pad
+          (and slot-value-if-stringp
+               (when slot-for-file-name-zero-padded
+                 (let ((validate-length (length slot-value-if-stringp)))
+                   (unless (< validate-length 6)
+                     (progn
+                       (warn            ;error 
+                        "~%:FUNCTION `write-sax-parsed-slots-to-file'~% ~
+                              With arg SLOT-FOR-FILE-NAME-ZERO-PADDED non-nil found slot-value with length less than 6~% ~
+                             slot: ~S~% slot-value: ~S~% length: ~S~% object: ~S~%"
+                        slot-for-file-name slot-value-if validate-length object)
+                       (warn "~%Something wrong with arg OBJECT, declining to dump to file~%")
+                       (return-from write-sax-parsed-slots-to-file)))
+                   (multiple-value-bind (parseable parse-length) (parse-integer slot-value-if-stringp :junk-allowed t)
+                     (unless (and parseable 
+                                  (typep parseable 'unsigned-byte) 
+                                  (eql parse-length validate-length))
+                       (progn
+                         (warn          ;error 
+                          "~%:FUNCTION `write-sax-parsed-slots-to-file'~% ~
+                         With arg SLOT-FOR-FILE-NAME-ZERO-PADDED non-nil, unable to coerce via~% ~
+                         CL:PARSE-INTEGER a valid positive number representation from slot-value of~% ~
+                         slot: ~S~% slot-value: ~S~% object: ~S~%" 
+                          slot-for-file-name slot-value-if object)
+                         (warn "~%Something wrong with arg OBJECT, declining to dump to file~%")
+                         (return-from write-sax-parsed-slots-to-file)))
+                     (make-string (- 6 validate-length) :initial-element #\0))))))
+         (slot-value-to-file-name 
+          (and slot-value-if-stringp
+               (merge-pathnames (make-pathname :name (concatenate 'string 
+                                                                  (or prefix-for-file-name
+                                                                      (string-downcase slot-for-file-name))
+                                                                  (and (not prefix-for-file-name) "-")
+                                                                  maybe-zero-pad
+                                                                  slot-value-if-stringp)
+                                               :type pathname-type)
+                                output-directory)))
+         (calculate-padding 
+          (and slot-value-to-file-name
+               (if pre-padded-format-control
+                   pre-padded-format-control
+                   (print-sax-parsed-slots-padding-format-control object)))))
     (if slot-value-to-file-name
         (with-open-file (fl slot-value-to-file-name
                             :direction :output 
                             :if-does-not-exist :create
                             :if-exists :supersede
                             :external-format :UTF-8)
-          ;; :WAS
-          ;; (format fl ";;; :CLASS `~A' ~A ~A ~%;;; :FILE-CREATED  ~A~%~%"
-          ;;         (string-downcase (class-name (class-of object)))
-          ;;         slot-for-file-name
-          ;;         slot-value-if-stringp
-          ;;         (mon:timestamp-for-file))
           (%write-sax-parsed-slots-to-file-dumping-header
            object
            :stream fl 
@@ -188,14 +230,15 @@
 ;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun write-sax-parsed-class-hash-to-files (hash-table &key parsed-class
                                                              slot-for-file-name
+                                                             (slot-for-file-name-zero-padded nil)
                                                              prefix-for-file-name
                                                              (pathname-type "lisp")
                                                              output-directory)
                                              
   (declare (type hash-table hash-table)
            (type (and symbol (mon::not-null)) slot-for-file-name parsed-class)
-           (type (or mon:string-not-empty null) prefix-for-file-name))
-  (unless (equal output-directory
+           (type (or string null) prefix-for-file-name))
+  (unless (equal (pathname output-directory)
                  (make-pathname :directory (pathname-directory (probe-file output-directory))))
     (error "arg OUTPUT-DIRECTORY does not designate a valid directory~% got: ~S~%"
            output-directory))
@@ -205,11 +248,42 @@
                           (parsed-class v))
                  (write-sax-parsed-slots-to-file v 
                                                  :slot-for-file-name slot-for-file-name 
+                                                 :slot-for-file-name-zero-padded slot-for-file-name-zero-padded
                                                  :prefix-for-file-name prefix-for-file-name
                                                  :output-directory output-directory
                                                  :directory-exists-check nil
                                                  :pre-padded-format-control calculate-padding))
              hash-table)))
+
+(defun write-sax-parsed-inventory-record-hash-to-zero-padded-directory (hash-table &key
+                                                                        (base-output-directory *dbc-base-item-number-image-pathname*)
+                                                                        (pathname-type "lisp"))
+  (declare (type hash-table hash-table)
+           (mon:pathname-or-namestring base-output-directory)
+           ((or null string) pathname-type))
+  (unless (equal (pathname base-output-directory)
+                 (make-pathname :directory (pathname-directory (probe-file base-output-directory))))
+    (error "arg BASE-OUTPUT-DIRECTORY does not designate a valid directory~% got: ~S~%"
+           base-output-directory))
+  (let ((calculate-padding (print-sax-parsed-slots-padding-format-control (make-instance 'parsed-inventory-record))))
+    (maphash #'(lambda (k v)
+                 (declare (string k) 
+                          (parsed-class v))
+
+                 (let* ((padded-prefix (make-string (- 6 (length k)) :initial-element #\0)) ;; (format nil "~V,,,'0@A" (- 6 (length key)) #\0))
+                        (padded-directory-name (concatenate 'string padded-prefix k))
+                        (padded-directory (merge-pathnames (make-pathname :directory `(:relative ,padded-directory-name))
+                                                           base-output-directory)))
+                   (ensure-directories-exist padded-directory)
+                   (write-sax-parsed-slots-to-file v 
+                                                   :slot-for-file-name 'inventory-number 
+                                                   :slot-for-file-name-zero-padded t
+                                                   :prefix-for-file-name ""
+                                                   :output-directory padded-directory
+                                                   :directory-exists-check nil
+                                                   :pre-padded-format-control calculate-padding)))
+                 hash-table)))
+
 
 ;; Next we need to map the hash-table values and for each object and each slot
 ;; of object clean up the crap in the fields.

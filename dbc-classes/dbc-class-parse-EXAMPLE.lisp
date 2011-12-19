@@ -36,19 +36,39 @@
    :key-accessor  #'inventory-number
    :slot-dispatch-function #'set-parsed-inventory-record-slot-value))
 
+;; (gethash *tt--parse-table*
+;; (10019
+
 ;; This will write all 8979 hash-table values to an individual file.
-(write-sax-parsed-class-hash-to-files 
+(write-sax-parsed-class-hash-to-files
  *tt--parse-table*
  :parsed-class 'parsed-inventory-record
  :slot-for-file-name 'inventory-number
- :prefix-for-file-name "inventory-number"
+ ;; :prefix-for-file-name "inventory-number-"
+ :prefix-for-file-name "0"
  :output-directory (make-default-sax-parsed-xml-output-pathname-directory 
                     :pathname-sub-directory (list (sub-name *xml-output-dir*) "individual-parse-refs")
                     :pathname-base-directory (system-base-path *xml-output-dir*)
                     :pathname-dated-p t))
 
+;; :NOTE This will create ~8679 subdirs of the form /<PARENT>/0NNNNN/ each which
+;; contains a file 0NNNNN.lisp file beneath <PARENT>
+;; 
+;; (write-sax-parsed-inventory-record-hash-to-per-image-directory 
+;;  *tt--parse-table*
+;;  :base-output-directory (merge-pathnames 
+;;                          (make-pathname 
+;;                           :directory `(:relative ,(concatenate 'string 
+;;                                                                "individual-parse-refs-zero-padded-"
+;;                                                                (mon:time-string-yyyy-mm-dd))))
+;;                          (sub-path *xml-output-dir*)))
 
-
+;; :NOTE This will overwrite each 0NNNNN.lisp file in the subdirs beneath
+;; *dbc-base-item-number-image-pathname* which may or may not be what is wanted!
+;;
+;; (write-sax-parsed-inventory-record-hash-to-per-image-directory 
+;;  *tt--parse-table* 
+;;  :base-output-directory *dbc-base-item-number-image-pathname*)
 
 ;; (sub-path *xml-input-dir*)
 

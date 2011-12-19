@@ -996,7 +996,8 @@ When null and OJBECT's a slot is not `cl:slot-boundp' print its slot-value as NI
 de-serialzed OBJECT will have its slot :initarg intialized to nil which is what
 we've done elswhere for this class.~%~@
 :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
-`write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
+`write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files',
+`write-sax-parsed-inventory-record-hash-to-zero-padded-directory'.~%▶▶▶")
 
 (fundoc 'write-sax-parsed-slots-to-file
 "Write a list of the slot/value pairs of OBJECT to a file in OUTPUT-DIRECTORY.~%~@
@@ -1006,10 +1007,15 @@ Arg SLOT-FOR-FILE-NAME is a symbol, e.g. 'item-number, 'control-id-entity-num-ar
 If it satisfies `cl:slot-exists-p', `cl:slot-boundp' and `cl:slot-value', it's
 value is used as the suffix for a file name otherwise an error is signaled.~%~@
 Arg PREFIX-FOR-FILE-NAME is a string, e.g. \"item-number\", \"artist-enity-num\",
-etc.  It is combined with `cl:slot-value' of SLOT-FOR-FILE-NAME when makeing a
-pathname to write OBJECT to.  When a string is provided it should not contain a
-trailing #\\-. If PREFIX-FOR-FILE-NAME is null the `cl:string' representation of
+etc.  It is combined with `cl:slot-value' of SLOT-FOR-FILE-NAME when making a
+pathname to write OBJECT to.  When a string is provided it should contain a
+trailing #\\- if one is wanted. If PREFIX-FOR-FILE-NAME is null the `cl:string' representation of
 SLOT-FOR-FILE-NAME is used instead.~%~@
+When keyword SLOT-FOR-FILE-NAME-ZERO-PADDED is non-nil if slot-value of
+SLOT-FOR-FILE-NAME is a positive integer or string representing one it will be
+prepended with leading zeros such that it will have the form 0NNNNN. In either
+case, the slot-value must not represent an integer larger than 99999 or a
+warning is signalled and the file will not be written.~%~@
 Keyword arg PRE-PADDED-FORMAT-CONTROL, if supplied, is used in lieu of return
 value of `print-sax-parsed-slots-padding-format-control' with OBJECT as argument.~%~@
 :EXAMPLE~%
@@ -1019,7 +1025,8 @@ value of `print-sax-parsed-slots-padding-format-control' with OBJECT as argument
   :prefix-for-file-name \"inventory-number\"
   :output-directory \(merge-pathnames #P\"individual-parse-refs-2011-10-01/\" \(sub-path *xml-output-dir*\)\)\)~%~@
 :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
-`write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
+`write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files',
+`write-sax-parsed-inventory-record-hash-to-zero-padded-directory'.~%▶▶▶")
 
 (fundoc 'write-sax-parsed-class-hash-to-files
 "Write the sax-parsed class of HASH-TABLE to a file in OUTPUT-DIRECTORY.~%~@
@@ -1032,7 +1039,25 @@ value of `print-sax-parsed-slots-padding-format-control' with OBJECT as argument
   :output-directory \(merge-pathnames #P\"individual-parse-refs-2011-10-01/\" 
                                      \(sub-path *xml-output-dir*\)\)\)~%~@
 :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
+`write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files',
+`write-sax-parsed-inventory-record-hash-to-zero-padded-directory'.~%▶▶▶")
+
+(fundoc 'write-sax-parsed-inventory-record-hash-to-zero-padded-directory
+        "Write all parsed-inventory-records in HASH-TABLE to a relative sub-directory
+pathname of the form 0NNNNN beneath BASE-OUTPUT-DIRECTORY. If sub-directory does
+not exist it will be created as if by `cl:ensure-directories-exist'.~%~@
+:EXAMPLE~%
+ \(write-sax-parsed-inventory-record-hash-to-per-image-directory 
+  *tt--parse-table*
+  :base-output-directory \(merge-pathnames 
+                          \(make-pathname 
+                           :directory `\(:relative ,\(concatenate 'string 
+                                                                \"individual-parse-refs-zero-padded-\"
+                                                                \(mon:time-string-yyyy-mm-dd\)\)\)\)
+                          \(sub-path *xml-output-dir*\)\)\)~%~@
+:SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
 `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
+
 
 
 ;;; ==============================
