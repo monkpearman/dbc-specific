@@ -95,6 +95,7 @@
    ;;           (:file "dbc-uuid"       :depends-on ("dbc-uuid-types" "dbc-uuid-class"))))
    ;;
    (:file "conditions")
+   (:file "dbc-utils")
    (:module "dbc-classes"
             :components                 
             ((:file "dbc-docstrings-for-class")

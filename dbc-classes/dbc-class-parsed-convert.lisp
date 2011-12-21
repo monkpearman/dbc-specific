@@ -24,6 +24,73 @@
                                                    (mon:time-string-yyyy-mm-dd))))
     (system-path *system-path*))))
 
+(defgeneric control-id-indexed-number-zero-padded-string (integer-or-string))
+
+;; :EXAMPLE
+;;  (control-id-indexed-number-zero-padded-string 1)
+;;  (control-id-indexed-number-zero-padded-string 42)
+;;  (control-id-indexed-number-zero-padded-string 111)
+;;  (control-id-indexed-number-zero-padded-string 1111)
+;;  (control-id-indexed-number-zero-padded-string 99999)
+;; Following fail successfully:
+;;  (control-id-indexed-number-zero-padded-string -1)
+;;  (control-id-indexed-number-zero-padded-string 100000)
+(defmethod control-id-indexed-number-zero-padded-string ((integer-or-string integer))
+  (assert (typep integer-or-string '(integer 0 99999)))
+  (format nil "~V,'0d" 6 integer-or-string))
+
+;; :EXAMPLE
+;; (control-id-indexed-number-zero-padded-string "99999")
+;; (control-id-indexed-number-zero-padded-string "010000")
+;; (control-id-indexed-number-zero-padded-string "10000")
+;; (control-id-indexed-number-zero-padded-string "1")
+;; (control-id-indexed-number-zero-padded-string "12")
+;; (control-id-indexed-number-zero-padded-string "123")
+;; (control-id-indexed-number-zero-padded-string "1234")
+;; (control-id-indexed-number-zero-padded-string "12345")
+;; Following fail successfully:
+;; (control-id-indexed-number-zero-padded-string "100000")
+;; (control-id-indexed-number-zero-padded-string "0")
+;; (control-id-indexed-number-zero-padded-string "00")
+;; (control-id-indexed-number-zero-padded-string "000")
+;; (control-id-indexed-number-zero-padded-string "0000")
+;; (control-id-indexed-number-zero-padded-string "00000")
+;; (control-id-indexed-number-zero-padded-string "000000")
+;; (control-id-indexed-number-zero-padded-string "")
+(defmethod control-id-indexed-number-zero-padded-string ((integer-or-string string))
+  (let ((len (length integer-or-string)))
+    (assert (typep len '(integer 1 6)) nil 
+            ":METHOD `control-id-indexed-number-zero-padded-string'~% ~
+             arg INTEGER-OR-STRING with length not of type '(integer 1 6)~% got: ~S~% length: ~S~%" 
+            integer-or-string len)
+    (assert (every-digit-char-p integer-or-string) nil
+            ":METHOD `control-id-indexed-number-zero-padded-string'~% ~
+             arg INTEGER-OR-STRING did not satisfy `every-digit-char-p'~% got: ~S~%" 
+            integer-or-string)
+    (assert (%not-every-char-zero-p integer-or-string) nil
+            ":METHOD `control-id-indexed-number-zero-padded-string'~% ~
+             arg INTEGER-OR-STRING with every character `cl:char=' #\\0~% got: ~S~%" 
+            integer-or-string)
+    (ecase len
+      (6 
+       (assert (char= (char integer-or-string 0) #\0) nil
+               ":METHOD `control-id-indexed-number-zero-padded-string'~% ~
+                  arg INTEGER-OR-STRING with length 6 but char at index 0 not `cl:char=' #\\0~% got: ~S~%" 
+               integer-or-string)
+       integer-or-string)
+      (1 
+       (let ((new (make-array 6 :element-type 'character :initial-element #\0)))
+         (setf (aref new 5) (char integer-or-string 0))
+         new))
+      ((2 3 4 5)
+       (loop 
+          with new =  (make-array 6 :element-type 'character :initial-element #\0)
+          for chars across integer-or-string
+          for idx from (- 6 len)  below 6
+          do (setf (aref new idx) chars)
+          finally (return new))))))
+
+
 ;;; ==============================
 ;; :NOTE `load-sax-parsed-xml-file-to-parsed-class-hash' now has parameter
 ;; KEY-ACCESSOR which was orignally named PRIMARY-KEY-FUN and provided a

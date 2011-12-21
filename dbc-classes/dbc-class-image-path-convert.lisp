@@ -163,14 +163,6 @@
   (declare (mon:pathname-or-namestring pathname))
   (string= (pathname-name pathname) ".jpg"))
 
-(defun %every-digit-char-p (string)
-  (declare (string string))
-  (every #'digit-char-p string))
-
-;; (defun %every-digit-char-p (string)
-;;   (declare (string string))
-;;   (every #'digit-char-p string))
-
 ;; (%pathname-notany-solidus-p "a-b-c")
 ;; (null (%pathname-notany-solidus-p "a/b/c"))
 ;; (null (%pathname-notany-solidus-p #P"a/b/c"))
@@ -187,7 +179,7 @@
 (defun %pathname-name-all-digit-char-p (pathname)
   (declare (mon:pathname-or-namestring pathname))
   (unless (%pathname-name-empty-jpeg-p pathname)
-    (%every-digit-char-p (pathname-name pathname))))
+    (every-digit-char-p (pathname-name pathname))))
 
 ;; (%filter-item-image-directory-sequence
 ;;  #(#P"/httpd/flash_home/gallery/advert/large/10065m.jpg"
@@ -436,12 +428,12 @@
                                               arg ENUMBER is empty-string after cl:string-left-trim~% ~
                                               got: ~S" enumber)
                                       (if enumber-digit-char-p 
-                                          (if (%every-digit-char-p trim)
+                                          (if (every-digit-char-p trim)
                                               (if enumber-prepending-e
                                                   (concatenate 'string #(#\e) trim)
                                                   trim)
                                               (error ":FUNCTION `%string-trim-maybe-prepend-enumber'~% ~
-                                                       with arg ENUMBER-DIGIT-CHAR-P non-nil arg ENUMBER did not satisfy `%every-digit-char-p'~% ~
+                                                       with arg ENUMBER-DIGIT-CHAR-P non-nil arg ENUMBER did not satisfy `every-digit-char-p'~% ~
                                                        got: ~S" enumber))
                                           trim))))
         (declare (ignore trim-pretest))
