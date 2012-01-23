@@ -28,6 +28,52 @@
 ;; ----- naf-entity-publication-catalog
 ;; ----- naf-entity-publication-pamphlet
 ;;
+;;
+
+#|
+
+:NOTE As of 2012-01-23 we have a new inventory record scheme for instances of
+periodicals in various states of disassembly.
+each unbound (e.g. loose) periodical now has a sticker with a label of the form:
+ 00NNNN-MAG 
+
+relevant slots/classes
+
+naf-entity-publication-periodical-issue-data
+issue-number
+issue-date
+issue-volume
+issue-pages
+
+
+naf-entity-publication-periodical-issue-cover
+
+cover-by-naf-entity-artist ;; the naf entity whom illustrated the cover
+cover-pulled ;; whether the cover is pulled or not
+pulled-date ;; date cover was pulled
+
+
+naf-entity-publication-periodical-issue-brand-advert
+
+;; instances of naf-entity-brand adverts
+advertisement-naf-entitity-brand-coref
+advertisement-naf-entitity-artist-coref
+pulled-date ;; date advert was pulled
+date-advertisement-pulled
+advertisement-fractional ;; whether add is full, half, quarter, third page
+advertisement-fractional-orientation ;; horizontal/vertical
+
+naf-entity-publication-periodical-issue-illustration
+illustration-page
+illustration-naf-entitity-artist-coref
+illustration-color
+illustration-pulled
+pulled-date
+
+|#
+
+
+
 ;;; ==============================
 
 ;;; ==============================
