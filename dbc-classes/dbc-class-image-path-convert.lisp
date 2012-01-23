@@ -800,6 +800,27 @@
             when (listp item-spec)
             do (dbc-image-conversion-doing-pairs item-spec :stream bs)))))))
 
+
+;; Following used to fix borken copied files which didn't get their modtime attributes updated!
+(defun %dbc-item-image-update-modtimes ()
+  (let ((src-dest-vec *dbc-item-number-path-source-destination-vector*))
+    (loop
+       for num from 0 below (length src-dest-vec)
+       for item = (aref  src-dest-vec num)
+       for paths = (etypecase item 
+                     (unsigned-byte nil)
+                     (t (cadr item)))
+       unless (null paths) 
+       do (loop 
+             for (src . dest) in paths
+             if (and (or (probe-file src)
+                         (format T "~%found non-existent source pathname:~% ~S~%" src))
+                     (or (probe-file dest)
+                         (format T "~%found non-existent destination pathname:~% ~S~%" dest)))
+             do (mon::set-file-write-date-using-file dest src) 
+             and do (format T "~%set modtimes for pathname: ~A~%" dest)))))
+
+
 ;;; :NOTE OLD definition of `dbc-item-match-flash-path'
 ;; (dbc-item-match-flash-path #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/flash_home/gallery/books/large/11115.jpg")
 ;; | => #P"/mnt/NEF-DRV-A/EBAY/BIG-cropped-jpg/11115/11115-f.jpg",
