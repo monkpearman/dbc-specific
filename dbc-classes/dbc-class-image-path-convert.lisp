@@ -279,7 +279,7 @@
   (let ((chk-path #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/"))
     (unless (probe-file chk-path)
       (error ":FUNCTION `dbc-item-number-path-lookup-table-populate'~% ~
-                   cl:probe-file did not find pathname:~% ~S~% Verify that the path is mounted!!!"
+              cl:probe-file did not find pathname:~% ~S~% Verify that the path is mounted!!!"
              chk-path)))
   (setf *dbc-item-number-string-mapping-old-image-path-table* nil)
   (setf *dbc-item-number-string-mapping-old-image-path-table*  
@@ -340,6 +340,20 @@
      do (setf (aref big-vec big-vec-ref) gathered-transforms)
      finally (return big-vec)))
 
+;; Destructively set each elt of BIG-SOURCE-DESTINATION-PATH-VECTOR which doesn't map source/dest paths to NIL.
+;; Return list of the elts filtered.
+(defun %filter-item-number-image-source-destination-vector (big-source-destination-path-vector)
+  (declare (array big-source-destination-path-vector))
+  (loop
+     for num from 0 below (length big-source-destination-path-vector)
+     for item = (aref big-source-destination-path-vector num )
+     for paths = (etypecase item 
+                   (unsigned-byte nil)
+                   (t (cadr item)))
+     when (null paths) 
+     do (setf (aref big-source-destination-path-vector num) nil) 
+     and collect num))
+
 ;; :NOTE functions which accept a DESTINATION-PATHNAME keyword argument should default to something sensible
 ;; construction of the default should be abstracted to a dedicated function -
 ;; ideally one specialized on a class specific to what we are
@@ -373,7 +387,7 @@
 ;;                                                           ;; "dbc-item-image-src-dest-pathnames-zero-padded" 
 ;;                                                           "-"
 ;;                                                           (mon:time-string-yyyy-mm-dd)))
-;;                         #P"/mnt/NEF-DRV-A/DBC-ITEM-IMAGES/"))
+;;                         *dbc-base-item-number-image-pathname*))
 (defun %write-big-item-number-image-source-destination-vector-to-file (item-number-path-source-destination-vector &key destination-pathname)
   (declare (mon:pathname-or-namestring destination-pathname)
            (vector item-number-path-source-destination-vector))
@@ -658,7 +672,11 @@
       (dcp-item-image-copy-byte-stream byte-input
                         byte-output 
                         :element-type element-type)))
-  (probe-file dest-byte-file))
+  ;; (probe-file dest-byte-file)
+ (and
+  (probe-file dest-byte-file)
+  (mon::set-file-write-date-using-file (namestring source-byte-file) (namestring dest-byte-file))
+  dest-byte-file))
 
 
 (defclass dbc-item-image-conversion-state ()
@@ -747,9 +765,17 @@
   (if (dbc-image-conversion-next-pair object :stream stream)
       (prog2
           (dbc-image-conversion-probe-dest object :stream stream)
-          (dcp-item-image-copy-byte-file          
-           (dbc-image-conversion-current-pair-source object)
-           (dbc-image-conversion-current-pair-dest object))
+          ;; 
+          ;; Following won't work b/c we are moving across file-system boundaries:
+          ;;
+          ;; (sb-unix:unix-rename (namestring (dbc-image-conversion-current-pair-source object))
+          ;;                      (namestring (dbc-image-conversion-current-pair-dest object)))
+          ;; e.g.
+          ;; (sb-unix:unix-rename "/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/photos/big/QE2-poster-BAK.jpg"
+          ;;                      "/mnt/NEF-DRV-A/tt-blobs/QE2-poster-BAK.jpg")
+          ;;
+          (dcp-item-image-copy-byte-file (dbc-image-conversion-current-pair-source object)
+                                         (dbc-image-conversion-current-pair-dest object))
         (setf (image-current-pair object) nil))
       nil))
 
