@@ -34,41 +34,56 @@
 
 :NOTE As of 2012-01-23 we have a new inventory record scheme for instances of
 periodicals in various states of disassembly.
-each unbound (e.g. loose) periodical now has a sticker with a label of the form:
+each unbound (e.g. loose) issue of a periodical now has a sticker with a label of the form:
  00NNNN-MAG 
 
-relevant slots/classes
+This does not currently account for similar issues which remain bound into a
+volume but which otherwise likely share the same data...
 
+relevant slots (where each slot is likely to be instantiated as a class instance)
+
+--
+inventory-number  ;; control-id-indexed-naf-entity-publication-periodical-record
+
+--
 naf-entity-publication-periodical-issue-data
 issue-number
 issue-date
 issue-volume
 issue-pages
 
-
-naf-entity-publication-periodical-issue-cover
+--
+naf-entity-publication-periodical-issue-cover ;; the cover for an periodical
 
 cover-by-naf-entity-artist ;; the naf entity whom illustrated the cover
 cover-pulled ;; whether the cover is pulled or not
-pulled-date ;; date cover was pulled
+pulled-date  ;; date cover was pulled
 
+--
+naf-entity-publication-periodical-issue-advert ;; instances of naf-entity-brand adverts
 
-naf-entity-publication-periodical-issue-brand-advert
-
-;; instances of naf-entity-brand adverts
 advertisement-naf-entitity-brand-coref
 advertisement-naf-entitity-artist-coref
 pulled-date ;; date advert was pulled
-date-advertisement-pulled
-advertisement-fractional ;; whether add is full, half, quarter, third page
+date-advertisement-pulled ;; boolean -- whether advertisement is pulled
+advertisement-fractional ;; whether ad is full, half, quarter, third page
 advertisement-fractional-orientation ;; horizontal/vertical
+advertisement-color ;; full-color, monochrome, b/w 
 
+--
 naf-entity-publication-periodical-issue-illustration
 illustration-page
 illustration-naf-entitity-artist-coref
-illustration-color
-illustration-pulled
+illustration-color ;; full-color, monochrome, b/w 
+illustration-pulled ;; boolean
 pulled-date
+
+-- 
+naf-entity-publication-periodical-issue-article
+article-page
+illustration-naf-entitity-corefs ;; list of naf-entities referenced in/to/by article
+article-scanned ;; boolean -- whether article is scanned
+scanned-date
 
 |#
 

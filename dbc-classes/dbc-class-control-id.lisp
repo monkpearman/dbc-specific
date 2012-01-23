@@ -70,6 +70,8 @@ base-uuid                                     (base-dbc)
 -- control-id-record-type                     (control-id-type)
 --- control-id-inventory-record-type          (control-id-record-type)
 ---- control-id-inventory-record              (control-id-inventory-record-type)
+--- control-id-inventory-publication-record-type (control-id-record-type)
+---- control-id-inventory-publication-record  (control-id-inventory-publication-record-type)
 --- control-id-documentation-record-type      (control-id-record-type)
 ---- control-id-documentation-record          (control-id-inventory-record-type)
 --- control-id-authority-record-type          (control-id-record-type)
@@ -134,6 +136,7 @@ base-uuid                                     (base-dbc)
 - control-id-indexed-number                 (base-control-id)    
 -- control-id-record-indexed-number         (control-id-indexed-number)
 --- control-id-indexed-inventory-record     (control-id-record-indexed-number)
+--- control-id-indexed-inventory-publication-record (control-id-record-indexed-number)
 --- control-id-indexed-documentation-record (control-id-record-indexed-number)
 --- control-id-indexed-authority-record     (control-id-record-indexed-number)
 
@@ -601,12 +604,24 @@ A mixin for subclasses of which identify classes containing \"record\" like data
 (defclass control-id-authority-record-type (control-id-record-type)
   ((control-id-of-class-type 
     :initform (%find-control-id-class-or-lose 'base-authority-record))))
+;;
+(defclass control-id-inventory-publication-record-type (control-id-record-type)
+  ((control-id-of-class-type 
+    :initform (%find-control-id-class-or-lose 'dbc-class-inventory-publication-record)))
+  (:documentation 
+   #.(format nil
+"control-id for individual loose periodical issues and/or publications.~%~
+e.g. an loose issue of the periodical Femina is distinct from the linen-backed cover pulled~%~
+from that issue and is distinct from instances of `control-id-inventory-record-type'~%~
+because its individual leafs will become inventory-record insances once disassembled/disbound.")))
 
 ;; :ABSTRACT-CLASS
 (defclass control-id-record-indexed-number (control-id-indexed-number)
   ()
-  (:documentation ":ABSTRACT-CLASS for control-id-<FOO>-record-type classes which are primarily indexec by number.~%
-Usage of this class is roughly correllative with usage of control-id-display-name for control-id-entity-<FOO>-types"))
+  (:documentation 
+   #.(format nil
+   ":ABSTRACT-CLASS for control-id-<FOO>-record-type classes which are primarily indexed by number.~% 
+Usage of this class is roughly correllative with usage of control-id-display-name for control-id-entity-<FOO>-types")))
 
 
 ;;; ==============================
@@ -767,7 +782,7 @@ Likewise, such co-references may occur in both the same class and/or an entirely
 ;;; ==============================
 ;; inventory-record 
 ;;; ==============================
-;;
+
 
 ;; base-record (base-dbc)
 ;; base-inventory-record (base-record)
@@ -786,6 +801,24 @@ Likewise, such co-references may occur in both the same class and/or an entirely
   ()
   ;; (:documentation "See slot inventory-number of class `parsed-inventory-record'")
   )
+
+;;; ==============================
+;; publication-inventory-record 
+;;; ==============================
+
+(defclass control-id-inventory-publication-record (control-id-inventory-publication-record-type base-control-id)
+  ;; *control-id-inventory-publication-namespace*
+  ;; control-id-of-class-type
+  ;; control-id-identifies
+  ;; control-id-uuid
+  ((control-id-namespace 
+    :initform  (system-identity-uuid *control-id-inventory-publication-namespace*))))
+
+(defclass control-id-indexed-inventory-publication-record (control-id-inventory-publication-record control-id-record-indexed-number)
+  ()
+  ;; (:documentation "See slot inventory-number of class `parsed-inventory-record'")
+  )
+
 
 ;;; ==============================
 ;; documentation-record

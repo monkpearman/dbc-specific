@@ -74,6 +74,10 @@
   (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
                            :control-id '*control-id-inventory-namespace*))
 
+(defvar *control-id-inventory-publication-namespace*
+  (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
+                           :control-id '*control-id-inventory-publication-namespace*))
+
 (defvar *control-id-documentation-namespace*
   (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
                            :control-id '*control-id-documentation-namespace*))

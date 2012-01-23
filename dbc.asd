@@ -106,6 +106,7 @@
              (:file "dbc-class-uuid-vars")
              (:file "dbc-class-record")
              (:file "dbc-class-inventory-record")
+             (:file "dbc-class-inventory-publication-record")
              (:file "dbc-class-authority-record")
              (:file "dbc-class-entity")
              (:file "dbc-class-control-id")
