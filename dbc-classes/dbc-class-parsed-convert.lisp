@@ -136,14 +136,34 @@
              finally (setf (gethash (funcall key-accessor obj) hash-table) obj))
        finally (return (values hash-table (hash-table-count hash-table))))))
 
+;; :EXAMPLE
+;; (dbc::%print-sax-parsed-slots-calculate-padding-for-format-control-using-plist-keys '())
+;; (dbc::%print-sax-parsed-slots-calculate-padding-for-format-control-using-plist-keys '() :value-column-overage 19)
+;; (let ((plist (list :FOO-BAR "" :BARBAR-BAZ "0" :BAZ-BAR "0")))
+;;   (dbc::%print-sax-parsed-slots-calculate-padding-for-format-control-using-plist-keys plist))
+(defun %print-sax-parsed-slots-calculate-padding-for-format-control-using-plist-keys (plist &key (value-column-overage 4))
+  (declare ;; (optimize speed)
+   ((unsigned-byte 4) value-column-overage)
+   ((or null cons) plist))
+  (let ((check-empty (or (mon:plist-keys plist)
+                         value-column-overage)))
+    (etypecase check-empty
+      ((unsigned-byte 4) check-empty)
+      (cons (labels ((get-key-length (x)
+                       (declare ((or string keyword symbol) x))
+                       (length (string x))))
+              (+ (reduce #'max 
+                         (map 'list #'get-key-length check-empty))
+                 value-column-overage))))))
+
 (defun %print-sax-parsed-slots-calculate-padding-for-format-control (object &key (value-column-overage 4))
-  (declare (overage (unsigned-byte 4)))
+  (declare ((unsigned-byte 4) value-column-overage))
   (+ (reduce #'max 
-             (map 'list #'(lambda (x) (length (string x)))
-                  ;; :NOTE could prob. use this as well:
-                  ;; (accessors-of-parsed-class object)
-                  (mon:class-slot-list object))) 
-     value-column-overage))
+                 (map 'list #'(lambda (x) (length (string x)))
+                      ;; :NOTE could prob. use this as well:
+                      ;; (accessors-of-parsed-class object)
+                      (mon:class-slot-list object))) 
+         value-column-overage))
 
 ;; (let ((object 'parsed-inventory-record))
 ;;   (list (+ (reduce #'max (map 'list #'(lambda (x) (length (string x))) (mon:class-slot-list (find-class object)))) 4)
@@ -152,13 +172,14 @@
 
 ;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun print-sax-parsed-slots-padding-format-control (object &key (value-column-overage 4))
+  (declare ((unsigned-byte 4) value-column-overage))
   (format nil "~~&(~~{~~{:~~~D:A~~S~~}~~^~~%~~})" 
           ;; (+ (reduce #'max 
           ;;            (map 'list #'(lambda (x) (length (string x)))
           ;;                 (mon:class-slot-list object)))
           ;;    value-column-overage)
           (%print-sax-parsed-slots-calculate-padding-for-format-control 
-           object 
+           object
            :value-column-overage value-column-overage)))
 
 ;; :NOTE documented in dbc-specific/dbc-docs.lisp
@@ -200,7 +221,7 @@
 ;;                                 :output-directory (sub-path *xml-output-dir*))
 ;;
 ;; :NOTE documented in dbc-specific/dbc-docs.lisp
-(defun write-sax-parsed-slots-to-file (object &key slot-for-file-name 
+(defun write-sax-parsed-slots-to-file (object &key slot-for-file-name
                                                    prefix-for-file-name
                                                    (slot-for-file-name-zero-padded nil)
                                                    (pathname-type "lisp")

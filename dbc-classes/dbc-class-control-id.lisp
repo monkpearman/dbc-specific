@@ -12,13 +12,65 @@
  | results she wants.
  `---- One Flew Over the Cuckoo's Nest
 
- Because we intend that all objects in the DBC system will be referenced by
- thier UUID we need a way to _de-reference_ the to a non-uuid display name in
- day to day use.
+ We make some attempt to implement an interface which will allow integration
+ with the the CDWA Lite meta-model CDWA Lite is an XML schema to describe core
+ records for works of art and material culture based on the Categories for the
+ Description of Works of Art (CDWA) and Cataloging Cultural Objects: A Guide to
+ Describing Cultural Works and Their Images (CCO). A goal of CDWA is to enable
+ contributing records via the OAI Harvesting Protocol (Version 1.0).
 
+:SEE (URL `http://www.getty.edu/research/publications/electronic_publications/cdwa/cdwalite.html')
+:SEE (URL `http://www.getty.edu/research/publications/electronic_publications/cdwa/cdwalite.pdf')
+:SEE (URL `http://www.getty.edu/CDWA/CDWALite/CDWALite-xsd-public-v1-1.xsd')
+
+ More generally we intend the system to potentially integrate with the
+ International Committee for Documentation (CIDOC) Conceptual Reference Model
+ (CRM) i.e. CIDOC-CRM.
+
+ :SEE (URL `http://www.cidoc-crm.org/working_editions_cidoc.html')
+ :SEE (URL `http://www.cidoc-crm.org/docs/cidoc_crm_version_3_4_7.pdf')
+ :SEE (URL `http://www.cidoc-crm.org/docs/paper16.pdf')
+ :SEE (URL `http://www.cidoc-crm.org/docs/xml_to_rdfs/CIDOC_v3.3.2.rdfs')
+
+ and its revised extensions/modifications as harmonized under International
+ Federation of Library Associations and Institututions (IFLA) Functional
+ Requirements for Bibliographic Records (FRBR) as FRBRoo (Object Oriented) and
+ FRBRer (Entity Relation)
+
+:SEE (URL `http://www.cidoc-crm.org/frbr_inro.html')
+:SEE (URL `http://www.cidoc-crm.org/docs/frbr_oo/frbr_docs/FRBRoo_V1.0.2.pdf')
+
+ As a general interface for maintaining and enabling such integration we intend
+ that all objects in the DBC system will be canonically referenced by thier
+ UUID.  Abstractly we would like to integrate our UUIDs in lieu of the IFLA's
+ Working Group on Functional Requirements and Numbering of Authority Records
+ (FRANAR) which discussed a scheme for International Standard Authority Data
+ Numbers (ISADN) in their September 2008 paper entitled: 
+
+  "A Review of the Feasibility of an International Authority Data Number"
+
+ More specifically we are interested in the discussion from section 3 of that
+ paper which suggests tracking developments of ISO Project 27729
+ "International Standard Name Identifier (ISNI)" which charged a Working Group
+ to:
+
+  "define specifications for the syntax, assignment, registration, and
+   administration of an international standard identifier for parties (persons
+   and corporate bodies) involved in the creation and production of content
+   entities (e.g., authors, composers, performers, groups of performers such as
+   orchestras, music publishers, music producers, book publishers, audiovisual
+   producers, producers of sound recordings, broadcasters, etc.)".
+
+:SEE (URL `http://archive.ifla.org/VII/d4/wg-franar.htm')
+:SEE (URL `http://archive.ifla.org/VII/d4/franar-numbering-paper.pdf') 
+:SEE (URL `http://archive.ifla.org/VII/s29/wgfrsar.htm')
+
+ To ease interaction with the system we need a way to _de-reference_ the to a
+ non-UUID display name in day to day use.
+ 
  The class `base-control-id' is implemented to distinguish different
  types of controlled identities in classes with slots having 
- values used for identification puroposes.
+ values used for identification puroposes. 
 
  :NOTE subclasses of `base-control-id' are distinct from those of the class
  `base-uuid' which defines _canonical_ identities for dbc system objects and
@@ -159,7 +211,7 @@ base-uuid                                     (base-dbc)
 --- control-id-authority-loc            (control-id-authority-record) ;; nb2007017414 | n 98028882 | no 99021790
 --- control-id-authority-ulan           (control-id-authority-record) ;; 500013504
 --- control-id-authority-bnf            (control-id-authority-record) ;; FRBNF40421659
---- control-id-authority--oclc          (control-id-authority-record) ;; 
+--- control-id-authority-oclc          (control-id-authority-record) ;; 
 
 ;;; 
 
@@ -672,6 +724,10 @@ control-id-<FOO>-entity-type~%
 
 ;;; ==============================
 ;;; display-names
+;;; :NOTE The `control-id-display-name-<FOO>' interface is for congruence with
+;;; CDWA-LITE elements of the form:
+;;;    <cdwalite:displayFOO
+;;;
 ;;; ==============================
 
 ;; We've extended `control-id-display-name-for-entity-type' because the domain
@@ -679,7 +735,7 @@ control-id-<FOO>-entity-type~%
 ;;  artists, brands, authors, person, publication, location
 ;; Other types of objects which will need control-ids may include:
 ;;  product-items, documentation-items, edit-items, image-items, data-containers etc.
-;; These types of things do not really have meaningfull names but they will
+;; These types of things do not really have meaningful names but they will
 ;; none-the-less require an interface that allows us to refer to them
 ;; independent of their UUID identity..
 ;; :ABSTRACT-CLASS

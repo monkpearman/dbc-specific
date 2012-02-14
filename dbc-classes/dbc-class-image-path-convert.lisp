@@ -229,9 +229,13 @@
 (defun %make-item-number-string-hash-table (&key (max-item-number 12417))
   (declare ((unsigned-byte 29) max-item-number))
   (loop 
+     with item-max-prime = (mon:prime-or-next-greatest max-item-number)
      with hash-table = (make-hash-table :test #'equal
-                                        :size (mon:prime-or-next-greatest max-item-number))
-     for num from 1 below 12417
+                                        ;; :size (mon:prime-or-next-greatest max-item-number))
+                                        :size item-max-prime)
+  
+     ;; for num from 1 below 12417
+     for num from 1 below max-item-number
      ;; :WAS for numstring = (write-to-string num) ;;
      for numstring = (format nil "~V,'0d" 6 num)
      for vec = (make-array 7 :fill-pointer 0) ; for `vector-push-extend'
@@ -239,7 +243,8 @@
      finally (return hash-table)))
 
 ;; (%ensure-directory-item-number-exists *dbc-item-number-string-mapping-old-image-path-table*)
-;; ensure each item-key of BIG-ITEM-STRING-HASH-TABLE is a subdirectory of DESTINATION-PATHNAME return list of any pathnames created.
+;; Ensure each item-key of BIG-ITEM-STRING-HASH-TABLE is a subdirectory of
+;; DESTINATION-PATHNAME return list of any pathnames created.
 (defun %ensure-directory-item-number-exists (big-item-string-hash-table &key (destination-pathname *dbc-base-item-number-image-pathname*))
   (declare (mon:pathname-or-namestring destination-pathname)
            (hash-table big-item-string-hash-table))
