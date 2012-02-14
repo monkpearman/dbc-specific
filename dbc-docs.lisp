@@ -1006,7 +1006,9 @@ passed to `cl:make-instance' to re-instantiate the instance.~%~@
 Arg SLOT-FOR-FILE-NAME is a symbol, e.g. 'item-number, 'control-id-entity-num-artist, etc.
 If it satisfies `cl:slot-exists-p', `cl:slot-boundp' and `cl:slot-value', it's
 value is used as the suffix for a file name otherwise an error is signaled.~%~@
-Arg PREFIX-FOR-FILE-NAME is a string, e.g. \"item-number\", \"artist-enity-num\",
+:NOTE When called outside the package \"DBC\" the symbol must be package
+qualified, e.g. as DBC:INVENTORY-NUMBER.~%~@
+Arg PREFIX-FOR-FILE-NAME is a string, e.g. \"inventory-number\", \"artist-enity-num\",
 etc.  It is combined with `cl:slot-value' of SLOT-FOR-FILE-NAME when making a
 pathname to write OBJECT to.  When a string is provided it should contain a
 trailing #\\- if one is wanted. If PREFIX-FOR-FILE-NAME is null the `cl:string' representation of

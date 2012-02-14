@@ -27,6 +27,22 @@
 (defgeneric control-id-indexed-number-zero-padded-string (integer-or-string))
 
 ;; :EXAMPLE
+;; (control-id-indexed-number-zero-padded-string nil)
+(defmethod control-id-indexed-number-zero-padded-string ((integer-or-string null))
+  (error ":METHOD `control-id-indexed-number-zero-padded-string' -- arg INTEGER-OR-STRING must not be null"))
+
+;; :EXAMPLE
+;; (control-id-indexed-number-zero-padded-string (list nil))
+(defmethod control-id-indexed-number-zero-padded-string ((integer-or-string list))
+  (error ":METHOD `control-id-indexed-number-zero-padded-string' -- arg INTEGER-OR-STRING must not be a list"))
+
+;; :EXAMPLE
+;; (control-id-indexed-number-zero-padded-string 'foo)
+;; (control-id-indexed-number-zero-padded-string t)
+(defmethod control-id-indexed-number-zero-padded-string ((integer-or-string symbol))
+  (error ":METHOD `control-id-indexed-number-zero-padded-string' -- arg INTEGER-OR-STRING must not be a symbol"))
+
+;; :EXAMPLE
 ;;  (control-id-indexed-number-zero-padded-string 1)
 ;;  (control-id-indexed-number-zero-padded-string 42)
 ;;  (control-id-indexed-number-zero-padded-string 111)
@@ -89,6 +105,9 @@
           for idx from (- 6 len)  below 6
           do (setf (aref new idx) chars)
           finally (return new))))))
+
+
+
 
 
 ;;; ==============================
@@ -223,6 +242,8 @@
 ;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun write-sax-parsed-slots-to-file (object &key slot-for-file-name
                                                    prefix-for-file-name
+                                                   ;; suffix-for-file-name
+                                                   (print-unbound nil)
                                                    (slot-for-file-name-zero-padded nil)
                                                    (pathname-type "lisp")
                                                    output-directory 
@@ -232,23 +253,25 @@
             (type (and symbol (mon::not-null)) slot-for-file-name)
             (type (or string null) prefix-for-file-name)
             (mon:pathname-or-namestring output-directory)
-            (boolean directory-exists-check))
+            (boolean directory-exists-check print-unbound))
   (when directory-exists-check
     (unless (equal (pathname output-directory)
                    (make-pathname :directory (pathname-directory (probe-file output-directory))))
       (error ":FUNCTION `write-sax-parsed-slots-to-file' -- arg OUTPUT-DIRECTORY does not designate a valid directory~% got: ~S~%"
              output-directory)))
-  (let* ((slot-value-if 
-          (or (and (slot-exists-p object slot-for-file-name) ;; 'item-number
+  (let* ((warning "Something wrong with arg OBJECT, declining to dump slot values to file")
+         (slot-value-if 
+          (or (and (slot-exists-p object slot-for-file-name) ;; 'inventory-number
                    (slot-boundp   object slot-for-file-name)
                    (slot-value    object slot-for-file-name))
               (progn
                 (warn                   ;error 
                  "~%:FUNCTION `write-sax-parsed-slots-to-file'~% ~
-                  arg SLOT-FOR-FILE-NAME either non-existent slot-unbound or null~% slot:~S~% object: ~S~%"
+                  arg SLOT-FOR-FILE-NAME either non-existent, slot-unbound, null, ~
+                  or not properly package qualified with \"DBC\" ~% slot: ~S~% object: ~S~%"
                  slot-for-file-name object)
-                (warn "~%Something wrong with arg OBJECT, declining to dump to file~%")
-                (return-from write-sax-parsed-slots-to-file))))
+                (warn "~%~A~%" warning)
+                (return-from write-sax-parsed-slots-to-file (values nil warning)))))
          (slot-value-if-stringp 
           (or (and slot-value-if
                    (stringp slot-value-if)                                         
@@ -266,8 +289,8 @@
                               With arg SLOT-FOR-FILE-NAME-ZERO-PADDED non-nil found slot-value with length less than 6~% ~
                              slot: ~S~% slot-value: ~S~% length: ~S~% object: ~S~%"
                         slot-for-file-name slot-value-if validate-length object)
-                       (warn "~%Something wrong with arg OBJECT, declining to dump to file~%")
-                       (return-from write-sax-parsed-slots-to-file)))
+                       (warn "~%~A~%" warning)
+                       (return-from write-sax-parsed-slots-to-file (values nil warning))))
                    (multiple-value-bind (parseable parse-length) (parse-integer slot-value-if-stringp :junk-allowed t)
                      (unless (and parseable 
                                   (typep parseable 'unsigned-byte) 
@@ -279,8 +302,9 @@
                          CL:PARSE-INTEGER a valid positive number representation from slot-value of~% ~
                          slot: ~S~% slot-value: ~S~% object: ~S~%" 
                           slot-for-file-name slot-value-if object)
-                         (warn "~%Something wrong with arg OBJECT, declining to dump to file~%")
-                         (return-from write-sax-parsed-slots-to-file)))
+                         (warn "~%~A~%" warning)
+                         ;; (return-from write-sax-parsed-slots-to-file)))
+                         (return-from write-sax-parsed-slots-to-file (values nil warning))))
                      (make-string (- 6 validate-length) :initial-element #\0))))))
          (slot-value-to-file-name 
           (and slot-value-if-stringp
@@ -308,7 +332,7 @@
            :stream fl 
            :slot-for-file-name slot-for-file-name 
            :slot-for-file-name-value slot-value-if-stringp)
-          (print-sax-parsed-slots object :stream fl :print-unbound nil :pre-padded-format-control calculate-padding)
+          (print-sax-parsed-slots object :stream fl :print-unbound print-unbound :pre-padded-format-control calculate-padding)
           (write-char #\Newline fl)
           slot-value-to-file-name)
         (progn

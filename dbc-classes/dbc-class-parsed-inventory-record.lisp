@@ -480,6 +480,12 @@ This function should only be used for instantiating instances created _outside_ 
        do (setf (slot-value  prototype slot-is-accessor) nil))
     prototype))
 
+;; (defun parsed-inventory-record-null-prototype-to-file (object &key
+;;                                                        ;; (output-directory *dbc-base-item-number-image-pathname*)
+;;                                                        ;; (directory-exists-check t)
+;;                                                        prefix-for-file-name 
+;;                                                        suffix-for-file-name)
+
 ;; :NOTE `set-parsed-inventory-record-slot-value' is defined in loadtime-bind.lisp
 ;; (def-set-parsed-class-record-slot-value 
 ;;     set-parsed-inventory-record-slot-value

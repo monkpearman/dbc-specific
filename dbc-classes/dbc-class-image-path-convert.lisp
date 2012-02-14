@@ -7,7 +7,7 @@
 ;; directory per item/image number file-system and populates it with the images
 ;; from the old site pathnames.
 ;;
-;; Our largest item-ref from the xml/sql parse is 12416 our largist picture in httpd/photos/big is 12415
+;; Our largest item-ref from the xml/sql parse is 12416 our largest picture in httpd/photos/big is 12415
 ;; Approximate number of image we might have: (* 7 12417) => 86919
 ;;
 ;; Approximate number of images we actually have according to `%make-big-filtered-item-image-directory-vector' => 39326
