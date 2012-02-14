@@ -468,6 +468,18 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("edit_history"      . edit-history))
  )
 
+(defun parsed-inventory-record-null-prototype ()
+  "Return an instance of parsed-inventory-record with all slot-values null.
+We do this rather than using :initform or :default-initargs for class
+`parsed-inventory-record' and because we don't want to specialize on
+`initialize-instance'.
+This function should only be used for instantiating instances created _outside_ a sax parse!"
+  (let ((prototype (make-instance 'dbc::parsed-inventory-record)))
+    (loop 
+       for slot-is-accessor in (mon:class-slot-list 'dbc::parsed-inventory-record)
+       do (setf (slot-value  prototype slot-is-accessor) nil))
+    prototype))
+
 ;; :NOTE `set-parsed-inventory-record-slot-value' is defined in loadtime-bind.lisp
 ;; (def-set-parsed-class-record-slot-value 
 ;;     set-parsed-inventory-record-slot-value
