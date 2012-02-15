@@ -155,6 +155,44 @@
              finally (setf (gethash (funcall key-accessor obj) hash-table) obj))
        finally (return (values hash-table (hash-table-count hash-table))))))
 
+;; (parsed-inventory-record-xml-dump-file-and-hash)
+;; (gethash 'parsed-inventory-record *parsed-class-parse-table*)
+;; (gethash "12000" (gethash 'parsed-inventory-record *parsed-class-parse-table*))
+;; (inspect (gethash "12000" (gethash 'parsed-inventory-record *parsed-class-parse-table*)))
+(defun parsed-inventory-record-xml-dump-file-and-hash (&key 
+                                                       (input-file (make-pathname 
+                                                                    :directory (pathname-directory (sub-path *xml-input-dir*)) 
+                                                                    :name "dump-refs-DUMPING"))
+                                                       (output-pathname-sub-directory '("parsed-xml-inventory-records"))
+                                                       (output-pathname-base-directory (sub-path *xml-output-dir*))
+                                                       (output-pathname-name "inventory-records")
+                                                       (output-pathname-dated-p t)
+                                                       (output-pathname-type "lisp")
+                                                       (set-inventory-record-table t))
+  (let ((parsed-xml-file
+         (multiple-value-list 
+          (write-sax-parsed-xml-to-file
+           :input-file input-file
+           :output-file (make-default-sax-parsed-xml-output-pathname
+                         :pathname-sub-directory output-pathname-sub-directory
+                         :pathname-base-directory output-pathname-base-directory
+                         :pathname-name output-pathname-name
+                         :pathname-name-dated-p output-pathname-dated-p
+                         :pathname-type output-pathname-type))))
+        (parsed-hash (make-hash-table :test 'equal)))
+    ;; (if (cadr parsed-xml-file)
+    (load-sax-parsed-xml-file-to-parsed-class-hash
+     :parsed-class 'parsed-inventory-record  
+     :input-file (cadr parsed-xml-file)
+     :hash-table  parsed-hash
+     :key-accessor  #'inventory-number
+     :slot-dispatch-function #'set-parsed-inventory-record-slot-value)
+    (values 
+     (if set-inventory-record-table
+         (setf (gethash 'parsed-inventory-record *parsed-class-parse-table*) parsed-hash)
+         parsed-hash)
+     (cadr parsed-xml-file))))
+
 ;; :EXAMPLE
 ;; (dbc::%print-sax-parsed-slots-calculate-padding-for-format-control-using-plist-keys '())
 ;; (dbc::%print-sax-parsed-slots-calculate-padding-for-format-control-using-plist-keys '() :value-column-overage 19)
@@ -242,7 +280,7 @@
 ;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun write-sax-parsed-slots-to-file (object &key slot-for-file-name
                                                    prefix-for-file-name
-                                                   ;; suffix-for-file-name
+                                                   suffix-for-file-name
                                                    (print-unbound nil)
                                                    (slot-for-file-name-zero-padded nil)
                                                    (pathname-type "lisp")
@@ -251,7 +289,7 @@
                                                    (pre-padded-format-control nil))
   (declare  (parsed-class object)
             (type (and symbol (mon::not-null)) slot-for-file-name)
-            (type (or string null) prefix-for-file-name)
+            (type (or string null) prefix-for-file-name suffix-for-file-name)
             (mon:pathname-or-namestring output-directory)
             (boolean directory-exists-check print-unbound))
   (when directory-exists-check
@@ -311,9 +349,11 @@
                (merge-pathnames (make-pathname :name (concatenate 'string 
                                                                   (or prefix-for-file-name
                                                                       (string-downcase slot-for-file-name))
+                                                                  ;;  When a string is provided it should contain a trailing #\- if one is wanted.
                                                                   (and (not prefix-for-file-name) "-")
                                                                   maybe-zero-pad
-                                                                  slot-value-if-stringp)
+                                                                  slot-value-if-stringp
+                                                                  suffix-for-file-name)
                                                :type pathname-type)
                                 output-directory)))
          (calculate-padding 

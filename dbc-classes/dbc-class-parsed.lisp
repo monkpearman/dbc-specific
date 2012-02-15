@@ -64,6 +64,8 @@
 
 (in-package #:dbc)
 
+(defvar *parsed-class-parse-table* (make-hash-table))
+
 (defgeneric %parsed-class-subtype-check (parsed-class-object))
 
 (defgeneric field-to-accessor-table (object))
@@ -152,7 +154,8 @@
 (defclass parsed-class (base-dbc)
   ;; :NOTE Which other slots accessors and generics should this class establish?
   ()
-  (:documentation "Base dbc parsed class."))
+  (:documentation "Base dbc parsed class. 
+:NOTE variable *parsed-class-parse-table* holds hashes keyed to subclasses."))
 
 (defclass parsed-naf-entity (parsed-class)
   ()

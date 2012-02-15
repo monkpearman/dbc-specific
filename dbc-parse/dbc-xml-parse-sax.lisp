@@ -371,7 +371,8 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
                                               (%make-parsed-output-trimmed-pathname pathname-name))
                                     :type pathname-type)
                      sub-dir-ensured)))
-
+;; 
+;; (write-sax-parsed-xml-to-file 
 (defun write-sax-parsed-xml-to-file (&key input-file output-file)
   (declare (mon:pathname-or-namestring input-file)
            ((or mon:pathname-or-namestring list) output-file))
@@ -396,7 +397,7 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
                                        :if-does-not-exist :create)
           (%parsed-data-output-stream *parsed-data-current-state*) current-handler-stream)
     (unwind-protect
-         (cxml:parse input-file current-handler-instance)
+         (values (cxml:parse input-file current-handler-instance) dump-file)
       (progn
         (when (and (streamp current-handler-stream)
                    (open-stream-p current-handler-stream))
@@ -407,8 +408,10 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
                   (%parsed-data-current-parent *parsed-data-current-state*) nil
                   *parsed-data-current-state* nil))))))
 
+
 #|
 
+;;; ==============================
  (make-pathname :directory (pathname-directory (sub-path *xml-input-dir*)) :name "dump-artist-infos-xml")
  => #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/notes-versioned/sql-file-per-table-2010-08-25/from-DBC-ARCH-2010-09-01/dump-artist-infos-xml"
 
@@ -421,7 +424,7 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
   :output-file (list :pathname-name "inventory-dump-test" :pathname-sub-directory (list (sub-name *xml-output-dir*) "new-sax-parser" )))
 
 (make-default-sax-parsed-xml-output-pathname-directory :pathname-sub-directory "new-sax-parser" 
-                                                            :pathname-base-directory (sub-path *xml-output-dir*))
+                                                       :pathname-base-directory (sub-path *xml-output-dir*))
 
 #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/xml-class-dump-dir/new-sax-parser/"
 
@@ -429,23 +432,6 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
 
 (make-default-sax-parsed-xml-output-pathname-directory  :pathname-sub-directory (list (sub-name *xml-output-dir*) "new-sax-parser" ))
 (make-default-sax-parsed-xml-output-pathname-directory :pathname-sub-directory nil)
-
-
-(make-default-sax-parsed-xml-output-pathname 
- :pathname-sub-directory (list (sub-name *xml-output-dir*) "new-sax-parser")
- :pathname-name nil
- :pathname-name-dated-p nil
- :pathname-type nil)
-                                                                           ))
-
-#P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/new-sax-parser/artist-dump-test-2011-12-07.lisp"
-/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/new-sax-parser/artist-dump-test-2011-12-07.lisp
-;; /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/xml-class-dump-dir/new-sax-parser/artist-dump-test-2011-12-07.lisp
-
-(make-default-sax-parsed-xml-output-pathname-directory 
-                    :pathname-sub-directory (list (sub-name *xml-output-dir*) "individual-parse-artists" )
-                    :pathname-base-directory (system-base-path *xml-output-dir*)
-                    :pathname-dated-p t)
 
 |#
 

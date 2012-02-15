@@ -9,8 +9,6 @@
 (in-package #:dbc)
 ;; *package*
 
-
-
 ;; (make-instance 'parsed-inventory-record)
 
 ;;; ==============================
@@ -480,11 +478,39 @@ This function should only be used for instantiating instances created _outside_ 
        do (setf (slot-value  prototype slot-is-accessor) nil))
     prototype))
 
-;; (defun parsed-inventory-record-null-prototype-to-file (object &key
-;;                                                        ;; (output-directory *dbc-base-item-number-image-pathname*)
-;;                                                        ;; (directory-exists-check t)
-;;                                                        prefix-for-file-name 
-;;                                                        suffix-for-file-name)
+(defun parsed-inventory-record-null-prototype-to-file (object &key
+                                                       (base-output-directory dbc::*dbc-base-item-number-image-pathname*)
+                                                       ;; (directory-exists-check t)
+                                                       (prefix-for-file-name "")
+                                                       (suffix-for-file-name (concatenate 'string "_NEW-" (mon:time-string-yyyy-mm-dd)))
+                                                       (pathname-type "lisp")
+                                                       (print-unbound nil))
+  
+  (let* ((inventory-number-check (dbc::inventory-number object))
+         (record-id (or (and inventory-number-check
+                             (stringp inventory-number-check)
+                             (every-digit-char-p inventory-number-check)
+                             (control-id-indexed-number-zero-padded-string (inventory-number object)))
+                        (error ":FUNCTION `parsed-inventory-record-null-prototype-to-file' ~
+                                -- OBJECT has bad slot-value for slot inventory-number")))
+         (output-dir (and (or (equal (pathname base-output-directory) *dbc-base-item-number-image-pathname*)
+                              (probe-file base-output-directory))
+                          (ensure-directories-exist (merge-pathnames (make-pathname :directory `(:relative ,record-id))
+                                                                     base-output-directory)))))
+    (when output-dir 
+      (write-sax-parsed-slots-to-file
+       object
+       :output-directory output-dir
+       :slot-for-file-name 'inventory-number
+       :prefix-for-file-name prefix-for-file-name
+       :suffix-for-file-name suffix-for-file-name
+       :directory-exists-check nil
+       :print-unbound print-unbound
+       :slot-for-file-name-zero-padded t
+       :pathname-type pathname-type))))
+
+
+
 
 ;; :NOTE `set-parsed-inventory-record-slot-value' is defined in loadtime-bind.lisp
 ;; (def-set-parsed-class-record-slot-value 

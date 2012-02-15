@@ -24,6 +24,14 @@
 ;; *package*
 (defparameter *tt--parse-table* (make-hash-table :test 'equal))
 
+;; :NOTE following is roughly equivalent to evaluating
+;; `parsed-inventory-record-xml-dump-file-and-hash' which is prefered because it
+;; will populate all the records to a corresponding key in
+;; `*parsed-class-parse-table*'.
+;; (gethash 'parsed-inventory-record *parsed-class-parse-table*)
+;; (gethash "12000" (gethash 'parsed-inventory-record *parsed-class-parse-table*))
+;; (gethash "12000" (gethash 'parsed-inventory-record *parsed-class-parse-table*))
+;; (inspect (gethash "12000" (gethash 'parsed-inventory-record *parsed-class-parse-table*)))
 (let ((parsed-sax-file (make-default-sax-parsed-xml-output-pathname :pathname-name "sax-refs-test")))
   (write-sax-parsed-xml-to-file 
    :input-file  (merge-pathnames (make-pathname :name "dump-refs-DUMPING")

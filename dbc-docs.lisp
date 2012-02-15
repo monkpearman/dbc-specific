@@ -18,6 +18,14 @@ An instance of the system-path class holds the class allocated slot system-path
      \(system-base-path *system-path*\)\)~%~@
 :SEE-ALSO `dbc:system-path'.~%▶▶▶")
 
+(vardoc '*parsed-class-parse-table*
+"A hash-table. It's keys are symbols naming subclasses of class `parsed-class'
+its values are hash-tables of the parsed XML database files corresponding to the
+subclass identified by the key.~%~@
+:EXAMPLE~%
+ \(gethash 'parsed-inventory-record *parsed-class-parse-table*\)~%~@
+:SEE-ALSO `<XREF>'.~%▶▶▶")
+
 ;;; ==============================
 ;;; :SPECIALS-DBC-TEST-PATHS-DOCUMENTATION
 ;;; ==============================
@@ -1011,8 +1019,12 @@ qualified, e.g. as DBC:INVENTORY-NUMBER.~%~@
 Arg PREFIX-FOR-FILE-NAME is a string, e.g. \"inventory-number\", \"artist-enity-num\",
 etc.  It is combined with `cl:slot-value' of SLOT-FOR-FILE-NAME when making a
 pathname to write OBJECT to.  When a string is provided it should contain a
-trailing #\\- if one is wanted. If PREFIX-FOR-FILE-NAME is null the `cl:string' representation of
-SLOT-FOR-FILE-NAME is used instead.~%~@
+trailing #\\- if one is wanted. If PREFIX-FOR-FILE-NAME is null the `cl:string'
+representation of the symbol SLOT-FOR-FILE-NAME is used instead. To override
+this behaviour, i.e. to write a file without SLOT-FOR-FILE-NAME prepended use
+the the empty string, e.g. \"\".~%~@
+Arg SUFFIX-FOR-FILE-NAME is a string to append to the pathname name written to.
+When a string is provided it should contain a leading #\\- if one is wanted.~%~@
 When keyword SLOT-FOR-FILE-NAME-ZERO-PADDED is non-nil if slot-value of
 SLOT-FOR-FILE-NAME is a positive integer or string representing one it will be
 prepended with leading zeros such that it will have the form 0NNNNN. In either
@@ -1020,11 +1032,14 @@ case, the slot-value must not represent an integer larger than 99999 or a
 warning is signalled and the file will not be written.~%~@
 Keyword arg PRE-PADDED-FORMAT-CONTROL, if supplied, is used in lieu of return
 value of `print-sax-parsed-slots-padding-format-control' with OBJECT as argument.~%~@
+When keyword PRINT-UNBOUND is non-nil unbound slots of OBJECT are printed with
+their slot-value as #<UNBOUND>.~%~@
 :EXAMPLE~%
  \(write-sax-parsed-slots-to-file 
   <OBJECT>
   :slot-for-file-name 'inventory-number 
-  :prefix-for-file-name \"inventory-number\"
+  :prefix-for-file-name \"bubba-\"
+  :suffix-for-file-name \"-FOO\"
   :output-directory \(merge-pathnames #P\"individual-parse-refs-2011-10-01/\" \(sub-path *xml-output-dir*\)\)\)~%~@
 :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
 `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files',
@@ -1043,6 +1058,29 @@ value of `print-sax-parsed-slots-padding-format-control' with OBJECT as argument
 :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
 `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files',
 `write-sax-parsed-inventory-record-hash-to-zero-padded-directory'.~%▶▶▶")
+
+(fundoc 'parsed-inventory-record-null-prototype-to-file
+        "Write slot values of OBJECT to a file in directory corresponding to object's
+inventory-number slot value beneath BASE-OUTPUT-DIRECTORY.~%~@
+Return pathname of file written.~%~@
+Keyword args PREFIX-FOR-FILE-NAME, SUFFIX-FOR-FILE-NAME, PATHNAME-TYPE,
+PRINT-UNBOUND are as per `dbc::write-sax-parsed-slots-to-file'.~%~@
+:SEE-ALSO `parsed-inventory-record-xml-dump-file-and-hash'.~%▶▶▶")
+
+(fundoc 'parsed-inventory-record-xml-dump-file-and-hash
+        "Parse XML contents of INPUT-FILE and write a lispy version to disk as per
+`write-sax-parsed-xml-to-file' then feed the contents of the lisp file into a
+hash-table with `load-sax-parsed-xml-file-to-parsed-class-hash'.~%~@
+Return cl:values a hash-table and the output pathname written to.
+Keyword input-file is an XML file containing inventory-records to be parsed.
+Keywords OUTPUT-PATHNAME-SUB-DIRECTORY, OUTPUT-PATHNAME-BASE-DIRECTORY,
+OUTPUT-PATHNAME-NAME, OUTPUT-PATHNAME-DATED-P, and OUTPUT-PATHNAME-TYPE are as
+per `make-default-sax-parsed-xml-output-pathname'.~%~@
+When set-inventory-record-table is non-nil nth-value 1 is the return value of
+setting the 'parsed-inventory-record key in variable `*parsed-class-parse-table*' to the
+hash-table populated from the contents of INPUPT-FILE, else return a hash-table.~%
+:EXAMPLE~% \(parsed-inventory-record-xml-dump-file-and-hash\)~%~@
+:SEE-ALSO `parsed-inventory-record-null-prototype-to-file'.~%▶▶▶")
 
 (fundoc 'write-sax-parsed-inventory-record-hash-to-zero-padded-directory
         "Write all parsed-inventory-records in HASH-TABLE to a relative sub-directory
