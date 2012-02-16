@@ -163,6 +163,8 @@
                                                        (input-file (make-pathname 
                                                                     :directory (pathname-directory (sub-path *xml-input-dir*)) 
                                                                     :name "dump-refs-DUMPING"))
+                                                       ;; (output-pathname-sub-directory `(,(concatenate 'string "parsed-xml-inventory-records-"
+                                                       ;;                                                (mon:time-string-yyyy-mm-dd))))
                                                        (output-pathname-sub-directory '("parsed-xml-inventory-records"))
                                                        (output-pathname-base-directory (sub-path *xml-output-dir*))
                                                        (output-pathname-name "inventory-records")
