@@ -1,7 +1,10 @@
 ;;; :FILE-CREATED <Timestamp: #{2012-02-16T12:31:29-05:00Z}#{12074} - by MON>
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-sold-record-in-store.lisp
-;; 
 ;;; ==============================
+
+;; `base-inventory-sales-order-record' `parsed-inventory-sales-sold-record' `*control-id-inventory-sales-order-namespace*'.
+;; `base-inventory-sales-sold-record' `parsed-inventory-sales-sold-record' `*control-id-inventory-sales-order-namespace*'.
+;; `base-inventory-sales-sold-in-store-record' `parsed-inventory-sales-sold-in-store-record' `*control-id-inventory-sales-sold-in-store-namespace*'.
 
 #|
 These contents of these XML files correspond to the following derbycityprints SQL tables:
@@ -22,11 +25,11 @@ These contents of these XML files correspond to the following derbycityprints SQ
 ;;     :accessor <SLOT-ACCESSOR>
 ;;     :documentation ":ORIGINAL-FIELD \"<ORIGINAL-STRING>\"")
 ;; 
-;; (defclass parsed-sold-record-in-store (parsed-class)
+;; (defclass parsed-inventory-sales-sold-in-store-record (parsed-class)
 ;;  (()))
 
 ;; (make-parsed-class-field-slot-accessor-mapping 
-;;  'parsed-sold-record-in-store
+;;  'parsed-inventory-sales-sold-in-store-record
 ;;  '((<MATCH-STRING> . <TRANSFORM>)
 ;;    (<MATCH-STRING> . <TRANSFORM>)
 ;;    )))

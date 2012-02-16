@@ -2,6 +2,10 @@
 ;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-classes/dbc-class-parsed-sold-record.lisp
 ;;; ==============================
 
+;; `base-inventory-sales-order-record' `parsed-inventory-sales-sold-record' `*control-id-inventory-sales-order-namespace*'.
+;; `base-inventory-sales-sold-record' `parsed-inventory-sales-sold-record' `*control-id-inventory-sales-order-namespace*'.
+;; `base-inventory-sales-sold-in-store-record' `parsed-inventory-sales-sold-in-store-record' `*control-id-inventory-sales-sold-in-store-namespace*'.
+
 #|
 These contents of these XML files correspond to the following derbycityprints SQL tables:
  "orders-xml"         ; `orders`
@@ -23,11 +27,11 @@ These contents of these XML files correspond to the following derbycityprints SQ
 ;;     :accessor <SLOT-ACCESSOR>
 ;;     :documentation ":ORIGINAL-FIELD \"<ORIGINAL-STRING>\"")
 
-;; (defclass parsed-sold-record (parsed-class)
+;; (defclass parsed-inventory-sales-sold-record (parsed-class)
 ;;  (()))
 
 ;; (make-parsed-class-field-slot-accessor-mapping 
-;;  'parsed-sold-record
+;;  'parsed-inventory-sales-sold-record
 ;;  '((<MATCH-STRING> . <TRANSFORM>)
 ;;    (<MATCH-STRING> . <TRANSFORM>)
 ;;    ))

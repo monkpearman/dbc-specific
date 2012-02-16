@@ -4,6 +4,10 @@
 
 ;; *system-object-uuid-base-namespace*
 ;; *control-id-inventory-namespace*
+;; *control-id-inventory-publication-namespace*
+;; *control-id-inventory-sales-order-namespace*
+;; *control-id-inventory-sales-sold-namespace*
+;; *control-id-inventory-sales-sold-in-store-namespace*
 ;; *control-id-documentation-namespace*
 ;; *control-id-authority-namespace*
 ;; *control-id-category-namespace*
@@ -77,6 +81,18 @@
 (defvar *control-id-inventory-publication-namespace*
   (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
                            :control-id '*control-id-inventory-publication-namespace*))
+
+(defvar *control-id-inventory-sales-order-namespace*
+  (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
+                           :control-id '*control-id-inventory-order-namespace*))
+
+(defvar *control-id-inventory-sales-sold-namespace*
+  (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
+                           :control-id '*control-id-inventory-sold-namespace*))
+
+(defvar *control-id-inventory-sales-sold-in-store-namespace*
+  (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
+                           :control-id '*control-id-inventory-sold-in-store-namespace*))
 
 (defvar *control-id-documentation-namespace*
   (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)

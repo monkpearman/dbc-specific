@@ -1,6 +1,8 @@
 ;;; :FILE-CREATED <Timestamp: #{2012-02-16T10:43:14-05:00Z}#{12074} - by MON>
-;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-classes/dbc-class-parsed-sales-record.lisp
+;;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-inventory-sales-order-record.lisp
 ;;; ==============================
+
+;; dbc-class-parsed-inventory-record.lisp
 
 #|
 These contents of these XML files correspond to the following derbycityprints SQL tables:
@@ -22,17 +24,82 @@ These contents of these XML files correspond to the following derbycityprints SQ
 ;;     :accessor <SLOT-ACCESSOR>
 ;;     :documentation ":ORIGINAL-FIELD \"<ORIGINAL-STRING>\"")
 ;;
-;; (defclass parsed-order-record (parsed-class)
+;; (defclass parsed-inventory-sales-order-record (parsed-class)
 ;;  (()))
 
 
-;; control-id-in
+;; control-id-
 
-;; (make-parsed-class-field-slot-accessor-mapping 
-;;  'parsed-order-record
-;;  '(("order_number" . 
-;;    (<MATCH-STRING> . <TRANSFORM>)
-;;    ))
+(make-parsed-class-field-slot-accessor-mapping 
+ 'parsed-inventory-sales-order-record
+ '(("order_number"        . control-id-indexed-order-record)
+   ("customer_email"      . )
+   ("payment_type"        . )
+   ("weight"              . )
+   ("total"               . )
+   ("PNREF"               . )
+   ("RESULT"              . )
+   ("RESPMSG"             . )
+   ("AUTHCODE"            . )
+   ("PREFPSMSG"           . )
+   ("POSTFPSMSG"          . )
+   ("IAVS"                . )
+   ("IP"                  . )
+   ("card_name"           . )
+   ("status"              . )
+   ("amount_1"            . )
+   ("sale_tax"            . )
+   ("track_number"        . )
+   ("date_shipped"        . shipped-date)
+   ("id"                  . ignorable-id-number)
+   ("order_date"          . order-date)
+   ("mo_received"         . money-order-received)
+   ("mo_received_date"    . money-order-received-date)
+   ("check_received"      . check-received)
+   ("check_received_date" . check-received-date)
+   ("mo_cleared_date"     . money-order-cleared-date)
+   ("check_cleared_date"  . check-cleared-date)
+   ("check_cleared"       . check-cleared)
+   ("mo_cleared"          . money-order-cleared)
+   ("xml_data"            . response-xml-data)
+   ("ship_firstname"      . ship-to-first-name)
+   ("ship_last_name"      . ship-to-last-name)
+   ("ship_company"        . ship-to-company)
+   ("ship_adress1"        . ship-to-address-1)
+   ("ship_adress2"        . ship-to-address-2)
+   ("ship_city"           . ship-to-city)
+   ("ship_country"        . ship-to-country)
+   ("ship_state"          . ship-to-state)
+   ("ship_phone1"         . ship-to-phone-number-1)
+   ("ship_phone2"         . ship-to-phone-number-2)
+   ("bill_first_name"     . bill-to-first-name)
+   ("bill_lastname"       . bill-to-last-name)
+   ("bill_company"        . bill-to-company)
+   ("bill_adress1"        . bill-to-address-1)
+   ("bill_adress2"        . bill-to-address-2)
+   ("bill_city"           . bill-to-city)
+   ("bill_country"        . bill-to-country)
+   ("bill_state"          . bill-to-state)
+   ("bill_phone1"         . bill-to-phone-number-1)
+   ("bill_phone2"         . bill-to-phone-number-2)
+   ("ship_zip"            . ship-to-zip)
+   ("bill_zip"            . bill-to-zip)
+   ("cb_status"           . )
+   ("date_auth"           . authorized-date)
+   ("date_void"           . voided-date)
+   ("who_did_cb"          . )
+   ("why_cb"              . )
+   ("action_ip"           . )
+   ("ounces"              . )
+   ("pounds"              . )
+   ("postal_service"      . )
+   ("actual_shipcost"     . )
+   ("archived"            . )
+   ))
+
+
+
+
 
 
 ;;; ==============================
@@ -78,7 +145,7 @@ These contents of these XML files correspond to the following derbycityprints SQ
 ;;  1 | 3
 ;; 
 ;;
-;; - No clue what these were supposed to indicate
+;; - No clue what these were supposed to indicate and it appears that 0 and 2 are never used.
 ;; 
 ;; (search-forward-regexp "name=\"payment_type\"\>[^0]+\</field\>" nil t)
 ;;
@@ -300,9 +367,9 @@ These contents of these XML files correspond to the following derbycityprints SQ
 ;;
 ;; -
 ;;
-
+;; 
 ;;; ==============================
-;; :FIELD "date_shipped" :TRANSFORM
+;; :FIELD "date_shipped" :TRANSFORM shipped-date
 ;;
 ;;         :TYPE "timestamp"
 ;;         :NULL-P "NO"
