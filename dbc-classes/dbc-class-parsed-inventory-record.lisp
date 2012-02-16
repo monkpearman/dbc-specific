@@ -412,7 +412,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("volume"            . publication-volumes)
    ("edition"           . publication-edition)
    ("page"              . publication-pages)
-   ("Plate_number"      . publication-plates)
+   ("Plate_number"      . publication-plates) ; note case
    ("issue"             . publication-issue)
    ("year"              . publication-date)
    ("year_year"         . publication-date-range)
@@ -2237,13 +2237,54 @@ This function should only be used for instantiating instances created _outside_ 
 ;; :EXAMPLE-VALUES 
 ;;  0 | 1 | 2 | 3
 ;;
+;; - `online` and `onlinen` are far to similiarly named
+;;
 ;;  - These values correspond to:
 ;;
 ;;    not-online, sold, duplicate, and online
 ;;   
 ;;   Unofortunately I'm having trouble remember which is which
 ;;
-;; - `online` and `onlinen` are far to similiarly named
+;; - But see the output for SQL tables `sold_refs` `sold_in_store` `orders`
+;;   and correspodngin XML files in following paths:
+;;     (loop 
+;;        with base-dir = (sub-path *xml-input-dir*)
+;;        for sold-xml-pathnames in (list "orders-xml" "sold-in-store-xml" "sold-refs-xml")
+;;        collect (merge-pathnames (make-pathname :name sold-xml-pathnames) base-dir))
+;; 
+
+;;
+
+;;
+;; (let ((not-online     (list))
+;;       (sold           (list))
+;;       (duplicate      (list))
+;;       (online         (list))
+;;       (something-else (list)))
+;;   (loop 
+;;      for record-key being the hash-keys in (gethash 'dbc::parsed-inventory-record dbc::*parsed-class-parse-table*) using (hash-value record-value)
+;;      for status = (dbc::record-status-active record-value)
+;;      do (cond ((equal status "0")
+;;                (push (inventory-number record-value) not-online))
+;;               ((equal status "1")
+;;                (push (inventory-number record-value) sold))
+;;               ((equal status "2")
+;;                (push (inventory-number record-value) duplicate))
+;;               ((equal status "3")
+;;                (push (inventory-number record-value) online))
+;;               (t
+;;                (push (inventory-number record-value) something-else))))
+;;   (list 
+;;    :not-online        not-online
+;;    :sold              sold          
+;;    :duplicate         duplicate     
+;;    :online            online        
+;;    :something-else    something-else))
+;; 
+;; :NOT-ONLINE <- "0" seems correct 
+;; :SOLD       <- "1" has length 7466
+;; :DUPLICATE  <- "2" has length 338
+;; :ONLINE     <- "3" has length 667
 
 
 ;;; ==============================
