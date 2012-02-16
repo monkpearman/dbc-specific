@@ -22,13 +22,14 @@
 ;;
 (defclass parsed-artist-record (parsed-naf-entity)
 
-  (;; control-id-entity-num
+  (
+   ;; control-id-indexed-artist
    (control-id-entity-num-artist
     :initarg :control-id-entity-num-artist
     :accessor control-id-entity-num-artist
     :documentation ":ORIGINAL-FIELD \"id\"")
 
-   ;; control-id-naf-entity-doc-num
+   ;; control-id-indexed-documentation-record
    (control-id-doc-num-artist
     :initarg :control-id-doc-num-artist
     :accessor control-id-doc-num-artist

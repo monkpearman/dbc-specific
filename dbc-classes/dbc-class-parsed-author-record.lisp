@@ -10,16 +10,20 @@
 ;; *package*
 
 (defclass parsed-author-record (parsed-naf-entity)
-  ((control-id-doc-num-author
+  (
+   ;; control-id-indexed-documentation-record
+   (control-id-doc-num-author
     :initarg :control-id-doc-num-author
     :accessor control-id-doc-num-author
     :documentation ":ORIGINAL-FIELD \"bio\"")
 
+   ;; control-id-indexed-author
    (control-id-entity-num-author
     :initarg :control-id-entity-num-author
     :accessor control-id-entity-num-author
     :documentation ":ORIGINAL-FIELD \"id\"")
 
+   ;; control-id-display-author
    (control-id-display-author
     :initarg :control-id-display-author
     :accessor control-id-display-author
