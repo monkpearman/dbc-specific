@@ -2,9 +2,11 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-inventory-sales-order-record.lisp
 ;;; ==============================
 
-;; dbc-class-parsed-inventory-record.lisp
-
 #|
+ `base-inventory-sales-order-record' `parsed-inventory-sales-sold-record' `*control-id-inventory-sales-order-namespace*'.
+ `base-inventory-sales-sold-record' `parsed-inventory-sales-sold-record' `*control-id-inventory-sales-order-namespace*'.
+ `base-inventory-sales-sold-in-store-record' `parsed-inventory-sales-sold-in-store-record' `*control-id-inventory-sales-sold-in-store-namespace*'.
+
 These contents of these XML files correspond to the following derbycityprints SQL tables:
  "orders-xml"         ; `orders`
  "sold-in-store-xml"  ; `sold_refs`
@@ -15,6 +17,8 @@ These contents of these XML files correspond to the following derbycityprints SQ
     for sold-xml-pathnames in (list "orders-xml" "sold-in-store-xml" "sold-refs-xml")
     collect (merge-pathnames (make-pathname :name sold-xml-pathnames) base-dir))
 
+;; #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/notes-versioned/sql-file-per-table-2010-08-25/from-DBC-ARCH-2010-09-01/orders-xml"
+
 |#
 
 (in-package #:dbc)
@@ -24,77 +28,410 @@ These contents of these XML files correspond to the following derbycityprints SQ
 ;;     :accessor <SLOT-ACCESSOR>
 ;;     :documentation ":ORIGINAL-FIELD \"<ORIGINAL-STRING>\"")
 ;;
-;; (defclass parsed-inventory-sales-order-record (parsed-class)
-;;  (()))
 
 
-;; control-id-
+;; (progn (search-forward-regexp "^\\( (\\)\\(\".*\"\\)\\( +\\)\\(.*\\)\\()\\)" nil t)
+;;        (replace-match "(\\4\n:initarg :\\4\n:accessor \\4\n:documentation \":ORIGINAL-FIELD \\2\")"))
+
+(defclass parsed-inventory-sales-order-record (parsed-class)
+  (;; control-id-indexed-inventory-sales-order-record
+   (order-number 
+    :initarg :order-number
+    :accessor order-number
+    :documentation ":ORIGINAL-FIELD \"order_number\".")
+
+   (customer-email
+    :initarg :customer-email
+    :accessor customer-email
+    :documentation ":ORIGINAL-FIELD \"customer_email\".")
+
+   (payment-type
+    :initarg :payment-type
+    :accessor payment-type
+    :documentation ":ORIGINAL-FIELD \"payment_type\".")
+
+   (ignorable-shipping-weight-combined
+    :initarg :ignorable-shipping-weight-combined
+    :accessor ignorable-shipping-weight-combined
+    :documentation ":ORIGINAL-FIELD \"weight\".")
+
+   (payment-price-total
+    :initarg :payment-price-total
+    :accessor payment-price-total
+    :documentation ":ORIGINAL-FIELD \"total\".")
+
+   (payment-authorization-pnref
+    :initarg :payment-authorization-pnref
+    :accessor payment-authorization-pnref
+    :documentation ":ORIGINAL-FIELD \"PNREF\".")
+
+   (payment-authorization-result
+    :initarg :payment-authorization-result
+    :accessor payment-authorization-result
+    :documentation ":ORIGINAL-FIELD \"RESULT\".")
+
+   (payment-authorization-respmsg
+    :initarg :payment-authorization-respmsg
+    :accessor payment-authorization-respmsg
+    :documentation ":ORIGINAL-FIELD \"RESPMSG\".")
+
+   (payment-authorization-authcode
+    :initarg :payment-authorization-authcode
+    :accessor payment-authorization-authcode
+    :documentation ":ORIGINAL-FIELD \"AUTHCODE\".")
+
+   (payment-authorization-prefpsmsg
+    :initarg :payment-authorization-prefpsmsg
+    :accessor payment-authorization-prefpsmsg
+    :documentation ":ORIGINAL-FIELD \"PREFPSMSG\".")
+
+   (payment-authorization-postfpsmsg
+    :initarg :payment-authorization-postfpsmsg
+    :accessor payment-authorization-postfpsmsg
+    :documentation ":ORIGINAL-FIELD \"POSTFPSMSG\".")
+
+   (payment-authorization-iavs
+    :initarg :payment-authorization-iavs
+    :accessor payment-authorization-iavs
+    :documentation ":ORIGINAL-FIELD \"IAVS\".")
+
+   (payment-authorization-ip
+    :initarg :payment-authorization-ip
+    :accessor payment-authorization-ip
+    :documentation ":ORIGINAL-FIELD \"IP\".")
+
+   (customer-card-name
+    :initarg :customer-card-name
+    :accessor customer-card-name
+    :documentation ":ORIGINAL-FIELD \"card_name\".")
+
+   (record-status-payment
+    :initarg :record-status-payment
+    :accessor record-status-payment
+    :documentation ":ORIGINAL-FIELD \"status\".")
+
+   ;; :SEE shipping-price-actual
+   (shipping-price-ask
+    :initarg :shipping-price-ask
+    :accessor shipping-price-ask
+    :documentation ":ORIGINAL-FIELD \"amount_1\".")
+ 
+   (payment-price-taxable
+    :initarg :payment-price-taxable
+    :accessor payment-price-taxable
+    :documentation ":ORIGINAL-FIELD \"sale_tax\"")
+
+   ;; ignorable
+   (ignorable-shipping-tracking-number
+    :initarg :ignorable-shipping-tracking-number
+    :accessor ignorable-shipping-tracking-number
+    :documentation ":ORIGINAL-FIELD \"track_number\".")
+ 
+   (shipping-date
+    :initarg :shipping-date
+    :accessor shipping-date
+    :documentation ":ORIGINAL-FIELD \"date_shipped\".")
+
+   (ignorable-order-id-number
+    :initarg :ignorable-order-id-number
+    :accessor ignorable-order-id-number
+    :documentation ":ORIGINAL-FIELD \"id\".")
+
+   (order-date
+    :initarg :order-date
+    :accessor order-date
+    :documentation ":ORIGINAL-FIELD \"order_date\".")
+
+   (payment-money-order-received
+    :initarg :payment-money-order-received
+    :accessor payment-money-order-received
+    :documentation ":ORIGINAL-FIELD \"mo_received\".")
+
+   (payment-money-order-received-date
+    :initarg :payment-money-order-received-date
+    :accessor payment-money-order-received-date
+    :documentation ":ORIGINAL-FIELD \"mo_received_date\".")
+
+   (payment-check-received
+    :initarg :payment-check-received
+    :accessor payment-check-received
+    :documentation ":ORIGINAL-FIELD \"check_received\".")
+
+   (payment-check-received-date
+    :initarg :payment-check-received-date
+    :accessor payment-check-received-date
+    :documentation ":ORIGINAL-FIELD \"check_received_date\"")
+
+   (payment-money-order-cleared-date
+    :initarg :payment-money-order-cleared-date
+    :accessor payment-money-order-cleared-date
+    :documentation ":ORIGINAL-FIELD \"mo_cleared_date\"")
+
+   (payment-check-cleared-date
+    :initarg :payment-check-cleared-date
+    :accessor payment-check-cleared-date
+    :documentation ":ORIGINAL-FIELD \"check_cleared_date\".")
+
+   (payment-check-cleared
+    :initarg :payment-check-cleared
+    :accessor payment-check-cleared
+    :documentation ":ORIGINAL-FIELD \"check_cleared\".")
+
+   (payment-money-order-cleared
+    :initarg :payment-money-order-cleared
+    :accessor payment-money-order-cleared
+    :documentation ":ORIGINAL-FIELD \"mo_cleared\".")
+
+   (payment-authorization-xml-data
+    :initarg :payment-authorization-xml-data
+    :accessor payment-authorization-xml-data
+    :documentation ":ORIGINAL-FIELD \"xml_data\"")
+
+   (customer-ship-to-first-name
+    :initarg :customer-ship-to-first-name
+    :accessor customer-ship-to-first-name
+    :documentation ":ORIGINAL-FIELD \"ship_firstname\".")
+
+   (customer-ship-to-last-name
+    :initarg :customer-ship-to-last-name
+    :accessor customer-ship-to-last-name
+    :documentation ":ORIGINAL-FIELD \"ship_last_name\".")
+
+   (customer-ship-to-company
+    :initarg :customer-ship-to-company
+    :accessor customer-ship-to-company
+    :documentation ":ORIGINAL-FIELD \"ship_company\".")
+
+   (customer-ship-to-address-1
+    :initarg :customer-ship-to-address-1
+    :accessor customer-ship-to-address-1
+    :documentation ":ORIGINAL-FIELD \"ship_adress1\".")
+
+   (customer-ship-to-address-2
+    :initarg :customer-ship-to-address-2
+    :accessor customer-ship-to-address-2
+    :documentation ":ORIGINAL-FIELD \"ship_adress2\".")
+
+   (customer-ship-to-city
+    :initarg :customer-ship-to-city
+    :accessor customer-ship-to-city
+    :documentation ":ORIGINAL-FIELD \"ship_city\".")
+
+   (customer-ship-to-country
+    :initarg :customer-ship-to-country
+    :accessor customer-ship-to-country
+    :documentation ":ORIGINAL-FIELD \"ship_country\".")
+
+   (customer-ship-to-state
+    :initarg :customer-ship-to-state
+    :accessor customer-ship-to-state
+    :documentation ":ORIGINAL-FIELD \"ship_state\".")
+
+   (customer-ship-to-phone-number-1
+    :initarg :customer-ship-to-phone-number-1
+    :accessor customer-ship-to-phone-number-1
+    :documentation ":ORIGINAL-FIELD \"ship_phone1\".")
+
+   (customer-ship-to-phone-number-2
+    :initarg :customer-ship-to-phone-number-2
+    :accessor customer-ship-to-phone-number-2
+    :documentation ":ORIGINAL-FIELD \"ship_phone2\".")
+
+   (customer-bill-to-first-name
+    :initarg :customer-bill-to-first-name
+    :accessor customer-bill-to-first-name
+    :documentation ":ORIGINAL-FIELD \"bill_first_name\".")
+
+   (customer-bill-to-last-name
+    :initarg :customer-bill-to-last-name
+    :accessor customer-bill-to-last-name
+    :documentation ":ORIGINAL-FIELD \"bill_lastname\".")
+
+   (customer-bill-to-company
+    :initarg :customer-bill-to-company
+    :accessor customer-bill-to-company
+    :documentation ":ORIGINAL-FIELD \"bill_company\".")
+
+   (customer-bill-to-address-1
+    :initarg :customer-bill-to-address-1
+    :accessor customer-bill-to-address-1
+    :documentation ":ORIGINAL-FIELD \"bill_adress1\".")
+
+   (customer-bill-to-address-2
+    :initarg :customer-bill-to-address-2
+    :accessor customer-bill-to-address-2
+    :documentation ":ORIGINAL-FIELD \"bill_adress2\".")
+
+   (customer-bill-to-city
+    :initarg :customer-bill-to-city
+    :accessor customer-bill-to-city
+    :documentation ":ORIGINAL-FIELD \"bill_city\".")
+
+   (customer-bill-to-country
+    :initarg :customer-bill-to-country
+    :accessor customer-bill-to-country
+    :documentation ":ORIGINAL-FIELD \"bill_country\".")
+
+   (customer-bill-to-state
+    :initarg :customer-bill-to-state
+    :accessor customer-bill-to-state
+    :documentation ":ORIGINAL-FIELD \"bill_state\".")
+
+   (customer-bill-to-phone-number-1
+    :initarg :customer-bill-to-phone-number-1
+    :accessor customer-bill-to-phone-number-1
+    :documentation ":ORIGINAL-FIELD \"bill_phone1\".")
+
+   (customer-bill-to-phone-number-2
+    :initarg :customer-bill-to-phone-number-2
+    :accessor customer-bill-to-phone-number-2
+    :documentation ":ORIGINAL-FIELD \"bill_phone2\".")
+
+   (customer-ship-to-zip
+    :initarg :customer-ship-to-zip
+    :accessor customer-ship-to-zip
+    :documentation ":ORIGINAL-FIELD \"ship_zip\".")
+
+   (customer-bill-to-zip
+    :initarg :customer-bill-to-zip
+    :accessor customer-bill-to-zip
+    :documentation ":ORIGINAL-FIELD \"bill_zip\".")
+
+   ;; AFAICT either 0 | 2
+   (record-status-payment-verification
+    :initarg :record-status-payment-verification
+    :accessor record-status-payment-verification
+    :documentation ":ORIGINAL-FIELD \"cb_status\".")
+   
+   (payment-authorization-manual-verification-date
+    :initarg :payment-authorization-manual-verification-date
+    :accessor payment-authorization-manual-verification-date
+    :documentation ":ORIGINAL-FIELD \"date_auth\".")
+
+   (payment-authorization-manual-void-date
+    :initarg :payment-authorization-manual-void-date
+    :accessor payment-authorization-manual-void-date
+    :documentation ":ORIGINAL-FIELD \"date_void\".")
+
+   ;; Shares generic
+   (edit-by
+    :initarg :edit-by
+    :accessor edit-by
+    :documentation ":ORIGINAL-FIELD \"who_did_cb\".")
+
+   (payment-authorization-manual-verifcation-desicription
+    :initarg :payment-authorization-manual-verifcation-desicription
+    :accessor payment-authorization-manual-verifcation-desicription
+    :documentation ":ORIGINAL-FIELD \"why_cb\".")
+
+   ;; not sure if this is correct or not   
+   (payment-authorization-manual-verification-ip
+    :initarg :payment-authorization-manual-verification-ip
+    :accessor payment-authorization-manual-verification-ip
+    :documentation ":ORIGINAL-FIELD \"action_ip\".")
+
+   ;; ignorable
+   (shipping-weight-combined-ounces
+    :initarg :shipping-weight-combined-ounces
+    :accessor shipping-weight-combined-ounces
+    :documentation ":ORIGINAL-FIELD \"ounces\".")
+
+   ;; ignorable
+   (shipping-weight-combined-pounds
+    :initarg :shipping-weight-combined-pounds
+    :accessor shipping-weight-combined-pounds
+    :documentation ":ORIGINAL-FIELD \"pounds\".")
+
+   ;; ingorable always empty
+   (ignorable-usps-data
+    :initarg 
+    :accessor
+    :documentation ":ORIGINAL-FIELD \"postal_service\"." )
+
+   ;; ignorable always 0
+   (shipping-price-actual
+    :initarg 
+    :accessor
+    :documentation ":ORIGINAL-FIELD \"actual_shipcost\".")
+
+   (ignorable-payment-archived
+    :initarg 
+    :accessor
+    :documentation ":ORIGINAL-FIELD \"archived\".")
+   )
+  (:documentation 
+   #.(format nil
+             "Class for parsed dbc xml `orders` table.~%~@
+:EXAMPLE ~%
+ \(mon:class-slot-list  'parsed-inventory-sales-order-record\)~%~@
+:NOTE the accessor `order-number' should be used as value for the
+KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%")))
 
 (make-parsed-class-field-slot-accessor-mapping 
  'parsed-inventory-sales-order-record
- '(("order_number"        . control-id-indexed-order-record)
-   ("customer_email"      . )
-   ("payment_type"        . )
-   ("weight"              . )
-   ("total"               . )
-   ("PNREF"               . )
-   ("RESULT"              . )
-   ("RESPMSG"             . )
-   ("AUTHCODE"            . )
-   ("PREFPSMSG"           . )
-   ("POSTFPSMSG"          . )
-   ("IAVS"                . )
-   ("IP"                  . )
-   ("card_name"           . )
-   ("status"              . )
-   ("amount_1"            . )
-   ("sale_tax"            . )
-   ("track_number"        . )
-   ("date_shipped"        . shipped-date)
-   ("id"                  . ignorable-id-number)
+ '(("order_number"        . order-number)
+   ("customer_email"      . customer-email)
+   ("payment_type"        . payment-type)
+   ("weight"              . ignorable-shipping-weight-combined)
+   ("total"               . payment-price-total)
+   ("PNREF"               . payment-authorization-pnref)
+   ("RESULT"              . payment-authorization-result)
+   ("RESPMSG"             . payment-authorization-respmsg)
+   ("AUTHCODE"            . payment-authorization-authcode)
+   ("PREFPSMSG"           . payment-authorization-prefpsmsg)
+   ("POSTFPSMSG"          . payment-authorization-postfpsmsg)
+   ("IAVS"                . payment-authorization-iavs)
+   ("IP"                  . payment-authorization-ip)
+   ("card_name"           . customer-card-name)
+   ("status"              . record-status-payment)
+   ("amount_1"            . shipping-price-ask)
+   ("sale_tax"            . payment-price-taxable)
+   ("track_number"        . ignorable-shipping-tracking-number)
+   ("date_shipped"        . shipping-date)
+   ("id"                  . ignorable-order-id-number)
    ("order_date"          . order-date)
-   ("mo_received"         . money-order-received)
-   ("mo_received_date"    . money-order-received-date)
-   ("check_received"      . check-received)
-   ("check_received_date" . check-received-date)
-   ("mo_cleared_date"     . money-order-cleared-date)
-   ("check_cleared_date"  . check-cleared-date)
-   ("check_cleared"       . check-cleared)
-   ("mo_cleared"          . money-order-cleared)
-   ("xml_data"            . response-xml-data)
-   ("ship_firstname"      . ship-to-first-name)
-   ("ship_last_name"      . ship-to-last-name)
-   ("ship_company"        . ship-to-company)
-   ("ship_adress1"        . ship-to-address-1)
-   ("ship_adress2"        . ship-to-address-2)
-   ("ship_city"           . ship-to-city)
-   ("ship_country"        . ship-to-country)
-   ("ship_state"          . ship-to-state)
-   ("ship_phone1"         . ship-to-phone-number-1)
-   ("ship_phone2"         . ship-to-phone-number-2)
-   ("bill_first_name"     . bill-to-first-name)
-   ("bill_lastname"       . bill-to-last-name)
-   ("bill_company"        . bill-to-company)
-   ("bill_adress1"        . bill-to-address-1)
-   ("bill_adress2"        . bill-to-address-2)
-   ("bill_city"           . bill-to-city)
-   ("bill_country"        . bill-to-country)
-   ("bill_state"          . bill-to-state)
-   ("bill_phone1"         . bill-to-phone-number-1)
-   ("bill_phone2"         . bill-to-phone-number-2)
-   ("ship_zip"            . ship-to-zip)
-   ("bill_zip"            . bill-to-zip)
-   ("cb_status"           . )
-   ("date_auth"           . authorized-date)
-   ("date_void"           . voided-date)
-   ("who_did_cb"          . )
-   ("why_cb"              . )
-   ("action_ip"           . )
-   ("ounces"              . )
-   ("pounds"              . )
-   ("postal_service"      . )
-   ("actual_shipcost"     . )
-   ("archived"            . )
+   ("mo_received"         . payment-money-order-received)
+   ("mo_received_date"    . payment-money-order-received-date)
+   ("check_received"      . payment-check-received)
+   ("check_received_date" . payment-check-received-date)
+   ("mo_cleared_date"     . payment-money-order-cleared-date)
+   ("check_cleared_date"  . payment-check-cleared-date)
+   ("check_cleared"       . payment-check-cleared)
+   ("mo_cleared"          . payment-money-order-cleared)
+   ("xml_data"            . payment-authorization-xml-data)
+   ("ship_firstname"      . customer-ship-to-first-name)
+   ("ship_last_name"      . customer-ship-to-last-name)
+   ("ship_company"        . customer-ship-to-company)
+   ("ship_adress1"        . customer-ship-to-address-1)
+   ("ship_adress2"        . customer-ship-to-address-2)
+   ("ship_city"           . customer-ship-to-city)
+   ("ship_country"        . customer-ship-to-country)
+   ("ship_state"          . customer-ship-to-state)
+   ("ship_phone1"         . customer-ship-to-phone-number-1)
+   ("ship_phone2"         . customer-ship-to-phone-number-2)
+   ("bill_first_name"     . customer-bill-to-first-name)
+   ("bill_lastname"       . customer-bill-to-last-name)
+   ("bill_company"        . customer-bill-to-company)
+   ("bill_adress1"        . customer-bill-to-address-1)
+   ("bill_adress2"        . customer-bill-to-address-2)
+   ("bill_city"           . customer-bill-to-city)
+   ("bill_country"        . customer-bill-to-country)
+   ("bill_state"          . customer-bill-to-state)
+   ("bill_phone1"         . customer-bill-to-phone-number-1)
+   ("bill_phone2"         . customer-bill-to-phone-number-2)
+   ("ship_zip"            . customer-ship-to-zip)
+   ("bill_zip"            . customer-bill-to-zip)
+   ("cb_status"           . record-status-payment-verification) ;; record-status-active
+   ("date_auth"           . payment-authorization-manual-verification-date)
+   ("date_void"           . payment-authorization-manual-void-date)
+   ("who_did_cb"          . edit-by) ;;  
+   ("why_cb"              . payment-authorization-manual-verifcation-desicription) ;; description-inventory-translation
+   ("action_ip"           . payment-authorization-manual-verification-ip) ;; not sure if this is correct or not
+   ("ounces"              . shipping-weight-combined-ounces) ;; ignorable
+   ("pounds"              . shipping-weight-combined-pounds) ;; ignorable
+   ("postal_service"      . ignorable-usps-data) ;; ingorable always empty
+   ("actual_shipcost"     . shipping-price-actual) ;; ignorable always 0
+   ("archived"            . ignorable-payment-archived)
    ))
 
 
@@ -289,8 +626,8 @@ These contents of these XML files correspond to the following derbycityprints SQ
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
-;;
-;;
+;;  
+;; - a dotted quad 
 ;; - case is important when using `make-parsed-class-field-slot-accessor-mapping'
 ;;
 
@@ -676,7 +1013,12 @@ These contents of these XML files correspond to the following derbycityprints SQ
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
-;;
+;;  +33 474851673
+;;  0031-10-4041111
+;;  +33389556525
+;;  01 30 57 42 70
+;;  717-334-5120
+;;  (786) 4641888
 ;;
 ;; -
 ;;
@@ -691,7 +1033,7 @@ These contents of these XML files correspond to the following derbycityprints SQ
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
-;;
+;; as above if present else emtpy
 ;;
 ;; -
 ;;
@@ -901,8 +1243,9 @@ These contents of these XML files correspond to the following derbycityprints SQ
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
-;;
-;;
+;;  0000-00-00 00:00:00
+;;  2007-10-30 18:12:28
+;; 
 ;; -
 ;;
 
@@ -960,9 +1303,12 @@ These contents of these XML files correspond to the following derbycityprints SQ
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
-;;
-;;
-;; -
+;;  82.126.187.138
+;;  68.18.93.248
+;;  74.130.96.12
+;;  81.57.10.195
+;; 
+;; - Empty or a a dotted quad
 ;;
 
 ;;; ==============================
