@@ -647,6 +647,12 @@ A mixin for subclasses of which identify classes containing \"record\" like data
   ((control-id-of-class-type
     :initform (%find-control-id-class-or-lose 'base-inventory-record))))
 
+;; base-record (base-dbc)
+;; base-sales-order-record (base-record)
+;; base-order-record (base-sales-order-record)
+;; base-sold-record (base-sales-order-record)
+;; base-sold-record-in-store (base-sales-order-record)
+
 ;; `parsed-doc-record' 
 ;; control-id-documentation-record-num, control-id-documentation-record-sub-num
 (defclass control-id-documentation-record-type (control-id-record-type)
@@ -857,6 +863,10 @@ Likewise, such co-references may occur in both the same class and/or an entirely
   ()
   ;; (:documentation "See slot inventory-number of class `parsed-inventory-record'")
   )
+
+;; `base-inventory-sales-order-record' `parsed-inventory-sales-sold-record' `*control-id-inventory-sales-order-namespace*'.
+;; `base-inventory-sales-sold-record' `parsed-inventory-sales-sold-record' `*control-id-inventory-sales-order-namespace*'.
+;; `base-inventory-sales-sold-in-store-record' `parsed-inventory-sales-sold-in-store-record' `*control-id-inventory-sales-sold-in-store-namespace*'.
 
 ;;; ==============================
 ;; publication-inventory-record 
