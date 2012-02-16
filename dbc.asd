@@ -135,6 +135,9 @@
              (:file "dbc-class-parsed-technique-record")
              (:file "dbc-class-parsed-publication-record")
              (:file "dbc-class-parsed-theme-record")
+             (:file "dbc-class-parsed-order-record")
+             (:file "dbc-class-parsed-sold-record")
+             (:file "dbc-class-parsed-sold-record-in-store")
              ;; (:file "dbc-tgm")))
              ;;
              ;; (:file "dbc-class-symbol-construct-deprecated")
