@@ -868,6 +868,10 @@ Likewise, such co-references may occur in both the same class and/or an entirely
 ;; `base-inventory-sales-sold-record' `parsed-inventory-sales-sold-record' `*control-id-inventory-sales-order-namespace*'.
 ;; `base-inventory-sales-sold-in-store-record' `parsed-inventory-sales-sold-in-store-record' `*control-id-inventory-sales-sold-in-store-namespace*'.
 
+;; control-id-indexed-inventory-sales-order-record
+;; control-id-indexed-inventory-sales-sold-record
+;; control-id-indexed-inventory-sales-sold-in-store-record
+
 ;;; ==============================
 ;; publication-inventory-record 
 ;;; ==============================
