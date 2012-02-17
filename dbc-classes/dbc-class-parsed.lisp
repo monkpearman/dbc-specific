@@ -64,8 +64,6 @@
 
 (in-package #:dbc)
 
-(defvar *parsed-class-parse-table* (make-hash-table))
-
 (defgeneric %parsed-class-subtype-check (parsed-class-object))
 
 (defgeneric field-to-accessor-table (object))

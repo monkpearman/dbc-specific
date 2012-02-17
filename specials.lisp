@@ -58,13 +58,27 @@ corresponds to an item number e.g.:
 ;; This should maybe be some variant instance of class `system-path' but it
 ;; currently exists outside the dbc-specific source directory and is likely to remain so.
 (defvar *dbc-base-item-number-image-pathname*  #P"/mnt/NEF-DRV-A/DBC-ITEM-IMAGES/"
-        "Default base pathname for under which dbc images are located.")
+        "Default base pathname under which dbc images are located.")
 
-(defvar *parsed-class-field-slot-accessor-mapping-table* (make-hash-table))
+;; (vardoc 
+(defvar *parsed-class-parse-table* (make-hash-table))
 
 (vardoc '*parsed-class-field-slot-accessor-mapping-table*
-"Big table of mapping parsed-class symbols to instances of class `parsed-class-field-slot-accessor-mapping'.
-Its keys name object instances which subclass the class `parsed-class'.
+"Table mapping symbols which subclass `parsed-class' to a corresponding
+hash-table of parsed xml-data for that subclass.~%~@
+For use with `load-sax-parsed-xml-file-to-parsed-class-hash',
+`write-sax-parsed-class-hash-to-files', and functions defined with
+`def-parsed-class-record-xml-dump-file-and-hash'.~%~@
+:EXAMPLE~%
+ \(gethash 'parsed-inventory-record *parsed-class-parse-table*\)~%
+ \(gethash 'parsed-inventory-sales-order-record *parsed-class-parse-table*\)~%~@
+:SEE-ALSO .~%▶▶▶")
+
+(defvar *parsed-class-field-slot-accessor-mapping-table* (make-hash-table)
+
+(vardoc '*parsed-class-field-slot-accessor-mapping-table*
+"Big table mapping parsed-class symbols to instances of class `parsed-class-field-slot-accessor-mapping'.~%~@
+Its keys name object instances which subclass the class `parsed-class'.~%~@
 Its values are an instance of three slots:~%~%  ~
  parsed-class-mapped -- is a sybmol namign a parsed-class~% ~
  field-to-accessor-table -- is a hash-table mapping field-names to slot-accessors~% ~
