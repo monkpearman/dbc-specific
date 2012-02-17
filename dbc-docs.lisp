@@ -1098,6 +1098,72 @@ not exist it will be created as if by `cl:ensure-directories-exist'.~%~@
 :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
 `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
 
+(fundoc 'def-parsed-class-record-xml-dump-file-and-hash
+        "Return a function which consolidates functionality of both
+`write-sax-parsed-xml-to-file' and `load-sax-parsed-xml-file-to-parsed-class-hash'
+such that evalauting the returned function will for a given subclass parsed-<FOO> of
+`parsed-class' perform the following:~%
+ - Parse an XML input file~%~% ~
+ - For each parsed record write a Lispy sexp of the parsed XML input file to
+   disk (i.e. serialize the parse)~%~% ~
+ - Load the contents of the Lispy file \(i.e. deserialize the parse\)~%~% ~
+ - For each deserialized sexp create an instance of parsed-<FOO>~%~% ~
+ - Add the created instance to a hash-table keyed by some unique value of a
+   slot of parsed-<FOO>~%~@
+Keyword PARSED-CLASS is an unquoted symbol designating a class which subclasses `parsed-class'.~%~@
+Its symbol-name is concatenated with \"-xml-dump-file-and-hash\" as per return
+value of `%parsed-class-dumper-format-and-intern-symbol' to form the returned
+symbol-name of the defined function. For example the following pair:~%~% ~
+ :PARSED-CLASS parsed-inventory-record~%~@
+generates a function with the `cl:symbol-name' \"PARSED-INVENTORY-RECORD-XML-DUMP-FILE-AND-HASH\".~%~@
+
+Keyword DEFAULT-KEY-ACCESSOR is a symbol designating a method specialized on PARSED-CLASS
+as per`load-sax-parsed-xml-file-to-parsed-class-hash'.
+
+Keyword DEFAULT-INPUT-PATHNAME-NAME is a pathname-name \(a string\) naming
+the default xml file to parse, e.g.:~%
+ :DEFAULT-INPUT-PATHNAME-NAME \"dump-refs-DUMPING\"~%~@
+At runtime it is merged with the pathname value of the following form:~%
+  \(sub-path *xml-input-dir*\)~%~@
+to form a pathname for which `cl:probe-file' returns true.~%~@
+It becomes the defined functions default value for use with the keyword INPUT-FILE
+for both `write-sax-parsed-xml-to-file' and `load-sax-parsed-xml-file-to-parsed-class-hash'.~%~@
+
+Keyword DEFAULT-OUTPUT-PATHNAME-BASE-DIRECTORY is a pathname naming a default
+base directory, e.g.:~%
+ :DEFAULT-OUTPUT-PATHNAME-BASE-DIRECTORY \(sub-path *xml-output-dir*\)\)~%~@
+
+It is merged with the subdirectories specified by
+DEFAULT-OUTPUT-PATHNAME-SUB-DIRECTORY when writing the dumped file.~%~@
+
+It becomes the defined functions default value for use with the keyword
+OUTPUT-PATHNAME-BASE-DIRECTORY of `make-default-sax-parsed-xml-output-pathname'.~%~@
+
+Keyword DEFAULT-OUTPUT-PATHNAME-SUB-DIRECTORY is an unquoted list of strings each
+designating a sub directory of DEFAULT-OUTPUT-PATHNAME-BASE-DIRECTORY e.g.:~%
+ :DEFAULT-OUTPUT-PATHNAME-SUB-DIRECTORY \(\"parsed-xml-inventory-records\"\)~%~@
+It becomes the defined functions default value for use with the keyword
+OUTPUT-PATHNAME-SUB-DIRECTORY of `make-default-sax-parsed-xml-output-pathname'.~%~@
+Keyword DEFAULT-OUTPUT-PATHNAME-NAME is a string to use as the prefix when
+generating the dumped-file's dated pathname-name, e.g.:~%~% ~
+ :DEFAULT-OUTPUT-PATHNAME-NAME \"inventory-records\"~%~@
+would at runtime expand to a pathname-name having the form:~%~% ~
+ \"inventory-records-<YYYY>-<MM>-<DD>\"~%~@
+It becomes the defined functions default value for use with the
+keyword OUTPUT-PATHNAME-NAME of `write-sax-parsed-xml-to-file' and the
+keyword OUTPUT-PATHNAME-SUB-DIRECTORY of `make-default-sax-parsed-xml-output-pathname'.~%~@
+
+:EXAMPLE~%~@
+ \(def-parsed-class-record-xml-dump-file-and-hash 
+    :parsed-class parsed-inventory-sales-order-record
+    :default-key-accessor order-number
+    :default-input-pathname-name \"orders-xml\"
+    :default-output-pathname-base-directory \(sub-path *xml-output-dir*\)
+    :default-output-pathname-sub-directory \(\"parsed-xml-inventory-sales-order-records\"\)
+    :default-output-pathname-name \"order-records\"\)~%~@
+
+:SEE-ALSO `print-sax-parsed-slots', `write-sax-parsed-slots-to-file',
+`write-sax-parsed-class-hash-to-files'.~%▶▶▶")
 
 
 ;;; ==============================

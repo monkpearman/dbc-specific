@@ -341,6 +341,17 @@
           (warn "~%Something wrong with arg OBJECT, declining to dump to file~%")
           nil))))
 
+;; :NOTE Now that we can dereference PARSED-CLASS as a key in `*parsed-class-parse-table*'
+;;  we can access the HASH-TABLE assocociated with PARSED-CLASS directly e.g.:
+;;
+;;   (gethash 'parsed-inventory-record *parsed-class-parse-table*)
+;;   (gethash 'parsed-inventory-sales-order-record *parsed-class-parse-table*)
+;;
+;; However, to utilize this feature we will need to implment an early check
+;; which bails/errors if the key is not present, e.g.:
+;;
+;;  (gethash 'parsed-foo-does-not-exist *parsed-class-parse-table*)
+;;
 ;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun write-sax-parsed-class-hash-to-files (hash-table &key parsed-class
                                                              slot-for-file-name
@@ -403,30 +414,23 @@
                             "~:@(~A-XML-DUMP-FILE-AND-HASH~)"
                             parsed-class))
 
-;; :EXAMPLE
-;;  (def-parsed-class-record-xml-dump-file-and-hash 
-;;     :parsed-class parsed-inventory-sales-order-record
-;;     :default-key-accessor order-number
-;;     :default-input-pathname-name "orders-xml"
-;;     :default-output-pathname-sub-directory ("parsed-xml-inventory-sales-order-records")
-;;     :default-output-pathname-base-directory (sub-path *xml-output-dir*)
-;;     :default-output-pathname-name "order-records")
-;;
-;; :NOTE PARSED-CLASS' `parsed-class-slot-dispatch-function' may need to be evaluated at macroexpansion time.
+
+;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defmacro def-parsed-class-record-xml-dump-file-and-hash (&key parsed-class
-                                                          default-key-accessor 
-                                                          ;; default-key-accessor is a symbol designating a method specialized on PARSED-CLASS
-                                                          ;; see `load-sax-parsed-xml-file-to-parsed-class-hash'
-                                                          default-input-pathname-name ;; e.g. "dump-refs-DUMPING"
-                                                          default-output-pathname-sub-directory ;; '("parsed-xml-inventory-records"))
-                                                          default-output-pathname-base-directory ;; (sub-path *xml-output-dir*))
-                                                          default-output-pathname-name ;; "inventory-records")
+                                                          default-key-accessor
+                                                          default-input-pathname-name
+                                                          default-output-pathname-base-directory
+                                                          default-output-pathname-sub-directory
+                                                          default-output-pathname-name
                                                           ;; (output-pathname-dated-p t)
                                                           ;; (output-pathname-type "lisp")
                                                           ;; (set-inventory-record-table t))
                                                           )
   (let ((generated-name (%parsed-class-dumper-format-and-intern-symbol parsed-class))
-        ) ;; (dispatch-fun   (parsed-class-slot-dispatch-function parsed-class)))
+        ;; :NOTE PARSED-CLASS' `parsed-class-slot-dispatch-function' may need to
+        ;; be evaluated at macroexpansion time.
+        ;; (dispatch-fun   (parsed-class-slot-dispatch-function parsed-class)))
+        )
     `(defun ,generated-name (&key (input-file (make-pathname 
                                                :directory (pathname-directory (sub-path *xml-input-dir*)) 
                                                :name ,default-input-pathname-name))
