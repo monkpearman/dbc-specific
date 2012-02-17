@@ -63,7 +63,7 @@ corresponds to an item number e.g.:
 ;; (vardoc 
 (defvar *parsed-class-parse-table* (make-hash-table))
 
-(vardoc '*parsed-class-field-slot-accessor-mapping-table*
+(vardoc '*parsed-class-parse-table*
 "Table mapping symbols which subclass `parsed-class' to a corresponding
 hash-table of parsed xml-data for that subclass.~%~@
 For use with `load-sax-parsed-xml-file-to-parsed-class-hash',
@@ -72,7 +72,7 @@ For use with `load-sax-parsed-xml-file-to-parsed-class-hash',
 :EXAMPLE~%
  \(gethash 'parsed-inventory-record *parsed-class-parse-table*\)~%
  \(gethash 'parsed-inventory-sales-order-record *parsed-class-parse-table*\)~%~@
-:SEE-ALSO .~%▶▶▶")
+:SEE-ALSO `*parsed-class-field-slot-accessor-mapping-table*'.~%▶▶▶")
 
 (defvar *parsed-class-field-slot-accessor-mapping-table* (make-hash-table)
 
@@ -84,8 +84,8 @@ Its values are an instance of three slots:~%~%  ~
  field-to-accessor-table -- is a hash-table mapping field-names to slot-accessors~% ~
  accessor-to-field-table -- is a hash-table mapping slot-accessors to field-names~%~@
 For use with the macro `def-set-parsed-class-record-slot-value' which is used to
-define functions which map setf slot-value forms for use with `string-case:string-case'.
-:SEE-ALSO `make-parsed-class-field-slot-accessor-mapping'.~%▶▶▶")
+define functions which map setf slot-value forms for use with `string-case:string-case'.~%~@
+:SEE-ALSO `make-parsed-class-field-slot-accessor-mapping', `*parsed-class-parse-table*'.~%▶▶▶")
 
 ;;; ==============================
 
