@@ -14,7 +14,11 @@
 (defclass parsed-class-field-slot-accessor-mapping (base-dbc)
   ((parsed-class-mapped)     ; :reader parsed-class-mapped)
    (field-to-accessor-table) ; :reader field-to-accessor-table)
-   (accessor-to-field-table)) ; :reader accessor-to-field-table))
+   (accessor-to-field-table)  ; :reader accessor-to-field-table)
+   ;; a function for use with load-sax-parsed-xml-file-to-parsed-class-hash 
+   ;; genearted with def-set-parsed-class-record-slot-value
+   (parsed-class-slot-dispatch-function
+    :reader parsed-class-slot-dispatch-function))
   (:documentation 
    #.(format nil
              "Object for holding a mappings of field-names with slot-accessors.~%~@
@@ -31,7 +35,6 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
 `field-to-accessor-table', `accessor-to-field-table', `parsed-class-mapped',
 `make-parsed-class-field-slot-accessor-mapping',
 `def-set-parsed-class-record-slot-value'.~%▶▶▶")))
-
 
 ;; Returns a symbol designating a subclass of class `parsed-class'
 ;; :EXAMPLE
@@ -68,6 +71,13 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
 (defmethod accessors-of-parsed-class ((object parsed-class-field-slot-accessor-mapping))
   (alexandria:hash-table-keys (accessor-to-field-table object)))
 
+(defmethod parsed-class-slot-dispatch-function ((object parsed-class-field-slot-accessor-mapping))
+  (or (and (slot-boundp object 'parsed-class-slot-dispatch-function)
+           (slot-value object 'parsed-class-slot-dispatch-function))
+      (error ":METHOD `parsed-class-slot-dispatch-function' specialized on class `parsed-class-field-slot-accessor-mapping' with unbound slot~%")))
+
+;; (setf (slot-value (parsed-class-mapped 'parsed-inventory-record) 'parsed-class-slot-dispatch-function)(parsed-class-slot-dispatch-function (parsed-class-mapped 'parsed-inventory-record))
+
 ;; (defun print-parsed-class-field-slot-accessor-mapping (object stream)
 ;;   (format stream "~%:PARSED-CLASS-MAPPED     ~S ~S~%:FIELD-TO-ACCESSOR-TABLE ~S~%:ACCESSOR-TO-FIELD-TABLE ~S~%"
 ;;           (slot-value object 'parsed-class-mapped)
@@ -100,7 +110,10 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
                                    table-length-maybe
                                    sb-impl::+min-hash-table-size+))
            (f2a-table  (setf (field-to-accessor-table mapping) (make-hash-table :test #'equal :size table-size)))
-           (a2f-table  (setf (accessor-to-field-table mapping) (make-hash-table :size table-size))))
+           (a2f-table  (setf (accessor-to-field-table mapping) (make-hash-table :size table-size)))
+           (slot-dispatch-function (%parsed-class-set-slot-value-format-and-intern-symbol 
+                                    parsed-class-subclass)))
+      (setf (slot-value mapping 'parsed-class-slot-dispatch-function) slot-dispatch-function)
       (dolist (pair field-to-accessor-alist (mon:hash-invert-key-val f2a-table a2f-table))
         (setf (gethash (car pair) f2a-table) (cdr pair)))
       ;; Bind slot-value of parsed-class-mapped last. No reason binding it earlier
@@ -110,6 +123,8 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
       (setf (slot-value mapping 'parsed-class-mapped) the-class-parsed-class-subclass)
       (remhash parsed-class-subclass *parsed-class-field-slot-accessor-mapping-table*)
       (setf (gethash parsed-class-subclass *parsed-class-field-slot-accessor-mapping-table*) mapping))))
+
+;; (setf (gethash *parsed-class-field-slot-accessor-mapping-table*
 
 ;; :EXAMPLE
 ;;  (%parsed-class-record-setf-slot-value-forms 'parsed-inventory-record)
@@ -128,6 +143,9 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
              (field-to-accessor-table parsed-class-lookup))
     (setf setf-forms (nreverse setf-forms))))
 
+(defun %parsed-class-set-slot-value-format-and-intern-symbol (parsed-class)
+  (alexandria:format-symbol (find-package "DBC") "~:@(SET-~A-SLOT-VALUE~)" parsed-class))
+
 ;; :NOTE The setf of the accessor ensures we always populate the slot-value with nil
 ;; so as to avoid errors when slot is not `slot-boundp'.
 ;; 
@@ -142,11 +160,14 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
 ;;     parsed-inventory-record)                            ; <PARSED-CLASS> 
 ;;   *parsed-class-field-slot-accessor-mapping-table*)     ; <GLOBAL-HASH-TABLE-VAR> currently unused!
 ;;
-(defmacro def-set-parsed-class-record-slot-value (fun-name for-parsed-class) ; global-hash-table-var)
+;; (defmacro def-set-parsed-class-record-slot-value (fun-name for-parsed-class) ; global-hash-table-var)
+(defmacro def-set-parsed-class-record-slot-value (for-parsed-class) ; global-hash-table-var)
   ;; (let ((body-forms (%expand-parsed-class-record-setf-slot-value-forms parsed-class global-hash-table-var)))
   ;; (%expand-parsed-class-record-setf-slot-value-forms parsed-class global-hash-table-var)  
-  (let ((body-forms (%parsed-class-record-setf-slot-value-forms for-parsed-class)))
-    `(defun ,fun-name (field-string field-value object)
+  (let ((generated-name (%parsed-class-set-slot-value-format-and-intern-symbol for-parsed-class))
+        (body-forms (%parsed-class-record-setf-slot-value-forms for-parsed-class)))
+    ;; :WAS `(defun ,fun-name (field-string field-value object)
+    `(defun ,generated-name (field-string field-value object)
        (values 
         (string-case:string-case (field-string)
           ,@body-forms)
