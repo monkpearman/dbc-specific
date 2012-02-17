@@ -11,6 +11,14 @@
 ;;; :CLASSES
 ;;; ==============================
 
+;; (defclass parsed-class-parse-table (base-dbc)
+;; (;; a symbol designating a sublcass of parsed-class
+;;  (parsed-class) 
+;;  ;; a hash-table keyed to parsed-class-parsed in `*parsed-class-parse-table*'.
+;;  (parse-table)
+;;  )
+
+
 (defclass parsed-class-field-slot-accessor-mapping (base-dbc)
   ((parsed-class-mapped)     ; :reader parsed-class-mapped)
    (field-to-accessor-table) ; :reader field-to-accessor-table)
@@ -18,7 +26,9 @@
    ;; a function for use with load-sax-parsed-xml-file-to-parsed-class-hash 
    ;; genearted with def-set-parsed-class-record-slot-value
    (parsed-class-slot-dispatch-function
-    :reader parsed-class-slot-dispatch-function))
+    :reader parsed-class-slot-dispatch-function)
+   ;; (parsed-class-parse-table :reader parsed-class-parse-table)
+   )
   (:documentation 
    #.(format nil
              "Object for holding a mappings of field-names with slot-accessors.~%~@
@@ -76,8 +86,9 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
            (slot-value object 'parsed-class-slot-dispatch-function))
       (error ":METHOD `parsed-class-slot-dispatch-function' specialized on class `parsed-class-field-slot-accessor-mapping' with unbound slot~%")))
 
-;; (setf (slot-value (parsed-class-mapped 'parsed-inventory-record) 'parsed-class-slot-dispatch-function)(parsed-class-slot-dispatch-function (parsed-class-mapped 'parsed-inventory-record))
-
+;; (setf (slot-value (parsed-class-mapped 'parsed-inventory-record) 'parsed-class-slot-dispatch-function)
+;;       (parsed-class-slot-dispatch-function (parsed-class-mapped 'parsed-inventory-record))
+;;
 ;; (defun print-parsed-class-field-slot-accessor-mapping (object stream)
 ;;   (format stream "~%:PARSED-CLASS-MAPPED     ~S ~S~%:FIELD-TO-ACCESSOR-TABLE ~S~%:ACCESSOR-TO-FIELD-TABLE ~S~%"
 ;;           (slot-value object 'parsed-class-mapped)
@@ -90,8 +101,7 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
   (print-unreadable-object (object stream) ; :type t) 
     (format stream "HASH-MAPPED-CLASS ~S" 
             ;; (class-name (slot-value object 'parsed-class-mapped))
-            (slot-value object 'parsed-class-mapped)
-            )))
+            (slot-value object 'parsed-class-mapped))))
 
 ;; :NOTE As above, the arg GLOBAL-HASH-TABLE-VAR will always be `*parsed-class-field-slot-accessor-mapping-table*'
 (defun make-parsed-class-field-slot-accessor-mapping (parsed-class-subclass field-to-accessor-alist); global-hash-table-var)
@@ -145,10 +155,42 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
 
 (defun %parsed-class-set-slot-value-format-and-intern-symbol (parsed-class)
   (alexandria:format-symbol (find-package "DBC") "~:@(SET-~A-SLOT-VALUE~)" parsed-class))
+ 
+(defun %parsed-class-documenting-set-parsed-class-record-slot-value-function (parsed-class generated-name)
+  (let* ((example-accessor (mon:last-elt (accessors-of-parsed-class parsed-class)))
+         (example-field-string (accessor-to-field-mapping example-accessor parsed-class)))
+    ;; (list example-accessor example-field-string)))
+    (format nil
+            "Set FIELD-STRING to FIELD-VALUE for OBJECT according to the setf accessor~%~
+associated with FIELD-STRING.~%~@
+Return value is as if by cl:values:~%~% ~
+- nth-value 0 is FIELD-VALUE~% ~
+- nth-value 1 is OBJECT~%~@
+OBJECT is an instance of class `~(~A~)'.~%~@
+FIELD-STRING is a string with an associated setf accessor.~%~@
+FIELD-VALUE is a value to set as if by setf, e.g.:~%~% ~
+\(setf \(ACCESSOR OBJECT\) FIELD-VALUE\)~%~@
+For example, if OBJECT is an instance of the class `~(~A~)', and
+FIELD-STRING is the string ~S, and its setf accessor is `~(~A~)',
+then evaluating the following would set the `~(~A~)' slot-value of
+OBJECT to FIELD-VALUE as if by the following expression:~%~% ~
+\(setf \(~(~A~) OBJECT\) FIELD-VALUE\)~%~@
+:EXAMPLE~%~% ~
+ \(~\(~A~\) ~S \"<SOME-FIELD-VALUE>\" \(make-instance '~\(~A~\)\)\)~%~@
+:SEE-ALSO `def-set-parsed-class-record-slot-value'.~%▶▶▶"
+            parsed-class
+            parsed-class
+            example-field-string
+            example-accessor
+            example-accessor
+            example-accessor
+            generated-name    
+            example-field-string
+            parsed-class)))
 
 ;; :NOTE The setf of the accessor ensures we always populate the slot-value with nil
 ;; so as to avoid errors when slot is not `slot-boundp'.
-;; 
+;;
 ;; :TODO Currently these accessor methods are defined automagically at class creation.
 ;; We need to unify common routines and symbol-names to appropriate generic
 ;; functions and where the behavior is generalized across all class specialize
@@ -160,14 +202,19 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
 ;;     parsed-inventory-record)                            ; <PARSED-CLASS> 
 ;;   *parsed-class-field-slot-accessor-mapping-table*)     ; <GLOBAL-HASH-TABLE-VAR> currently unused!
 ;;
+;; => DBC::SET-PARSED-INVENTORY-RECORD-SLOT-VALUE
+
 ;; (defmacro def-set-parsed-class-record-slot-value (fun-name for-parsed-class) ; global-hash-table-var)
 (defmacro def-set-parsed-class-record-slot-value (for-parsed-class) ; global-hash-table-var)
   ;; (let ((body-forms (%expand-parsed-class-record-setf-slot-value-forms parsed-class global-hash-table-var)))
   ;; (%expand-parsed-class-record-setf-slot-value-forms parsed-class global-hash-table-var)  
-  (let ((generated-name (%parsed-class-set-slot-value-format-and-intern-symbol for-parsed-class))
-        (body-forms (%parsed-class-record-setf-slot-value-forms for-parsed-class)))
+  (let* ((generated-name (%parsed-class-set-slot-value-format-and-intern-symbol for-parsed-class))
+         (docstring      (%parsed-class-documenting-set-parsed-class-record-slot-value-function
+                          for-parsed-class generated-name))
+         (body-forms (%parsed-class-record-setf-slot-value-forms for-parsed-class)))
     ;; :WAS `(defun ,fun-name (field-string field-value object)
     `(defun ,generated-name (field-string field-value object)
+       ,docstring
        (values 
         (string-case:string-case (field-string)
           ,@body-forms)

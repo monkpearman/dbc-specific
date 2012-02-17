@@ -1374,8 +1374,6 @@ OBJECT should dereference a subclass of class `parsed-class'.~%
 "~%:EXAMPLE~%
  \(accessors-of-parsed-class 'parsed-inventory-record\)~%")
 
-
-
 (fundoc 'make-parsed-class-field-slot-accessor-mapping
 "Return an instance of class `parsed-class-field-slot-accessor-mapping'.~%~@
 Arg PARSED-CLASS-SUBCLASS is a symbol designating a class which subclasses `parsed-class'.
@@ -1399,6 +1397,16 @@ The cdr is a symbol designating an slot-accessor of class PARSED-CLASS-SUBCLASS.
 `field-to-accessor-table', `accessor-to-field-table', `parsed-class-mapped',
 `make-parsed-class-field-slot-accessor-mapping',
 `def-set-parsed-class-record-slot-value'.~%▶▶▶")
+
+(fundoc '%parsed-class-documenting-set-parsed-class-record-slot-value-function
+        "Generate a documentation string for GENERATED-NAME.~%~@
+PARSED-CLASS is a symbol designating the sublcass of parsed-class.~%~@
+GENERATED-NAME is a symbold designating a function as per the return value of
+macro `def-set-parsed-class-record-slot-value'.~%~@
+:EXAMPLE~%~@
+ (%parsed-class-documenting-set-parsed-class-record-slot-value-function 
+  'parsed-inventory-record  'set-parsed-inventory-record-slot-value)~%~@
+:SEE-ALSO `<XREF>'.~%▶▶▶")
 
 (fundoc 'def-set-parsed-class-record-slot-value
 "Define a function with FUN-NAME which maps the fields/value paris of orginal
