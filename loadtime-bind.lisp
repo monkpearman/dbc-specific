@@ -169,28 +169,40 @@
 ;;
 ;;; *parsed-class-field-slot-accessor-mapping-table*
 
-(def-set-parsed-class-record-slot-value 
-    set-parsed-inventory-record-slot-value
+(def-set-parsed-class-record-slot-value
+    ;; set-parsed-inventory-record-slot-value
     parsed-inventory-record)
 
-(def-set-parsed-class-record-slot-value 
-    set-parsed-artist-record-slot-value
+(def-set-parsed-class-record-slot-value
+    ;; set-parsed-inventory-sales-order-record-slot-value
+    parsed-inventory-sales-order-record)
+
+;; (def-set-parsed-class-record-slot-value
+;;     set-parsed-inventory-sales-sold-record-slot-value
+;;     parsed-inventory-sales-sold-record)
+
+;; (def-set-parsed-class-record-slot-value
+;;     set-parsed-inventory-sales-sold-in-store-record-slot-value
+;;     parsed-inventory-sales-sold-in-store-record)
+
+(def-set-parsed-class-record-slot-value
+    ;; set-parsed-artist-record-slot-value
     parsed-artist-record)
 
-(def-set-parsed-class-record-slot-value 
-    set-parsed-technique-record-slot-value
+(def-set-parsed-class-record-slot-value
+    ;; set-parsed-technique-record-slot-value
     parsed-technique-record)
 
-(def-set-parsed-class-record-slot-value 
-    set-parsed-person-record-slot-value
+(def-set-parsed-class-record-slot-value
+    ;; set-parsed-person-record-slot-value
     parsed-person-record)
 
-(def-set-parsed-class-record-slot-value 
-    set-parsed-author-record-slot-value
+(def-set-parsed-class-record-slot-value
+    ;; set-parsed-author-record-slot-value
     parsed-author-record)
 
-(def-set-parsed-class-record-slot-value 
-    set-parsed-brand-record-slot-value
+(def-set-parsed-class-record-slot-value
+    ;; set-parsed-brand-record-slot-value
     parsed-brand-record)
 
 
