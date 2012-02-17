@@ -354,11 +354,11 @@
 ;;
 ;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun write-sax-parsed-class-hash-to-files (hash-table &key parsed-class
-                                                             slot-for-file-name
-                                                             (slot-for-file-name-zero-padded nil)
-                                                             prefix-for-file-name
-                                                             (pathname-type "lisp")
-                                                             output-directory)
+                                             slot-for-file-name
+                                             (slot-for-file-name-zero-padded nil)
+                                             prefix-for-file-name
+                                             (pathname-type "lisp")
+                                             output-directory)
                                              
   (declare (type hash-table hash-table)
            (type (and symbol (mon::not-null)) slot-for-file-name parsed-class)
@@ -367,21 +367,28 @@
                  (make-pathname :directory (pathname-directory (probe-file output-directory))))
     (error "arg OUTPUT-DIRECTORY does not designate a valid directory~% got: ~S~%"
            output-directory))
-  (let ((calculate-padding (print-sax-parsed-slots-padding-format-control (make-instance parsed-class))))
-    (maphash #'(lambda (k v)
-                 (declare (ignore k) 
-                          (parsed-class v))
-                 (write-sax-parsed-slots-to-file v 
-                                                 :slot-for-file-name slot-for-file-name 
-                                                 :slot-for-file-name-zero-padded slot-for-file-name-zero-padded
-                                                 :prefix-for-file-name prefix-for-file-name
-                                                 :output-directory output-directory
-                                                 :directory-exists-check nil
-                                                 :pre-padded-format-control calculate-padding))
-             hash-table)))
+  (let ((calculate-padding (print-sax-parsed-slots-padding-format-control (make-instance parsed-class)))
+        (file-namestrings (make-array (hash-table-count hash-table) :fill-pointer 0)))
+    (flet ((hash-file-writer (k v)
+             (declare (ignore k) 
+                      (parsed-class v))
+             (vector-push-extend
+              (file-namestring
+               (write-sax-parsed-slots-to-file v
+                                               :slot-for-file-name slot-for-file-name
+                                               :slot-for-file-name-zero-padded slot-for-file-name-zero-padded
+                                               :prefix-for-file-name prefix-for-file-name
+                                               :pathname-type pathname-type
+                                               :output-directory output-directory
+                                               :directory-exists-check nil
+                                               :pre-padded-format-control calculate-padding))
+              file-namestrings)))
+      (maphash #'hash-file-writer hash-table))
+    (coerce file-namestrings 'list)))
 
 (defun write-sax-parsed-inventory-record-hash-to-zero-padded-directory (hash-table &key
                                                                         (base-output-directory *dbc-base-item-number-image-pathname*)
+                                                                        (checking-sold t)
                                                                         (pathname-type "lisp"))
   (declare (type hash-table hash-table)
            (mon:pathname-or-namestring base-output-directory)
@@ -390,30 +397,42 @@
                  (make-pathname :directory (pathname-directory (probe-file base-output-directory))))
     (error "arg BASE-OUTPUT-DIRECTORY does not designate a valid directory~% got: ~S~%"
            base-output-directory))
-  (let ((calculate-padding (print-sax-parsed-slots-padding-format-control (make-instance 'parsed-inventory-record))))
-    (maphash #'(lambda (k v)
-                 (declare (string k) 
-                          (parsed-class v))
-
-                 (let* ((padded-prefix (make-string (- 6 (length k)) :initial-element #\0)) ;; (format nil "~V,,,'0@A" (- 6 (length key)) #\0))
-                        (padded-directory-name (concatenate 'string padded-prefix k))
-                        (padded-directory (merge-pathnames (make-pathname :directory `(:relative ,padded-directory-name))
-                                                           base-output-directory)))
-                   (ensure-directories-exist padded-directory)
-                   (write-sax-parsed-slots-to-file v 
-                                                   :slot-for-file-name 'inventory-number 
-                                                   :slot-for-file-name-zero-padded t
-                                                   :prefix-for-file-name ""
-                                                   :output-directory padded-directory
-                                                   :directory-exists-check nil
-                                                   :pre-padded-format-control calculate-padding)))
-                 hash-table)))
+  (let ((calculate-padding (print-sax-parsed-slots-padding-format-control (make-instance 'parsed-inventory-record)))
+        (vec (make-array (hash-table-count hash-table) :fill-pointer 0)))
+    (flet ((hash-padded-record-writer (k v)
+             ;; #'(lambda (k v)
+             (declare (string k) 
+                      (parsed-class v))
+             (let* ((padded-prefix (make-string (- 6 (length k)) :initial-element #\0)) ;; (format nil "~V,,,'0@A" (- 6 (length key)) #\0))
+                    (padded-directory-name (concatenate 'string padded-prefix k))
+                    (padded-sold-directory-name (when checking-sold 
+                                                  (concatenate 'string padded-directory-name "_SOLD")))
+                    (padded-directory (merge-pathnames (make-pathname :directory `(:relative ,padded-directory-name))
+                                                       base-output-directory))
+                    (padded-sold-directory
+                     (when padded-sold-directory-name
+                       (merge-pathnames (make-pathname :directory `(:relative ,padded-sold-directory-name))
+                                        base-output-directory))))
+               (if (and padded-sold-directory
+                        (probe-file padded-sold-directory))
+                   (setf padded-directory padded-sold-directory)
+                   (ensure-directories-exist padded-directory))
+               (vector-push-extend 
+                (write-sax-parsed-slots-to-file v 
+                                                :slot-for-file-name 'inventory-number 
+                                                :slot-for-file-name-zero-padded t
+                                                :prefix-for-file-name ""
+                                                :output-directory padded-directory
+                                                :directory-exists-check nil
+                                                :pre-padded-format-control calculate-padding)
+                vec))))
+      (maphash #'hash-padded-record-writer hash-table))
+    vec))
 
 (defun %parsed-class-dumper-format-and-intern-symbol (parsed-class)
   (alexandria:format-symbol (find-package "DBC")
                             "~:@(~A-XML-DUMP-FILE-AND-HASH~)"
                             parsed-class))
-
 
 ;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defmacro def-parsed-class-record-xml-dump-file-and-hash (&key parsed-class
@@ -440,29 +459,32 @@
                              (output-pathname-dated-p t)
                              (output-pathname-type "lisp")
                              (set-inventory-record-table t))
-       (let ((parsed-xml-file
-              (multiple-value-list 
-               (write-sax-parsed-xml-to-file
-                :input-file input-file
-                :output-file (make-default-sax-parsed-xml-output-pathname
-                              :pathname-sub-directory output-pathname-sub-directory
-                              :pathname-base-directory output-pathname-base-directory
-                              :pathname-name output-pathname-name
-                              :pathname-name-dated-p output-pathname-dated-p
-                              :pathname-type output-pathname-type))))
-             (parsed-hash  (make-hash-table :test 'equal)))
+       (let* ((parsed-xml-file
+               (multiple-value-list
+                (write-sax-parsed-xml-to-file
+                 :input-file input-file
+                 :output-file (make-default-sax-parsed-xml-output-pathname
+                               :pathname-sub-directory output-pathname-sub-directory
+                               :pathname-base-directory output-pathname-base-directory
+                               :pathname-name output-pathname-name
+                               :pathname-name-dated-p output-pathname-dated-p
+                               :pathname-type output-pathname-type))))
+              (parsed-hash  (make-hash-table :test 'equal :size (mon:prime-or-next-greatest (caddr parsed-xml-file)))))
+         ;;(loaded-hash  
+         ;;(multiple-value-list 
          (load-sax-parsed-xml-file-to-parsed-class-hash
-          :parsed-class ',parsed-class
-          :input-file (cadr parsed-xml-file)
-          :hash-table  parsed-hash
-          :key-accessor  (function ,default-key-accessor)
-          ;; e.g. #'set-parsed-inventory-record-slot-value
-          :slot-dispatch-function (function ,(parsed-class-slot-dispatch-function parsed-class)))
+                 :parsed-class ',parsed-class
+                 :input-file (cadr parsed-xml-file)
+                 :hash-table  parsed-hash
+                 :key-accessor  (function ,default-key-accessor)
+                 ;; e.g. #'set-parsed-inventory-record-slot-value
+                 :slot-dispatch-function (function ,(parsed-class-slot-dispatch-function parsed-class)))
           (values 
            (if set-inventory-record-table
                (setf (gethash ',parsed-class *parsed-class-parse-table*) parsed-hash)
                parsed-hash)
-           (cadr parsed-xml-file))))))
+           (cadr  parsed-xml-file)
+           (caddr parsed-xml-file))))))
 
 ;; Next we need to map the hash-table values and for each object and each slot
 ;; of object clean up the crap in the fields.
