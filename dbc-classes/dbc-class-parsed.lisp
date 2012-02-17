@@ -86,6 +86,9 @@
 
 (defgeneric accessors-of-parsed-class (object))
 
+(defgeneric parsed-class-slot-dispatch-function (object))
+;; (defgeneric (setf parsed-class-slot-dispatch-function) (parsed-class-symbol ))
+
 ;; These are common to class `parsed-class' and its subclasses
 (defgeneric naf-entity-author-coref (object))
 (defgeneric (setf naf-entity-author-coref) (coref-value object))
@@ -232,6 +235,14 @@
   (%parsed-class-mapped-with-known-key-helper
    (%parsed-class-subtype-check object)))
 
+(defmethod parsed-class-slot-dispatch-function ((object parsed-class))
+  (parsed-class-slot-dispatch-function (parsed-class-mapped object)))
+
+;; (parsed-class-slot-dispatch-function 'parsed-inventory-record)
+;; (parsed-class-slot-dispatch-function 'foo)
+(defmethod parsed-class-slot-dispatch-function ((object symbol))
+  (parsed-class-slot-dispatch-function (parsed-class-mapped object)))
+
 ;; (%parsed-class-mapped-with-known-key-helper
 ;;  (%parsed-class-subtype-check (make-instance 'parsed-inventory-record)))
 
@@ -281,6 +292,8 @@
 
 (defmethod accessors-of-parsed-class ((object parsed-class))
   (alexandria:hash-table-keys (accessor-to-field-table object)))
+
+
 
     
 ;;; ==============================

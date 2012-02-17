@@ -1,5 +1,5 @@
 ;;; :FILE-CREATED <Timestamp: #{2012-02-16T12:31:29-05:00Z}#{12074} - by MON>
-;;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-sold-record-in-store.lisp
+;;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-inventory-sold-in-store-record.lisp
 ;;; ==============================
 
 ;; `base-inventory-sales-order-record' `parsed-inventory-sales-sold-record' `*control-id-inventory-sales-order-namespace*'.

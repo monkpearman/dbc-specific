@@ -272,7 +272,10 @@
     :accessor inventory-bar-code
     :documentation ":ORIGINAL-FIELD \"bar_code\"")
 
-   (unit-weight
+   ;; :NOTE See ignorable-shipping-weight-combined, ignorable-shipping-weight-combined-pounds,
+   ;; ignorable-shipping-weight-combined-ounces slot in class
+   ;; `parsed-inventory-record'
+   (unit-weight 
     :initarg :unit-weight
     :accessor unit-weight
     :documentation ":ORIGINAL-FIELD \"weight\"")
@@ -390,7 +393,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 
 ;; control-id-entity-num-artist
 
-(make-parsed-class-field-slot-accessor-mapping 
+(make-parsed-class-field-slot-accessor-mapping
  'parsed-inventory-record
  '(("ref"               . inventory-number)
    ("title"             . description-inventory-title)
@@ -466,6 +469,55 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("edit_history"      . edit-history))
  )
 
+;; (parsed-inventory-record-xml-dump-file-and-hash)
+;; (gethash 'parsed-inventory-record *parsed-class-parse-table*)
+;; (gethash "12000" (gethash 'parsed-inventory-record *parsed-class-parse-table*))
+;; (inspect (gethash "12000" (gethash 'parsed-inventory-record *parsed-class-parse-table*)))
+;; (defun parsed-inventory-record-xml-dump-file-and-hash (&key 
+;;                                                        (input-file (make-pathname 
+;;                                                                     :directory (pathname-directory (sub-path *xml-input-dir*)) 
+;;                                                                     :name "dump-refs-DUMPING"))
+;;                                                        ;; (output-pathname-sub-directory `(,(concatenate 'string "parsed-xml-inventory-records-"
+;;                                                        ;;                                                (mon:time-string-yyyy-mm-dd))))
+;;                                                        (output-pathname-sub-directory '("parsed-xml-inventory-records"))
+;;                                                        (output-pathname-base-directory (sub-path *xml-output-dir*))
+;;                                                        (output-pathname-name "inventory-records")
+;;                                                        (output-pathname-dated-p t)
+;;                                                        (output-pathname-type "lisp")
+;;                                                        (set-inventory-record-table t))
+;;   (let ((parsed-xml-file
+;;          (multiple-value-list 
+;;           (write-sax-parsed-xml-to-file
+;;            :input-file input-file
+;;            :output-file (make-default-sax-parsed-xml-output-pathname
+;;                          :pathname-sub-directory output-pathname-sub-directory
+;;                          :pathname-base-directory output-pathname-base-directory
+;;                          :pathname-name output-pathname-name
+;;                          :pathname-name-dated-p output-pathname-dated-p
+;;                          :pathname-type output-pathname-type))))
+;;         (parsed-hash (make-hash-table :test 'equal)))
+;;     ;; (if (cadr parsed-xml-file)
+;;     (load-sax-parsed-xml-file-to-parsed-class-hash
+;;      :parsed-class 'parsed-inventory-record  
+;;      :input-file (cadr parsed-xml-file)
+;;      :hash-table  parsed-hash
+;;      :key-accessor  #'inventory-number
+;;      :slot-dispatch-function #'set-parsed-inventory-record-slot-value)
+;;     (values 
+;;      (if set-inventory-record-table
+;;          (setf (gethash 'parsed-inventory-record *parsed-class-parse-table*) parsed-hash)
+;;          parsed-hash)
+;;      (cadr parsed-xml-file))))
+;;
+;; :NOTE following supersedes definition above.
+(def-parsed-class-record-xml-dump-file-and-hash 
+    :parsed-class parsed-inventory-record
+  :default-key-accessor inventory-number
+  :default-input-pathname-name "dump-refs-DUMPING"
+  :default-output-pathname-base-directory (sub-path *xml-output-dir*)
+  :default-output-pathname-sub-directory (list "parsed-xml-inventory-records")
+  :default-output-pathname-name "inventory-records")
+
 (defun parsed-inventory-record-null-prototype ()
   "Return an instance of parsed-inventory-record with all slot-values null.
 We do this rather than using :initform or :default-initargs for class
@@ -510,16 +562,9 @@ This function should only be used for instantiating instances created _outside_ 
        :pathname-type pathname-type))))
 
 
-
-
 ;; :NOTE `set-parsed-inventory-record-slot-value' is defined in loadtime-bind.lisp
 ;; (def-set-parsed-class-record-slot-value 
-;;     set-parsed-inventory-record-slot-value
 ;;     parsed-inventory-record)
-
-;; (set-parsed-inventory-record-slot-value 
-
-;;; *parsed-class-field-slot-accessor-mapping-table*
 
 ;;; ==============================
 ;; :NOTE Depreated use the macro'd version generated with `def-set-parsed-class-record-slot-value' instead. 

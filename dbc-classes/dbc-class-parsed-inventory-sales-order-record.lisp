@@ -17,21 +17,31 @@ These contents of these XML files correspond to the following derbycityprints SQ
     for sold-xml-pathnames in (list "orders-xml" "sold-in-store-xml" "sold-refs-xml")
     collect (merge-pathnames (make-pathname :name sold-xml-pathnames) base-dir))
 
+
+ :ELISP
+ (progn (search-forward-regexp "^\\( (\\)\\(\".*\"\\)\\( +\\)\\(.*\\)\\()\\)" nil t)
+        (replace-match "(\\4\n:initarg :\\4\n:accessor \\4\n:documentation \":ORIGINAL-FIELD \\2\")"))
+
+ (<SLOT>
+     :initarg :<SLOT-INIT>
+     :accessor <SLOT-ACCESSOR>
+     :documentation ":ORIGINAL-FIELD \"<ORIGINAL-STRING>\"")
+
 ;; #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/notes-versioned/sql-file-per-table-2010-08-25/from-DBC-ARCH-2010-09-01/orders-xml"
+;; parsed-inventory-sales-order-record
+
+;; (or (and (functionp ,default-key-accessor) ,default-key-accessor)
+;;     (and (fboundp ,default-key-accessor)
+;;          (function ,default-key-accessor))
+;;     (error ":F"()))
+;; (fdefinition (find-method #'inventory-number nil '(parsed-inventory-record)))
 
 |#
 
 (in-package #:dbc)
 
-;; (<SLOT>
-;;     :initarg :<SLOT-INIT>
-;;     :accessor <SLOT-ACCESSOR>
-;;     :documentation ":ORIGINAL-FIELD \"<ORIGINAL-STRING>\"")
-;;
 
 
-;; (progn (search-forward-regexp "^\\( (\\)\\(\".*\"\\)\\( +\\)\\(.*\\)\\()\\)" nil t)
-;;        (replace-match "(\\4\n:initarg :\\4\n:accessor \\4\n:documentation \":ORIGINAL-FIELD \\2\")"))
 
 (defclass parsed-inventory-sales-order-record (parsed-class)
   (;; control-id-indexed-inventory-sales-order-record
@@ -344,19 +354,19 @@ These contents of these XML files correspond to the following derbycityprints SQ
 
    ;; ingorable always empty
    (ignorable-usps-data
-    :initarg 
-    :accessor
+    :initarg ignorable-usps-data
+    :accessor ignorable-usps-data 
     :documentation ":ORIGINAL-FIELD \"postal_service\"." )
 
    ;; ignorable always 0
    (shipping-price-actual
-    :initarg 
-    :accessor
+    :initarg shipping-price-actual
+    :accessor shipping-price-actual
     :documentation ":ORIGINAL-FIELD \"actual_shipcost\".")
 
    (ignorable-payment-archived
-    :initarg 
-    :accessor
+    :initarg ignorable-payment-archived
+    :accessor ignorable-payment-archived
     :documentation ":ORIGINAL-FIELD \"archived\".")
    )
   (:documentation 
@@ -435,8 +445,54 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%")))
    ))
 
 
+;; (def-parsed-class-record-xml-dump-file-and-hash 
+;;     parsed-inventory-sales-order-record
+;;     order-number
+;;   "orders-xml"
+;;   (list "parsed-xml-inventory-sales-order-records")
+;;   (sub-path *xml-output-dir*)
+;;   "order-records")
+;;
+;; Defines the function `parsed-inventory-sales-order-record-xml-dump-file-and-hash'
+;; :EXAMPLE
+;; (parsed-inventory-sales-order-record-xml-dump-file-and-hash)
+;; => #<HASH-TABLE :TEST EQUAL :COUNT 80 {E3B1731}>
+;;    #P"../dbc-specific/xml-class-dump-dir/parsed-xml-inventory-sales-order-records/order-records-2012-02-16.lisp"
+(def-parsed-class-record-xml-dump-file-and-hash 
+    :parsed-class parsed-inventory-sales-order-record
+  :default-key-accessor order-number
+  :default-input-pathname-name "orders-xml"
+  :default-output-pathname-sub-directory (list "parsed-xml-inventory-sales-order-records")
+  :default-output-pathname-base-directory (sub-path *xml-output-dir*)
+  :default-output-pathname-name "order-records")
 
-
+;; (write-sax-parsed-xml-to-file :input-file (make-pathname :directory (pathname-directory (sub-path *xml-input-dir*))
+;;                                                          :name "orders-xml")
+;;                               :output-file (make-default-sax-parsed-xml-output-pathname 
+;;                                             :pathname-sub-directory (list "parsed-xml-inventory-sales-order-records")
+;;                                             :pathname-base-directory (sub-path *xml-output-dir*)
+;;                                             :pathname-name "order-records"
+;;                                             :pathname-name-dated-p t
+;;                                             :pathname-type "lisp"))
+;;
+;; (let ((parsed-xml-file
+;;        '(T #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/xml-class-dump-dir/parsed-xml-inventory-sales-order-records/order-records-2012-02-16.lisp"))
+;;       (parsed-hash (make-hash-table :test 'equal))
+;;       (set-inventory-record-table nil))
+;;   (load-sax-parsed-xml-file-to-parsed-class-hash 
+;;    :parsed-class 'parsed-inventory-sales-order-record
+;;    :input-file (cadr parsed-xml-file)
+;;    :hash-table parsed-hash
+;;    :key-accessor #'order-number
+;;    :slot-dispatch-function #'set-parsed-inventory-sales-order-record-slot-value)
+;;   (values
+;;    (if set-inventory-record-table
+;;        (setf (gethash
+;;               'parsed-inventory-sales-order-record
+;;               *parsed-class-parse-table*)
+;;              parsed-hash)
+;;        parsed-hash)
+;;    (cadr parsed-xml-file)))
 
 
 ;;; ==============================

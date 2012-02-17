@@ -155,46 +155,6 @@
              finally (setf (gethash (funcall key-accessor obj) hash-table) obj))
        finally (return (values hash-table (hash-table-count hash-table))))))
 
-;; (parsed-inventory-record-xml-dump-file-and-hash)
-;; (gethash 'parsed-inventory-record *parsed-class-parse-table*)
-;; (gethash "12000" (gethash 'parsed-inventory-record *parsed-class-parse-table*))
-;; (inspect (gethash "12000" (gethash 'parsed-inventory-record *parsed-class-parse-table*)))
-(defun parsed-inventory-record-xml-dump-file-and-hash (&key 
-                                                       (input-file (make-pathname 
-                                                                    :directory (pathname-directory (sub-path *xml-input-dir*)) 
-                                                                    :name "dump-refs-DUMPING"))
-                                                       ;; (output-pathname-sub-directory `(,(concatenate 'string "parsed-xml-inventory-records-"
-                                                       ;;                                                (mon:time-string-yyyy-mm-dd))))
-                                                       (output-pathname-sub-directory '("parsed-xml-inventory-records"))
-                                                       (output-pathname-base-directory (sub-path *xml-output-dir*))
-                                                       (output-pathname-name "inventory-records")
-                                                       (output-pathname-dated-p t)
-                                                       (output-pathname-type "lisp")
-                                                       (set-inventory-record-table t))
-  (let ((parsed-xml-file
-         (multiple-value-list 
-          (write-sax-parsed-xml-to-file
-           :input-file input-file
-           :output-file (make-default-sax-parsed-xml-output-pathname
-                         :pathname-sub-directory output-pathname-sub-directory
-                         :pathname-base-directory output-pathname-base-directory
-                         :pathname-name output-pathname-name
-                         :pathname-name-dated-p output-pathname-dated-p
-                         :pathname-type output-pathname-type))))
-        (parsed-hash (make-hash-table :test 'equal)))
-    ;; (if (cadr parsed-xml-file)
-    (load-sax-parsed-xml-file-to-parsed-class-hash
-     :parsed-class 'parsed-inventory-record  
-     :input-file (cadr parsed-xml-file)
-     :hash-table  parsed-hash
-     :key-accessor  #'inventory-number
-     :slot-dispatch-function #'set-parsed-inventory-record-slot-value)
-    (values 
-     (if set-inventory-record-table
-         (setf (gethash 'parsed-inventory-record *parsed-class-parse-table*) parsed-hash)
-         parsed-hash)
-     (cadr parsed-xml-file))))
-
 ;; :EXAMPLE
 ;; (dbc::%print-sax-parsed-slots-calculate-padding-for-format-control-using-plist-keys '())
 ;; (dbc::%print-sax-parsed-slots-calculate-padding-for-format-control-using-plist-keys '() :value-column-overage 19)
@@ -438,6 +398,67 @@
                                                    :pre-padded-format-control calculate-padding)))
                  hash-table)))
 
+(defun %parsed-class-dumper-format-and-intern-symbol (parsed-class)
+  (alexandria:format-symbol (find-package "DBC")
+                            "~:@(~A-XML-DUMP-FILE-AND-HASH~)"
+                            parsed-class))
+
+;; :EXAMPLE
+;;  (def-parsed-class-record-xml-dump-file-and-hash 
+;;     :parsed-class parsed-inventory-sales-order-record
+;;     :default-key-accessor order-number
+;;     :default-input-pathname-name "orders-xml"
+;;     :default-output-pathname-sub-directory ("parsed-xml-inventory-sales-order-records")
+;;     :default-output-pathname-base-directory (sub-path *xml-output-dir*)
+;;     :default-output-pathname-name "order-records")
+;;
+;; :NOTE PARSED-CLASS' `parsed-class-slot-dispatch-function' may need to be evaluated at macroexpansion time.
+(defmacro def-parsed-class-record-xml-dump-file-and-hash (&key parsed-class
+                                                          default-key-accessor 
+                                                          ;; default-key-accessor is a symbol designating a method specialized on PARSED-CLASS
+                                                          ;; see `load-sax-parsed-xml-file-to-parsed-class-hash'
+                                                          default-input-pathname-name ;; e.g. "dump-refs-DUMPING"
+                                                          default-output-pathname-sub-directory ;; '("parsed-xml-inventory-records"))
+                                                          default-output-pathname-base-directory ;; (sub-path *xml-output-dir*))
+                                                          default-output-pathname-name ;; "inventory-records")
+                                                          ;; (output-pathname-dated-p t)
+                                                          ;; (output-pathname-type "lisp")
+                                                          ;; (set-inventory-record-table t))
+                                                          )
+  (let ((generated-name (%parsed-class-dumper-format-and-intern-symbol parsed-class))
+        ) ;; (dispatch-fun   (parsed-class-slot-dispatch-function parsed-class)))
+    `(defun ,generated-name (&key (input-file (make-pathname 
+                                               :directory (pathname-directory (sub-path *xml-input-dir*)) 
+                                               :name ,default-input-pathname-name))
+                             (output-pathname-sub-directory ,default-output-pathname-sub-directory)
+                             (output-pathname-base-directory ,default-output-pathname-base-directory)
+                             (output-pathname-name ,default-output-pathname-name)
+                             (output-pathname-dated-p t)
+                             (output-pathname-type "lisp")
+                             (set-inventory-record-table t))
+       (let ((parsed-xml-file
+              (multiple-value-list 
+               (write-sax-parsed-xml-to-file
+                :input-file input-file
+                :output-file (make-default-sax-parsed-xml-output-pathname
+                              :pathname-sub-directory output-pathname-sub-directory
+                              :pathname-base-directory output-pathname-base-directory
+                              :pathname-name output-pathname-name
+                              :pathname-name-dated-p output-pathname-dated-p
+                              :pathname-type output-pathname-type))))
+             (parsed-hash  (make-hash-table :test 'equal)))
+         (load-sax-parsed-xml-file-to-parsed-class-hash
+          :parsed-class ',parsed-class
+          :input-file (cadr parsed-xml-file)
+          :hash-table  parsed-hash
+          :key-accessor  (function ,default-key-accessor)
+          ;; e.g. #'set-parsed-inventory-record-slot-value
+          :slot-dispatch-function (function ,(parsed-class-slot-dispatch-function parsed-class)))
+          (values 
+           (if set-inventory-record-table
+               (setf (gethash ',parsed-class *parsed-class-parse-table*) parsed-hash)
+               parsed-hash)
+           (cadr parsed-xml-file))))))
 
 ;; Next we need to map the hash-table values and for each object and each slot
 ;; of object clean up the crap in the fields.
