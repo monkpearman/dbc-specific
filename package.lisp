@@ -20,7 +20,9 @@
              #:*xml-output-refs-ext*           ;; ---> OUTPUT
              #:*xml-input-dir*                 ;; <--- INPUT
              ;;
-             #:*parsed-inventory-record-class-name*
+             ;; We no longer define `*parsed-inventory-record-class-name*' 
+             ;; it is now defined in :FILE dbc-specific/dbc-classes/dbc-class-symbol-construct-deprecated.lisp
+             ;; #:*parsed-inventory-record-class-name*
 	     ;;
            ;; conditions.lisp
              ;;
