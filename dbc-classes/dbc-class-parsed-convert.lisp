@@ -429,10 +429,13 @@
       (maphash #'hash-padded-record-writer hash-table))
     vec))
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+
 (defun %parsed-class-dumper-format-and-intern-symbol (parsed-class)
   (alexandria:format-symbol (find-package "DBC")
                             "~:@(~A-XML-DUMP-FILE-AND-HASH~)"
                             parsed-class))
+) ;; close eval-when
 
 ;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defmacro def-parsed-class-record-xml-dump-file-and-hash (&key parsed-class
