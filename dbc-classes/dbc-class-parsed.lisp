@@ -87,6 +87,9 @@
 (defgeneric parsed-class-slot-dispatch-function (object))
 ;; (defgeneric (setf parsed-class-slot-dispatch-function) (parsed-class-symbol ))
 
+(defgeneric parsed-class-parse-table (object))
+(defgeneric (setf parsed-class-parse-table) (hash-table object))
+
 ;; These are common to class `parsed-class' and its subclasses
 (defgeneric naf-entity-author-coref (object))
 (defgeneric (setf naf-entity-author-coref) (coref-value object))
@@ -164,26 +167,26 @@
 :SEE-ALSO `parsed-artist-record', `parsed-author-record',~%~
 `parsed-person-record', `parsed-brand-record', `parsed-publication-record'.~%▶▶▶")))
 
-(defun %parsed-class-mapped-with-known-key-helper (parsed-class-symbol)
-  ;; (declare (symbol parsed-class-symbol))
-  (when (eql parsed-class-symbol 'parsed-class)
-    (error "Arg PARSED-CLASS-SYMBOL is cl:eql the symbol PARSED-CLASS.~% ~
-          Arg must be a symbol designating a subclass of `parsed-class'~%"))
-  (multiple-value-bind (key-val key-present) (gethash parsed-class-symbol *parsed-class-field-slot-accessor-mapping-table*)
-    (if key-present
-        (if (typep key-val 'parsed-class-field-slot-accessor-mapping)
-            key-val
-            (error ":FUNCTION `%parsed-class-mapped-with-known-key-helper'~% ~
-                    Arg PARSED-CLASS-SYMBOL is a present hash-table-key with non-valid value in hash-table `~A'~% ~
-                    hash-table-key: ~S~% ~
-                    hash-table-value: ~S~%"
-                   '*parsed-class-field-slot-accessor-mapping-table*
-                   parsed-class-symbol key-val))
-        (error ":FUNCTION `%parsed-class-mapped-with-known-key-helper'~% ~
-                 Arg PARSED-CLASS-SYMBOL not a present hash-table-key in hash-table `~A'~% ~
-                 hash-table-key: ~S~%"
-               '*parsed-class-field-slot-accessor-mapping-table*
-               parsed-class-symbol))))
+;; (defun %parsed-class-mapped-with-known-key-helper (parsed-class-symbol)
+;;   ;; (declare (symbol parsed-class-symbol))
+;;   (when (eql parsed-class-symbol 'parsed-class)
+;;     (error "Arg PARSED-CLASS-SYMBOL is cl:eql the symbol PARSED-CLASS.~% ~
+;;           Arg must be a symbol designating a subclass of `parsed-class'~%"))
+;;   (multiple-value-bind (key-val key-present) (gethash parsed-class-symbol *parsed-class-field-slot-accessor-mapping-table*)
+;;     (if key-present
+;;         (if (typep key-val 'parsed-class-field-slot-accessor-mapping)
+;;             key-val
+;;             (error ":FUNCTION `%parsed-class-mapped-with-known-key-helper'~% ~
+;;                     Arg PARSED-CLASS-SYMBOL is a present hash-table-key with non-valid value in hash-table `~A'~% ~
+;;                     hash-table-key: ~S~% ~
+;;                     hash-table-value: ~S~%"
+;;                    '*parsed-class-field-slot-accessor-mapping-table*
+;;                    parsed-class-symbol key-val))
+;;         (error ":FUNCTION `%parsed-class-mapped-with-known-key-helper'~% ~
+;;                  Arg PARSED-CLASS-SYMBOL not a present hash-table-key in hash-table `~A'~% ~
+;;                  hash-table-key: ~S~%"
+;;                '*parsed-class-field-slot-accessor-mapping-table*
+;;                parsed-class-symbol))))
 
 (defmethod %parsed-class-subtype-check ((parsed-class-object (eql 'parsed-class)))
   (error "Arg PARSED-CLASS-OBJECT is cl:eql the symbol PARSED-CLASS.~% ~
@@ -296,9 +299,46 @@
 (defmethod accessors-of-parsed-class ((object parsed-class))
   (alexandria:hash-table-keys (accessor-to-field-table object)))
 
+;; (parsed-class-parse-table (make-instance 'parsed-inventory-record))
+;; Following fails successfully:
+;; (parsed-class-parse-table (make-instance 'parsed-class))
+(defmethod parsed-class-parse-table ((object parsed-class))
+  (parsed-class-parse-table (parsed-class-mapped object)))
+
+;; (parsed-class-parse-table 'parsed-inventory-record)
+;; Following fails successfully:
+;;  (parsed-class-parse-table 'parsed-foo-record)
+(defmethod parsed-class-parse-table ((object symbol))
+  (parsed-class-parse-table (parsed-class-mapped object)))
+
+;; (defgeneric (setf parsed-class-parse-table) (hash-table object))
+
+;; (%parsed-class-parse-table-make-table)
+(defun %parsed-class-parse-table-make-table (&key 
+                                             ;; test should always be #'equal
+                                             (size #+sbcl sb-impl::+min-hash-table-size+ #-sbcl 16)
+                                             (rehash-size 1.5)
+                                             (rehash-threshold 1.0)
+                                             weakness
+                                             synchronized)
+  (make-hash-table :test #'equal 
+                   :size size
+                   :rehash-size rehash-size
+                   :rehash-threshold rehash-threshold
+                   :weakness weakness
+                   :synchronized synchronized))
+
+;; (setf (parsed-class-parse-table (make-instance 'parsed-artist-record)) 
+;;       (%parsed-class-parse-table-make-table))
+(defmethod (setf parsed-class-parse-table) (hash-table (object parsed-class))
+  (setf (parsed-class-parse-table (parsed-class-mapped object)) hash-table))
 
 
-    
+;; (setf (parsed-class-parse-table 'parsed-artist-record) nil)
+;;       (%parsed-class-parse-table-make-table))
+(defmethod (setf parsed-class-parse-table) (hash-table (object symbol))
+  (setf (parsed-class-parse-table (parsed-class-mapped object)) hash-table))
+
 ;;; ==============================
 
 

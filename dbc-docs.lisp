@@ -1073,6 +1073,7 @@ their slot-value as #<UNBOUND>.~%~@
 
 (fundoc 'write-sax-parsed-class-hash-to-files
 "Write the sax-parsed class of HASH-TABLE to a file in OUTPUT-DIRECTORY.~%~@
+Return value is a list of the `cl:file-namestring's of each file written.~%~@
 :EXAMPLE~%
  \(write-sax-parsed-class-hash-to-files 
   <HASH-TABLE> 

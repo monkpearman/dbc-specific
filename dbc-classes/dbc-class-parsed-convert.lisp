@@ -135,10 +135,17 @@
 ;;        finally (return (values hash-table (hash-table-count hash-table))))))
 ;;
 ;;
+;; (parsed-class-parse-table 'parsed-inventory-sales-order-record)
+;;
+;; :NOTE We could default HASH-TABLE to use `parsed-class-parse-table' e.g.:
+;;  (hash-table (parsed-class-parse-table parsed-class))
+;; However, if we do so we need a good condition handler/restart that lets us
+;; choose whether we want to overwrite the existing hash-table.
+;;
 ;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun load-sax-parsed-xml-file-to-parsed-class-hash (&key parsed-class
                                                            input-file
-                                                           hash-table
+                                                           hash-table ; (parsed-class-parse-table parsed-class)
                                                            key-accessor
                                                            slot-dispatch-function)
   (with-open-file (fl input-file
@@ -249,7 +256,7 @@
                                                    output-directory 
                                                    (directory-exists-check t)
                                                    (pre-padded-format-control nil))
-  (declare  (parsed-class object)
+  (declare  (type parsed-class object) ;;(parsed-class object)
             (type (and symbol (mon::not-null)) slot-for-file-name)
             (type (or string null) prefix-for-file-name suffix-for-file-name)
             (mon:pathname-or-namestring output-directory)
@@ -352,6 +359,8 @@
 ;;
 ;;  (gethash 'parsed-foo-does-not-exist *parsed-class-parse-table*)
 ;;
+;; :NOTE The functionality is now available with the methods `parsed-class-parse-table'.
+;;
 ;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defun write-sax-parsed-class-hash-to-files (hash-table &key parsed-class
                                              slot-for-file-name
@@ -371,7 +380,7 @@
         (file-namestrings (make-array (hash-table-count hash-table) :fill-pointer 0)))
     (flet ((hash-file-writer (k v)
              (declare (ignore k) 
-                      (parsed-class v))
+                      (type parsed-class v))
              (vector-push-extend
               (file-namestring
                (write-sax-parsed-slots-to-file v
@@ -386,6 +395,16 @@
       (maphash #'hash-file-writer hash-table))
     (coerce file-namestrings 'list)))
 
+;; (funcall #'(lambda (&key (x 1) (y (+ x 1))) y)) => 3
+;; (funcall #'(lambda (&key (y (+ x 1)) (x 1)) y) :y 8) => 8
+;; (funcall #'(lambda (&key (y (+ x 1)) (x 1)) y)) => error
+;; (funcall #'(lambda (&key y (x 1) &aux (y (+ (or y 0) x 2))) y)) => 3
+;; (funcall #'(lambda (&key y (x 1) &aux (y (+ (or y 0) x 2))) y) :y 4) => 7
+;; (funcall #'(lambda (&key (y nil y-supplied-p) (x 1) &aux (y (if (and y y-supplied-p)
+;;                                                                 y 
+;;                                                                 (+ (or y 0) x 2)))) y) :y 4) => 4
+;;
+;; If we make HASH-TABLE a keyword we can default to (parsed-class-parse-table 'parsed-inventory-record)
 (defun write-sax-parsed-inventory-record-hash-to-zero-padded-directory (hash-table &key
                                                                         (base-output-directory *dbc-base-item-number-image-pathname*)
                                                                         (checking-sold t)
@@ -462,7 +481,7 @@
                              (output-pathname-name ,default-output-pathname-name)
                              (output-pathname-dated-p t)
                              (output-pathname-type "lisp")
-                             (set-inventory-record-table t))
+                             (set-parsed-class-parse-table t))
        (let* ((parsed-xml-file
                (multiple-value-list
                 (write-sax-parsed-xml-to-file
@@ -481,11 +500,12 @@
                  :input-file (cadr parsed-xml-file)
                  :hash-table  parsed-hash
                  :key-accessor  (function ,default-key-accessor)
-                 ;; e.g. #'set-parsed-inventory-record-slot-value
+                 ;; e.g. class specific function as defined by macro `def-set-parsed-class-record-slot-value'
                  :slot-dispatch-function (function ,(parsed-class-slot-dispatch-function parsed-class)))
           (values 
-           (if set-inventory-record-table
-               (setf (gethash ',parsed-class *parsed-class-parse-table*) parsed-hash)
+           (if set-parsed-class-parse-table
+               ;; (setf (gethash ',parsed-class *parsed-class-parse-table*) parsed-hash)
+               (setf (parsed-class-parse-table ',parsed-class) parsed-hash)
                parsed-hash)
            (cadr  parsed-xml-file)
            (caddr parsed-xml-file))))))

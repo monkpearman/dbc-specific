@@ -510,6 +510,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;;      (cadr parsed-xml-file))))
 ;;
 ;; :NOTE following supersedes definition above.
+;;  Returns the function `parsed-inventory-record-xml-dump-file-and-hash'.
 (def-parsed-class-record-xml-dump-file-and-hash 
     :parsed-class parsed-inventory-record
   :default-key-accessor inventory-number

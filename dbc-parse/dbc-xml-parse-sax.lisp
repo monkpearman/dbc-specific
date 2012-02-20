@@ -50,7 +50,10 @@ Its children will contain attribute/value pairs which correspond to the slot-nam
 (defgeneric %parsed-data-match-attribute-pair (object))
 (defgeneric (setf %parsed-data-match-attribute-pair) (match-attribute-pair object))
 
-(defclass %parsed-data-state ()  
+(defgeneric %parsed-data-parent-element-count (object))
+(defgeneric (setf %parsed-data-parent-element-count) (newcount object))
+
+(defclass %parsed-data-state ()
   ;; :NOTE We used to explicitly provide a string the parent XML element we were matching, e.g. "row".
   ;; :matching-start-element-parent "row"
   ;; :collect-element-and-attribute-pair ("field" . "name"))
@@ -58,6 +61,9 @@ Its children will contain attribute/value pairs which correspond to the slot-nam
      ;; :%parsed-data-match-parent-element
      :initarg :%parsed-data-match-parent-element ;; e.g. "row"
      :accessor %parsed-data-match-parent-element)
+   (%parsed-data-parent-element-count
+    :initform 0
+    :accessor %parsed-data-parent-element-count)
     (%parsed-data-match-attribute-pair
      ;; :initarg :%parsed-data-match-attribute-pair ;; e.g. ("field" . "name")
      :accessor :%parsed-data-match-attribute-pair)
@@ -86,6 +92,12 @@ Its children will contain attribute/value pairs which correspond to the slot-nam
 (defmethod (setf %parsed-data-match-parent-element) (parent-element-name (object %parsed-data-state))
   (declare (string parent-element-name))
   (setf (slot-value object '%parsed-data-match-parent-element) parent-element-name))
+
+(defmethod %parsed-data-parent-element-count ((object %parsed-data-state))
+  (slot-value object '%parsed-data-parent-element-count))
+
+(defmethod (setf %parsed-data-parent-element-count) (newcount (object %parsed-data-state))
+  (setf (slot-value object '%parsed-data-parent-element-count) newcount))
 
 (defmethod %parsed-data-match-attribute-pair ((object %parsed-data-state))
   (slot-value object '%parsed-data-match-attribute-pair))
@@ -226,6 +238,8 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
   ;; :TODO we _really_ need to be checking against a list of known field-names instead of against "row"
   (when (string-equal local-name "row")
     (setf (%parsed-data-current-parent *parsed-data-current-state*) (make-instance 'dbc-sax-parsing-class))
+    (setf (%parsed-data-parent-element-count *parsed-data-current-state*) 
+          (1+ (%parsed-data-parent-element-count *parsed-data-current-state*)))
     (return-from sax:start-element))
   ;; (unless (typep *parsed-data-current-row* 'dbc-sax-parsing-class)
   ;;   (setf *parsed-data-current-row* (make-instance 'dbc-sax-parsing-class)))
@@ -282,7 +296,9 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
            :output-file (%parsed-data-output-path *parsed-data-current-state*)
            ;; :NOTE This may potentially leave a reference to an otherwise dead fd-stream...
            ;; :output-stream (%parsed-data-output-stream *parsed-data-current-state*)
-           )))
+           )
+          ;; (%parsed-data-parent-element-count *parsed-data-current-state*)
+          ))
 
 (defun write-sax-parsed-delimiter (&key output-stream)
   ;; :NOTE consider using `cl:write-line' instead.
@@ -397,7 +413,11 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
                                        :if-does-not-exist :create)
           (%parsed-data-output-stream *parsed-data-current-state*) current-handler-stream)
     (unwind-protect
-         (values (cxml:parse input-file current-handler-instance) dump-file)
+         (values 
+          (cxml:parse input-file current-handler-instance) 
+          dump-file
+          (%parsed-data-parent-element-count *parsed-data-current-state*)
+          )
       (progn
         (when (and (streamp current-handler-stream)
                    (open-stream-p current-handler-stream))
@@ -406,6 +426,7 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
             (setf (%parsed-data-output-stream *parsed-data-current-state*) nil
                   (%parsed-data-output-path *parsed-data-current-state*) nil
                   (%parsed-data-current-parent *parsed-data-current-state*) nil
+                  (%parsed-data-parent-element-count *parsed-data-current-state*) nil
                   *parsed-data-current-state* nil))))))
 
 

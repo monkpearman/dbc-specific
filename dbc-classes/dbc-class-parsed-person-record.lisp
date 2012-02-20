@@ -121,6 +121,10 @@
 KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 :SEE-ALSO `<XREF>'.~%▶▶▶")))
 
+;; (subtypep (find-class 'parsed-person-record nil)  (find-class 'parsed-class))
+;; (parsed-class-mapped 'parsed-person-record)
+;; (parsed-class-slot-dispatch-function  'parsed-person-record)
+
 (make-parsed-class-field-slot-accessor-mapping 
  'parsed-person-record
  '(("bio"               . control-id-doc-num-person)

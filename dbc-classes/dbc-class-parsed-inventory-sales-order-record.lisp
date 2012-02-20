@@ -458,6 +458,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%")))
 ;; (parsed-inventory-sales-order-record-xml-dump-file-and-hash)
 ;; => #<HASH-TABLE :TEST EQUAL :COUNT 80 {E3B1731}>
 ;;    #P"../dbc-specific/xml-class-dump-dir/parsed-xml-inventory-sales-order-records/order-records-2012-02-16.lisp"
+;;  Returns the function `parsed-inventory-record-xml-dump-file-and-hash'.
 (def-parsed-class-record-xml-dump-file-and-hash 
     :parsed-class parsed-inventory-sales-order-record
   :default-key-accessor order-number
