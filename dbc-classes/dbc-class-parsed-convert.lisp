@@ -443,9 +443,10 @@
                                                           default-output-pathname-name
                                                           ;; (output-pathname-dated-p t)
                                                           ;; (output-pathname-type "lisp")
-                                                          ;; (set-inventory-record-table t))
+                                                          ;; (set-parsed-class-parse-table t)
                                                           )
-  (let ((generated-name (%parsed-class-dumper-format-and-intern-symbol parsed-class))
+  ;; let* to ensure `%parsed-class-dumper-format-and-intern-symbol' evaluated at macroexpansion time.
+  (let* ((generated-name (%parsed-class-dumper-format-and-intern-symbol parsed-class))
         ;; :NOTE PARSED-CLASS' `parsed-class-slot-dispatch-function' may need to
         ;; be evaluated at macroexpansion time.
         ;; (dispatch-fun   (parsed-class-slot-dispatch-function parsed-class)))
