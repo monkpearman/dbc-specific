@@ -18,17 +18,14 @@
 ;;  (parse-table)
 ;;  )
 
-
 (defclass parsed-class-field-slot-accessor-mapping (base-dbc)
-  ((parsed-class-mapped)     ; :reader parsed-class-mapped)
-   (field-to-accessor-table) ; :reader field-to-accessor-table)
-   (accessor-to-field-table)  ; :reader accessor-to-field-table)
+  ((parsed-class-mapped)                ; :reader parsed-class-mapped)
+   (field-to-accessor-table)            ; :reader field-to-accessor-table)
+   (accessor-to-field-table)            ; :reader accessor-to-field-table)
    ;; a function for use with load-sax-parsed-xml-file-to-parsed-class-hash 
    ;; genearted with def-set-parsed-class-record-slot-value
    (parsed-class-slot-dispatch-function
-    :reader parsed-class-slot-dispatch-function)
-   ;; (parsed-class-parse-table :reader parsed-class-parse-table)
-   )
+    :reader parsed-class-slot-dispatch-function))
   (:documentation 
    #.(format nil
              "Object for holding a mappings of field-names with slot-accessors.~%~@
@@ -46,6 +43,30 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
 `make-parsed-class-field-slot-accessor-mapping',
 `def-set-parsed-class-record-slot-value'.~%▶▶▶")))
 
+;; :NOTE we define function `%parsed-class-mapped-with-known-key-helper' here b/c the
+;; when compiling :FILE dbc-specific/dbc-classes/dbc-class-parsed.lisp
+;; we error with an undefined class `parsed-class-field-slot-accessor-mapping' otherwise.
+(defun %parsed-class-mapped-with-known-key-helper (parsed-class-symbol)
+  ;; (declare (symbol parsed-class-symbol))
+  (when (eql parsed-class-symbol 'parsed-class)
+    (error "Arg PARSED-CLASS-SYMBOL is cl:eql the symbol PARSED-CLASS.~% ~
+          Arg must be a symbol designating a subclass of `parsed-class'~%"))
+  (multiple-value-bind (key-val key-present) (gethash parsed-class-symbol *parsed-class-field-slot-accessor-mapping-table*)
+    (if key-present
+        (if (typep key-val 'parsed-class-field-slot-accessor-mapping)
+            key-val
+            (error ":FUNCTION `%parsed-class-mapped-with-known-key-helper'~% ~
+                    Arg PARSED-CLASS-SYMBOL is a present hash-table-key with non-valid value in hash-table `~A'~% ~
+                    hash-table-key: ~S~% ~
+                    hash-table-value: ~S~%"
+                   '*parsed-class-field-slot-accessor-mapping-table*
+                   parsed-class-symbol key-val))
+        (error ":FUNCTION `%parsed-class-mapped-with-known-key-helper'~% ~
+                 Arg PARSED-CLASS-SYMBOL not a present hash-table-key in hash-table `~A'~% ~
+                 hash-table-key: ~S~%"
+               '*parsed-class-field-slot-accessor-mapping-table*
+               parsed-class-symbol))))
+
 ;; Returns a symbol designating a subclass of class `parsed-class'
 ;; :EXAMPLE
 ;; (parsed-class-mapped (gethash 'parsed-inventory-record *parsed-class-field-slot-accessor-mapping-table*))
@@ -55,6 +76,24 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
 
 ;; (defmethod (setf parsed-class-mapped) (parsed-class-symbol (object parsed-class-field-slot-accessor-mapping))
 ;;   (setf (slot-value object 'parsed-class-mapped) parsed-class-symbol))
+
+
+;; (parsed-class-parse-table (parsed-class-mapped 'parsed-inventory-record))
+(defmethod parsed-class-parse-table ((object parsed-class-field-slot-accessor-mapping))
+  (let* ((class-name-if (slot-value object 'parsed-class-mapped))
+         (name          (class-name class-name-if)))
+    (values (gethash name *parsed-class-parse-table*)
+            name
+            class-name-if)))
+
+;; (setf (parsed-class-parse-table (parsed-class-mapped 'parsed-artist-record))
+;;       (%parsed-class-parse-table-make-table))
+(defmethod (setf parsed-class-parse-table) (hash-table (object parsed-class-field-slot-accessor-mapping))
+  (multiple-value-bind (parse-table class-symbol class-object) (parsed-class-parse-table object)
+    (declare (ignore parse-table))
+    (values (setf (gethash class-symbol *parsed-class-parse-table*) hash-table)
+            class-symbol
+            class-object)))
 
 (defmethod accessor-to-field-table ((object parsed-class-field-slot-accessor-mapping))
   (slot-value object 'accessor-to-field-table))
@@ -104,7 +143,7 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
             (slot-value object 'parsed-class-mapped))))
 
 ;; :NOTE As above, the arg GLOBAL-HASH-TABLE-VAR will always be `*parsed-class-field-slot-accessor-mapping-table*'
-(defun make-parsed-class-field-slot-accessor-mapping (parsed-class-subclass field-to-accessor-alist); global-hash-table-var)
+(defun make-parsed-class-field-slot-accessor-mapping (parsed-class-subclass field-to-accessor-alist) ; global-hash-table-var)
   (let ((the-class-parsed-class-subclass
          (or (find-class parsed-class-subclass nil)
              (error ":FUNCTION `make-parsed-class-field-slot-accessor-mapping'~% ~
@@ -132,7 +171,12 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
       ;; it may no longer be current.
       (setf (slot-value mapping 'parsed-class-mapped) the-class-parsed-class-subclass)
       (remhash parsed-class-subclass *parsed-class-field-slot-accessor-mapping-table*)
-      (setf (gethash parsed-class-subclass *parsed-class-field-slot-accessor-mapping-table*) mapping))))
+      (prog1 
+          (setf (gethash parsed-class-subclass *parsed-class-field-slot-accessor-mapping-table*) mapping)
+        (unless (parsed-class-parse-table parsed-class-subclass)
+          (setf (parsed-class-parse-table parsed-class-subclass)
+                (%parsed-class-parse-table-make-table)))))))
+        
 
 ;; (setf (gethash *parsed-class-field-slot-accessor-mapping-table*
 
@@ -152,6 +196,9 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
              ;; (field-to-accessor-table (gethash parsed-class-lookup *parsed-class-field-slot-accessor-mapping-table*))) ; hash-table)))
              (field-to-accessor-table parsed-class-lookup))
     (setf setf-forms (nreverse setf-forms))))
+
+;; macro `def-set-parsed-class-record-slot-value' evaluates the following inside a let*
+(eval-when (:compile-toplevel :load-toplevel :execute)
 
 (defun %parsed-class-set-slot-value-format-and-intern-symbol (parsed-class)
   (alexandria:format-symbol (find-package "DBC") "~:@(SET-~A-SLOT-VALUE~)" parsed-class))
@@ -187,6 +234,7 @@ OBJECT to FIELD-VALUE as if by the following expression:~%~% ~
             generated-name    
             example-field-string
             parsed-class)))
+) ;; close eval when
 
 ;; :NOTE The setf of the accessor ensures we always populate the slot-value with nil
 ;; so as to avoid errors when slot is not `slot-boundp'.
@@ -209,9 +257,8 @@ OBJECT to FIELD-VALUE as if by the following expression:~%~% ~
   ;; (let ((body-forms (%expand-parsed-class-record-setf-slot-value-forms parsed-class global-hash-table-var)))
   ;; (%expand-parsed-class-record-setf-slot-value-forms parsed-class global-hash-table-var)  
   (let* ((generated-name (%parsed-class-set-slot-value-format-and-intern-symbol for-parsed-class))
-         (docstring      (%parsed-class-documenting-set-parsed-class-record-slot-value-function
-                          for-parsed-class generated-name))
-         (body-forms (%parsed-class-record-setf-slot-value-forms for-parsed-class)))
+         (docstring      (%parsed-class-documenting-set-parsed-class-record-slot-value-function for-parsed-class generated-name))
+         (body-forms     (%parsed-class-record-setf-slot-value-forms for-parsed-class)))
     ;; :WAS `(defun ,fun-name (field-string field-value object)
     `(defun ,generated-name (field-string field-value object)
        ,docstring
