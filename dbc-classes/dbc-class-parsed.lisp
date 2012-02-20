@@ -216,22 +216,27 @@
                                          got: ~S~% class-of: ~S~%" parsed-class-object (class-name objects-class))))))
     subclass-check))
 
-;; (parsed-class-mapped (make-instance 'parsed-inventory-record))
+;; :EXAMPLE
+;;  (parsed-class-mapped (make-instance 'parsed-inventory-record))
 ;;
-;; fails successfully:
+;; Following fail successfully:
 ;; (parsed-class-mapped (make-instance 'parsed-foo-record))
 ;; (parsed-class-mapped (make-instance 'parsed-class))
+;; 
+;; :NOTE function `%parsed-class-mapped-with-known-key-helper' defined in 
+;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-field-slot-mapping.lisp b/c
+;; compiler complains about an undefined class `parsed-class-field-slot-accessor-mapping' otherwise.
 ;;
 ;; (remove-method #'parsed-class-mapped (find-method #'parsed-class-mapped nil '(parsed-class)))
 (defmethod parsed-class-mapped ((object parsed-class))
-  (%parsed-class-mapped-with-known-key-helper
-   (%parsed-class-subtype-check object)))
+  (%parsed-class-mapped-with-known-key-helper (%parsed-class-subtype-check object)))
 
-;; (parsed-class-mapped 'parsed-inventory-record)
-;; (parsed-class-mapped 'parsed-foo-record)
+;; :EXAMPLE
+;;  (parsed-class-mapped 'parsed-inventory-record)
+;; Following fails successfully:
+;;  (parsed-class-mapped 'parsed-foo-record)
 (defmethod parsed-class-mapped ((object symbol))
-  (%parsed-class-mapped-with-known-key-helper
-   (%parsed-class-subtype-check object)))
+  (%parsed-class-mapped-with-known-key-helper (%parsed-class-subtype-check object)))
 
 (defmethod parsed-class-slot-dispatch-function ((object parsed-class))
   (parsed-class-slot-dispatch-function (parsed-class-mapped object)))
