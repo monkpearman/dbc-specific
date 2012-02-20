@@ -181,8 +181,11 @@
              ;;
              ;;
            ;; dbc-classes/dbc-class-parsed-inventory-record.lisp
-             ;;
-             #:parsed-inventory-record     ;; <CLASS>
+             ;; :NOTE exporting parsed-inventory-record is not a good idea
+             ;; because we use the class-name of subclasses of parsed-class as
+             ;; keys in various hash-tables and exporting the symbol makes the
+             ;; interface different for other parsed-<foo>-record classes
+             ;; #:parsed-inventory-record     ;; <CLASS>
              ;;
              ;;
            ;; :MODULE dbc-parse
