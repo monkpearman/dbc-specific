@@ -2,54 +2,98 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-slot-value-equal.lisp
 ;;; ==============================
 
+;; Elsewhere we have stuff that wants to repopulate an existing hash-table mapped
+;; to a bunch of objects.  For a given object I'd like to not update its
+;; existing slot-value unless its value has changed.  when a change has occured
+;; in many cases is likely to be a case correction.
+
 (in-package #:dbc)
 
-(defun %parsed-class-slot-value-equal-array-check (slot-value-a slot-value-b)
-  (declare (array slot-value-a slot-value-b))
-  (cond ((eq slot-value-a slot-value-b) 
-         t)
-        ((eql (array-total-size slot-value-a) (array-total-size slot-value-b))
-         ;; there is no win here
-         ;; (when (or (and (simple-vector slot-value-a)
-         ;;                (simple-vector slot-value-b))
-         ;;           (and (simple-bit-vector-p slot-value-a)
-         ;;                (simple-bit-vector-p slot-value-b)))
-         ;;   (return-from %parsed-class-slot-value-equal-array-check
-         ;;     (list slot-value-a slot-value-b)))
-         (unless (eql (array-rank slot-value-a) (array-rank slot-value-b))
-           (return-from %parsed-class-slot-value-equal-array-check))
-         (unless (eql (array-dimensions slot-value-a) (array-dimensions slot-value-b))
-           (return-from %parsed-class-slot-value-equal-array-check))
-         ;; we do not consider displaced-arrays to be equal
-         (when (or (array-displacement slot-value-a)
-                   (array-displacement slot-value-b))
-           (return-from %parsed-class-slot-value-equal-array-check))
-         ;; If an array is adjustable the other one must be as well.
-         (when (or (adjustable-array-p slot-value-a)
-                   (adjustable-array-p slot-value-b))
-           (cond ((adjustable-array-p slot-value-a)
-                  (unless (adjustable-array-p slot-value-b)
-                    (return-from %parsed-class-slot-value-equal-array-check)))
-                 ((adjustable-array-p slot-value-b)
-                  (unless (adjustable-array-p slot-value-a)
-                    (return-from %parsed-class-slot-value-equal-array-check)))))
-         ;; If an array has a fill-pointer the other one must as well and they
-         ;; must each have the same index.
-         (when (or (array-has-fill-pointer-p slot-value-a)
-                   (array-has-fill-pointer-p slot-value-b))
-           (cond ((array-has-fill-pointer-p slot-value-a)
-                  (unless (and (array-has-fill-pointer-p slot-value-b)
-                               (eql (fill-pointer slot-value-a)
-                                    (fill-pointer slot-value-b)))
-                    (return-from %parsed-class-slot-value-equal-array-check)))
-                 ((array-has-fill-pointer-p slot-value-b)
-                  (unless (and (array-has-fill-pointer-p slot-value-a)
-                               (eql (fill-pointer slot-value-a)
-                                    (fill-pointer slot-value-b)))
-                    (return-from %parsed-class-slot-value-equal-array-check)))))
-         t)
-        (t nil)))
+;; Our original version of `%parsed-class-slot-value-equal-array-check'
+;; (defun %parsed-class-slot-value-equal-array-check (slot-value-a slot-value-b)
+;;   (declare (array slot-value-a slot-value-b)
+;;            (optimize speed))
+;;   (cond ((eq slot-value-a slot-value-b) 
+;;          t)
+;;         ((eql (array-total-size slot-value-a) (array-total-size slot-value-b))
+;;          (unless (eql (array-rank slot-value-a) (array-rank slot-value-b))
+;;            (return-from %parsed-class-slot-value-equal-array-check))
+;;          (unless (eql (array-dimensions slot-value-a) (array-dimensions slot-value-b))
+;;            (return-from %parsed-class-slot-value-equal-array-check))
+;;          ;; we do not consider displaced-arrays to be equal
+;;          (when (or (array-displacement slot-value-a)
+;;                    (array-displacement slot-value-b))
+;;            (return-from %parsed-class-slot-value-equal-array-check))
+;;          ;; If an array is adjustable the other one must be as well.
+;;          (when (or (adjustable-array-p slot-value-a)
+;;                    (adjustable-array-p slot-value-b))
+;;            (cond ((adjustable-array-p slot-value-a)
+;;                   (unless (adjustable-array-p slot-value-b)
+;;                     (return-from %parsed-class-slot-value-equal-array-check)))
+;;                  ((adjustable-array-p slot-value-b)
+;;                   (unless (adjustable-array-p slot-value-a)
+;;                     (return-from %parsed-class-slot-value-equal-array-check)))))
+;;          ;; If an array has a fill-pointer the other one must as well and they
+;;          ;; must each have the same index.
+;;          (when (or (array-has-fill-pointer-p slot-value-a)
+;;                    (array-has-fill-pointer-p slot-value-b))
+;;            (cond ((array-has-fill-pointer-p slot-value-a)
+;;                   (unless (and (array-has-fill-pointer-p slot-value-b)
+;;                                (eql (fill-pointer slot-value-a)
+;;                                     (fill-pointer slot-value-b)))
+;;                     (return-from %parsed-class-slot-value-equal-array-check)))
+;;                  ((array-has-fill-pointer-p slot-value-b)
+;;                   (unless (and (array-has-fill-pointer-p slot-value-a)
+;;                                (eql (fill-pointer slot-value-a)
+;;                                     (fill-pointer slot-value-b)))
+;;                     (return-from %parsed-class-slot-value-equal-array-check)))))
+;;          t)
+;;         (t nil)))
 
+;; Thanks to 3b for help reducing the above definition to avoid using so
+;; much when/unless/cond/return-from
+;; :PASTE-DATE 2012-02-22
+;; :PASTE-URL (URL `http://paste.lisp.org/+2QPJ/4')
+(defun %parsed-class-slot-value-equal-array-check (slot-value-a slot-value-b)
+  (declare (array slot-value-a slot-value-b)
+           (optimize speed))
+  (or 
+   ;; If they are the same object, we're done
+   (eq slot-value-a slot-value-b)
+   ;; else, check that the shape and properties of each array are congruent.
+   (and 
+    ;; are cl:array-total-size and cl:array-rank eql for both arrays
+    (equal (array-dimensions slot-value-a)
+           (array-dimensions slot-value-b))
+    ;; we do not consider displaced-arrays to be equal
+    (not (array-displacement slot-value-a))
+    (not (array-displacement slot-value-b))
+    ;; If an array is adjustable the other one must be as well.
+    (eql (adjustable-array-p slot-value-a)
+         (adjustable-array-p slot-value-b))
+    ;; When an array has a fill-pointer the other one must as well and they must
+    ;; each have the same fill-pointer index.
+    (or 
+     ;; Neither array has a fill-pointer, we're done
+     (and (not (array-has-fill-pointer-p slot-value-a))
+          (not (array-has-fill-pointer-p slot-value-b)))
+     (and 
+      ;; each has a fill-pointer
+      (array-has-fill-pointer-p slot-value-a)
+      (array-has-fill-pointer-p slot-value-b)
+      ;; do each have the same fill-pointer index => T
+      (eql (fill-pointer slot-value-a)
+           (fill-pointer slot-value-b)))))))
+
+;; (not (array-displacement #()))
+;; (not (array-displacement (make-array 0 :adjustable t)))
+
+;; (eql (adjustable-array-p #())
+;;      (adjustable-array-p (make-array 0 :adjustable t)))
+
+
+;;      
+;; (%parsed-class-slot-value-equal-array-check #() (make-array 0 :adjustable t))
 
 ;;; ==============================
 ;; methods for comparing equality of parsed-class slot-values
@@ -61,7 +105,7 @@ compare strings as if by cl:string= and perform array comparison as follows:
  - If an array is adjustable the other one must be as well;
  - If an array has a fill-pointer the other one must as well and they
    must each have the same index;
- -If either array is displaced-array we do not consider them to be equal." ))
+ - If either array is displaced-array we do not consider them to be equal." ))
 
 (defmethod parsed-class-slot-value-equal ((slot-value-a t) (slot-value-b t))
   (equal slot-value-a slot-value-b))
@@ -167,6 +211,10 @@ compare strings as if by cl:string= and perform array comparison as follows:
 ;;  (make-array 1 :initial-contents '(2) :adjustable t)
 ;;  (make-array 1 :element-type '(unsigned-byte 2) :initial-contents '(2) :fill-pointer 1))
 ;; => NIL
+;;
+;; (parsed-class-slot-value-equal
+;;  (make-array 1 :initial-contents '(2) :adjustable t)
+;;  (make-array 1 :element-type '(unsigned-byte 2) :initial-contents '(2)))
 ;;
 ;; (parsed-class-slot-value-equal
 ;;  (make-array 1 :initial-contents '(2) :adjustable t)
