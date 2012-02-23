@@ -126,6 +126,7 @@
              (:file "dbc-class-description")
              (:file "dbc-class-documentation-record")
              (:file "dbc-class-parsed")
+             (:file "dbc-class-parsed-slot-value-equal")
              (:file "dbc-class-parsed-field-slot-mapping")
              (:file "dbc-class-parsed-convert")
              (:file "dbc-class-parsed-inventory-record")
