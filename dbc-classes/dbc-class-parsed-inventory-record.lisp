@@ -391,6 +391,16 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash',
 `write-sax-parsed-xml-refs-file', `set-parsed-inventory-record-slot-value'.~%▶▶▶")))
 
+;; (make-instance 'parsed-inventory-record)
+;; => #<PARSED-INVENTORY-RECORD NIL>
+;; (nth-value 0 (gethash "9842" (parsed-class-parse-table 'parsed-inventory-record)))
+;; => #<PARSED-INVENTORY-RECORD "009842">
+(defmethod print-object ((object parsed-inventory-record) stream)
+  (print-unreadable-object (object stream :type t) 
+    (format stream "~S" (and (slot-boundp object 'inventory-number)
+                             (stringp (inventory-number object))
+                             (control-id-indexed-number-zero-padded-string (inventory-number object))))))
+
 ;; control-id-entity-num-artist
 
 (make-parsed-class-field-slot-accessor-mapping
