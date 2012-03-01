@@ -54,6 +54,21 @@ GalaneÌ„s, DeÌ„meÌ„trios EmmanoueÌ„l
 Galanis, DeÌmeÌtrius Emmanuel
 GalaneÌs, DeÌmeÌtrios EmmanoueÌl\
 
+ē <- bad
+ē <- good ; LATIN SMALL LETTER E WITH MACRON (275, #o423, #x113) 0x0113
+
+Galanis, DeÌmeÌtrius Emmanuel -> Galanis, Démétrius Emmanuel
+GalaneÌ„s, DeÌ„meÌ„trios EmmanoueÌ„l -> Galanēs, Dēmētrios Emmanouēl
+DeÌ„meÌ„trios EmmanoueÌ„l GalaneÌ„s -> Dēmētrios Emmanouēl Galanēs
+GalaneÌ„s -> Galanēs
+
+Galanis, Démétrius Emmanuel
+http://lccn.loc.gov/n84019731
+http://viaf.org/viaf/5203500
+
+naturaliseÌ -> naturalisé
+francÌ§ais -> français
+
 "Ì" => "é"
 "Ì" => "ē"
 "Ì„"    => "ē"
@@ -134,8 +149,10 @@ Mōppasāṅṅ, Di. Ge., 1850-1893
 Ì
 nâ€œThomas McLean.â€
 
-
-
+ā <- bad
+ā <-good
+ReonaÌ„ru -> Reonāru
+ā
 
 ;;; ==============================
 

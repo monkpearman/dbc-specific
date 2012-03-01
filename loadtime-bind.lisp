@@ -181,9 +181,9 @@
 ;;     set-parsed-inventory-sales-sold-record-slot-value
 ;;     parsed-inventory-sales-sold-record)
 
-;; (def-set-parsed-class-record-slot-value
-;;     set-parsed-inventory-sales-sold-in-store-record-slot-value
-;;     parsed-inventory-sales-sold-in-store-record)
+;; `set-parsed-inventory-sales-sold-in-store-record-slot-value'
+(def-set-parsed-class-record-slot-value
+     parsed-inventory-sales-sold-in-store-record)
 
 ;; `set-parsed-artist-record-slot-value'
 (def-set-parsed-class-record-slot-value
@@ -209,6 +209,10 @@
 (def-set-parsed-class-record-slot-value
     ;; set-parsed-brand-record-slot-value
     parsed-brand-record)
+
+;; (parsed-inventory-record-xml-dump-file-and-hash)
+;; (parsed-inventory-sales-order-record-xml-dump-file-and-hash)
+;; (parsed-inventory-sales-sold-in-store-record-xml-dump-file-and-hash)
 
 
 ;;; ==============================

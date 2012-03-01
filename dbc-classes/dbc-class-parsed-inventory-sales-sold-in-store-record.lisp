@@ -57,7 +57,6 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 :SEE-ALSO `set-parsed-inventory-sales-sold-in-store-record-slot-value', ~
 `parsed-inventory-sales-sold-in-store-record-xml-dump-file-and-hash'.")))
 
-
 (make-parsed-class-field-slot-accessor-mapping
  'parsed-inventory-sales-sold-in-store-record
  '(("id"       . ignorable-sold-in-store-id-number)
@@ -75,7 +74,6 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
   :default-output-pathname-sub-directory (list "parsed-xml-inventory-sales-sold-in-store-record")
   :default-output-pathname-base-directory (sub-path *xml-output-dir*)
   :default-output-pathname-name "sold-in-store-records")
-
 
 ;;; ==============================
 ;; :FIELD "id" :TRANSFORM ignorable-sold-in-store-id-number

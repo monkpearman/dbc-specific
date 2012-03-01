@@ -469,6 +469,9 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("edit_history"      . edit-history))
  )
 
+
+;; (parsed-class-parse-table 'parsed-inventory-record)
+;; (load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-inventory-record #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/xml-class-dump-dir/parsed-xml-inventory-records/inventory-records-2012-02-16.lisp")
 ;; (parsed-inventory-record-xml-dump-file-and-hash)
 ;; (gethash 'parsed-inventory-record *parsed-class-parse-table*)
 ;; (gethash "12000" (gethash 'parsed-inventory-record *parsed-class-parse-table*))
@@ -511,7 +514,14 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;;
 ;; :NOTE following supersedes definition above.
 ;;  Returns the function `parsed-inventory-record-xml-dump-file-and-hash'.
-(def-parsed-class-record-xml-dump-file-and-hash 
+;; (def-parsed-class-record-xml-dump-file-and-hash
+;;     :parsed-class parsed-inventory-record
+;;   :default-key-accessor inventory-number
+;;   :default-input-pathname-name "dump-refs-DUMPING"
+;;   :default-output-pathname-base-directory (sub-path *xml-output-dir*)
+;;   :default-output-pathname-sub-directory (list "parsed-xml-inventory-records")
+;;   :default-output-pathname-name "inventory-records")
+(def-parsed-class-record-xml-dump-file-and-hash
     :parsed-class parsed-inventory-record
   :default-key-accessor inventory-number
   :default-input-pathname-name "dump-refs-DUMPING"

@@ -339,6 +339,7 @@
 (defmethod (setf parsed-class-parse-table) (hash-table (object symbol))
   (setf (parsed-class-parse-table (parsed-class-mapped object)) hash-table))
 
+
 ;;; ==============================
 
 
@@ -352,3 +353,4 @@
 
 ;;; ==============================
 ;;; EOF
+

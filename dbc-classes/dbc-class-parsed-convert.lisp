@@ -456,6 +456,91 @@
                             parsed-class))
 ) ;; close eval-when
 
+
+;; 
+;; :TODO (While the following might better handled in our persistence layer, we
+;; don't have one yet and even where we do it prob. won't try to account for any
+;; early stuff we do with subclasses of class `parsed-class' apply to esp. wrt
+;; `update-instance-for-redefined-class' b/c at the parsed-class layer we
+;; manually account for and maintain orthogonal relationship between the slots
+;; of a parsed-class and its accessors...)
+;;
+;; For callers of `load-sax-parsed-xml-file-to-parsed-class-hash' which use it's
+;; return value to SET-PARSED-CLASS-PARSE-TABLE (e.g. the automagically defined
+;; functions returned by macro`def-parsed-class-record-xml-dump-file-and-hash')
+;; we need a way to detect when a parsed-class has an existing populated
+;; hash-table and if so when SET-PARSED-CLASS-PARSE-TABLE is non-nil it is a
+;; keyword indicating to only populate with new instances of PARSED-CLASS with
+;; new slot-values if the value has changed. A key dereferences instances of
+;; PARSED-CLASS in the associated parsed-class-parse-table. 
+;;
+;; Following enumerate the keywords identifying possible actions we might take:
+;;
+;; :SET-PARSED-CLASS-PARSE-TABLE nil - return a new hash-table the keys of which
+;; derefernce to instances of PARSED-CLASS.
+;;
+;; :SET-PARSED-CLASS-PARSE-TABLE :PARSED-CLASS-SLOT-VALUES-UNCONDITIONAL-UPDATE
+;; - unconditionally set newly parsed slot/slot-value pairs for each existing or
+;; new instance without checking for differences.
+;;
+;; :SET-PARSED-CLASS-PARSE-TABLE :PARSED-CLASS-SLOT-VALUES-USE-EXISTING - If an
+;; existing instance exists for any slot/slot-value pair if differences exist
+;; between the newly parsed instance and the existing instance keep the
+;; existing-instance slot-value. If there is no existing instance add the new
+;; instance to the parsed-class-parse-table.
+;;
+;; :SET-PARSED-CLASS-PARSE-TABLE :PARSED-CLASS-SLOT-VALUES-USE-NEW - If an
+;; existing instance exists for any slot/slot-value pair if differences exist
+;; between the newly parsed instance and the existing instance set the
+;; existing-instance slot-value to the newly parsed value.  If there is no
+;; existing instance add the new instance to the table.
+;;
+;; Regardless the basic form is to do something like this:
+;;
+;; (loop 
+;;    with parsed-accessor = (accessors-of-parsed-class '<PARSED-CLASS>)
+;;    with changed = ()  
+;;    for new-key being the hash-keys in <NEW-HASH> using (hash-value new-object-with-values)
+;;    for existing-key being the hash-keys in <OLD-HASH> using (hash-value existing-object-with-values)
+;;    if existing-object-with-values
+;;    do (loop 
+;;          for accessor in parsed-accessor
+;;          for new-value = (funcall accessor new-object-with-values)
+;;          for existing-value = (funcall accessor existing-object-with-values)
+;;          unless (equalp new-value existing-value)
+;;          do (setf (slot-value existing-object-with-values accessor) new-value) and
+;;          do (push (slot-value existing-object-with-values accessor) changed))
+;;    finally (return changed))
+;;
+;; Following is a working example using the template above:
+;;
+;; (defparameter *tt--hash*
+;;   (load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-inventory-sales-sold-in-store-record
+;;                                                  :hash-table (make-hash-table :test #'equal)
+;;                                                  :input-file (merge-pathnames (make-pathname :directory '(:relative "parsed-xml-inventory-sales-sold-in-store-record")
+;;                                                                                              :name "sold-in-store-records-2012-02-20"
+;;                                                                                              :type "lisp")
+;;                                                                               (sub-path *xml-output-dir*))
+;;                                                  :key-accessor 'inventory-number
+;;                                                  :slot-dispatch-function 'set-parsed-inventory-sales-sold-in-store-record-slot-value))
+;; (loop 
+;;    with parsed-accessor = (accessors-of-parsed-class 'parsed-inventory-sales-sold-in-store-record)
+;;    with changed = ()  
+;;    for new-key being the hash-keys in *tt--hash* using (hash-value new-object-with-values)
+;;    for existing-key being the hash-keys in (parsed-class-parse-table 'parsed-inventory-sales-sold-in-store-record) using (hash-value existing-object-with-values)
+;;    if existing-object-with-values
+;;    do (loop 
+;;          for accessor in parsed-accessor
+;;          for new-value = (funcall accessor new-object-with-values)
+;;          for existing-value = (funcall accessor existing-object-with-values)
+;;          unless (equalp new-value existing-value)
+;;          do (setf (slot-value existing-object-with-values accessor) new-value) and
+;;          do (push (slot-value existing-object-with-values accessor) changed))
+;;     finally (return changed))
+;;
+;; (equal "ABC" "abc")
+;; (equal (cons "a" nil) (list "a"))
+;;
 ;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defmacro def-parsed-class-record-xml-dump-file-and-hash (&key parsed-class
                                                           default-key-accessor
@@ -468,11 +553,15 @@
                                                           ;; (set-parsed-class-parse-table t)
                                                           )
   ;; let* to ensure `%parsed-class-dumper-format-and-intern-symbol' evaluated at macroexpansion time.
-  (let* ((generated-name (%parsed-class-dumper-format-and-intern-symbol parsed-class))
-        ;; :NOTE PARSED-CLASS' `parsed-class-slot-dispatch-function' may need to
-        ;; be evaluated at macroexpansion time.
-        ;; (dispatch-fun   (parsed-class-slot-dispatch-function parsed-class)))
-        )
+  ;; (let* ((generated-name (%parsed-class-dumper-format-and-intern-symbol parsed-class))
+  ;; :NOTE PARSED-CLASS' `parsed-class-slot-dispatch-function' may need to
+  ;; be evaluated at macroexpansion time.
+  ;; (dispatch-fun   (parsed-class-slot-dispatch-function parsed-class)))
+  ;;)
+  (let ((generated-name (alexandria:format-symbol (find-package "DBC")
+                                                  "~:@(~A-XML-DUMP-FILE-AND-HASH~)"
+                                                  parsed-class))
+        );; (dispatch-fun (parsed-class-slot-dispatch-function parsed-class)))
     `(defun ,generated-name (&key (input-file (make-pathname 
                                                :directory (pathname-directory (sub-path *xml-input-dir*)) 
                                                :name ,default-input-pathname-name))
@@ -495,13 +584,15 @@
               (parsed-hash  (make-hash-table :test 'equal :size (mon:prime-or-next-greatest (caddr parsed-xml-file)))))
          ;;(loaded-hash  
          ;;(multiple-value-list 
-         (load-sax-parsed-xml-file-to-parsed-class-hash
-                 :parsed-class ',parsed-class
-                 :input-file (cadr parsed-xml-file)
-                 :hash-table  parsed-hash
-                 :key-accessor  (function ,default-key-accessor)
-                 ;; e.g. class specific function as defined by macro `def-set-parsed-class-record-slot-value'
-                 :slot-dispatch-function (function ,(parsed-class-slot-dispatch-function parsed-class)))
+         (let ((dispatch-fun (parsed-class-slot-dispatch-function ',parsed-class)))
+           (load-sax-parsed-xml-file-to-parsed-class-hash
+            :parsed-class ',parsed-class
+            :input-file (cadr parsed-xml-file)
+            :hash-table  parsed-hash
+            :key-accessor  (function ,default-key-accessor)
+            ;; e.g. class specific function as defined by macro `def-set-parsed-class-record-slot-value'
+            ;; :slot-dispatch-function (function ,(parsed-class-slot-dispatch-function parsed-class)))
+            :slot-dispatch-function dispatch-fun))
           (values 
            (if set-parsed-class-parse-table
                ;; (setf (gethash ',parsed-class *parsed-class-parse-table*) parsed-hash)
@@ -509,6 +600,15 @@
                parsed-hash)
            (cadr  parsed-xml-file)
            (caddr parsed-xml-file))))))
+
+
+;; (parsed-class-parse-table 'parsed-inventory-sales-sold-in-store-record)
+;; 981
+
+ 
+          
+          
+
 
 ;; Next we need to map the hash-table values and for each object and each slot
 ;; of object clean up the crap in the fields.

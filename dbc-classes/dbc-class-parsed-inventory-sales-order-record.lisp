@@ -377,6 +377,7 @@ These contents of these XML files correspond to the following derbycityprints SQ
 :NOTE the accessor `order-number' should be used as value for the
 KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%")))
 
+;; parsed-inventory-sales-order-record
 (make-parsed-class-field-slot-accessor-mapping 
  'parsed-inventory-sales-order-record
  '(("order_number"        . order-number)
@@ -435,7 +436,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%")))
    ("date_auth"           . payment-authorization-manual-verification-date)
    ("date_void"           . payment-authorization-manual-void-date)
    ("who_did_cb"          . edit-by) ;;  
-   ("why_cb"              . payment-authorization-manual-verifcation-desicription) ;; description-inventory-translation
+   ("why_cb"              . payment-authorization-manual-verifcation-desicription) ;; description-inventory-condition
    ("action_ip"           . payment-authorization-manual-verification-ip) ;; not sure if this is correct or not
    ("ounces"              . shipping-weight-combined-ounces) ;; ignorable
    ("pounds"              . shipping-weight-combined-pounds) ;; ignorable
@@ -458,7 +459,8 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%")))
 ;; (parsed-inventory-sales-order-record-xml-dump-file-and-hash)
 ;; => #<HASH-TABLE :TEST EQUAL :COUNT 80 {E3B1731}>
 ;;    #P"../dbc-specific/xml-class-dump-dir/parsed-xml-inventory-sales-order-records/order-records-2012-02-16.lisp"
-;;  Returns the function `parsed-inventory-record-xml-dump-file-and-hash'.
+;;
+;; `parsed-inventory-sales-order-record-xml-dump-file-and-hash'
 (def-parsed-class-record-xml-dump-file-and-hash 
     :parsed-class parsed-inventory-sales-order-record
   :default-key-accessor order-number

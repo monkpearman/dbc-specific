@@ -38,6 +38,8 @@ SELECT * INTO OUTFILE '/tmp/dbc-dump-arist-infos'
 
 
 ;;; ==============================
+(info "(mysql)mysqldump")
+
 mysqldump
 --result-file=
 --tab=path
@@ -74,7 +76,9 @@ mysqldump --xml -u root derbycityprints refs > /tmp/dump-refs-xml
 
 mysqldump -u root -p  derbycityprints artist_infos > /tmp/artist_infos
 
-;;; :TEMPLATE mysqldump --xml -u root -p  derbycityprints  > /tmp/dump- -xml
+;;; :TEMPLATE mysqldump --xml -u root -p  derbycityprints <FOO-TABLE> /tmp/dump-<FOO>-xml
+;;; :TEMPLATE mysqldump --xml -u root -p  derbycityprints <FOO-TABLE> --result-file=/tmp/<FOO>-xml
+
 mysqldump --xml -u root -p  derbycityprints artist_infos     > /tmp/artist_infos
 mysqldump --xml -u root -p  derbycityprints author_infos     > /tmp/dump-author_infos-xml
 mysqldump --xml -u root -p  derbycityprints book_infos       > /tmp/dump-book_infos-xml
@@ -94,6 +98,10 @@ mysqldump --xml -u root -p  derbycityprints  themes_fr        > /tmp/dump-themes
 mysqldump --xml -u root -p  derbycityprints  words            > /tmp/dump-word-xml
 mysqldump --xml -u root -p  derbycityprints  translations     > /tmp/dump-translations-xml
 
+
+
+mysqldump --xml -u root -p  derbycityprints sold_refs --result-file=/tmp/sold-refs-xml
+mysqldump --xml -u root -p  derbycityprints sold_in_store --result-file=/tmp/sold-in-store-xml
 
 
 ;; :NOTE the `-p' flag will initiate a prompt for the mysql-root-user's password
