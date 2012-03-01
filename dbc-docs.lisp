@@ -1094,21 +1094,6 @@ Keyword args PREFIX-FOR-FILE-NAME, SUFFIX-FOR-FILE-NAME, PATHNAME-TYPE,
 PRINT-UNBOUND are as per `dbc::write-sax-parsed-slots-to-file'.~%~@
 :SEE-ALSO `parsed-inventory-record-xml-dump-file-and-hash'.~%▶▶▶")
 
-(fundoc 'parsed-inventory-record-xml-dump-file-and-hash
-        "Parse XML contents of INPUT-FILE and write a lispy version to disk as per
-`write-sax-parsed-xml-to-file' then feed the contents of the lisp file into a
-hash-table with `load-sax-parsed-xml-file-to-parsed-class-hash'.~%~@
-Return cl:values a hash-table and the output pathname written to.
-Keyword input-file is an XML file containing inventory-records to be parsed.
-Keywords OUTPUT-PATHNAME-SUB-DIRECTORY, OUTPUT-PATHNAME-BASE-DIRECTORY,
-OUTPUT-PATHNAME-NAME, OUTPUT-PATHNAME-DATED-P, and OUTPUT-PATHNAME-TYPE are as
-per `make-default-sax-parsed-xml-output-pathname'.~%~@
-When set-inventory-record-table is non-nil nth-value 1 is the return value of
-setting the 'parsed-inventory-record key in variable `*parsed-class-parse-table*' to the
-hash-table populated from the contents of INPUPT-FILE, else return a hash-table.~%
-:EXAMPLE~% \(parsed-inventory-record-xml-dump-file-and-hash\)~%~@
-:SEE-ALSO `parsed-inventory-record-null-prototype-to-file'.~%▶▶▶")
-
 (fundoc 'write-sax-parsed-inventory-record-hash-to-zero-padded-directory
         "Write all parsed-inventory-records in HASH-TABLE to a relative sub-directory
 pathname of the form 0NNNNN beneath BASE-OUTPUT-DIRECTORY. If sub-directory does
@@ -1124,6 +1109,21 @@ not exist it will be created as if by `cl:ensure-directories-exist'.~%~@
                           \(sub-path *xml-output-dir*\)\)\)~%~@
 :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
 `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
+
+;; (fundoc 'parsed-inventory-record-xml-dump-file-and-hash
+;;         "Parse XML contents of INPUT-FILE and write a lispy version to disk as per
+;; `write-sax-parsed-xml-to-file' then feed the contents of the lisp file into a
+;; hash-table with `load-sax-parsed-xml-file-to-parsed-class-hash'.~%~@
+;; Return cl:values a hash-table and the output pathname written to.
+;; Keyword input-file is an XML file containing inventory-records to be parsed.
+;; Keywords OUTPUT-PATHNAME-SUB-DIRECTORY, OUTPUT-PATHNAME-BASE-DIRECTORY,
+;; OUTPUT-PATHNAME-NAME, OUTPUT-PATHNAME-DATED-P, and OUTPUT-PATHNAME-TYPE are as
+;; per `make-default-sax-parsed-xml-output-pathname'.~%~@
+;; When set-inventory-record-table is non-nil nth-value 1 is the return value of
+;; setting the 'parsed-inventory-record key in variable `*parsed-class-parse-table*' to the
+;; hash-table populated from the contents of INPUPT-FILE, else return a hash-table.~%
+;; :EXAMPLE~% \(parsed-inventory-record-xml-dump-file-and-hash\)~%~@
+;; :SEE-ALSO `parsed-inventory-record-null-prototype-to-file'.~%▶▶▶")
 
 (fundoc 'def-parsed-class-record-xml-dump-file-and-hash
         "Return a function which consolidates functionality of both
@@ -1191,6 +1191,170 @@ keyword OUTPUT-PATHNAME-SUB-DIRECTORY of `make-default-sax-parsed-xml-output-pat
 
 :SEE-ALSO `print-sax-parsed-slots', `write-sax-parsed-slots-to-file',
 `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
+
+
+;;; ==============================
+;;; dbc-specific/dbc-classes/dbc-class-parsed-slot-value-equal.lisp
+;;; ==============================
+
+(generic-doc #'parsed-class-slot-value-equal
+"Compare SLOT-VALUE-A SLOT-VALUE-B as if by cl:equal except when descending
+compare strings as if by cl:string= and perform array comparison as follows:~%~% ~
+- If an array is adjustable the other one must be as well;~%~% ~
+- If an array has a fill-pointer the other one must as well and they~%   ~
+must each have the same index;~%~% ~
+- If either array is displaced-array we do not consider them to be equal.~%~@
+- If SLOT-VALUE-A and SLOT-VALUE-B are the same array the array must satisfy the
+  above constraints. That is, the array must not be a displaced-array.~%~@
+:NOTE The above constraints around arrays have important consequences when
+comparing hash-table's. When comparing two hashes (even if they are the same
+hash) map descend every hash-value of each hash-table comparing it to itself and
+return NIL if any array object encountered in the descent does not satisfy
+`parsed-class-slot-value-equal'.~%~@
+:NOTE This functionality is looseley modeled after the EQUALS cdr.
+:SEE \(URL `http://cdr.eurolisp.org/document/8/cleqcmp.html'\)~%~@
+:SEE-ALSO `<XREF>'.~%▶▶▶")
+
+(method-doc #'parsed-class-slot-value-equal nil '(null null)
+"~%:EXAMPLE~%
+ \(parsed-class-slot-value-equal nil nil\)~%")
+
+(method-doc #'parsed-class-slot-value-equal nil '((eql t) (eql t))
+"~%:EXAMPLE~%
+ \(parsed-class-slot-value-equal t t\)~%")
+
+(method-doc #'parsed-class-slot-value-equal nil '((eql t) null)
+"~%:EXAMPLE~%
+ \(parsed-class-slot-value-equal t nil\)~%")
+
+(method-doc #'parsed-class-slot-value-equal nil '(null (eql t))
+"~%:EXAMPLE~%
+ \(parsed-class-slot-value-equal nil t\)~%")
+
+(method-doc #'parsed-class-slot-value-equal nil '(character character)
+"~%:EXAMPLE~%
+ \(parsed-class-slot-value-equal #\\A #\\A\)~%
+ \(parsed-class-slot-value-equal #\\A #\\a\)~%")
+
+(method-doc #'parsed-class-slot-value-equal nil '(string string)
+"~%:EXAMPLE~%
+ \(parsed-class-slot-value-equal \"string\" \"string\"\)
+ \(parsed-class-slot-value-equal \"string\" \"String\"\)~%")
+
+(method-doc #'parsed-class-slot-value-equal nil '(cons cons)
+"~%:EXAMPLE~%
+ \(parsed-class-slot-value-equal nil \(\)\)~%
+ \(parsed-class-slot-value-equal \(cons nil nil\) \(list nil\)\)~%
+ \(parsed-class-slot-value-equal '\(a \(b\) \(c . d\)\) '\(a \(b\) \(c . d\)\)\)~%
+ \(parsed-class-slot-value-equal '\(a b c . d\) '\(a b c . d\)\)~%
+ \(parsed-class-slot-value-equal '\(a \(b\) \(c . d\)\) '\(a \(b\) \(c . D\)\)\)~%
+ \(parsed-class-slot-value-equal '\(a \(b\) \(c . d\)\) '\(a \(b\) \(c . :D\)\)\)~%
+ \(parsed-class-slot-value-equal '\(a \(b\) \(c . \"C\"\)\) '\(a \(b\) \(c . \"C\"\)\)\)~%
+ \(parsed-class-slot-value-equal '\(a \(b\) \(c . \"C\"\)\) '\(a \(b\) \(c . \"c\"\)\)\)~%
+ \(parsed-class-slot-value-equal '\(a \(b\) \(c . #\(\)\)\) '\(a \(b\) \(c . #\(\)\)\)\)~%
+ \(parsed-class-slot-value-equal '\(a \(b\) \(c . #\(\)\)\) `\(a \(b\) \(c . ,\(make-array 0 :adjustable t\)\)\)\)~%")
+
+(method-doc #'parsed-class-slot-value-equal nil '(hash-table hash-table)
+"~%:EXAMPLE~%
+ \(parsed-class-slot-value-equal \(make-hash-table\) \(make-hash-table\)\)~%
+ \(parsed-class-slot-value-equal \(make-hash-table :test #'equal\) \(make-hash-table :test #'equal\)\)~%
+ \(parsed-class-slot-value-equal \(make-hash-table :test #'equal\) \(make-hash-table :test #'eql\)\)~%
+ \(let \(\(hta \(make-hash-table\)\)
+       \(htb \(make-hash-table\)\)
+       \(return-val '\(\)\)\)
+   \(setf \(gethash 8 hta\) \"8\"
+         \(gethash 8 htb\) \"8\"
+         return-val \(parsed-class-slot-value-equal hta htb\)
+         \(gethash 8 hta\) \"not-8\"
+         return-val \(list return-val \(parsed-class-slot-value-equal hta htb\)\)
+         \(gethash 8 hta\) \(make-array 0\)
+         \(gethash 8 htb\) \(make-array 0\)
+         return-val `\(,\(parsed-class-slot-value-equal hta htb\) ,@return-val\)
+         \(gethash 8 hta\) \(make-array 2\)
+         \(gethash 8 htb\) \(make-array 2 :fill-pointer 1\)
+         return-val `\(,\(parsed-class-slot-value-equal hta htb\) ,@return-val\)
+         \(gethash 8 hta\) \(make-hash-table\)
+         \(gethash 8 htb\) \(make-hash-table\)
+         return-val `\(,\(parsed-class-slot-value-equal hta htb\) ,@return-val\)
+         \(gethash 9 \(gethash 8 hta\)\) \"9\"
+         \(gethash 9 \(gethash 8 htb\)\) \"9\"
+         return-val `\(,\(parsed-class-slot-value-equal hta htb\) ,@return-val\)
+         \(gethash 9 \(gethash 8 hta\)\) \"not-9\"
+         \(gethash 9 \(gethash 8 htb\)\) \"9\"
+         return-val `\(,\(parsed-class-slot-value-equal hta htb\) ,@return-val\)\)
+   \(remhash 8 hta\)
+   \(setf return-val `\(,\(not \(parsed-class-slot-value-equal hta htb\)\) ,@return-val\)\)
+   \(remhash 8 htb\)
+   \(setf return-val `\(,\(parsed-class-slot-value-equal hta htb\) ,@return-val\)\)
+   \(values \(equal '\(t t nil t t nil t t nil\) return-val\) return-val\)\)~%")
+
+(method-doc #'parsed-class-slot-value-equal nil '(simple-vector simple-vector)
+"~%:EXAMPLE~%
+ \(parsed-class-slot-value-equal #\(\) #\(\)\)~%
+ \(parsed-class-slot-value-equal #\(#\(\)\) #\(#\(\)\)\)~%
+ \(parsed-class-slot-value-equal #\(#\(#\\a\)\) #\(#\(#\\a\)\)\)~%
+ \(parsed-class-slot-value-equal #\(#\(#\\a\)\) #\(#\(#\\A\)\)\)~%")
+
+(method-doc #'parsed-class-slot-value-equal nil '(bit-vector bit-vector)
+"~%:EXAMPLE~%
+ \(parsed-class-slot-value-equal #*010 #*010\)~%
+ \(parsed-class-slot-value-equal \(make-array 3 :element-type 'bit :fill-pointer 1\)
+                                \(make-array 3 :element-type 'bit :fill-pointer 1\)\)~%
+ \(parsed-class-slot-value-equal \(make-array 3 :element-type 'bit :fill-pointer 1\)
+                                \(make-array 3 :element-type 'bit :fill-pointer 2\)\)~%
+ \(parsed-class-slot-value-equal \(make-array 3 :element-type 'bit :fill-pointer 3\)
+                                #*000\)~%")
+
+(method-doc #'parsed-class-slot-value-equal nil '(vector vector)
+"~%:EXAMPLE~%
+ \(parsed-class-slot-value-equal \(vector 2\) \(vector 2\)\)~%
+ \(parsed-class-slot-value-equal
+  \(make-array 1 :element-type '\(unsigned-byte 2\) :initial-contents '\(2\) :fill-pointer 1\)
+  \(make-array 1 :element-type '\(unsigned-byte 2\) :initial-contents '\(2\) :fill-pointer 1\)\)~%
+ \(parsed-class-slot-value-equal
+  \(make-array 1 :element-type '\(unsigned-byte 2\) :initial-contents '\(2\) :fill-pointer 1\)
+  \(make-array 1 :element-type '\(unsigned-byte 2\) :initial-contents '\(2\) :fill-pointer 0\)\)~%
+ \(let* \(\(vec1 \(make-array 1 :element-type '\(unsigned-byte 2\) :initial-contents '\(2\) :fill-pointer 1\)\)
+        \(vec2 \(make-array 1 :element-type '\(unsigned-byte 2\) :displaced-to vec1\)\)\)
+   \(parsed-class-slot-value-equal vec1 vec2\)\)~%
+ \(parsed-class-slot-value-equal
+  \(make-array 1 :initial-contents '\(2\) :fill-pointer 1\)
+  \(make-array 1 :element-type '\(unsigned-byte 2\) :initial-contents '\(2\) :fill-pointer 1\)\)~%
+ \(parsed-class-slot-value-equal
+  \(make-array 1 :initial-contents '\(2\) :adjustable t\)
+  \(make-array 1 :element-type '\(unsigned-byte 2\) :initial-contents '\(2\) :fill-pointer 1\)\)~%
+ \(parsed-class-slot-value-equal
+  \(make-array 1 :initial-contents '\(2\) :adjustable t\)
+  \(make-array 1 :element-type '\(unsigned-byte 2\) :initial-contents '\(2\)\)\)~%
+ \(parsed-class-slot-value-equal
+  \(make-array 1 :initial-contents '\(2\) :adjustable t\)
+  \(make-array 1 :element-type '\(unsigned-byte 2\) :initial-contents '\(2\) :adjustable t\)\)~%")
+
+(method-doc #'parsed-class-slot-value-equal nil '(array array)
+"~%:EXAMPLE~%
+ \(parsed-class-slot-value-equal \(make-array '\(2 2\)\) \(make-array '\(2 2\)\)\)~%
+ \(parsed-class-slot-value-equal \(make-array '\(2 2\) :adjustable t\)
+                                \(make-array '\(2 2\) :adjustable t\)\)~%
+ \(parsed-class-slot-value-equal #2A\(\(1 2\) \(3 4\)\)
+                                #2A\(\(1 2\) \(3 4\)\)\)~%
+ \(parsed-class-slot-value-equal \(make-array '\(2 2\) :adjustable t\)
+                                \(make-array '\(2 2\) :adjustable nil\)\)~%
+ \(parsed-class-slot-value-equal #2A\(\(1 2\) \(3 4\) \(5 6\)\)
+                                #2A\(\(1 2\) \(3 4\)\)\)~%
+:NOTE In the following example when the local displaced var is an argument to
+parsed-class-slot-value-equal the return value is never true:~%
+ \(let \(\(not-displaced \(make-array '\(2 2\)
+                                  :initial-contents '\(\(1 2\) \(3 4\)\)
+                                  :adjustable t\)\)
+       \(displaced \(make-array '\(2 2\)
+                              :displaced-to \(vector 0 1 2 3 4\)
+                              :displaced-index-offset 1
+                              :adjustable t\)\)\)
+   \(list \(%parsed-class-slot-value-equal-array-check not-displaced not-displaced\)
+         \(%parsed-class-slot-value-equal-array-check displaced displaced\)
+         \(parsed-class-slot-value-equal not-displaced not-displaced\)
+         \(parsed-class-slot-value-equal displaced displaced\)
+         \(parsed-class-slot-value-equal not-displaced displaced\)\)\)~%")
 
 
 ;;; ==============================
@@ -1574,6 +1738,47 @@ The :VERBOSE t form is used with `cl:describe' method, the nil form is used with
 `system-identity-uuid', `system-identity-uuid-byte-array',
 `system-identity-uuid-bit-vector', `system-identity-uuid-integer',
 `system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶")
+
+
+
+;;; ==============================
+;;; dbc-specific/dbc-classes/dbc-class-image-path-convert.lisp
+;;; ==============================
+
+(fundoc 'inventory-record-image-directory-probe
+"Probe for an ITEM-NUMBER subdir beneath BASE-IMAGE-DIRECTORY-PATHNAME.~%
+If a subdir exists with a name matching the return value of:~%
+ \(control-id-indexed-number-zero-padded-string ITEM-NUMBER\)~%
+return the subdirs pathname.~%~@
+ITEM-NUMBER is a positive-integer or the string equivalent of one.~%
+BASE-IMAGE-DIRECTORY-PATHNAME is a pathname identifying a directory to search
+for images beneath. Default is `*dbc-base-item-number-image-pathname*'.~%~@
+:EXAMPLE~%
+ \(inventory-record-image-jpg-probe \"2849\"\)~% 
+ \(inventory-record-image-jpg-probe 2849\)~%
+ (inventory-record-image-jpg-probe 99999)~%~@
+:SEE-ALSO `inventory-record-image-jpg-probe'.~%▶▶▶")
+
+(fundoc 'inventory-record-image-jpg-probe
+"Probe for a jpg image in an ITEM-NUMBER subdir beneath BASE-IMAGE-DIRECTORY-PATHNAME.~%
+ITEM-NUMBER is a positive-integer or the string equivalent of one.~%
+BASE-IMAGE-DIRECTORY-PATHNAME is a pathname identifying a directory to search
+for images beneath. Default is `*dbc-base-item-number-image-pathname*'.~%
+IMAGE-SUFFIX is a string it must be one of:~%
+ \"\" \"-m\" \"-s\" \"-f\" \"-fs\" \"-fc\" \"-z\"~%
+Return as cl:values the following:~%
+ PATHNAME | NIL
+ \"0NNNNN\"             ; item-number as zero padded string
+ \"NNNNN\" | <INTEGER>  ; integer or string depending on ITEM-NUMBER's type~%
+:EXAMPLE~%
+ \(inventory-record-image-jpg-probe \"2849\"\)~%
+ \(inventory-record-image-jpg-probe 2849\)~%
+ \(inventory-record-image-jpg-probe 2849 :image-suffix \"-z\"\)~%
+ \(inventory-record-image-jpg-probe 2849 :image-suffix \"-f\"\)~%
+ \(inventory-record-image-jpg-probe 2849 :image-suffix \"-m\"\)~%
+Following errors successfully:~%~@
+ \(inventory-record-image-jpg-probe 2849 :image-suffix \"foo\"\)
+:SEE-ALSO `inventory-record-image-directory-probe'.~%▶▶▶")
 
 ;;; ==============================
 

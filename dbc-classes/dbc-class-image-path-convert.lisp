@@ -157,6 +157,34 @@
       :name-suffix name-suffix
       :destination-pathname destination-pathname)))
 
+(defun inventory-record-image-directory-probe (item-number 
+                                               &key (base-image-directory-pathname *dbc-base-item-number-image-pathname*))
+  (declare (mon:pathname-or-namestring base-image-directory-pathname))
+  (let* ((0-string      (control-id-indexed-number-zero-padded-string item-number))
+         (0-sold-string (concatenate 'string 0-string "_SOLD"))
+         (0-string-dir  (or (probe-file (merge-pathnames 
+                                         (make-pathname :directory `(:relative ,0-string))
+                                         base-image-directory-pathname))
+                            (probe-file (merge-pathnames 
+                                         (make-pathname :directory `(:relative ,0-sold-string))
+                                         base-image-directory-pathname)))))
+    0-string-dir))
+
+(defun inventory-record-image-jpg-probe (item-number &key (image-suffix "")
+                                         (base-image-directory-pathname *dbc-base-item-number-image-pathname*))
+  (declare (string image-suffix))
+  (let ((suffixe '(list "" "-m" "-s" "-f" "-fs" "-fc" "-z")))
+    (unless (member image-suffix suffixe :test #'string=)
+      (error ":FUNCTION `inventory-record-image-jpg-probe' -- keyword arg IMAGE-SUFFIX not a valid suffix~% ~
+            must be one of one of~% ~A~% got: ~S" suffixe image-suffix)))
+  (let* ((0-string       (control-id-indexed-number-zero-padded-string item-number))
+         (0-string-dir   (inventory-record-image-directory-probe 0-string))
+         (0-img-pathname (and 0-string-dir
+                              (probe-file 
+                               (merge-pathnames (make-pathname :name (concatenate 'string 0-string image-suffix) :type "jpg")
+                                                0-string-dir)))))
+    (values (and 0-img-pathname) 0-string item-number)))
+
 ;; (%pathname-name-empty-jpeg-p #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/photos/big/.jpg")
 ;; (null (%pathname-name-empty-jpeg-p #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/photos/big/foo.jpg"))
 (defun %pathname-name-empty-jpeg-p (pathname)
@@ -658,8 +686,10 @@
       (write-sequence byte-stream-bfr to-byte-stream :end byte-stream-pos))))
 
 ;; adapted from `copy-byte-file' in clime/copy-bytes.lisp
-(defun dcp-item-image-copy-byte-file (source-byte-file dest-byte-file &key (if-exists :supersede) ;; :error 
-                       (element-type    'unsigned-byte))
+(defun dcp-item-image-copy-byte-file (source-byte-file dest-byte-file &key 
+                                      (if-exists :supersede) ;; :error 
+                                      (element-type    'unsigned-byte)
+                                      (set-dest-byte-file-write-date nil))
   ;; (external-format :default)
   ;; (report-stream   *standard-output*))
   ;; (verify-element-type-for-copy-byte element-type :stream report-stream)
@@ -680,7 +710,9 @@
   ;; (probe-file dest-byte-file)
  (and
   (probe-file dest-byte-file)
-  (mon::set-file-write-date-using-file (namestring source-byte-file) (namestring dest-byte-file))
+  (and set-dest-byte-file-write-date
+       (or (mon::set-file-write-date-using-file (namestring source-byte-file) (namestring dest-byte-file)) 
+           t))
   dest-byte-file))
 
 
@@ -780,7 +812,8 @@
           ;;                      "/mnt/NEF-DRV-A/tt-blobs/QE2-poster-BAK.jpg")
           ;;
           (dcp-item-image-copy-byte-file (dbc-image-conversion-current-pair-source object)
-                                         (dbc-image-conversion-current-pair-dest object))
+                                         (dbc-image-conversion-current-pair-dest object)
+                                         :set-dest-byte-file-write-date t)
         (setf (image-current-pair object) nil))
       nil))
 
