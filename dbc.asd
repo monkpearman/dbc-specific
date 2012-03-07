@@ -62,6 +62,7 @@
                :mon
                :mon-test
                :image-ops
+               :csv-parser
                ;; :NOTE Following will be made available to system by :mon
 	       ;; :split-sequence
                ;; :string-case
@@ -141,6 +142,7 @@
              (:file "dbc-class-parsed-inventory-sales-order-record")
              (:file "dbc-class-parsed-inventory-sales-sold-record")
              (:file "dbc-class-parsed-inventory-sales-sold-in-store-record")
+             (:file "dbc-class-parsed-csv-writer")
              ;; (:file "dbc-tgm")))
              ;;
              ;; (:file "dbc-class-symbol-construct-deprecated")
