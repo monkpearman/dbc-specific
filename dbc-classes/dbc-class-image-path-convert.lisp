@@ -130,10 +130,6 @@
 
 (in-package #:dbc)
 
-;; base- "\?"
-;; other-window-scroll-buffer
-;; (when (get-buffer other-window-scroll-buffer
-
 ;; (macroexpand-1 
 ;;  '(def-dbc-item-match-pathname-pattern 
 ;;      tt--dbc-item-match-big-path
@@ -168,8 +164,9 @@
               cl:probe-file did not find pathname:~% ~S~% Verify that the path is mounted!!!"
            base-httpd-synced-directory)))
 
-(defun %make-httpd-synced-item-number-image-wild-pathname-list (&optional (base-httpd-synced-directory *dbc-base-httpd-synced-item-number-image-pathname*)
-                                                                          (subdirs-for-wild-pathname *dbc-wild-httpd-synced-item-number-image-pathname-list*))
+(defun %make-httpd-synced-item-number-image-wild-pathname-list (&optional 
+                                                                (base-httpd-synced-directory *dbc-base-httpd-synced-item-number-image-pathname*)
+                                                                (subdirs-for-wild-pathname   *dbc-wild-httpd-synced-item-number-image-pathname-list*))
   
   (declare (mon:pathname-or-namestring base-httpd-synced-directory)
            (type (and list (not null)) subdirs-for-wild-pathname))
@@ -263,14 +260,8 @@
     (map nil #'pusher filtered-sequence)))
 
 ;; (defparameter *tt--vector* 
-;;   (%make-big-filtered-item-image-directory-vector
-;;    (list #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/photos/big/*.jpg"
-;;          #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/photos/frame/*.jpg"
-;;          #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/photos/small/*.jpg"
-;;          #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/photos/zoom_size/*.jpg"
-;;          #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/images/backgrounds/headers/*.jpg"
-;;          #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/flash_home/gallery/*/large/*.jpg"
-;;          #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/flash_home/gallery/*/tn/*.jpg")))
+;;   (%make-big-filtered-item-image-directory-vector 
+;;    (%make-httpd-synced-item-number-image-wild-pathname-list)))
 (defun %make-big-filtered-item-image-directory-vector (wild-pathname-list)
   (let ((big-directory-array (make-array 86919 :fill-pointer 0)))
     (flet ((pushing-filtered-directory-paths (wild-pathname)
@@ -289,8 +280,6 @@
     with hash-table = (make-hash-table :test #'equal
                                        ;; :size (mon:prime-or-next-greatest max-item-number))
                                        :size item-max-prime)
-  
-    ;; for num from 1 below 12417
     for num from 1 below max-item-number
     ;; :WAS for numstring = (write-to-string num) ;;
     for numstring = (format nil "~V,'0d" 6 num)
@@ -339,7 +328,7 @@
 ;; (dbc-item-number-path-lookup-table-populate)
 (defun dbc-item-number-path-lookup-table-populate (&optional
                                                    (base-httpd-synced-directory *dbc-base-httpd-synced-item-number-image-pathname*)
-                                                   (subdirs-for-wild-pathname *dbc-wild-httpd-synced-item-number-image-pathname-list*))
+                                                   (subdirs-for-wild-pathname   *dbc-wild-httpd-synced-item-number-image-pathname-list*))
   (let ((wild-paths (%make-httpd-synced-item-number-image-wild-pathname-list base-httpd-synced-directory 
                                                                              subdirs-for-wild-pathname))) 
     (setf *dbc-item-number-string-mapping-old-image-path-table* nil)
@@ -421,7 +410,7 @@
 ;;                                                           "dbc-item-image-pathnames" 
 ;;                                                           "-"
 ;;                                                           (mon:time-string-yyyy-mm-dd)))
-;;                         #P"/mnt/NEF-DRV-A/DBC-ITEM-IMAGES/"))
+;;                         *dbc-base-item-number-image-pathname*)) 
 (defun %write-big-item-number-image-directory-hash-to-file (big-item-string-hash-table &key destination-pathname)
   (declare (mon:pathname-or-namestring destination-pathname)
            (hash-table big-item-string-hash-table))
@@ -471,7 +460,8 @@
 ;; (%string-trim-maybe-prepend-enumber "e1334" :enumber-digit-char-p t)
 ;; (%string-trim-maybe-prepend-enumber "q-1334" :enumber-digit-char-p t)
 ;; (%string-trim-maybe-prepend-enumber "e-1334" :enumber-digit-char-p t)
-(defun %string-trim-maybe-prepend-enumber (enumber &key (enumber-digit-char-p nil) (enumber-prepending-e nil))
+(defun %string-trim-maybe-prepend-enumber (enumber &key (enumber-digit-char-p nil)
+                                                        (enumber-prepending-e nil))
   (declare ((or string null) enumber))
   (if (null enumber) 
       nil
@@ -672,8 +662,16 @@
                                               (name-suffix "f")
                                               (name-suffix-thumb "fs")
                                               (name-suffix-categ "fc")
-                                              (destination-pathname *dbc-base-item-number-image-pathname*))
-  (unless (pathname-match-p target #P"/**/httpd/flash_home/gallery/*/*/*.jpg")
+                                              (destination-pathname *dbc-base-item-number-image-pathname*)
+                                              (base-httpd-syned-directory *dbc-base-httpd-synced-item-number-image-pathname*))
+  ;;(unless (pathname-match-p target #P"/**/httpd/flash_home/gallery/*/*/*.jpg")
+  ;; (return-from dbc-item-match-flash-path (values nil target)))
+  (unless (pathname-match-p target 
+                            (make-pathname :directory `(:relative "" :wild-inferiors
+                                                                  ,@(last (pathname-directory base-httpd-syned-directory))
+                                                                  "flash_home" "gallery" :wild :wild)
+                                           :name :wild
+                                           :type "jpg"))
     (return-from dbc-item-match-flash-path (values nil target)))
   (let* ((funs-and-suffixe
            ;; :NOTE Order is important categ must be first b/c large matches categ paths as well!
@@ -862,12 +860,10 @@
 ;;
 (defun dbc-image-conversion-doing-item-conversions (spec-vec 
                                                     &key stream 
-                                                         (log-file 
-                                                          (merge-pathnames
-                                                           (make-pathname :name (concatenate 'string 
-                                                                                 "dbc-item-image-conversion-log-"
-                                                                                 (mon:time-string-yyyy-mm-dd)))
-                                                           *dbc-base-item-number-image-pathname*)))
+                                                         (log-file (merge-pathnames
+                                                                    (make-pathname 
+                                                                     :name (mon:timestamp-for-file-with :prefix "dbc-item-image-conversion-log"))
+                                                                    *dbc-base-item-number-image-pathname*)))
   (with-open-file (lf log-file
                       :direction :output
                       :if-exists :supersede

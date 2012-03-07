@@ -32,7 +32,7 @@
 ;; (gethash "12000" (gethash 'parsed-inventory-record *parsed-class-parse-table*))
 ;; (gethash "12000" (gethash 'parsed-inventory-record *parsed-class-parse-table*))
 ;; (inspect (gethash "12000" (gethash 'parsed-inventory-record *parsed-class-parse-table*)))
-(let ((parsed-sax-file (make-default-sax-parsed-xml-output-pathname :pathname-name "sax-refs-test")))
+(let ((parsed-sax-file (make-parsed-class-output-file-ensuring-pathname :pathname-name "sax-refs-test")))
   (write-sax-parsed-xml-to-file 
    :input-file  (merge-pathnames (make-pathname :name "dump-refs-DUMPING")
                                  (sub-path *xml-input-dir*))
@@ -106,18 +106,18 @@
 (write-sax-parsed-xml-to-file
 :input-file  (merge-pathnames (make-pathname :name "dump-artist-infos-xml")
                                (sub-path *xml-input-dir*))
- :output-file (make-default-sax-parsed-xml-output-pathname :pathname-name "sax-artist-test"))
+ :output-file (make-parsed-class-output-file-ensuring-pathname :pathname-name "sax-artist-test"))
 
 (load-sax-parsed-xml-file-to-parsed-class-hash
  :parsed-class 'parsed-artist-record
- :input-file (make-default-sax-parsed-xml-output-pathname :parse-file-prefix "sax-artist-test")
+ :input-file (make-parsed-class-output-file-ensuring-pathname :parse-file-prefix "sax-artist-test")
  :hash-table *tt--parse-table*
  :key-accessor #'control-id-entity-num-artist
  :slot-dispatch-function #'set-parsed-artist-record-slot-value)
 
 (load-sax-parsed-xml-file-to-parsed-class-hash
  :parsed-class 'parsed-artist-record
- :input-file (make-default-sax-parsed-xml-output-pathname :pathname-name "artist-dump-test" :pathname-sub-directory (list (sub-name *xml-output-dir*) "new-sax-parser"))
+ :input-file (make-parsed-class-output-file-ensuring-pathname :pathname-name "artist-dump-test" :pathname-sub-directory (list (sub-name *xml-output-dir*) "new-sax-parser"))
  :hash-table *tt--parse-table*
  :key-accessor #'control-id-entity-num-artist
  :slot-dispatch-function #'set-parsed-artist-record-slot-value)
@@ -179,7 +179,7 @@
   (setf *tt--read*
         (apply #'make-instance 'parsed-artist-record read-forms)))
 
-;; (make-default-sax-parsed-xml-output-pathname :pathname-name (make-default-sax-parsed-xml-output-pathname :pathname-name
+;; (make-parsed-class-output-file-ensuring-pathname :pathname-name (make-parsed-class-output-file-ensuring-pathname :pathname-name
 ;; #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/xml-class-dump-dir/sax-artist-test-2011-11-29.lisp"
 
 ;; (cl-ppcre:regex-replace-all

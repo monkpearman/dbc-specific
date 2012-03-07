@@ -498,7 +498,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;;          (multiple-value-list 
 ;;           (write-sax-parsed-xml-to-file
 ;;            :input-file input-file
-;;            :output-file (make-default-sax-parsed-xml-output-pathname
+;;            :output-file (make-parsed-class-output-file-ensuring-pathname
 ;;                          :pathname-sub-directory output-pathname-sub-directory
 ;;                          :pathname-base-directory output-pathname-base-directory
 ;;                          :pathname-name output-pathname-name

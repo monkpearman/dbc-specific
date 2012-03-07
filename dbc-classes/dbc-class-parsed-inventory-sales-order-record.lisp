@@ -471,7 +471,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%")))
 
 ;; (write-sax-parsed-xml-to-file :input-file (make-pathname :directory (pathname-directory (sub-path *xml-input-dir*))
 ;;                                                          :name "orders-xml")
-;;                               :output-file (make-default-sax-parsed-xml-output-pathname 
+;;                               :output-file (make-parsed-class-output-file-ensuring-pathname 
 ;;                                             :pathname-sub-directory (list "parsed-xml-inventory-sales-order-records")
 ;;                                             :pathname-base-directory (sub-path *xml-output-dir*)
 ;;                                             :pathname-name "order-records"

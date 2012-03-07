@@ -331,23 +331,20 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
   ;;              (mon:time-string-yyyy-mm-dd))
   (mon:timestamp-for-file-with :prefix prefix :universal-time nil))
 
-
-;; 
-;; 
-;; (make-parsed-class-output-directory-pathname :pathname-sub-directory '("bubba" "more")
+;; (make-parsed-class-output-directory-ensuring-pathname :pathname-sub-directory '("bubba" "more")
 ;;                                                        :pathname-base-directory (sub-path *xml-output-dir*)
 ;;                                                        :pathname-dated-p t)
-;; (make-parsed-class-output-directory-pathname :pathname-sub-directory '("bubba" "more")
+;; (make-parsed-class-output-directory-ensuring-pathname :pathname-sub-directory '("bubba" "more")
 ;;                                                        :pathname-base-directory (sub-path *xml-output-dir*))
-(defun make-parsed-class-output-directory-pathname (&key (pathname-sub-directory  (sub-name *xml-output-dir*) sub-supplied-p)
-                                                                   (pathname-dated-p nil)
-                                                                   (pathname-base-directory (system-base-path *system-path*) base-supplied-p)
-                                                                   ;(ensure-directories-exist t)
-                                                                   )
+(defun make-parsed-class-output-directory-ensuring-pathname (&key (pathname-sub-directory  (sub-name *xml-output-dir*) sub-supplied-p)
+                                                         (pathname-dated-p nil)
+                                                         (pathname-base-directory (system-base-path *system-path*) base-supplied-p)
+                                                         ;; (ensure-directories-exist t)
+                                                         )
   (declare ((or string list) pathname-sub-directory)
            (mon:pathname-or-namestring pathname-base-directory))
   (when (and pathname-dated-p (or (null sub-supplied-p) (null base-supplied-p)))
-    (error ":FUNCTION `make-parsed-class-output-directory-pathname'~% ~
+    (error ":FUNCTION `make-parsed-class-output-directory-ensuring-pathname'~% ~
              when arg PATHNAME-DATED-P is non-nil both PATHNAME-SUB-DIRECTORY and PATHNAME-BASE-DIRECTORY must be supplied."))
   (let* ((base-dir-if
            (or (osicat:directory-exists-p pathname-base-directory)
@@ -381,8 +378,9 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
                                (make-pathname :directory ensure-subname-maybe-dated)
                                base-dir-if))))
 
-;; make-default-parsed-class-xml-output-pathname
-(defun make-default-sax-parsed-xml-output-pathname (&key (pathname-name "parsed-xml")
+;; make-parsed-class-output-directory-ensuring-pathname
+;; make-parsed-class-output-file-ensuring-pathname make-parsed-class-output-file-ensuring-pathname
+(defun make-parsed-class-output-file-ensuring-pathname (&key (pathname-name "parsed-xml")
                                                          (pathname-name-dated-p t)
                                                          (pathname-type "lisp")
                                                          (pathname-sub-directory  (sub-name *xml-output-dir*))
@@ -390,8 +388,8 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
   (declare ((or string list) pathname-sub-directory)
            (string pathname-name)
            (mon:pathname-or-namestring pathname-base-directory))
-  (let ((sub-dir-ensured (make-parsed-class-output-directory-pathname :pathname-sub-directory pathname-sub-directory
-                                                                                :pathname-base-directory pathname-base-directory)))
+  (let ((sub-dir-ensured (make-parsed-class-output-directory-ensuring-pathname :pathname-sub-directory pathname-sub-directory
+                                                                      :pathname-base-directory pathname-base-directory)))
     (merge-pathnames (make-pathname :name (if pathname-name-dated-p 
                                               (%make-dated-parse-output-prefix-for-pathname pathname-name)
                                               (%make-parsed-output-trimmed-pathname pathname-name))
@@ -409,7 +407,7 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
               (if (mon:pathname-or-namestring-not-empty-dotted-or-wild-p output-file)
                   output-file
                   (error "Arg OUTPUT-FILE did not satisfy `mon:pathname-or-namestring-not-empty-dotted-or-wild-p'"))
-              (apply #'make-default-sax-parsed-xml-output-pathname output-file)))
+              (apply #'make-parsed-class-output-file-ensuring-pathname output-file)))
         (current-handler-instance (make-dbc-sax-handler))
         (current-handler-stream '()))
     (setf 
@@ -447,9 +445,9 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
     (if (mon:pathname-or-namestring-not-empty-dotted-or-wild-p output-file)
         output-file
         (error "Arg OUTPUT-FILE did not satisfy `mon:pathname-or-namestring-not-empty-dotted-or-wild-p'"))
-    (apply #'make-default-sax-parsed-xml-output-pathname output-file))
+    (apply #'make-parsed-class-output-file-ensuring-pathname output-file))
 
-(apply #'make-default-sax-parsed-xml-output-pathname output-file)
+(apply #'make-parsed-class-output-file-ensuring-pathname output-file)
 
 (:pathname-name <NAME>
  :pathname-name-dated-p <BOOLEAN>
@@ -477,15 +475,15 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
   :input-file (make-pathname :directory (pathname-directory (sub-path *xml-input-dir*)) :name "dump-refs-DUMPING") 
   :output-file (list :pathname-name "inventory-dump-test" :pathname-sub-directory (list (sub-name *xml-output-dir*) "new-sax-parser" )))
 
-(make-parsed-class-output-directory-pathname :pathname-sub-directory "new-sax-parser" 
+(make-parsed-class-output-directory-ensuring-pathname :pathname-sub-directory "new-sax-parser" 
                                                        :pathname-base-directory (sub-path *xml-output-dir*))
 
 #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/xml-class-dump-dir/new-sax-parser/"
 
-(make-parsed-class-output-directory-pathname :pathname-name "artist-dump-test" :pathname-sub-directory (list (sub-name *xml-output-dir*) "new-sax-parser"))
+(make-parsed-class-output-directory-ensuring-pathname :pathname-name "artist-dump-test" :pathname-sub-directory (list (sub-name *xml-output-dir*) "new-sax-parser"))
 
-(make-parsed-class-output-directory-pathname  :pathname-sub-directory (list (sub-name *xml-output-dir*) "new-sax-parser" ))
-(make-parsed-class-output-directory-pathname :pathname-sub-directory nil)
+(make-parsed-class-output-directory-ensuring-pathname  :pathname-sub-directory (list (sub-name *xml-output-dir*) "new-sax-parser" ))
+(make-parsed-class-output-directory-ensuring-pathname :pathname-sub-directory nil)
 
 |#
 
