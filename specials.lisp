@@ -55,12 +55,7 @@
 
 (defvar *dbc-item-number-string-mapping-old-image-path-table* nil)
 
-(defvar *dbc-item-number-path-source-destination-vector* nil
-  "Vector mapping item-numbers to to their original source paths and their
-  directory under pathname named by `*dbc-base-item-number-image-pathname*'.
-When CL:BOUNDP the vector is 1 indexed such that the object it indexes
-corresponds to an item number e.g.:
- (aref *dbc-item-number-path-source-destination-vector* 8999) maps to item-number \"8999\".")
+(defvar *dbc-item-number-path-source-destination-vector* nil)
 
 ;; :NOTE we currently hardwire this as the default base-pathname for all dbc images.
 ;; This should maybe be some variant instance of class `system-path' but it

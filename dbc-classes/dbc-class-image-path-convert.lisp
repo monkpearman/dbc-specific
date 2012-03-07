@@ -159,8 +159,8 @@
       :name-suffix name-suffix
       :destination-pathname destination-pathname)))
 
-(defun %ensure-dbc-base-http-synced-item-number-image-pathname-exists (base-httpd-synced-directory
-                                                                      *dbc-base-httpd-synced-item-number-image-pathname*)
+(defun %ensure-dbc-base-http-synced-item-number-image-pathname-exists (&optional (base-httpd-synced-directory
+                                                                                  *dbc-base-httpd-synced-item-number-image-pathname*))
   (declare (mon:pathname-or-namestring base-httpd-synced-directory))
   (unless ;; (osicat:directory-exists-p chk-path)
       (probe-file base-httpd-synced-directory)
@@ -181,7 +181,6 @@
                                  :type "jpg")
                   base-httpd-synced-directory))
        subdirs-for-wild-pathname))
-
 
 (defun inventory-record-image-directory-probe (item-number 
                                                &key (base-image-directory-pathname *dbc-base-item-number-image-pathname*))
@@ -338,32 +337,16 @@
 ;;; ==============================
 
 ;; (dbc-item-number-path-lookup-table-populate)
-(defun dbc-item-number-path-lookup-table-populate ()
-  (let ((chk-path #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/"))
-    (unless ;; (osicat:directory-exists-p chk-path)
-        (probe-file chk-path)
-      (error ":FUNCTION `dbc-item-number-path-lookup-table-populate'~% ~
-              cl:probe-file did not find pathname:~% ~S~% Verify that the path is mounted!!!"
-             chk-path)))
-  (setf *dbc-item-number-string-mapping-old-image-path-table* nil)
-  (setf *dbc-item-number-string-mapping-old-image-path-table*  
-        (%make-item-number-string-hash-table-values
-         (%make-big-filtered-item-image-directory-vector
-          (map 'list #'(lambda (subdir-or-subdir-list)
-                         (merge-pathnames 
-                          (make-pathname :directory `(:relative ,@(alexandria::ensure-list subdir-or-subdir-list))
-                                         :name :wild
-                                         :type "jpg")
-                          chk-path))
-               ;; :NOTE Order is important here!!!
-               '("big"
-                 "frame"
-                 "small"
-                 "zoom_size"
-                 ("images" "backgrounds" "headers")
-                 ("flash_home" "gallery" :wild "large")
-                 ("flash_home" "gallery" :wild "tn"))))
-         (%make-item-number-string-hash-table))))
+(defun dbc-item-number-path-lookup-table-populate (&optional
+                                                   (base-httpd-synced-directory *dbc-base-httpd-synced-item-number-image-pathname*)
+                                                   (subdirs-for-wild-pathname *dbc-wild-httpd-synced-item-number-image-pathname-list*))
+  (let ((wild-paths (%make-httpd-synced-item-number-image-wild-pathname-list base-httpd-synced-directory 
+                                                                             subdirs-for-wild-pathname))) 
+    (setf *dbc-item-number-string-mapping-old-image-path-table* nil)
+    (setf *dbc-item-number-string-mapping-old-image-path-table*  
+          (%make-item-number-string-hash-table-values
+           (%make-big-filtered-item-image-directory-vector wild-paths)
+           (%make-item-number-string-hash-table)))))
 
 ;; (length (setf *dbc-item-number-path-source-destination-vector*
 ;;               (map-item-image-source-destination-paths *dbc-item-number-string-mapping-old-image-path-table*)))

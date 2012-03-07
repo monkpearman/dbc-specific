@@ -1772,7 +1772,8 @@ The :VERBOSE t form is used with `cl:describe' method, the nil form is used with
 "Pathname under which old dbc images are stored.~%~@
 :NOTE may not be mounted!!!~%~@
 Callers will signal an error if cl:probe-file doesn't return true. ~%~@
-:SEE-ALSO `*dbc-wild-httpd-synced-item-number-image-pathname-list*'.~%▶▶▶")
+:SEE-ALSO `*dbc-wild-httpd-synced-item-number-image-pathname-list*',
+`*dbc-item-number-path-source-destination-vector*'.~%▶▶▶")
 
 (vardoc '*dbc-wild-httpd-synced-item-number-image-pathname-list*
         "List of pathname-directory components to construct wild pathnames for matching
@@ -1780,7 +1781,16 @@ jpg images beneath `*dbc-base-httpd-synced-item-number-image-pathname*'.~%~@
 Elements of list are either strings or a list of strings and/or wild pathname
 keywords e.g. :wild :wild-inferiors.~%~@
 :NOTE Order in wich the elements are specified is important!!!~%~@
-:SEE-ALSO `<XREF>'.~%▶▶▶")
+:SEE-ALSO `*dbc-item-number-path-source-destination-vector*'.~%▶▶▶")
+
+(vardoc '*dbc-item-number-path-source-destination-vector*
+        "Vector mapping item-numbers to to their original source paths and their
+  directory under pathname named by `*dbc-base-item-number-image-pathname*'.
+When CL:BOUNDP the vector is 1 indexed such that the object it indexes
+corresponds to an item number e.g.:
+ (aref *dbc-item-number-path-source-destination-vector* 8999) maps to item-number \"8999\".
+:SEE-ALSO ``*dbc-wild-httpd-synced-item-number-image-pathname-list*',
+`*dbc-base-httpd-synced-item-number-image-pathname*'.~%▶▶▶")
 
 (fundoc '%ensure-dbc-base-http-synced-item-number-image-pathname-exists
         "Verify BASE-HTTPD-SYNCED-DIRECTORY exists with cl:probe-file. 
