@@ -54,7 +54,7 @@
  :slot-for-file-name 'inventory-number
  ;; :prefix-for-file-name "inventory-number-"
  :prefix-for-file-name "0"
- :output-directory (make-default-sax-parsed-xml-output-pathname-directory 
+ :output-directory (make-parsed-class-output-directory-pathname 
                     :pathname-sub-directory (list (sub-name *xml-output-dir*) "individual-parse-refs")
                     :pathname-base-directory (system-base-path *xml-output-dir*)
                     :pathname-dated-p t))
@@ -130,7 +130,7 @@
  :parsed-class 'parsed-artist-record
  :slot-for-file-name 'control-id-entity-num-artist
  :prefix-for-file-name "artist-id-number"
- :output-directory (make-default-sax-parsed-xml-output-pathname-directory 
+ :output-directory (make-parsed-class-output-directory-pathname 
                     :pathname-sub-directory (list (sub-name *xml-output-dir*) "individual-parse-artists" )
                     :pathname-base-directory (system-base-path *xml-output-dir*)
                     :pathname-dated-p t))
@@ -139,7 +139,7 @@
 ;; :parsed-class 'parsed-artist-record
  :slot-for-file-name 'control-id-entity-num-artist
  :prefix-for-file-name "artist-id-number-FOO"
- :output-directory (make-default-sax-parsed-xml-output-pathname-directory 
+ :output-directory (make-parsed-class-output-directory-pathname 
                     :pathname-sub-directory (list (sub-name *xml-output-dir*) "individual-parse-artists" )
                     :pathname-base-directory (system-base-path *xml-output-dir*)
                     :pathname-dated-p t))

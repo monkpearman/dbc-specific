@@ -264,8 +264,10 @@
             (mon:pathname-or-namestring output-directory)
             (boolean directory-exists-check print-unbound))
   (when directory-exists-check
-    (unless (equal (pathname output-directory)
-                   (make-pathname :directory (pathname-directory (probe-file output-directory))))
+    (unless 
+        ;; (osicat:directory-exists-p output-directory)
+        (equal (pathname output-directory)
+               (make-pathname :directory (pathname-directory (probe-file output-directory))))
       (error ":FUNCTION `write-sax-parsed-slots-to-file' -- arg OUTPUT-DIRECTORY does not designate a valid directory~% got: ~S~%"
              output-directory)))
   (let* ((warning "Something wrong with arg OBJECT, declining to dump slot values to file")
@@ -402,8 +404,10 @@
   (declare (type hash-table hash-table)
            (type (and symbol (mon::not-null)) slot-for-file-name parsed-class)
            (type (or string null) prefix-for-file-name))
-  (unless (equal (pathname output-directory)
-                 (make-pathname :directory (pathname-directory (probe-file output-directory))))
+  (unless 
+      ;; (osicat:directory-exists-p output-directory)
+      (equal (pathname output-directory)
+             (make-pathname :directory (pathname-directory (probe-file output-directory))))
     (error "arg OUTPUT-DIRECTORY does not designate a valid directory~% got: ~S~%"
            output-directory))
   (let ((calculate-padding (print-sax-parsed-slots-padding-format-control (make-instance parsed-class)))
@@ -442,8 +446,10 @@
   (declare (type hash-table hash-table)
            (mon:pathname-or-namestring base-output-directory)
            ((or null string) pathname-type))
-  (unless (equal (pathname base-output-directory)
-                 (make-pathname :directory (pathname-directory (probe-file base-output-directory))))
+  (unless 
+      ;; (osicat:directory-exists-p base-output-directory)
+      (equal (pathname base-output-directory)
+             (make-pathname :directory (pathname-directory (probe-file base-output-directory))))
     (error "arg BASE-OUTPUT-DIRECTORY does not designate a valid directory~% got: ~S~%"
            base-output-directory))
   (let ((calculate-padding (print-sax-parsed-slots-padding-format-control (make-instance 'parsed-inventory-record)))
@@ -463,11 +469,12 @@
                        (merge-pathnames (make-pathname :directory `(:relative ,padded-sold-directory-name))
                                         base-output-directory))))
                (if (and padded-sold-directory
+                        ;; (osicat:directory-exists-p padded-sold-directory)
                         (probe-file padded-sold-directory))
                    (setf padded-directory padded-sold-directory)
                    (ensure-directories-exist padded-directory))
                (vector-push-extend 
-                (write-sax-parsed-slots-to-file v 
+                (write-sax-parsed-slots-to-file v
                                                 :slot-for-file-name 'inventory-number 
                                                 :slot-for-file-name-zero-padded t
                                                 :prefix-for-file-name ""
@@ -602,15 +609,15 @@
                              (output-pathname-type "lisp")
                              (set-parsed-class-parse-table t))
        (let* ((parsed-xml-file
-               (multiple-value-list
-                (write-sax-parsed-xml-to-file
-                 :input-file input-file
-                 :output-file (make-default-sax-parsed-xml-output-pathname
-                               :pathname-sub-directory output-pathname-sub-directory
-                               :pathname-base-directory output-pathname-base-directory
-                               :pathname-name output-pathname-name
-                               :pathname-name-dated-p output-pathname-dated-p
-                               :pathname-type output-pathname-type))))
+                (multiple-value-list
+                 (write-sax-parsed-xml-to-file
+                  :input-file input-file
+                  :output-file (make-default-sax-parsed-xml-output-pathname
+                                :pathname-sub-directory output-pathname-sub-directory
+                                :pathname-base-directory output-pathname-base-directory
+                                :pathname-name output-pathname-name
+                                :pathname-name-dated-p output-pathname-dated-p
+                                :pathname-type output-pathname-type))))
               (parsed-hash  (make-hash-table :test 'equal :size (mon:prime-or-next-greatest (caddr parsed-xml-file)))))
          ;;(loaded-hash  
          ;;(multiple-value-list 

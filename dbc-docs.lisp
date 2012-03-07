@@ -885,14 +885,14 @@ Commented delimiter is written as a `cl:fresh-line' followed by a string of
 `write-sax-parsed-xml-row-to-file', `load-sax-parsed-xml-file-to-parsed-class-hash',
 `*parsed-data-current-state*', `*xml-input-dir*', `*xml-output-dir*'.~%▶▶▶")
 
-(fundoc 'make-default-sax-parsed-xml-output-pathname-directory
+(fundoc 'make-parsed-class-output-directory-pathname
 "Return a directory for use when outputting parsed xml files.~%
 If PATHNAME-SUB-DIRECTORY does not exist in PATHNAME-BASE-DIRECTORY it is created as if by `cl:ensure-directories-exist'.~%
 If PATHNAME-BASE-DIRECTORY does not satisfy `osicat:directory-exists-p' an error is signaled.~%
 :EXAMPLE~%
- \(make-default-sax-parsed-xml-output-pathname-directory :pathname-sub-directory \"new-sax-parser\" 
+ \(make-parsed-class-output-directory-pathname :pathname-sub-directory \"new-sax-parser\" 
                                                         :pathname-base-directory \(sub-path *xml-output-dir*\)\)~%
-:SEE-ALSO `make-default-sax-parsed-xml-output-pathname-directory'.~%▶▶▶")
+:SEE-ALSO `make-parsed-class-output-directory-pathname'.~%▶▶▶")
 
 (fundoc 'make-default-sax-parsed-xml-output-pathname
 "Return a pathname suitable for use as the OUTPUT-FILE arg to `write-sax-parsed-xml-to-file'.~%~@
@@ -910,7 +910,7 @@ It should name an existing directory, an error is signaled if not.~%~@
 :EXAMPLE~%
  \(%make-default-parsed-output-pathname :pathname-name \"bubba\" \)~%
  \(%make-default-parsed-output-pathname :pathname-name \"bubba\" :pathname-name-dated-p nil\)~%
-:SEE-ALSO `make-default-sax-parsed-xml-output-pathname-directory'.~%▶▶▶")
+:SEE-ALSO `make-parsed-class-output-directory-pathname'.~%▶▶▶")
 
 (fundoc 'write-sax-parsed-xml-to-file
         "Parse the dbc XML refs in INPUT-FILE and write thier lispy counterparts to OUTPUT-FILE.~%~@
@@ -1071,26 +1071,11 @@ their slot-value as #<UNBOUND>.~%~@
 `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files',
 `write-sax-parsed-inventory-record-hash-to-zero-padded-directory'.~%▶▶▶")
 
-(fundoc 'write-sax-parsed-class-hash-to-files
-"Write the sax-parsed class of HASH-TABLE to a file in OUTPUT-DIRECTORY.~%~@
-Return value is a list of the `cl:file-namestring's of each file written.~%~@
-:EXAMPLE~%
- \(write-sax-parsed-class-hash-to-files 
-  <HASH-TABLE> 
-  :parse-class 'parsed-inventory-record
-  :slot-for-file-name 'inventory-number 
-  :prefix-for-file-name \"inventory-number\"
-  :output-directory \(merge-pathnames #P\"individual-parse-refs-2011-10-01/\" 
-                                     \(sub-path *xml-output-dir*\)\)\)~%~@
-:SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
-`write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files', `write-parsed-class-parse-table-to-file'
-`write-sax-parsed-inventory-record-hash-to-zero-padded-directory',.~%▶▶▶")
-
 (fundoc 'parsed-inventory-record-null-prototype-to-file
         "Write slot values of OBJECT to a file in directory corresponding to object's
 inventory-number slot value beneath BASE-OUTPUT-DIRECTORY.~%~@
 Return pathname of file written.~%~@
-Keyword args PREFIX-FOR-FILE-NAME, SUFFIX-FOR-FILE-NAME, PATHNAME-TYPE,
+Keyword args PREFIX-FOR-FILE-NAME, SUFFIX-FOR-FILE-NAME, PATHNAME-TYPE, and
 PRINT-UNBOUND are as per `dbc::write-sax-parsed-slots-to-file'.~%~@
 :SEE-ALSO `parsed-inventory-record-xml-dump-file-and-hash'.~%▶▶▶")
 
@@ -1194,22 +1179,41 @@ keyword OUTPUT-PATHNAME-SUB-DIRECTORY of `make-default-sax-parsed-xml-output-pat
 
 (fundoc 'parsed-inventory-record-load-default-parsed-file-to-hash 
         "Load slots of class inventory-record to parsed-class-parse-table from most recent parsed file.~%~@
-Signal an error if the parsed file or its containing directory can not be found.
+Signal an error if the parsed file or its containing directory can not be found.~%~@
 :SEE-ALSO `parsed-inventory-record-xml-dump-file-and-hash',
 `load-sax-parsed-xml-file-to-parsed-class-hash',
 `write-sax-parsed-slots-to-file', `write-parsed-class-parse-table-to-file'.~%▶▶▶")
 
+(fundoc 'write-sax-parsed-class-hash-to-files
+"Write each parsed-class object of HASH-TABLE to a dedicated file beneath OUTPUT-DIRECTORY.~%~@
+Return value is a list of the `cl:file-namestring's of each file written.~%~@
+:EXAMPLE~%
+ \(write-sax-parsed-class-hash-to-files 
+  <HASH-TABLE> 
+  :parse-class 'parsed-inventory-record
+  :slot-for-file-name 'inventory-number 
+  :prefix-for-file-name \"inventory-number\"
+  :output-directory \(merge-pathnames #P\"individual-parse-refs-2011-10-01/\" 
+                                     \(sub-path *xml-output-dir*\)\)\)~%~@
+:SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash',
+`print-sax-parsed-slots', `write-sax-parsed-slots-to-file',
+`write-sax-parsed-class-hash-to-files',
+`write-parsed-class-parse-table-to-file',
+`write-sax-parsed-inventory-record-hash-to-zero-padded-directory',.~%▶▶▶")
+
 (fundoc 'write-parsed-class-parse-table-to-file
-"Like `write-sax-parsed-slots-to-file' but dumps the contents of a populated
-parsed-class-parse-table for PARSED-CLASS as a plist of key/value pairs where
-each key is a keyword corresponding to a slot-initarg for PARSED-CLASS.~%~@
-:NOTE As compared to `write-sax-parsed-slots-to-file' there is an increase in
+        "Ouput as if by `write-sax-parsed-slots-to-file' but instead of writing an individual file
+per object dumps the contents of a populated parsed-class-parse-table for
+PARSED-CLASS to one file such that the each object in the hash-table is written
+as a plist of key/value pairs where each key is a keyword corresponding to a
+slot-initarg for PARSED-CLASS.~%~@
+:NOTE As compared to output of `write-sax-parsed-xml-to-file' there is an increase in
 the overall size of the file written because each object contains a dedicated
 plist of key/value pairs, so we are trading file size for human readability.~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `write-sax-parsed-class-hash-to-files', `write-sax-parsed-slots-to-file',
-`parsed-inventory-record-xml-dump-file-and-hash',
+`write-sax-parsed-xml-file', `parsed-inventory-record-xml-dump-file-and-hash',
 `load-sax-parsed-xml-file-to-parsed-class-hash'.~%▶▶▶")
 
 
