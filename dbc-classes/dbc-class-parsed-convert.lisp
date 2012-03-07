@@ -358,10 +358,6 @@
 ;;                                 :name (mon:timestamp-for-file-with :prefix "inventory-record-table-dump")
 ;;                                 :type "lisp")
 ;;                                (sub-path *xml-output-dir*)))
-;; (fundoc 'write-parsed-class-parse-table-to-file
-;; like `write-sax-parsed-slots-to-file' but dumps the contents of a populated
-;; parsed-class-parse-table for PARSED-CLASS as a plist of key/value pairs where
-;; each key is a keyword corresponding to a slot-initarg for PARSED-CLASS.
 (defun write-parsed-class-parse-table-to-file (&key parsed-class output-file)
 
   (let ((frmt-cntl (print-sax-parsed-slots-padding-format-control (make-instance parsed-class)))

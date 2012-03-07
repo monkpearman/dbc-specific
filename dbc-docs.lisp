@@ -1083,8 +1083,8 @@ Return value is a list of the `cl:file-namestring's of each file written.~%~@
   :output-directory \(merge-pathnames #P\"individual-parse-refs-2011-10-01/\" 
                                      \(sub-path *xml-output-dir*\)\)\)~%~@
 :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
-`write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files',
-`write-sax-parsed-inventory-record-hash-to-zero-padded-directory'.~%▶▶▶")
+`write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files', `write-parsed-class-parse-table-to-file'
+`write-sax-parsed-inventory-record-hash-to-zero-padded-directory',.~%▶▶▶")
 
 (fundoc 'parsed-inventory-record-null-prototype-to-file
         "Write slot values of OBJECT to a file in directory corresponding to object's
@@ -1190,14 +1190,27 @@ keyword OUTPUT-PATHNAME-SUB-DIRECTORY of `make-default-sax-parsed-xml-output-pat
     :default-output-pathname-name \"order-records\"\)~%~@
 
 :SEE-ALSO `print-sax-parsed-slots', `write-sax-parsed-slots-to-file',
-`write-sax-parsed-class-hash-to-files'.~%▶▶▶")
+`write-sax-parsed-class-hash-to-files', `write-parsed-class-parse-table-to-file'.~%▶▶▶")
 
 (fundoc 'parsed-inventory-record-load-default-parsed-file-to-hash 
         "Load slots of class inventory-record to parsed-class-parse-table from most recent parsed file.~%~@
 Signal an error if the parsed file or its containing directory can not be found.
 :SEE-ALSO `parsed-inventory-record-xml-dump-file-and-hash',
 `load-sax-parsed-xml-file-to-parsed-class-hash',
-`write-sax-parsed-slots-to-file'.~%▶▶▶")
+`write-sax-parsed-slots-to-file', `write-parsed-class-parse-table-to-file'.~%▶▶▶")
+
+(fundoc 'write-parsed-class-parse-table-to-file
+"Like `write-sax-parsed-slots-to-file' but dumps the contents of a populated
+parsed-class-parse-table for PARSED-CLASS as a plist of key/value pairs where
+each key is a keyword corresponding to a slot-initarg for PARSED-CLASS.~%~@
+:NOTE As compared to `write-sax-parsed-slots-to-file' there is an increase in
+the overall size of the file written because each object contains a dedicated
+plist of key/value pairs, so we are trading file size for human readability.~%~@
+:EXAMPLE~%~@
+ { ... <EXAMPLE> ... } ~%~@
+:SEE-ALSO `write-sax-parsed-class-hash-to-files', `write-sax-parsed-slots-to-file',
+`parsed-inventory-record-xml-dump-file-and-hash',
+`load-sax-parsed-xml-file-to-parsed-class-hash'.~%▶▶▶")
 
 
 ;;; ==============================
