@@ -885,16 +885,16 @@ Commented delimiter is written as a `cl:fresh-line' followed by a string of
 `write-sax-parsed-xml-row-to-file', `load-sax-parsed-xml-file-to-parsed-class-hash',
 `*parsed-data-current-state*', `*xml-input-dir*', `*xml-output-dir*'.~%▶▶▶")
 
-(fundoc 'make-parsed-class-output-directory-pathname
+(fundoc 'make-parsed-class-output-directory-ensuring-pathname
 "Return a directory for use when outputting parsed xml files.~%
 If PATHNAME-SUB-DIRECTORY does not exist in PATHNAME-BASE-DIRECTORY it is created as if by `cl:ensure-directories-exist'.~%
 If PATHNAME-BASE-DIRECTORY does not satisfy `osicat:directory-exists-p' an error is signaled.~%
 :EXAMPLE~%
- \(make-parsed-class-output-directory-pathname :pathname-sub-directory \"new-sax-parser\" 
+ \(make-parsed-class-output-directory-ensuring-pathname :pathname-sub-directory \"new-sax-parser\" 
                                                         :pathname-base-directory \(sub-path *xml-output-dir*\)\)~%
-:SEE-ALSO `make-parsed-class-output-directory-pathname'.~%▶▶▶")
+:SEE-ALSO `make-parsed-class-output-directory-ensuring-pathname'.~%▶▶▶")
 
-(fundoc 'make-default-sax-parsed-xml-output-pathname
+(fundoc 'make-parsed-class-output-file-ensuring-pathname
 "Return a pathname suitable for use as the OUTPUT-FILE arg to `write-sax-parsed-xml-to-file'.~%~@
 Any directory components specified by PATHNAME-SUB-DIRECTORY which do not exist
 relative to PATHNAME-BASE-DIRECTORY will be created as if by `cl:ensure-directories-exist'.~%~@
@@ -910,7 +910,7 @@ It should name an existing directory, an error is signaled if not.~%~@
 :EXAMPLE~%
  \(%make-default-parsed-output-pathname :pathname-name \"bubba\" \)~%
  \(%make-default-parsed-output-pathname :pathname-name \"bubba\" :pathname-name-dated-p nil\)~%
-:SEE-ALSO `make-parsed-class-output-directory-pathname'.~%▶▶▶")
+:SEE-ALSO `make-parsed-class-output-directory-ensuring-pathname'.~%▶▶▶")
 
 (fundoc 'write-sax-parsed-xml-to-file
         "Parse the dbc XML refs in INPUT-FILE and write thier lispy counterparts to OUTPUT-FILE.~%~@
@@ -924,7 +924,7 @@ an error is signaled if not. When keyword arg OUTPUT-FILE is a list is has the f
   :pathname-type <TYPE>
   :pathname-sub-directory [<STRING> | <LIST OF STRINGS>]
   :pathname-base-directory [<PATHNAME> | <NAMESTRING>]\)~%~@
-where each property of list is a keyword/value argument to `make-default-sax-parsed-xml-output-pathname'.~%~@
+where each property of list is a keyword/value argument to `make-parsed-class-output-file-ensuring-pathname'.~%~@
 :EXAMPLE~%
  \(write-sax-parsed-xml-to-file\)~%
  \(write-sax-parsed-xml-to-file
@@ -1103,7 +1103,7 @@ not exist it will be created as if by `cl:ensure-directories-exist'.~%~@
 ;; Keyword input-file is an XML file containing inventory-records to be parsed.
 ;; Keywords OUTPUT-PATHNAME-SUB-DIRECTORY, OUTPUT-PATHNAME-BASE-DIRECTORY,
 ;; OUTPUT-PATHNAME-NAME, OUTPUT-PATHNAME-DATED-P, and OUTPUT-PATHNAME-TYPE are as
-;; per `make-default-sax-parsed-xml-output-pathname'.~%~@
+;; per `make-parsed-class-output-file-ensuring-pathname'.~%~@
 ;; When set-inventory-record-table is non-nil nth-value 1 is the return value of
 ;; setting the 'parsed-inventory-record key in variable `*parsed-class-parse-table*' to the
 ;; hash-table populated from the contents of INPUPT-FILE, else return a hash-table.~%
@@ -1149,13 +1149,13 @@ It is merged with the subdirectories specified by
 DEFAULT-OUTPUT-PATHNAME-SUB-DIRECTORY when writing the dumped file.~%~@
 
 It becomes the defined functions default value for use with the keyword
-OUTPUT-PATHNAME-BASE-DIRECTORY of `make-default-sax-parsed-xml-output-pathname'.~%~@
+OUTPUT-PATHNAME-BASE-DIRECTORY of `make-parsed-class-output-file-ensuring-pathname'.~%~@
 
 Keyword DEFAULT-OUTPUT-PATHNAME-SUB-DIRECTORY is an unquoted list of strings each
 designating a sub directory of DEFAULT-OUTPUT-PATHNAME-BASE-DIRECTORY e.g.:~%
  :DEFAULT-OUTPUT-PATHNAME-SUB-DIRECTORY \(\"parsed-xml-inventory-records\"\)~%~@
 It becomes the defined functions default value for use with the keyword
-OUTPUT-PATHNAME-SUB-DIRECTORY of `make-default-sax-parsed-xml-output-pathname'.~%~@
+OUTPUT-PATHNAME-SUB-DIRECTORY of `make-parsed-class-output-file-ensuring-pathname'.~%~@
 Keyword DEFAULT-OUTPUT-PATHNAME-NAME is a string to use as the prefix when
 generating the dumped-file's dated pathname-name, e.g.:~%~% ~
  :DEFAULT-OUTPUT-PATHNAME-NAME \"inventory-records\"~%~@
@@ -1163,7 +1163,7 @@ would at runtime expand to a pathname-name having the form:~%~% ~
  \"inventory-records-<YYYY>-<MM>-<DD>\"~%~@
 It becomes the defined functions default value for use with the
 keyword OUTPUT-PATHNAME-NAME of `write-sax-parsed-xml-to-file' and the
-keyword OUTPUT-PATHNAME-SUB-DIRECTORY of `make-default-sax-parsed-xml-output-pathname'.~%~@
+keyword OUTPUT-PATHNAME-SUB-DIRECTORY of `make-parsed-class-output-file-ensuring-pathname'.~%~@
 
 :EXAMPLE~%~@
  \(def-parsed-class-record-xml-dump-file-and-hash 
@@ -1768,6 +1768,35 @@ The :VERBOSE t form is used with `cl:describe' method, the nil form is used with
 ;;; ==============================
 ;;; dbc-specific/dbc-classes/dbc-class-image-path-convert.lisp
 ;;; ==============================
+(vardoc '*dbc-base-httpd-synced-item-number-image-pathname*
+"Pathname under which old dbc images are stored.~%~@
+:NOTE may not be mounted!!!~%~@
+Callers will signal an error if cl:probe-file doesn't return true. ~%~@
+:SEE-ALSO `*dbc-wild-httpd-synced-item-number-image-pathname-list*'.~%▶▶▶")
+
+(vardoc '*dbc-wild-httpd-synced-item-number-image-pathname-list*
+        "List of pathname-directory components to construct wild pathnames for matching
+jpg images beneath `*dbc-base-httpd-synced-item-number-image-pathname*'.~%~@
+Elements of list are either strings or a list of strings and/or wild pathname
+keywords e.g. :wild :wild-inferiors.~%~@
+:NOTE Order in wich the elements are specified is important!!!~%~@
+:SEE-ALSO `<XREF>'.~%▶▶▶")
+
+(fundoc '%ensure-dbc-base-http-synced-item-number-image-pathname-exists
+        "Verify BASE-HTTPD-SYNCED-DIRECTORY exists with cl:probe-file. 
+An error is signaled if not.~%~@
+:EXAMPLE~%
+ (%ensure-dbc-base-http-synced-item-number-image-pathname-exists 
+  *dbc-base-httpd-synced-item-number-image-pathname*)
+:SEE-ALSO `%make-httpd-synced-item-number-image-wild-pathname-list'.~%▶▶▶")
+
+(fundoc '%make-httpd-synced-item-number-image-wild-pathname-list
+        "Return a list of wild pathnames merging SUBDIRS-FOR-WILD-PATHNAME with BASE-HTTPD-SYNCED-DIRECTORY.~%~@
+An error is signaled if base-httpd-synced-directory does not exist.~%~@
+:EXAMPLE~%~@
+ \(make-item-number-image-wild-pathname-list *dbc-base-httpd-synced-item-number-image-pathname*
+                                            *dbc-wild-httpd-synced-item-number-image-pathname-list*\)~%~@
+:SEE-ALSO `%ensure-dbc-base-http-synced-item-number-image-pathname-exists', .~%▶▶▶")
 
 (fundoc 'inventory-record-image-directory-probe
 "Probe for an ITEM-NUMBER subdir beneath BASE-IMAGE-DIRECTORY-PATHNAME.~%

@@ -129,6 +129,7 @@
 
 
 (in-package #:dbc)
+
 ;; base- "\?"
 ;; other-window-scroll-buffer
 ;; (when (get-buffer other-window-scroll-buffer
@@ -158,17 +159,44 @@
       :name-suffix name-suffix
       :destination-pathname destination-pathname)))
 
+(defun %ensure-dbc-base-http-synced-item-number-image-pathname-exists (base-httpd-synced-directory
+                                                                      *dbc-base-httpd-synced-item-number-image-pathname*)
+  (declare (mon:pathname-or-namestring base-httpd-synced-directory))
+  (unless ;; (osicat:directory-exists-p chk-path)
+      (probe-file base-httpd-synced-directory)
+    (error ":FUNCTION `ensure-dbc-base-http-synced-item-number-image-pathname-exists'~% ~
+              cl:probe-file did not find pathname:~% ~S~% Verify that the path is mounted!!!"
+           base-httpd-synced-directory)))
+
+(defun %make-httpd-synced-item-number-image-wild-pathname-list (&optional (base-httpd-synced-directory *dbc-base-httpd-synced-item-number-image-pathname*)
+                                                                          (subdirs-for-wild-pathname *dbc-wild-httpd-synced-item-number-image-pathname-list*))
+  
+  (declare (mon:pathname-or-namestring base-httpd-synced-directory)
+           (type (and list (not null)) subdirs-for-wild-pathname))
+  (%ensure-dbc-base-http-synced-item-number-image-pathname-exists base-httpd-synced-directory)
+  (map 'list #'(lambda (subdir-or-subdir-list)
+                 (merge-pathnames 
+                  (make-pathname :directory `(:relative ,@(alexandria::ensure-list subdir-or-subdir-list))
+                                 :name :wild
+                                 :type "jpg")
+                  base-httpd-synced-directory))
+       subdirs-for-wild-pathname))
+
+
 (defun inventory-record-image-directory-probe (item-number 
                                                &key (base-image-directory-pathname *dbc-base-item-number-image-pathname*))
   (declare (mon:pathname-or-namestring base-image-directory-pathname))
   (let* ((0-string      (control-id-indexed-number-zero-padded-string item-number))
          (0-sold-string (concatenate 'string 0-string "_SOLD"))
-         (0-string-dir  (or (probe-file (merge-pathnames 
-                                         (make-pathname :directory `(:relative ,0-string))
-                                         base-image-directory-pathname))
-                            (probe-file (merge-pathnames 
-                                         (make-pathname :directory `(:relative ,0-sold-string))
-                                         base-image-directory-pathname)))))
+         (0-string-dir  (or 
+                         ;; osicat:directory-exists-p
+                         (probe-file (merge-pathnames 
+                                      (make-pathname :directory `(:relative ,0-string))
+                                      base-image-directory-pathname))
+                         ;; osicat:directory-exists-p
+                         (probe-file (merge-pathnames 
+                                      (make-pathname :directory `(:relative ,0-sold-string))
+                                      base-image-directory-pathname)))))
     0-string-dir))
 
 (defun inventory-record-image-jpg-probe (item-number &key (image-suffix "")
@@ -312,21 +340,29 @@
 ;; (dbc-item-number-path-lookup-table-populate)
 (defun dbc-item-number-path-lookup-table-populate ()
   (let ((chk-path #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/"))
-    (unless (probe-file chk-path)
+    (unless ;; (osicat:directory-exists-p chk-path)
+        (probe-file chk-path)
       (error ":FUNCTION `dbc-item-number-path-lookup-table-populate'~% ~
               cl:probe-file did not find pathname:~% ~S~% Verify that the path is mounted!!!"
              chk-path)))
   (setf *dbc-item-number-string-mapping-old-image-path-table* nil)
   (setf *dbc-item-number-string-mapping-old-image-path-table*  
-        (%make-item-number-string-hash-table-values 
+        (%make-item-number-string-hash-table-values
          (%make-big-filtered-item-image-directory-vector
-          (list #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/photos/big/*.jpg"
-                #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/photos/frame/*.jpg"
-                #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/photos/small/*.jpg"
-                #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/photos/zoom_size/*.jpg"
-                #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/images/backgrounds/headers/*.jpg"
-                #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/flash_home/gallery/*/large/*.jpg"
-                #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/flash_home/gallery/*/tn/*.jpg"))
+          (map 'list #'(lambda (subdir-or-subdir-list)
+                         (merge-pathnames 
+                          (make-pathname :directory `(:relative ,@(alexandria::ensure-list subdir-or-subdir-list))
+                                         :name :wild
+                                         :type "jpg")
+                          chk-path))
+               ;; :NOTE Order is important here!!!
+               '("big"
+                 "frame"
+                 "small"
+                 "zoom_size"
+                 ("images" "backgrounds" "headers")
+                 ("flash_home" "gallery" :wild "large")
+                 ("flash_home" "gallery" :wild "tn"))))
          (%make-item-number-string-hash-table))))
 
 ;; (length (setf *dbc-item-number-path-source-destination-vector*

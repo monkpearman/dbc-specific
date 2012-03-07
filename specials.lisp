@@ -42,6 +42,17 @@
 
 ;;; ==============================
 
+(defvar *dbc-base-httpd-synced-item-number-image-pathname* #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/")
+
+(defvar *dbc-wild-httpd-synced-item-number-image-pathname-list* '( ;; :NOTE Order is important here!!!
+                                                                  "big"
+                                                                  "frame"
+                                                                  "small"
+                                                                  "zoom_size"
+                                                                  ("images" "backgrounds" "headers")
+                                                                  ("flash_home" "gallery" :wild "large")
+                                                                  ("flash_home" "gallery" :wild "tn")))
+
 (defvar *dbc-item-number-string-mapping-old-image-path-table* nil)
 
 (defvar *dbc-item-number-path-source-destination-vector* nil
