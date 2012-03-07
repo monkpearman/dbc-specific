@@ -120,6 +120,14 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
 (defmethod accessors-of-parsed-class ((object parsed-class-field-slot-accessor-mapping))
   (alexandria:hash-table-keys (accessor-to-field-table object)))
 
+;; (initargs-of-parsed-class (parsed-class-mapped 'parsed-inventory-record))
+(defmethod initargs-of-parsed-class ((object parsed-class-field-slot-accessor-mapping))
+  (loop 
+    with key-package = (find-package "KEYWORD")
+    for slot in (accessors-of-parsed-class object)
+    for name = (symbol-name slot)
+    collect (find-symbol name key-package)))
+
 (defmethod parsed-class-slot-dispatch-function ((object parsed-class-field-slot-accessor-mapping))
   (or (and (slot-boundp object 'parsed-class-slot-dispatch-function)
            (slot-value object 'parsed-class-slot-dispatch-function))

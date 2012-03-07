@@ -2,7 +2,6 @@
 ;;; :FILE ../dbc-classes/dbc-class-parsed-convert.lisp
 ;;; ==============================
 
-
 
 ;;; ==============================
 ;;; Interface for the xml->parse-class->hash-table->file conversion
@@ -100,15 +99,11 @@
          new))
       ((2 3 4 5)
        (loop 
-          with new =  (make-array 6 :element-type 'character :initial-element #\0)
-          for chars across integer-or-string
-          for idx from (- 6 len)  below 6
-          do (setf (aref new idx) chars)
-          finally (return new))))))
-
-
-
-
+         with new = (make-array 6 :element-type 'character :initial-element #\0)
+         for chars across integer-or-string
+         for idx from (- 6 len)  below 6
+         do (setf (aref new idx) chars)
+         finally (return new))))))
 
 ;;; ==============================
 ;; :NOTE `load-sax-parsed-xml-file-to-parsed-class-hash' now has parameter
@@ -220,14 +215,14 @@
                                (print-sax-parsed-slots-padding-format-control object))))
     (format stream calculate-padding 
             (loop 
-               with unbound = (when print-unbound "#<UNBOUND>") ;(if print-unbound "#<UNBOUND>" "; #<UNBOUND>")
-               for slot-chk in (mon:class-slot-list object)
-               for x = (slot-boundp object slot-chk)
-               if x
-               nconc (list (list slot-chk (slot-value object slot-chk))) into rtn 
-               else  
-               nconc (list (list slot-chk unbound)) into rtn
-               finally (return rtn)))))
+              with unbound = (when print-unbound "#<UNBOUND>") ;(if print-unbound "#<UNBOUND>" "; #<UNBOUND>")
+              for slot-chk in (mon:class-slot-list object)
+              for x = (slot-boundp object slot-chk)
+              if x
+                nconc (list (list slot-chk (slot-value object slot-chk))) into rtn 
+              else  
+                nconc (list (list slot-chk unbound)) into rtn
+              finally (return rtn)))))
 
 (defun %write-sax-parsed-slots-to-file-dumping-header (object &key
                                                        stream
@@ -239,6 +234,13 @@
           slot-for-file-name-value
           (mon:timestamp-for-file)))
 
+;;  
+;;; :FILE-CREATED <Timestamp: #{2012-03-02T11:55:04-05:00Z}#{12095} - by MON>
+;; (mon:timestamp)
+;; "<Timestamp: #{2012-03-02T11:56:02+05:00Z} - by MON>"
+;;  #P"/mnt/RMT-PILOT-SHR/Ohio-State-auction-2012-February/lot-images-unsorted/IMG_0046.JPG")
+;;
+
 ;; (write-sax-parsed-slots-to-file (gethash "12393" *tt--parse-table*)
 ;;                                 ;;:prefix-for-file-name "bubba"
 ;;                                 ;; :slot-for-file-name 'naf-entity-artist-coref ;warns and bails
@@ -247,7 +249,7 @@
 ;;                                 :output-directory (sub-path *xml-output-dir*))
 ;;
 ;; :NOTE documented in dbc-specific/dbc-docs.lisp
-(defun write-sax-parsed-slots-to-file (object &key slot-for-file-name
+(defun write-sax-parsed-slots-to-file (object &key slot-for-file-name 
                                                    prefix-for-file-name
                                                    suffix-for-file-name
                                                    (print-unbound nil)
@@ -268,68 +270,68 @@
              output-directory)))
   (let* ((warning "Something wrong with arg OBJECT, declining to dump slot values to file")
          (slot-value-if 
-          (or (and (slot-exists-p object slot-for-file-name) ;; 'inventory-number
-                   (slot-boundp   object slot-for-file-name)
-                   (slot-value    object slot-for-file-name))
-              (progn
-                (warn                   ;error 
-                 "~%:FUNCTION `write-sax-parsed-slots-to-file'~% ~
+           (or (and (slot-exists-p object slot-for-file-name) ;; 'inventory-number
+                    (slot-boundp   object slot-for-file-name)
+                    (slot-value    object slot-for-file-name))
+               (progn
+                 (warn                  ;error 
+                  "~%:FUNCTION `write-sax-parsed-slots-to-file'~% ~
                   arg SLOT-FOR-FILE-NAME either non-existent, slot-unbound, null, ~
                   or not properly package qualified with \"DBC\" ~% slot: ~S~% object: ~S~%"
-                 slot-for-file-name object)
-                (warn "~%~A~%" warning)
-                (return-from write-sax-parsed-slots-to-file (values nil warning)))))
+                  slot-for-file-name object)
+                 (warn "~%~A~%" warning)
+                 (return-from write-sax-parsed-slots-to-file (values nil warning)))))
          (slot-value-if-stringp 
-          (or (and slot-value-if
-                   (stringp slot-value-if)                                         
-                   slot-value-if)
-              (and slot-value-if 
-                   (format nil "~S" slot-value-if))))
+           (or (and slot-value-if
+                    (stringp slot-value-if)                                         
+                    slot-value-if)
+               (and slot-value-if 
+                    (format nil "~S" slot-value-if))))
          (maybe-zero-pad
-          (and slot-value-if-stringp
-               (when slot-for-file-name-zero-padded
-                 (let ((validate-length (length slot-value-if-stringp)))
-                   (unless (< validate-length 6)
-                     (progn
-                       (warn            ;error 
-                        "~%:FUNCTION `write-sax-parsed-slots-to-file'~% ~
+           (and slot-value-if-stringp
+                (when slot-for-file-name-zero-padded
+                  (let ((validate-length (length slot-value-if-stringp)))
+                    (unless (< validate-length 6)
+                      (progn
+                        (warn           ;error 
+                         "~%:FUNCTION `write-sax-parsed-slots-to-file'~% ~
                               With arg SLOT-FOR-FILE-NAME-ZERO-PADDED non-nil found slot-value with length less than 6~% ~
                              slot: ~S~% slot-value: ~S~% length: ~S~% object: ~S~%"
-                        slot-for-file-name slot-value-if validate-length object)
-                       (warn "~%~A~%" warning)
-                       (return-from write-sax-parsed-slots-to-file (values nil warning))))
-                   (multiple-value-bind (parseable parse-length) (parse-integer slot-value-if-stringp :junk-allowed t)
-                     (unless (and parseable 
-                                  (typep parseable 'unsigned-byte) 
-                                  (eql parse-length validate-length))
-                       (progn
-                         (warn          ;error 
-                          "~%:FUNCTION `write-sax-parsed-slots-to-file'~% ~
+                         slot-for-file-name slot-value-if validate-length object)
+                        (warn "~%~A~%" warning)
+                        (return-from write-sax-parsed-slots-to-file (values nil warning))))
+                    (multiple-value-bind (parseable parse-length) (parse-integer slot-value-if-stringp :junk-allowed t)
+                      (unless (and parseable 
+                                   (typep parseable 'unsigned-byte) 
+                                   (eql parse-length validate-length))
+                        (progn
+                          (warn         ;error 
+                           "~%:FUNCTION `write-sax-parsed-slots-to-file'~% ~
                          With arg SLOT-FOR-FILE-NAME-ZERO-PADDED non-nil, unable to coerce via~% ~
                          CL:PARSE-INTEGER a valid positive number representation from slot-value of~% ~
                          slot: ~S~% slot-value: ~S~% object: ~S~%" 
-                          slot-for-file-name slot-value-if object)
-                         (warn "~%~A~%" warning)
-                         ;; (return-from write-sax-parsed-slots-to-file)))
-                         (return-from write-sax-parsed-slots-to-file (values nil warning))))
-                     (make-string (- 6 validate-length) :initial-element #\0))))))
+                           slot-for-file-name slot-value-if object)
+                          (warn "~%~A~%" warning)
+                          ;; (return-from write-sax-parsed-slots-to-file)))
+                          (return-from write-sax-parsed-slots-to-file (values nil warning))))
+                      (make-string (- 6 validate-length) :initial-element #\0))))))
          (slot-value-to-file-name 
-          (and slot-value-if-stringp
-               (merge-pathnames (make-pathname :name (concatenate 'string 
-                                                                  (or prefix-for-file-name
-                                                                      (string-downcase slot-for-file-name))
-                                                                  ;;  When a string is provided it should contain a trailing #\- if one is wanted.
-                                                                  (and (not prefix-for-file-name) "-")
-                                                                  maybe-zero-pad
-                                                                  slot-value-if-stringp
-                                                                  suffix-for-file-name)
-                                               :type pathname-type)
-                                output-directory)))
+           (and slot-value-if-stringp
+                (merge-pathnames (make-pathname :name (concatenate 'string 
+                                                                   (or prefix-for-file-name
+                                                                       (string-downcase slot-for-file-name))
+                                                                   ;;  When a string is provided it should contain a trailing #\- if one is wanted.
+                                                                   (and (not prefix-for-file-name) "-")
+                                                                   maybe-zero-pad
+                                                                   slot-value-if-stringp
+                                                                   suffix-for-file-name)
+                                                :type pathname-type)
+                                 output-directory)))
          (calculate-padding 
-          (and slot-value-to-file-name
-               (if pre-padded-format-control
-                   pre-padded-format-control
-                   (print-sax-parsed-slots-padding-format-control object)))))
+           (and slot-value-to-file-name
+                (if pre-padded-format-control
+                    pre-padded-format-control
+                    (print-sax-parsed-slots-padding-format-control object)))))
     (if slot-value-to-file-name
         (with-open-file (fl slot-value-to-file-name
                             :direction :output 
@@ -347,6 +349,38 @@
         (progn
           (warn "~%Something wrong with arg OBJECT, declining to dump to file~%")
           nil))))
+
+;; (write-parsed-class-parse-table-to-file 
+;;  :parsed-class 'parsed-inventory-record
+;;  :output-file (merge-pathnames (make-pathname
+;;                                 :directory '(:relative "parsed-xml-inventory-records")
+;;                                 :name (mon:timestamp-for-file-with :prefix "inventory-record-table-dump" :universal-time t)
+;;                                 :name (mon:timestamp-for-file-with :prefix "inventory-record-table-dump")
+;;                                 :type "lisp")
+;;                                (sub-path *xml-output-dir*)))
+;; (fundoc 'write-parsed-class-parse-table-to-file
+;; like `write-sax-parsed-slots-to-file' but dumps the contents of a populated
+;; parsed-class-parse-table for PARSED-CLASS as a plist of key/value pairs where
+;; each key is a keyword corresponding to a slot-initarg for PARSED-CLASS.
+(defun write-parsed-class-parse-table-to-file (&key parsed-class output-file)
+
+  (let ((frmt-cntl (print-sax-parsed-slots-padding-format-control (make-instance parsed-class)))
+        (parsed-hash (parsed-class-parse-table parsed-class)))
+    (unless (zerop (hash-table-count parsed-hash))
+      (with-open-file (fl output-file
+                          :direction :output
+                          :if-exists :supersede
+                          :if-does-not-exist :create
+                          :element-type 'character
+                          :external-format :UTF-8)
+        (loop 
+           for obj being the hash-values of (parsed-class-parse-table parsed-class)
+           do 
+             (print-sax-parsed-slots obj :stream fl :print-unbound nil :pre-padded-format-control frmt-cntl)
+             (write-char #\Newline fl)
+             (write-char #\Newline fl))))))
+     
+;; (print-sax-parsed-slots object :stream fl :print-unbound print-unbound :pre-padded-format-control calculate-padding)
 
 ;; :NOTE Now that we can dereference PARSED-CLASS as a key in `*parsed-class-parse-table*'
 ;;  we can access the HASH-TABLE assocociated with PARSED-CLASS directly e.g.:

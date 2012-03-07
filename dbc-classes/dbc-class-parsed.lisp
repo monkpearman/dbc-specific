@@ -84,6 +84,8 @@
 
 (defgeneric accessors-of-parsed-class (object))
 
+(defgeneric initargs-of-parsed-class (object))
+
 (defgeneric parsed-class-slot-dispatch-function (object))
 ;; (defgeneric (setf parsed-class-slot-dispatch-function) (parsed-class-symbol ))
 
@@ -298,6 +300,18 @@
 
 (defmethod accessors-of-parsed-class ((object parsed-class))
   (alexandria:hash-table-keys (accessor-to-field-table object)))
+
+;; (initargs-of-parsed-class 'parsed-inventory-record)
+;; Following fails successfully:
+;; (initargs-of-parsed-class 'parsed-class)
+(defmethod initargs-of-parsed-class ((object symbol))
+  (initargs-of-parsed-class (parsed-class-mapped object)))
+
+;; (initargs-of-parsed-class (make-instance 'parsed-inventory-record))
+;; Following fails successfully:
+;; (initargs-of-parsed-class (make-instance 'parsed-class))
+(defmethod initargs-of-parsed-class ((object parsed-class))
+  (initargs-of-parsed-class (parsed-class-mapped object)))
 
 ;; (parsed-class-parse-table (make-instance 'parsed-inventory-record))
 ;; Following fails successfully:

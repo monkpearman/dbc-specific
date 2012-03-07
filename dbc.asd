@@ -61,6 +61,7 @@
                :unicly
                :mon
                :mon-test
+               :image-ops
                ;; :NOTE Following will be made available to system by :mon
 	       ;; :split-sequence
                ;; :string-case
@@ -79,7 +80,7 @@
                ;; :NOTE Time related dependencies should maybe use a separate
                ;; time dedicated system for these (and others). 
                ;; :SEE :FILE "dbc-french-dates.lisp" below.
-	       ;; :local-time
+	       ;; :local-time :chronicity
                ;; :parse-time ;; Not sure which version to use
                ;; :date-calc 
 	       )

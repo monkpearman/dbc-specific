@@ -1192,6 +1192,13 @@ keyword OUTPUT-PATHNAME-SUB-DIRECTORY of `make-default-sax-parsed-xml-output-pat
 :SEE-ALSO `print-sax-parsed-slots', `write-sax-parsed-slots-to-file',
 `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
 
+(fundoc 'parsed-inventory-record-load-default-parsed-file-to-hash 
+        "Load slots of class inventory-record to parsed-class-parse-table from most recent parsed file.~%~@
+Signal an error if the parsed file or its containing directory can not be found.
+:SEE-ALSO `parsed-inventory-record-xml-dump-file-and-hash',
+`load-sax-parsed-xml-file-to-parsed-class-hash',
+`write-sax-parsed-slots-to-file'.~%▶▶▶")
+
 
 ;;; ==============================
 ;;; dbc-specific/dbc-classes/dbc-class-parsed-slot-value-equal.lisp

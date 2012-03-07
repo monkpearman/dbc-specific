@@ -397,9 +397,12 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;; => #<PARSED-INVENTORY-RECORD "009842">
 (defmethod print-object ((object parsed-inventory-record) stream)
   (print-unreadable-object (object stream :type t) 
-    (format stream "~S" (and (slot-boundp object 'inventory-number)
-                             (stringp (inventory-number object))
-                             (control-id-indexed-number-zero-padded-string (inventory-number object))))))
+    (let* ((inv-num (and (slot-boundp object 'inventory-number)
+                         (slot-value object 'inventory-number)))
+           (inv-num-if (and (stringp inv-num)
+                            (control-id-indexed-number-zero-padded-string inv-num))))
+      (declare (mon:string-or-null inv-num-if))
+      (format stream "~S" inv-num-if))))
 
 ;; control-id-entity-num-artist
 
@@ -479,13 +482,6 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("edit_history"      . edit-history))
  )
 
-
-;; (parsed-class-parse-table 'parsed-inventory-record)
-;; (load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-inventory-record #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/xml-class-dump-dir/parsed-xml-inventory-records/inventory-records-2012-02-16.lisp")
-;; (parsed-inventory-record-xml-dump-file-and-hash)
-;; (gethash 'parsed-inventory-record *parsed-class-parse-table*)
-;; (gethash "12000" (gethash 'parsed-inventory-record *parsed-class-parse-table*))
-;; (inspect (gethash "12000" (gethash 'parsed-inventory-record *parsed-class-parse-table*)))
 ;; (defun parsed-inventory-record-xml-dump-file-and-hash (&key 
 ;;                                                        (input-file (make-pathname 
 ;;                                                                     :directory (pathname-directory (sub-path *xml-input-dir*)) 
@@ -582,6 +578,42 @@ This function should only be used for instantiating instances created _outside_ 
        :slot-for-file-name-zero-padded t
        :pathname-type pathname-type))))
 
+;; (parsed-class-parse-table 'parsed-inventory-record)
+;; (load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-inventory-record #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/xml-class-dump-dir/parsed-xml-inventory-records/inventory-records-2012-02-16.lisp")
+;; (parsed-inventory-record-xml-dump-file-and-hash)
+;; (gethash 'parsed-inventory-record *parsed-class-parse-table*)
+;; (gethash "12000" (gethash 'parsed-inventory-record *parsed-class-parse-table*))
+;; (inspect (gethash "12000" (gethash 'parsed-inventory-record *parsed-class-parse-table*)))
+;;
+
+;; (parsed-inventory-record-load-default-parsed-file-to-hash)
+;;
+(defun parsed-inventory-record-load-default-parsed-file-to-hash ()
+  (let* ((maybe-wild-pathname 
+           (merge-pathnames (make-pathname :name :wild 
+                                           :type "lisp")
+                            (or (probe-file (merge-pathnames 
+                                             (make-pathname :directory '(:relative "parsed-xml-inventory-records"))
+                                             (sub-path *xml-output-dir*)))
+                                (error ":FUNCTION `parsed-inventory-record-load-default-parsed-file-to-hash'~% ~
+                                      did find suitable directory containing parsed-xml-inventory-records"))))
+         (maybe-find-wilds (directory maybe-wild-pathname))
+         (most-recent-parse-file
+           (or (and maybe-find-wilds
+                    (car (sort 
+                          (remove-if-not #'(lambda (x) (pathname-match-p x "/**/inventory-records-*.lisp"))
+                                         maybe-find-wilds)
+                          #'string>
+                          :key #'pathname-name)))
+               (error ":FUNCTION `parsed-inventory-record-load-default-parsed-file-to-hash'~% ~
+                       did not find suitable parsed file beneath directory:~% ~S"
+                      (pathname (directory-namestring maybe-wild-pathname))))))
+    (when most-recent-parse-file
+      (load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-inventory-record
+                                                     :input-file most-recent-parse-file
+                                                     :hash-table (parsed-class-parse-table 'dbc::parsed-inventory-record)
+                                                     :key-accessor 'inventory-number
+                                                     :slot-dispatch-function #'set-parsed-inventory-record-slot-value))))
 
 ;; :NOTE `set-parsed-inventory-record-slot-value' is defined in loadtime-bind.lisp
 ;; (def-set-parsed-class-record-slot-value 
