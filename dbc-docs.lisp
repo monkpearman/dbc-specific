@@ -1843,6 +1843,62 @@ Following errors successfully:~%~@
  \(inventory-record-image-jpg-probe 2849 :image-suffix \"foo\"\)
 :SEE-ALSO `inventory-record-image-directory-probe'.~%▶▶▶")
 
+
+;;; ==============================
+;;; dbc-specific/dbc-classes/dbc-class-parsed-csv-writer.lisp
+;;; ==============================
+
+(fundoc 'parsed-inventory-record-write-parse-table-to-csv-file
+"Clean PREFIX-FOR-FILE-NAME for use with `write-parsed-class-parse-table-to-csv-file'.~%~@
+:EXAMPLE~%
+ \(parsed-class-csv-clean-prefix-for-file-name \"parsed-inventory-record\"\)~%
+ \(parsed-class-csv-clean-prefix-for-file-name \"parsed-inventory-record- \"\)~%
+ \(parsed-class-csv-clean-prefix-for-file-name \" parsed-inventory-record-CSV \"\)~%
+ \(parsed-class-csv-clean-prefix-for-file-name \"parsed-inventory-record-csv _-\"\)~%~@
+Following error successfully:~%
+ \(parsed-class-csv-clean-prefix-for-file-name \"\"\)~%
+ \(parsed-class-csv-clean-prefix-for-file-name \"-CSV\"\)~%
+ \(parsed-class-csv-clean-prefix-for-file-name \"-csv\"\)~%~@
+:SEE-ALSO `<XREF>'.~%▶▶▶")
+
+(fundoc 'write-parsed-class-parse-table-to-csv-file
+        "Write the slot values of PARSED-CLASS to a csv file.
+Return the file written if the parsed-class-parse-table for class is populated else nil.
+prefix-for-file-name is a name to prepend to a pathname-name. 
+It is trimmed of whitespace and #\\_ #\\-.~%~@
+The written file will have the format: <PREFIX-FOR-FILENAME>-CSV-<TIMESTAMP>.csv
+OUTPUT-SUB-DIRECTORY is a string or list of strings which when merged with
+BASE-OUTPUT-DIRECTORY create a path to write the filename beneath. If the
+merged pathname contains subdirectories which do not exist they will be
+created as if by `cl:ensure-directories-exist'.~%~@
+BASE-OUTPUT-DIRECTORY is a base pathname beneath which to write the file. 
+If BASE-OUTPUT-DIRECTORY does not exist an error is signalled.
+FILTERING-SLOT-LIST is a list of slots of PARSED-CLASS for which the
+slot-values should not be written.~%~@
+SLOT-HEADER-CASE is a keyword either :downcase or :upcase designating the
+case for the initargs written to the CSV header.~%~@
+:EXAMPLE~%~@
+ \(write-parsed-class-parse-table-to-csv-file :parsed-class 'parsed-inventory-record
+                                             :prefix-for-file-name \"inventory-records\"
+                                             :output-sub-directory \"parsed-csv-inventory-records\"
+                                             :slot-header-case :downcase\)
+:SEE-ALSO `<XREF>'.~%▶▶▶")
+
+(fundoc 'def-parsed-class-write-csv-file
+"Wrapper macro for `write-parsed-class-parse-table-to-csv-file'. 
+Return a function with defaults specific to PARSED-CLASS.
+Returned function has a symbol-name with the format:~%
+ write-<PARSED-CLASS>-parse-table-to-csv-file~%~@
+:EXAMPLE~%~@
+ \(def-parsed-class-write-csv-file
+     :parsed-class parsed-inventory-record
+   :default-prefix-for-file-name \"inventory-records\"
+   :default-output-pathname-sub-directory \"parsed-csv-inventory-records\"
+   :default-output-pathname-base-directory \(merge-pathnames
+                                            \(make-pathname :directory '\(:relative \"parsed-csv-records\"\)\)
+                                            \(dbc::sub-path dbc::*xml-output-dir*\)\)\)~%~@
+:SEE-ALSO `write-parsed-inventory-record-parse-table-to-csv-file'.~%▶▶▶")
+
 ;;; ==============================
 
 

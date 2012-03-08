@@ -81,23 +81,25 @@
      (prog1 t (terpri) (terpri))
      (system-described *xml-output-dir* t))
 
-(progn
-  ;; `*system-notes-dir*'
-  (system-subdir-init-w-var '*system-notes-dir* 
-                            :parent-path (system-base-path *system-path*))
-  (when (sub-path *system-notes-dir*)
-    ;; :NOTE `system-subdir-init-w-var' should take care of describing to *standard-output*
-    ;; (system-described *system-notes-dir* nil)
-    ;; We terpri so as to delimit the descriptions.
-    (dotimes (i 3) (terpri))
-    ;; `*xml-input-dir*'
-    (system-subdir-init-w-var '*xml-input-dir*
-                        :parent-path (sub-path *system-notes-dir*))
-    (terpri)
-    ;; :NOTE `system-subdir-init-w-var' should take care of describing to *standard-output*
-    ;; (when (sub-path *xml-input-dir*)
-    ;;   (system-described *xml-input-dir* nil))
-    ))
+;; (let ((dbc-build-system::*dbc-build-system-reloading-system* t))
+(when
+      ;; `*system-notes-dir*'
+      (system-subdir-init-w-var '*system-notes-dir* 
+                                :parent-path (system-base-path *system-path*))
+    (when (sub-path *system-notes-dir*)
+      ;; :NOTE `system-subdir-init-w-var' should take care of describing to *standard-output*
+      ;; (system-described *system-notes-dir* nil)
+      ;; We terpri so as to delimit the descriptions.
+      (dotimes (i 3) (terpri))
+      ;; `*xml-input-dir*'
+      (system-subdir-init-w-var '*xml-input-dir*
+                                :parent-path (sub-path *system-notes-dir*))
+      (terpri)
+      ;; :NOTE `system-subdir-init-w-var' should take care of describing to *standard-output*
+      ;; (when (sub-path *xml-input-dir*)
+      ;;   (system-described *xml-input-dir* nil))
+      ))
+;;)
 
 ;; (and (sub-path *xml-input-dir*)
 ;;      (let (;; *xml-input-refs-name*
