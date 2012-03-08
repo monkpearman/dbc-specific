@@ -391,17 +391,50 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash',
 `write-sax-parsed-xml-refs-file', `set-parsed-inventory-record-slot-value'.~%▶▶▶")))
 
+
+;; :EXAMPLE
+;; (let ((obj (make-instance 'parsed-inventory-record)))
+;;   (setf (inventory-number obj) "42")
+;;   (control-id-indexed-number-zero-padded-string obj))
+;;
+;;  (control-id-indexed-number-zero-padded-string (parsed-class-table-lookup 'parsed-inventory-record "3566"))
+;;
+;; Following errors successfully:
+;;  (control-id-indexed-number-zero-padded-string (make-instance 'parsed-inventory-record))
+;;
+(defmethod control-id-indexed-number-zero-padded-string ((object parsed-inventory-record))
+  (let ((chk-slot-value (and (slot-boundp object 'inventory-number) ;; should we check slot-boundp or let it fail?
+                             (inventory-number object))))
+    (if chk-slot-value
+        (control-id-indexed-number-zero-padded-string chk-slot-value)
+        (error ":METHOD `control-id-indexed-number-zero-padded-string' specializing class `parsed-inventory-record'~% ~
+                   OBJECT with invalid inventory-number slot-value~% got-object: ~S~% with-slot-value: ~S"
+               object chk-slot-value))))
+
 ;; (make-instance 'parsed-inventory-record)
-;; => #<PARSED-INVENTORY-RECORD NIL>
-;; (nth-value 0 (gethash "9842" (parsed-class-parse-table 'parsed-inventory-record)))
-;; => #<PARSED-INVENTORY-RECORD "009842">
-(defmethod print-object ((object parsed-inventory-record) stream)
-  (print-unreadable-object (object stream :type t) 
-    (let* ((inv-num (and (slot-boundp object 'inventory-number)
-                         (slot-value object 'inventory-number)))
-           (inv-num-if (and (stringp inv-num)
+
+
+(print-unreadable-object ((make-instance 'parsed-inventory-record) nil :type t :identity t))
+
+(let* ((inv-num (and (slot-boundp object 'inventory-number)
+                     (slot-value object 'inventory-number)))
+       (inv-num-if (and (stringp inv-num)
                             (control-id-indexed-number-zero-padded-string inv-num))))
       (declare (mon:string-or-null inv-num-if))
+      (format stream "~S" inv-num-if)))
+
+;; (make-instance 'parsed-inventory-record)
+;; => #<PARSED-INVENTORY-RECORD NIL {IDENTITY}>
+;; (parsed-class-table-lookup 'parsed-inventory-record "9842")
+;; => #<PARSED-INVENTORY-RECORD "009842">
+(defmethod print-object ((object parsed-inventory-record) stream)
+  ;; (print-unreadable-object (object stream :type t) 
+  (let* ((inv-num (and (slot-boundp object 'inventory-number)
+                       (slot-value object 'inventory-number)))
+         (inv-num-if (and (stringp inv-num)
+                          (control-id-indexed-number-zero-padded-string inv-num))))
+    (declare (mon:string-or-null inv-num-if))
+    (print-unreadable-object (object stream :type t :identity (not inv-num-if)) 
       (format stream "~S" inv-num-if))))
 
 ;; control-id-entity-num-artist
@@ -481,25 +514,6 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("date_edit"         . edit-date)
    ("edit_history"      . edit-history))
  )
-
-;; :EXAMPLE
-;; (let ((obj (make-instance 'parsed-inventory-record)))
-;;   (setf (inventory-number obj) "42")
-;;   (control-id-indexed-number-zero-padded-string obj))
-;;
-;;  (control-id-indexed-number-zero-padded-string (parsed-class-table-lookup 'parsed-inventory-record "3566"))
-;;
-;; Following errors successfully:
-;;  (control-id-indexed-number-zero-padded-string (make-instance 'parsed-inventory-record))
-;;
-(defmethod control-id-indexed-number-zero-padded-string ((object parsed-inventory-record))
-  (let ((chk-slot-value (and (slot-boundp object 'inventory-number) ;; should we check slot-boundp or let it fail?
-                             (inventory-number object))))
-    (if chk-slot-value
-        (control-id-indexed-number-zero-padded-string chk-slot-value)
-        (error ":METHOD `control-id-indexed-number-zero-padded-string' specializing class `parsed-inventory-record'~% ~
-                   OBJECT with invalid inventory-number slot-value~% got-object: ~S~% with-slot-value: ~S"
-               object chk-slot-value))))
 
 ;; (defun parsed-inventory-record-xml-dump-file-and-hash (&key 
 ;;                                                        (input-file (make-pathname 
