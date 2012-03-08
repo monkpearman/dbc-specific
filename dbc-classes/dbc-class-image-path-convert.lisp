@@ -179,36 +179,6 @@
                   base-httpd-synced-directory))
        subdirs-for-wild-pathname))
 
-(defun inventory-record-image-directory-probe (item-number 
-                                               &key (base-image-directory-pathname *dbc-base-item-number-image-pathname*))
-  (declare (mon:pathname-or-namestring base-image-directory-pathname))
-  (let* ((0-string      (control-id-indexed-number-zero-padded-string item-number))
-         (0-sold-string (concatenate 'string 0-string "_SOLD"))
-         (0-string-dir  (or 
-                         ;; osicat:directory-exists-p
-                         (probe-file (merge-pathnames 
-                                      (make-pathname :directory `(:relative ,0-string))
-                                      base-image-directory-pathname))
-                         ;; osicat:directory-exists-p
-                         (probe-file (merge-pathnames 
-                                      (make-pathname :directory `(:relative ,0-sold-string))
-                                      base-image-directory-pathname)))))
-    0-string-dir))
-
-(defun inventory-record-image-jpg-probe (item-number &key (image-suffix "")
-                                                          (base-image-directory-pathname *dbc-base-item-number-image-pathname*))
-  (declare (string image-suffix))
-  (let ((suffixe '(list "" "-m" "-s" "-f" "-fs" "-fc" "-z")))
-    (unless (member image-suffix suffixe :test #'string=)
-      (error ":FUNCTION `inventory-record-image-jpg-probe' -- keyword arg IMAGE-SUFFIX not a valid suffix~% ~
-            must be one of one of~% ~A~% got: ~S" suffixe image-suffix)))
-  (let* ((0-string       (control-id-indexed-number-zero-padded-string item-number))
-         (0-string-dir   (inventory-record-image-directory-probe 0-string))
-         (0-img-pathname (and 0-string-dir
-                              (probe-file 
-                               (merge-pathnames (make-pathname :name (concatenate 'string 0-string image-suffix) :type "jpg")
-                                                0-string-dir)))))
-    (values (and 0-img-pathname) 0-string item-number)))
 
 ;; (%pathname-name-empty-jpeg-p #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/photos/big/.jpg")
 ;; (null (%pathname-name-empty-jpeg-p #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/photos/big/foo.jpg"))
@@ -946,6 +916,16 @@
 ;;  #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/flash_home/gallery/categ1/large/5606.jpg"
 ;;  :name-suffix-categ "cat")
 
+
+;;; ==============================
+
+
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; show-trailing-whitespace: t
+;; mode: lisp-interaction
+;; package: dbc
+;; End:
 
 ;;; ==============================
 ;;; EOF

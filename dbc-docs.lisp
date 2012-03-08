@@ -1808,21 +1808,38 @@ An error is signaled if base-httpd-synced-directory does not exist.~%~@
                                             *dbc-wild-httpd-synced-item-number-image-pathname-list*\)~%~@
 :SEE-ALSO `%ensure-dbc-base-http-synced-item-number-image-pathname-exists', .~%▶▶▶")
 
-(fundoc 'inventory-record-image-directory-probe
-"Probe for an ITEM-NUMBER subdir beneath BASE-IMAGE-DIRECTORY-PATHNAME.~%
+
+;;; ==============================
+;;; dbc-specific/dbc-classes/dbc-class-image-path-inventory-record.lisp
+;;; ==============================
+
+(generic-doc #'inventory-record-image-directory-probe
+        "Probe for an ITEM-NUMBER subdir beneath BASE-IMAGE-DIRECTORY-PATHNAME.~%
 If a subdir exists with a name matching the return value of:~%
  \(control-id-indexed-number-zero-padded-string ITEM-NUMBER\)~%
 return the subdirs pathname.~%~@
-ITEM-NUMBER is a positive-integer or the string equivalent of one.~%
+OBJECT is an instance of class parsed-inventory-record, a positive-integer, or
+the string equivalent of one.~%
 BASE-IMAGE-DIRECTORY-PATHNAME is a pathname identifying a directory to search
-for images beneath. Default is `*dbc-base-item-number-image-pathname*'.~%~@
-:EXAMPLE~%
- \(inventory-record-image-jpg-probe \"2849\"\)~% 
- \(inventory-record-image-jpg-probe 2849\)~%
- (inventory-record-image-jpg-probe 99999)~%~@
+for images beneath. Specializing methods default to `*dbc-base-item-number-image-pathname*'.~%~@
 :SEE-ALSO `inventory-record-image-jpg-probe'.~%▶▶▶")
 
-(fundoc 'inventory-record-image-jpg-probe
+(method-doc #'inventory-record-image-directory-probe nil '(integer)
+            "~%:EXAMPLE~%
+ \(inventory-record-image-directory-probe 2849\)~%
+ \(inventory-record-image-directory-probe 99999\)~%")
+
+(method-doc #'inventory-record-image-directory-probe nil '(string)
+            "~%:EXAMPLE~%
+ \(inventory-record-image-directory-probe \"2849\"\)~%")
+
+(method-doc #'inventory-record-image-directory-probe nil '(parsed-inventory-record)
+            "~%:EXAMPLE~%
+ \(let \(\(obj \(make-instance 'parsed-inventory-record\)\)\)
+   \(setf \(inventory-number obj\) \"2849\"\)
+   \(inventory-record-image-directory-probe obj\)\)~%")
+
+(generic-doc #'inventory-record-image-jpg-probe
 "Probe for a jpg image in an ITEM-NUMBER subdir beneath BASE-IMAGE-DIRECTORY-PATHNAME.~%
 ITEM-NUMBER is a positive-integer or the string equivalent of one.~%
 BASE-IMAGE-DIRECTORY-PATHNAME is a pathname identifying a directory to search
@@ -1833,15 +1850,35 @@ Return as cl:values the following:~%
  PATHNAME | NIL
  \"0NNNNN\"             ; item-number as zero padded string
  \"NNNNN\" | <INTEGER>  ; integer or string depending on ITEM-NUMBER's type~%
-:EXAMPLE~%
+:SEE-ALSO `inventory-record-image-directory-probe'.~%▶▶▶")
+
+(method-doc #'inventory-record-image-jpg-probe nil '(string)
+"~%:EXAMPLE~%
  \(inventory-record-image-jpg-probe \"2849\"\)~%
+ \(inventory-record-image-jpg-probe \"2849\" :image-suffix \"-z\"\)~%
+ \(inventory-record-image-jpg-probe \"2849\" :image-suffix \"-f\"\)~%
+ \(inventory-record-image-jpg-probe \"2849\" :image-suffix \"-m\"\)~%")
+
+(method-doc #'inventory-record-image-jpg-probe nil '(integer)
+"~%:EXAMPLE~%
  \(inventory-record-image-jpg-probe 2849\)~%
  \(inventory-record-image-jpg-probe 2849 :image-suffix \"-z\"\)~%
  \(inventory-record-image-jpg-probe 2849 :image-suffix \"-f\"\)~%
- \(inventory-record-image-jpg-probe 2849 :image-suffix \"-m\"\)~%
-Following errors successfully:~%~@
- \(inventory-record-image-jpg-probe 2849 :image-suffix \"foo\"\)
-:SEE-ALSO `inventory-record-image-directory-probe'.~%▶▶▶")
+ \(inventory-record-image-jpg-probe 2849 :image-suffix \"-m\"\)~%")
+
+(method-doc #'inventory-record-image-jpg-probe nil '(parsed-inventory-record)
+"~%:EXAMPLE~%
+ \(let \(\(obj \(make-instance 'parsed-inventory-record\)\)\)
+   \(setf \(inventory-number obj\) \"2849\"\)
+   \(list 
+    \(inventory-record-image-jpg-probe obj\)
+    \(inventory-record-image-jpg-probe obj :image-suffix \"-z\"\)
+    \(inventory-record-image-jpg-probe obj :image-suffix \"-f\"\)
+    \(inventory-record-image-jpg-probe obj :image-suffix \"-m\"\)\)\)~%
+Following errors successfully:~%
+ \(let \(\(obj \(make-instance 'parsed-inventory-record\)\)\)
+   \(setf \(inventory-number obj\) \"2849\"\)
+   \(inventory-record-image-jpg-probe obj :image-suffix \"foo\"\)\)~%")
 
 
 ;;; ==============================

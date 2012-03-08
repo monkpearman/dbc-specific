@@ -142,13 +142,14 @@
              (:file "dbc-class-parsed-inventory-sales-order-record")
              (:file "dbc-class-parsed-inventory-sales-sold-record")
              (:file "dbc-class-parsed-inventory-sales-sold-in-store-record")
-             (:file "dbc-class-parsed-csv-writer")
              ;; (:file "dbc-tgm")))
              ;;
              ;; (:file "dbc-class-symbol-construct-deprecated")
              ;;
              (:file "dbc-class-image")
              (:file "dbc-class-image-path-convert")
+             (:file "dbc-class-image-path-inventory-record")
+             (:file "dbc-class-parsed-csv-writer")
              ))
    (:module "dbc-parse"
 	    :components
