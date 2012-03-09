@@ -1841,15 +1841,23 @@ for images beneath. Specializing methods default to `*dbc-base-item-number-image
 
 (generic-doc #'inventory-record-image-jpg-probe
 "Probe for a jpg image in an ITEM-NUMBER subdir beneath BASE-IMAGE-DIRECTORY-PATHNAME.~%
-ITEM-NUMBER is a positive-integer or the string equivalent of one.~%
+ITEM-NUMBER is an instance of class parsed-inventory-record, a positive-integer
+or the string equivalent of one.~%
 BASE-IMAGE-DIRECTORY-PATHNAME is a pathname identifying a directory to search
 for images beneath. Default is `*dbc-base-item-number-image-pathname*'.~%
-IMAGE-SUFFIX is a string it must be one of:~%
+IMAGE-SUFFIX is either :all or a string.
+When IMAGE-SUFFIX is a string it must be one of:~%
  \"\" \"-m\" \"-s\" \"-f\" \"-fs\" \"-fc\" \"-z\"~%
-Return as cl:values the following:~%
- PATHNAME | NIL
- \"0NNNNN\"             ; item-number as zero padded string
- \"NNNNN\" | <INTEGER>  ; integer or string depending on ITEM-NUMBER's type~%
+Return value is as if by `inventory-record-image-jpg-probe-all' and has the same
+semantics except that nth-value 0 is a single pathname when a matching image for
+ITEM-NUMBER is found unless IMAGE-SUFFIX is :all in which case return value is a
+list.
+PATHNAME-RETURN-STYLE indicates how pathnames should be returned if a match is found.
+:absolute returns an absolute pathname.
+:relative returns a pathname with the format: 
+ #P\"<PARENT-DIR>/<FILENAME>.jpg\"~%~@
+:file-pathname returns a pathanme with the format: 
+ #P\"<FILENAME>.jpg\"~%~@
 :SEE-ALSO `inventory-record-image-directory-probe'.~%▶▶▶")
 
 (method-doc #'inventory-record-image-jpg-probe nil '(string)
@@ -1879,6 +1887,104 @@ Following errors successfully:~%
  \(let \(\(obj \(make-instance 'parsed-inventory-record\)\)\)
    \(setf \(inventory-number obj\) \"2849\"\)
    \(inventory-record-image-jpg-probe obj :image-suffix \"foo\"\)\)~%")
+
+;; "^<00NNNN>((-[msz]{1}?)??|(-f[sc]??)??)??$"
+
+(generic-doc #'inventory-record-image-jpg-probe-all
+"Probe for a jpg images in an ITEM-NUMBER subdir beneath BASE-IMAGE-DIRECTORY-PATHNAME.~%
+Find images with pathname-names matching the cl-ppcre regex:~%
+ \"^[0-9]{6}?\(\(-[msz]{1}?\)??|\(-f[sc]??\)??\)??$\"~%~@
+ITEM-NUMBER is an instance of class parsed-inventory-record, a positive-integer
+or the string equivalent of one.~%
+BASE-IMAGE-DIRECTORY-PATHNAME is a pathname identifying a directory to search
+for images beneath. Default is `*dbc-base-item-number-image-pathname*'.~%
+PATHNAME-RETURN-STYLE indicates how pathnames should be returned when matching
+images are found it should be one of following keywords:~%
+ :absolute :relative :file-pathname~%
+ :absolute indicates to return a list of absolute pathnames~%
+ :relative indicates to return a list of pathnames with the format:
+  #P\"<RELATIVE-ITEM-DIRECTORY>/<FILENAME>.jpg\"~%
+ :file-pathname indicates to return a list of pathnames with the format:
+  #P\"<FILENAME>.jpg\"~%~@
+Return value is as if by cl:values and has one of the following formats:~%
+ a) NIL, NIL, <ITEM-NUMBER-STRING>~%
+ b) NIL, <ITEM-DIRECTORY>, <ITEM-NUMBER-STRING>~%
+ c) <IMAGE-LIST>, <ITEM-DIRECTORY> | <RELATIVE-ITEM-DIRECTORY>, <ITEM-NUMBER-STRING>~%
+In case a ITEM-NUMBER does not have a directory beneath BASE-IMAGE-DIRECTORY-PATHNAME~%
+In case b ITEM-NUMBER does have a directory beneath BASE-IMAGE-DIRECTORY-PATHNAME
+but either does not contain jpg images or, if it does, these do not match our
+pattern. Note also that nth-value 1 is always ITEM-NUMBER's directory even when
+PATHNAME-RETURN-STYLE is :relative -- see below for additional discussion.~%
+In case c ITEM-NUMBER does have a directory beneath BASE-IMAGE-DIRECTORY-PATHNAME
+and it contains jpg images which match our pattern. Here the pathname returned
+for nth-value 1 is contigent on whether or not PATHNAME-RETURN-STYLE is
+:relative. If it is, the pathname returned is the parent directory relative to
+the directory containg the images of <IMAGE-LIST>.~%
+:EXAMPLE~%
+ Here the base pathname-name at nth-value 2 matches the subdir name \"001894\"
+ at nth-value 1:~%
+ \(%inventory-record-image-jpg-probe-all 001894 
+                                        :pathname-return-style :absolute\)
+ |=> \(#P\"/<BASE-IMAGE-DIRECTORY-PATHNAME>/001894/001894.jpg\"
+ |    #P\"/<BASE-IMAGE-DIRECTORY-PATHNAME>/001894/001894-m.jpg\"
+ |    #P\"/<BASE-IMAGE-DIRECTORY-PATHNAME>/001894/001894-s.jpg\"\)
+ |    #P\"/<BASE-IMAGE-DIRECTORY-PATHNAME>/001894/\"
+ |   \"001894\"~%
+ Here base pathname-name at nth-value 2 does not match subdir name
+ \"001893_SOLD\" at nth-value 1:~%
+ \(%inventory-record-image-jpg-probe-all \"001893\" :pathname-return-style :absolute\)
+ |=> \(#P\"/<BASE-IMAGE-DIRECTORY-PATHNAME>/001893_SOLD/001893.jpg\"
+ |    #P\"/<BASE-IMAGE-DIRECTORY-PATHNAME>/001893_SOLD/001893-m.jpg\"
+ |    #P\"/<BASE-IMAGE-DIRECTORY-PATHNAME>/001893_SOLD/001893-s.jpg\"\)
+ |    #P\"/<BASE-IMAGE-DIRECTORY-PATHNAME>/001893_SOLD/\"
+ |    \"001893\"~%
+ Here we can map a merge-pathnames with the elts of nth-value 0 with nth-value 1:~%
+ \(%inventory-record-image-jpg-probe-all 001893 :pathname-return-style :relative\)
+ |=> \(#P\"001893_SOLD/001893.jpg\" #P\"001893_SOLD/001893-m.jpg\"
+ |    #P\"001893_SOLD/001893-s.jpg\"\)
+ |    #P\"/<BASE-IMAGE-DIRECTORY-PATHNAME>/\"
+ |    \"001893\"~%
+ Here we can map a merge-pathnames with the elts of nth-value 0 with nth-value 1
+ Note however base pathname-name at nth-value 2 does not match subdir name
+ \"001893_SOLD\" at nth-value 1:~%
+ \(%inventory-record-image-jpg-probe-all 001893 :pathname-return-style :file-pathname\)
+ |=> \(#P\"001893.jpg\" #P\"001893-m.jpg\" #P\"001893-s.jpg\"\)
+ |    #P\"/<BASE-IMAGE-DIRECTORY-PATHNAME>/001893_SOLD/\" 
+ |   \"001893\"~%
+ Here ITEM-NUMBER 56666 does not have an existent directory:~%
+ \(%inventory-record-image-jpg-probe-all 56666\)
+ |=> NIL
+ |   NIL
+ |   \"056666\"~%
+ In following examples directory for 013476 exists but does not contain jpg
+ images matching our pattern.~%
+ \(%inventory-record-image-jpg-probe-all 013476 :pathname-return-style :absolute\)
+ |=> NIL
+ |   #P\"/<BASE-IMAGE-DIRECTORY-PATHNAME>/013476/\"
+ |   \"013476\"~%
+ \(%inventory-record-image-jpg-probe-all 013476 :pathname-return-style :file-pathname\)
+ |=> NIL
+ |   #P\"/<BASE-IMAGE-DIRECTORY-PATHNAME>/013476/\"
+ |   \"013476\"~%
+ \(%inventory-record-image-jpg-probe-all 013476 :pathname-return-style :relative\)
+ |=> NIL
+ |   #P\"/<BASE-IMAGE-DIRECTORY-PATHNAME>/013476/\"
+ |   \"013476\"~%~@
+:NOTE In the last example above, when PATHNAME-RETURN-STYLE is :relative and we
+find an existing diretory for ITEM-NUMBER which contains jpg files matching our
+pattern we return the _parent_ diretory of the files matched. However, in
+earlier examples when matching jpg files are found beneath a pathname which does
+exist for ITEM-NUMBER we return for nth-value 1 a pathname which is relative to
+the directory containing the images. This difference is because the semantics
+for recovering a parent directory given a null pathname are such that this
+returns a meaningful pathname:~%
+ \(merge-pathnames \(make-pathname :name nil :type nil\)
+  #P\"/<BASE-IMAGE-DIRECTORY-PATHNAME>/<ITEM-NUMBER-DIR>/\"\)~%
+whereas this does not:~%
+ \(merge-pathnames \(make-pathname :name nil :type nil\)
+  #P\"/<BASE-IMAGE-DIRECTORY-PATHNAME>/\"\)~%~%")
+
+
 
 
 ;;; ==============================
