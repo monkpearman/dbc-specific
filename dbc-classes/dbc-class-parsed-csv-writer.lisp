@@ -80,7 +80,7 @@
            output-file))))))
 
 ;; `write-parsed-inventory-record-parse-table-to-csv-file'
-(defmacro def-parsed-class-write-csv-file (&key parsed-class
+(defmacro def-parsed-class-write-csv-file  (&key parsed-class
                                                 default-prefix-for-file-name
                                                 default-output-pathname-sub-directory
                                                 (default-output-pathname-base-directory
