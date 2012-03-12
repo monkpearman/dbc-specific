@@ -352,32 +352,103 @@
           (warn "~%Something wrong with arg OBJECT, declining to dump to file~%")
           nil))))
 
-;; (write-parsed-class-parse-table-to-file 
-;;  :parsed-class 'parsed-inventory-record
+;; (write-parsed-class-parse-table-to-file :parsed-class 'parsed-inventory-record :output-sub-directory "parsed-inventory-record")
+;; (write-parsed-class-parse-table-to-file :parsed-class 'parsed-inventory-record :hash-table *tt-hash* :output-sub-directory "parsed-inventory-record")
+;;  
 ;;  :output-file (merge-pathnames (make-pathname
 ;;                                 :directory '(:relative "parsed-xml-inventory-records")
 ;;                                 :name (mon:timestamp-for-file-with :prefix "inventory-record-table-dump" :universal-time t)
 ;;                                 :name (mon:timestamp-for-file-with :prefix "inventory-record-table-dump")
 ;;                                 :type "lisp")
 ;;                                (sub-path *xml-output-dir*)))
-(defun write-parsed-class-parse-table-to-file (&key parsed-class output-file)
-
-  (let ((frmt-cntl (print-sax-parsed-slots-padding-format-control (make-instance parsed-class)))
-        (parsed-hash (parsed-class-parse-table parsed-class)))
-    (unless (zerop (hash-table-count parsed-hash))
+(defun write-parsed-class-parse-table-to-file (&key parsed-class 
+                                                    hash-table
+                                                    output-sub-directory
+                                                    (base-output-directory 
+                                                     (merge-pathnames
+                                                      (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                                      (dbc::sub-path dbc::*xml-output-dir*)))
+                                                    (pathname-type "pctd"))
+  (declare (symbol parsed-class)
+           (type (or null hash-table) hash-table)
+           (type (or string (and list (not null))) output-sub-directory)
+           (mon:pathname-or-namestring base-output-directory))
+  (let* ((frmt-cntl (print-sax-parsed-slots-padding-format-control (make-instance parsed-class)))
+         (class-string-name (string-downcase (class-name (find-class parsed-class))))
+         (parsed-hash 
+           (or (and hash-table 
+                    (if (zerop (hash-table-count hash-table))
+                        (return-from write-parsed-class-parse-table-to-file (values nil hash-table))
+                        (or (and (loop 
+                                   for vals being the hash-values in hash-table
+                                   always (eql (type-of  vals) parsed-class))
+                                 (setf class-string-name (concatenate 'string "non-default-table-" class-string-name))
+                                 hash-table)
+                            (error ":FUNCTION `write-parsed-class-parse-table-to-file' -- arg hash-table contains value which is not a ~A"
+                                   class-string-name))))
+               (parsed-class-parse-table parsed-class)))
+         (output-file 
+           (if (zerop (hash-table-count parsed-hash))
+               (return-from write-parsed-class-parse-table-to-file (values nil hash-table))
+               (make-parsed-class-output-file-ensuring-pathname
+                :pathname-base-directory base-output-directory
+                :pathname-sub-directory `(,@(alexandria::ensure-list output-sub-directory))
+                :pathname-name class-string-name
+                :pathname-name-dated-p t
+                ;:pathname-type "lisp"))))
+                :pathname-type pathname-type))))
+    (when output-file
       (with-open-file (fl output-file
                           :direction :output
                           :if-exists :supersede
                           :if-does-not-exist :create
                           :element-type 'character
                           :external-format :UTF-8)
+        (format fl ";;; :CLASS `~A'~%;;; :FILE-CREATED ~A~%~%"
+                class-string-name
+                (local-time:format-timestring nil (local-time:now)))
         (loop 
-           for obj being the hash-values of (parsed-class-parse-table parsed-class)
-           do 
+          for obj being the hash-values of (parsed-class-parse-table parsed-class)
+          do 
              (print-sax-parsed-slots obj :stream fl :print-unbound nil :pre-padded-format-control frmt-cntl)
              (write-char #\Newline fl)
-             (write-char #\Newline fl))))))
-     
+             (write-char #\Newline fl))
+        output-file))))
+
+;; `write-parsed-inventory-record-parse-table-to-file'
+;; (macroexpand-1 
+;;  '(def-parsed-class-write-parse-table-to-file
+;;    :parsed-class parsed-inventory-record
+;;    :default-output-pathname-sub-directory "parsed-inventory-record"
+;;    :default-output-pathname-base-directory (merge-pathnames
+;;                                             (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+;;                                             (sub-path *xml-output-dir*))
+;;    :default-pathname-type "pctd"))
+(defmacro def-parsed-class-write-parse-table-to-file (&key parsed-class
+                                                           default-output-pathname-sub-directory
+                                                           (default-output-pathname-base-directory
+                                                            (merge-pathnames
+                                                             (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                                             (dbc::sub-path dbc::*xml-output-dir*)))
+                                                           (default-pathname-type "pctd"))
+                                                           
+  (let ((generated-name (alexandria:format-symbol (find-package "DBC")
+                                                  "~:@(WRITE-~A-PARSE-TABLE-TO-FILE~)"
+                                                  parsed-class)))
+    `(defun ,generated-name (&key hash-table
+                                  (output-sub-directory ,default-output-pathname-sub-directory)
+                                  (base-output-directory ,default-output-pathname-base-directory)
+                                  (pathname-type ,default-pathname-type))
+       (declare (type (or null hash-table) hash-table)
+                (type (or string (and list (not null))) output-sub-directory)
+                (mon:pathname-or-namestring base-output-directory)
+                (string pathname-type))
+       (write-parsed-class-parse-table-to-file :parsed-class ',parsed-class
+                                               :output-sub-directory  output-sub-directory
+                                               :base-output-directory base-output-directory
+                                               :pathname-type pathname-type))))
+
+
 ;; (print-sax-parsed-slots object :stream fl :print-unbound print-unbound :pre-padded-format-control calculate-padding)
 
 ;; :NOTE Now that we can dereference PARSED-CLASS as a key in `*parsed-class-parse-table*'
