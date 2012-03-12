@@ -325,6 +325,12 @@
 (defmethod parsed-class-parse-table ((object symbol))
   (parsed-class-parse-table (parsed-class-mapped object)))
 
+(defmethod parsed-class-table-lookup ((object symbol) hash-key)
+  (gethash hash-key (parsed-class-parse-table (parsed-class-mapped object))))
+
+(defmethod parsed-class-table-lookup ((object parsed-class) hash-key)
+  (gethash hash-key (parsed-class-parse-table (parsed-class-mapped object))))
+
 ;; (defgeneric (setf parsed-class-parse-table) (hash-table object))
 
 ;; (%parsed-class-parse-table-make-table)
