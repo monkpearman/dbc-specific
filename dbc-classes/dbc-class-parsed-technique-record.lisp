@@ -103,15 +103,15 @@
     :documentation ":ORIGINAL-FIELD \"default_pic\"")
    
    ;; this is the good one
-   (edit-date 
-    :initarg :edit-date
-    :accessor edit-date
+   (edit-timestamp 
+    :initarg :edit-timestamp
+    :accessor edit-timestamp
     :documentation ":ORIGINAL-FIELD \"date_edt\"")
    
    ;; IGNORABLE assuming date_edt is present and corresponds
-   (edit-date-origin
-    :initarg :edit-date-origin
-    :accessor edit-date-origin
+   (edit-timestamp-origin
+    :initarg :edit-timestamp-origin
+    :accessor edit-timestamp-origin
     :documentation ":ORIGINAL-FIELD \"date_edit\"")
        
    ;; IGNORABLE always 0
@@ -153,8 +153,8 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("variation_of"      . technique-entity-type-coref)
    ("notes"             . description-media-entity-technique-note)
    ("default_pic"       . image-default-id)
-   ("date_edt"          . edit-date)
-   ("date_edit"         . edit-date-origin)
+   ("date_edt"          . edit-timestamp)
+   ("date_edit"         . edit-timestamp-origin)
    ("online"            . record-status-active)
    ("user_name"         . edit-by)
    ("naf_creator"       . edit-by-creator)))
@@ -181,8 +181,8 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;;      ("notes"
 ;;       (setf (description-media-entity-technique-note object) field-value))
 ;;      ("default_pic" (setf (image-default-id object) field-value))
-;;      ("date_edt" (setf (edit-date object) field-value))
-;;      ("date_edit" (setf (edit-date-origin object) field-value))
+;;      ("date_edt" (setf (edit-timestamp object) field-value))
+;;      ("date_edit" (setf (edit-timestamp-origin object) field-value))
 ;;      ("online" (setf (record-status-active object) field-value))
 ;;      ("user_name" (setf (edit-by object) field-value))
 ;;      ("naf_creator" (setf (edit-by-creator object) field-value)))
@@ -205,8 +205,8 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
  "variation_of"      ;; technique-entity-type-coref
  "notes"             ;; description-technique-notes
  "default_pic"       ;; image-default-id
- "date_edt"          ;; edit-date              ;; this is the good one
- "date_edit"         ;; edit-date-origin       ;; IGNORABLE assuming date_edt is present and corresponds
+ "date_edt"          ;; edit-timestamp              ;; this is the good one
+ "date_edit"         ;; edit-timestamp-origin       ;; IGNORABLE assuming date_edt is present and corresponds
  "online"            ;; record-status-active   ;; IGNORABLE always 0
  "user_name"         ;; edit-by                ;; IGNORABLE always empty  
  "naf_creator"       ;; edit-by-creator        ;; IGNORABLE always empty
@@ -356,7 +356,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;;
 
 ;;; ==============================
-;; :FIELD "date_edt" :TRANSFORM edit-date
+;; :FIELD "date_edt" :TRANSFORM edit-timestamp
 ;;
 ;;         :TYPE "timestamp"
 ;;         :NULL-P "NO"
@@ -373,7 +373,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;;
 
 ;;; ==============================
-;; :FIELD "date_edit" :TRANSFORM edit-date-origin
+;; :FIELD "date_edit" :TRANSFORM edit-timestamp-origin
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"

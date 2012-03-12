@@ -170,15 +170,15 @@
     :documentation ":ORIGINAL-FIELD \"naf_creator\"")
 
    ;; shares-generic
-   (edit-date-origin ;; date_edt is the good one IGNORABLE assuming date_edit is present and corresponds.
-    :initarg :edit-date-origin
-    :accessor edit-date-origin
+   (edit-timestamp-origin ;; date_edt is the good one IGNORABLE assuming date_edit is present and corresponds.
+    :initarg :edit-timestamp-origin
+    :accessor edit-timestamp-origin
     :documentation ":ORIGINAL-FIELD \"date_edit\"")
 
    ;; shares-generic
-   (edit-date
-    :initarg :edit-date
-    :accessor edit-date
+   (edit-timestamp
+    :initarg :edit-timestamp
+    :accessor edit-timestamp
     :documentation ":ORIGINAL-FIELD \"date_edt\"")
 
    (ignorable-cancel-num
@@ -230,8 +230,8 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("online"            . record-status-active)
    ("user_name"         . edit-by)
    ("naf_creator"       . edit-by-creator)
-   ("date_edit"         . edit-date-origin)
-   ("date_edt"          . edit-date)
+   ("date_edit"         . edit-timestamp-origin)
+   ("date_edt"          . edit-timestamp)
    ("cancel_num"        . ignorable-cancel-num)
    ("special_note"      . ignorable-special-note)))
 
@@ -272,8 +272,8 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;;      ("online" (setf (record-status-active object) field-value))
 ;;      ("user_name" (setf (edit-by object) field-value))
 ;;      ("naf_creator" (setf (edit-by-creator object) field-value))
-;;      ("date_edit" (setf (edit-date-origin object) field-value))
-;;      ("date_edt" (setf (edit-date object) field-value))
+;;      ("date_edit" (setf (edit-timestamp-origin object) field-value))
+;;      ("date_edt" (setf (edit-timestamp object) field-value))
 ;;      ("cancel_num" (setf (ignorable-cancel-num object) field-value))
 ;;      ("special_note" (setf (ignorable-special-note object) field-value)))
 ;;    object))
@@ -353,8 +353,8 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;;    (record-status-active                                   . "online")
 ;;    (edit-by                                      . "user_name")
 ;;    (edit-by-creator                              . "naf_creator")
-;;    (edit-date-origin                             . "date_edit") ;; date_edt is the good one
-;;    (edit-date                                    . "date_edt")    
+;;    (edit-timestamp-origin                             . "date_edit") ;; date_edt is the good one
+;;    (edit-timestamp                                    . "date_edt")    
 ;;    (ignorable-cancel-num                         . "cancel_num")
 ;;    (ignorable-special-note                       . "special_note")))
 
@@ -403,8 +403,8 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;; "user_name"         ;; "edit-by"
 ;; "naf_creator"       ;; "edit-by-creator"
 ;;
-;; "date_edit"         ;; "edit-date-origin" ;; date_edt is the good one
-;; "date_edt"          ;; "edit-date"
+;; "date_edit"         ;; "edit-timestamp-origin" ;; date_edt is the good one
+;; "date_edt"          ;; "edit-timestamp"
 ;;
 ;; "cancel_num"        ;; "ignorable-cancel-num"
 ;; "special_note"      ;; "ignorable-special-note"
@@ -782,13 +782,13 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;;; ==============================
 ;;  :FIELD date_edt & name=date_edit 
 ;;
-;; :FIELD "date_edit"  :TRANSFORM edit-date-origin
+;; :FIELD "date_edit"  :TRANSFORM edit-timestamp-origin
 ;; :TYPE "varchar(255)" 
 ;;
 ;; :EXAMPLE-VALUES 
 ;;  "2008-08-3"
 ;;
-;; :FIELD "date_edt"  :TRANSFORM edit-date
+;; :FIELD "date_edt"  :TRANSFORM edit-timestamp
 ;; :TYPE "timestamp"
 ;;
 ;; :EXAMPLE-VALUES 

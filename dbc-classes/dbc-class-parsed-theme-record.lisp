@@ -63,9 +63,9 @@
     :documentation ":ORIGINAL-FIELD \"related_pic_num\"")
 
    ;; shares-generic
-   (edit-date
-    :initarg :edit-date
-    :accessor edit-date
+   (edit-timestamp
+    :initarg :edit-timestamp
+    :accessor edit-timestamp
     :documentation ":ORIGINAL-FIELD \"date_edit\"")
 
    (ignorable-subdivision-number
@@ -118,7 +118,7 @@
    ("active"             . record-status-active)
    ("display_pic"        . image-default-xref)
    ("related_pic_num"    . image-coref)
-   ("date_edit"          . edit-date)
+   ("date_edit"          . edit-timestamp)
    ("subdivision_number" . ignorable-subdivision-number)
    ("range"              . ignorable-range)
    ("RT"                 . ignorable-rt) ;; theme-entity-rt-coref
@@ -133,7 +133,7 @@
 ;; "active"             :TRANSFORM "record-status-active"
 ;; "display_pic"        :TRANSFORM "image-default-xref"
 ;; "related_pic_num"    :TRANSFORM "image-coref"
-;; "date_edit"          :TRANSFORM "edit-date"
+;; "date_edit"          :TRANSFORM "edit-timestamp"
 ;; "subdivision_number" :TRANSFORM ignorable-subdivision-number
 ;; "range"              :TRANSFORM ignorable-range
 ;; "RT"                 :TRANSFORM ignorable-rt  ;; theme-entity-rt-coref
@@ -264,7 +264,7 @@
 
 
 ;;; ==============================
-;; :FIELD "date_edit" :TRANSFORM "edit-date"
+;; :FIELD "date_edit" :TRANSFORM "edit-timestamp"
 ;;
 ;;         :TYPE "timestamp"
 ;;         :NULL-P "NO"

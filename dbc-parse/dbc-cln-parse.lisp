@@ -274,7 +274,7 @@
             ((stringp maybe-string)
              (if (string= maybe-string "0000-00-00 00:00:00")
                  (values nil nil nil maybe-string)
-                 (multiple-value-bind (matched values) (cl-ppcre:scan-to-strings edit-date-timestamp-regex maybe-string)
+                 (multiple-value-bind (matched values) (cl-ppcre:scan-to-strings edit-timestamp-regex maybe-string)
                    (unless matched (error "Can't parse ~s as a timestamp" maybe-string))
                    (let* ((encoded
                             (encode-universal-time  (parse-integer (aref values 5))

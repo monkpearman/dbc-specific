@@ -203,14 +203,14 @@ scanned-date
     :accessor record-status-active
     :documentation ":ORIGINAL-FIELD \"online\"")
 
-   (edit-date-origin
-    :initarg :edit-date-origin
-    :accessor edit-date-origin
+   (edit-timestamp-origin
+    :initarg :edit-timestamp-origin
+    :accessor edit-timestamp-origin
     :documentation ":ORIGINAL-FIELD \"date_edit\"")
 
-   (edit-date
-    :initarg :edit-date
-    :accessor edit-date
+   (edit-timestamp
+    :initarg :edit-timestamp
+    :accessor edit-timestamp
     :documentation ":ORIGINAL-FIELD \"date_edt\"")
 
 
@@ -257,8 +257,8 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("default_pic"        . image-default-id)
    ("print_default_pic"  . image-default-xref)
    ("online"             . record-status-active)
-   ("date_edit"          . edit-date-origin)
-   ("date_edt"           . edit-date)
+   ("date_edit"          . edit-timestamp-origin)
+   ("date_edt"           . edit-timestamp)
    ("user_name"          . edit-by)
    ("naf_creator"        . edit-by-creator)))
 
@@ -300,8 +300,8 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;;      ("default_pic" (setf (image-default-id object) field-value))
 ;;      ("print_default_pic" (setf (image-default-xref object) field-value))
 ;;      ("online" (setf (record-status-active object) field-value))
-;;      ("date_edit" (setf (edit-date-origin object) field-value))
-;;      ("date_edt" (setf (edit-date object) field-value))
+;;      ("date_edit" (setf (edit-timestamp-origin object) field-value))
+;;      ("date_edt" (setf (edit-timestamp object) field-value))
 ;;      ("user_name" (setf (edit-by object) field-value))
 ;;      ("naf_creator" (setf (edit-by-creator object) field-value)))
 ;;    object))
@@ -338,8 +338,8 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;; "print_default_pic"    ;; "image-default-xref"
 ;;
 ;; "online"               ;; "record-status-active"
-;; "date_edit"            ;; "edit-date-origin"
-;; "date_edt"             ;; "edit-date"
+;; "date_edit"            ;; "edit-timestamp-origin"
+;; "date_edt"             ;; "edit-timestamp"
 ;;
 ;; "user_name"            ;; "edit-by"
 ;; "naf_creator"          ;; "edit-by-creator"
@@ -709,7 +709,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;;
 
 ;;; ==============================
-;; :FIELD "date_edit" :TRANSFORM edit-date-origin
+;; :FIELD "date_edit" :TRANSFORM edit-timestamp-origin
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -724,7 +724,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;;
 
 ;;; ==============================
-;; :FIELD "date_edt" :TRANSFORM edit-date
+;; :FIELD "date_edt" :TRANSFORM edit-timestamp
 ;;
 ;;         :TYPE "timestamp"
 ;;         :NULL-P "NO"

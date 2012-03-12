@@ -95,9 +95,9 @@
     :accessor image-default-xref
     :documentation ":ORIGINAL-FIELD \"print_default_pic\"")
 
-   (edit-date-origin
-    :initarg :edit-date-origin
-    :accessor edit-date-origin
+   (edit-timestamp-origin
+    :initarg :edit-timestamp-origin
+    :accessor edit-timestamp-origin
     :documentation ":ORIGINAL-FIELD \"date_edit\"")
 
    (edit-by
@@ -110,9 +110,9 @@
     :accessor edit-by-creator
     :documentation ":ORIGINAL-FIELD \"naf_creator\"")
 
-   (edit-date
-    :initarg :edit-date
-    :accessor edit-date
+   (edit-timestamp
+    :initarg :edit-timestamp
+    :accessor edit-timestamp
     :documentation ":ORIGINAL-FIELD \"date_edt\"")
    )
   (:documentation #.(format nil
@@ -137,7 +137,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("death_location"    . location-death)
    ("role"              . naf-entity-role-appearance-coref)
    ("gender"            . naf-entity-gender-type)
-   ("date_edit"         . edit-date-origin)
+   ("date_edit"         . edit-timestamp-origin)
    ("notes"             . description-person-note-general)
    ("used_for"          . naf-entity-person-display-name-coref)
    ("default_pic"       . image-default-id )
@@ -147,7 +147,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("user_name"         . edit-by)
    ("naf_creator"       . edit-by-creator)
    ("online"            . record-status-active)
-   ("date_edt"          . edit-date)))
+   ("date_edt"          . edit-timestamp)))
 
 ;; :NOTE fields appearing in class `parsed-artist-record' but not in class `parsed-person-record'
 ;; ("date_born"         . birth-date)
@@ -179,7 +179,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;;      ("death_location" (setf (location-death object) field-value))
 ;;      ("role" (setf (naf-entity-role-appearance-coref object) field-value))
 ;;      ("gender" (setf (naf-entity-gender-type object) field-value))
-;;      ("date_edit" (setf (edit-date-origin object) field-value))
+;;      ("date_edit" (setf (edit-timestamp-origin object) field-value))
 ;;      ("notes" (setf (description-person-note-general object) field-value))
 ;;      ("used_for"
 ;;       (setf (naf-entity-person-display-name-coref object) field-value))
@@ -190,7 +190,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;;      ("user_name" (setf (edit-by object) field-value))
 ;;      ("naf_creator" (setf (edit-by-creator object) field-value))
 ;;      ("online" (setf (record-status-active object) field-value))
-;;      ("date_edt" (setf (edit-date object) field-value)))
+;;      ("date_edt" (setf (edit-timestamp object) field-value)))
 ;;    object))
 
 ;;; ==============================

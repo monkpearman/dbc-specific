@@ -112,14 +112,14 @@
     :accessor edit-by-creator
     :documentation ":ORIGINAL-FIELD \"naf_creator\"")
 
-   (edit-date-origin
-    :initarg :edit-date-origin
-    :accessor edit-date-origin
+   (edit-timestamp-origin
+    :initarg :edit-timestamp-origin
+    :accessor edit-timestamp-origin
     :documentation ":ORIGINAL-FIELD \"date_edit\"")
 
-   (edit-date
-    :initarg :edit-date
-    :accessor edit-date
+   (edit-timestamp
+    :initarg :edit-timestamp
+    :accessor edit-timestamp
     :documentation ":ORIGINAL-FIELD \"date_edt\""))
 
   (:documentation
@@ -149,8 +149,8 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("online"             . record-status-active)
    ("user_name"          . edit-by)
    ("naf_creator"        . edit-by-creator)
-   ("date_edit"          . edit-date-origin)
-   ("date_edt"           . edit-date)
+   ("date_edit"          . edit-timestamp-origin)
+   ("date_edt"           . edit-timestamp)
    ))
 
 

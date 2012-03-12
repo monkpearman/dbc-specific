@@ -184,7 +184,7 @@
 ;; automagically at class defininition time and by extensio would give us
 ;; greater control over the method dispatch on the subclasses of the class `parsed-class'.
 ;; So, for example certain slots will have generic functions shared over many different subclasses, e.g.:
-;; `edit-date-origin' `edit-date'
+;; `edit-timestamp-origin' `edit-timestamp'
 ;; `naf-entity-person-coref' `naf-entity-artist-coref'
 ;; `naf-entity-author-coref' `naf-entity-brand-coref'
 ;; `naf-entity-publication-coref'

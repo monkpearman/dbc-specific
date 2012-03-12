@@ -114,14 +114,14 @@
     :accessor edit-by-creator
     :documentation ":ORIGINAL-FIELD \"naf_creator\"")
 
-   (edit-date
-    :initarg :edit-date
-    :accessor edit-date
+   (edit-timestamp
+    :initarg :edit-timestamp
+    :accessor edit-timestamp
     :documentation ":ORIGINAL-FIELD \"date_edt\"")
 
-   (edit-date-origin
-    :initarg :edit-date-origin
-    :accessor edit-date-origin
+   (edit-timestamp-origin
+    :initarg :edit-timestamp-origin
+    :accessor edit-timestamp-origin
     :documentation ":ORIGINAL-FIELD \"date_edit\""))
   (:documentation
    #.(format nil
@@ -144,7 +144,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("death_location"    . location-death)
    ("books_assoc"       . naf-entity-publication-coref)
    ("gender"            . naf-entity-gender-type)
-   ("date_edit"         . edit-date-origin)
+   ("date_edit"         . edit-timestamp-origin)
    ("notes"             . description-author-note-general)
    ("print_default_pic" . image-default-xref)
    ("default_pic"       . image-default-id)
@@ -153,7 +153,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("user_name"         . edit-by)
    ("naf_creator"       . edit-by-creator)
    ("online"            . record-status-active)
-   ("date_edt"          . edit-date)))
+   ("date_edt"          . edit-timestamp)))
 
 ;; :NOTE `set-parsed-inventory-record-slot-value' is defined in loadtime-bind.lisp
 ;; (def-set-parsed-class-record-slot-value 

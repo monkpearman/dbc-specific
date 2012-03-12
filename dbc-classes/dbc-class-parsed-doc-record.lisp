@@ -43,8 +43,8 @@
    ("c6"           . category-entity-6-coref)
    ("user"         . edit-by-creator) ;; stan | constance 
    ("on_line"      . record-status-active) ;; 1 | 0 | null
-   ("date_edit"    . edit-date-origin) ;; 
-   ("date_edt"     . edit-date) ;; the good one
+   ("date_edit"    . edit-timestamp-origin) ;; 
+   ("date_edt"     . edit-timestamp) ;; the good one
    ))
 
 
@@ -582,7 +582,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "date_edit" :TRANSFORM  edit-date-origin
+;; :FIELD "date_edit" :TRANSFORM  edit-timestamp-origin
 ;;
 ;;         :TYPE "varchar(50)"
 ;;         :NULL-P "NO"

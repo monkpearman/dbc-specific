@@ -375,16 +375,16 @@
 
    ;; shares-generic   
    ;; :TODO this should be edit-timestamp-origin
-   (edit-date-origin ;; IGNORABLE assuming date_edit is present and corresponds.
-    :initarg :edit-date-origin
-    :accessor edit-date-origin
+   (edit-timestamp-origin ;; IGNORABLE assuming date_edit is present and corresponds.
+    :initarg :edit-timestamp-origin
+    :accessor edit-timestamp-origin
     :documentation ":ORIGINAL-FIELD \"date\"")
 
    ;; shares-generic
    ;; :TODO This should be edit-timestamp to differentiate from publication-date, death-date, birth-date, etc.
-   (edit-date 
-    :initarg :edit-date
-    :accessor edit-date
+   (edit-timestamp 
+    :initarg :edit-timestamp
+    :accessor edit-timestamp
     :documentation ":ORIGINAL-FIELD \"date_edit\"")
 
    (edit-history
@@ -507,8 +507,8 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("seo_title"         . description-inventory-seo-title)
    ("description_seo"   . description-inventory-seo)
    ("keywords_seo"      . keywords-seo)
-   ("date"              . edit-date-origin)
-   ("date_edit"         . edit-date)
+   ("date"              . edit-timestamp-origin)
+   ("date_edit"         . edit-timestamp)
    ("edit_history"      . edit-history))
  )
 
@@ -618,14 +618,14 @@ This function should only be used for instantiating instances created _outside_ 
   with change-count = 0
   with null-count = 0
   for obj being the hash-values in *tt-hash*
-  for date = (edit-date obj)
+  for date = (edit-timestamp obj)
   for date-convert = (field-convert-timestamp date)
   if date-convert 
     do (incf change-count)
-       (setf (edit-date obj) date-convert)
+       (setf (edit-timestamp obj) date-convert)
   else
     do (incf null-count)
-       (setf (edit-date obj) date-convert)
+       (setf (edit-timestamp obj) date-convert)
   finally (return (list change-count null-count)))
 => (2698 6271)
 
@@ -806,9 +806,9 @@ This function should only be used for instantiating instances created _outside_ 
 ;;      ("keywords_seo"
 ;;       (setf (keywords-seo object) field-value))
 ;;      ("date"
-;;       (setf (edit-date-origin object) field-value))
+;;       (setf (edit-timestamp-origin object) field-value))
 ;;      ("date_edit"
-;;       (setf (edit-date object) field-value))
+;;       (setf (edit-timestamp object) field-value))
 ;;      ("edit_history"
 ;;       (setf (edit-history object) field-value)))
 ;;    object))
@@ -971,8 +971,8 @@ This function should only be used for instantiating instances created _outside_ 
 ;;  "description_seo"  ;; description-inventory-seo
 ;;  "keywords_seo"     ;; keywords-seo
 ;;
-;;  "date"             ;; edit-date-origin  ;; IGNORABLE assuming date_edit is present and corresponds 
-;;  "date_edit"        ;; edit-date
+;;  "date"             ;; edit-timestamp-origin  ;; IGNORABLE assuming date_edit is present and corresponds 
+;;  "date_edit"        ;; edit-timestamp
 ;;  "edit_history      ;; edit-history
 ;;  ")
 ;;
@@ -1314,7 +1314,7 @@ This function should only be used for instantiating instances created _outside_ 
 
 
 ;;; ==============================
-;; :FIELD "date" :TRANSFORM edit-date-origin
+;; :FIELD "date" :TRANSFORM edit-timestamp-origin
 ;;
 ;;         :TYPE "varchar(100)"
 ;;         :NULL-P "NO"
@@ -1326,7 +1326,7 @@ This function should only be used for instantiating instances created _outside_ 
 ;;  "date" 
 ;;  "0"
 ;;
-;; - Following appears to be the _original_ edit-date field. 
+;; - Following appears to be the _original_ edit-timestamp field. 
 ;;    AFAICT all occurences are circa 2004 e.g.
 ;;   occurence for entire file:
 ;;   "20040811125434" 
@@ -2479,7 +2479,7 @@ This function should only be used for instantiating instances created _outside_ 
 ;;   Use `field-convert-1-0-x'
 
 ;;; ==============================
-;; :FIELD "date_edit" :TRANSFORM edit-date 
+;; :FIELD "date_edit" :TRANSFORM edit-timestamp 
 ;;
 ;;         :TYPE "timestamp"
 ;;         :NULL-P "NO"

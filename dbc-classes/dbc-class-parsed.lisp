@@ -31,8 +31,8 @@
 ;; `record-status-active'          -> `record-status-active'         ; parsed-class
 ;; `edit-by'                       -> `edit-by'                      ; parsed-class
 ;; `edit-by-creator'               -> `edit-by-creator'              ; parsed-class
-;; `edit-date-origin'              -> `edit-date-origin'             ; parsed-class
-;; `edit-date'                     -> `edit-date'                    ; parsed-class
+;; `edit-timestamp-origin'              -> `edit-timestamp-origin'             ; parsed-class
+;; `edit-timestamp'                     -> `edit-timestamp'                    ; parsed-class
 ;;
 
 ;; `control-id-display-name-for-entity-type' -> | `control-id-display-artist'       ; parsed-naf-entity
@@ -122,11 +122,11 @@
 (defgeneric edit-by-creator (object))
 (defgeneric (setf edit-by-creator) (creator-value object))
 
-(defgeneric edit-date-origin (object))
-(defgeneric (setf edit-date-origin) (date-value object))
+(defgeneric edit-timestamp-origin (object))
+(defgeneric (setf edit-timestamp-origin) (date-value object))
 
-(defgeneric edit-date (object))
-(defgeneric (setf edit-date) (date-value object))
+(defgeneric edit-timestamp (object))
+(defgeneric (setf edit-timestamp) (date-value object))
 
 (defgeneric naf-entity-gender-type (object))
 (defgeneric (setf naf-entity-gender-type) (gender-type object))
