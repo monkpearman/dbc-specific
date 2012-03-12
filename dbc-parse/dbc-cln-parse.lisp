@@ -259,6 +259,41 @@
                (values nil string-field-maybe)))))
     (values string-field-maybe (type-of string-field-maybe))))
 
+;; (field-convert-edit-timestamp "")
+;; (field-convert-edit-timestamp "  ")
+;; (field-convert-edit-timestamp "0000-00-00 00:00:00")
+;; (field-convert-edit-timestamp "2009-01-27 22:00:31")
+;; following errors successfully:
+;; (field-convert-edit-timestamp " _")
+(let ((edit-timestamp-regex 
+        (cl-ppcre:create-scanner "^([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2})$")))
+  (defun field-convert-edit-timestamp (maybe-timestamp)
+    (multiple-value-bind (maybe-string of-type) (field-convert-verify-string maybe-timestamp)
+      (cond ((null maybe-string) 
+             (values nil nil nil of-type))
+            ((stringp maybe-string)
+             (if (string= maybe-string "0000-00-00 00:00:00")
+                 (values nil nil nil maybe-string)
+                 (multiple-value-bind (matched values) (cl-ppcre:scan-to-strings edit-date-timestamp-regex maybe-string)
+                   (unless matched (error "Can't parse ~s as a timestamp" maybe-string))
+                   (let* ((encoded
+                            (encode-universal-time  (parse-integer (aref values 5))
+                                                    (parse-integer (aref values 4))
+                                                    (parse-integer (aref values 3))
+                                                    (parse-integer (aref values 2))
+                                                    (parse-integer (aref values 1))
+                                                    (parse-integer (aref values 0))))
+                          (lt-timestamp (local-time:universal-to-timestamp encoded))
+                          (lt-timestamp-string (princ-to-string lt-timestamp)))
+                     (values 
+                      lt-timestamp-string
+                      lt-timestamp
+                      encoded
+                      maybe-string)))))))))
+
+;;(defun %field-convert-timestamp-edit-timestamp-origin ()
+;; (gethash "5512" *tt-hash*)
+
 (declaim (inline field-convert-remove-duplicates))
 (defun field-convert-remove-duplicates (string-list-maybe)
   (declare (optimize (speed 3)))
@@ -281,6 +316,8 @@
        (delete-duplicates str-lst-trans :test #'string= :from-end t) 
        ;; (remove-duplicates str-lst-trans :test #'string=) 
        string-list-maybe))))
+
+
  
 ;;; ==============================
 ;;
