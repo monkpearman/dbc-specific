@@ -108,15 +108,7 @@
                                                    :base-output-directory base-output-directory
                                                    :filtering-slot-list   filtering-slot-list
                                                    :slot-header-case      slot-header-case))))
-(def-parsed-class-write-csv-file
-    :parsed-class parsed-inventory-record
-  :default-prefix-for-file-name "inventory-records"
-  :default-output-pathname-sub-directory "parsed-csv-inventory-records"
-  :default-output-pathname-base-directory (merge-pathnames
-                                           (make-pathname :directory '(:relative "parsed-csv-records"))
-                                           (dbc::sub-path dbc::*xml-output-dir*)))
 
-;; (write-parsed-inventory-record-parse-table-to-csv-file)
 
 ;;; ==============================
 

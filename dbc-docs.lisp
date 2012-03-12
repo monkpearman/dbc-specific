@@ -1166,20 +1166,29 @@ keyword OUTPUT-PATHNAME-NAME of `write-sax-parsed-xml-to-file' and the
 keyword OUTPUT-PATHNAME-SUB-DIRECTORY of `make-parsed-class-output-file-ensuring-pathname'.~%~@
 
 :EXAMPLE~%~@
- \(def-parsed-class-record-xml-dump-file-and-hash 
-    :parsed-class parsed-inventory-sales-order-record
-    :default-key-accessor order-number
-    :default-input-pathname-name \"orders-xml\"
-    :default-output-pathname-base-directory \(sub-path *xml-output-dir*\)
-    :default-output-pathname-sub-directory \(\"parsed-xml-inventory-sales-order-records\"\)
-    :default-output-pathname-name \"order-records\"\)~%~@
+ \(macroexpand-1
+  '\(def-parsed-class-record-xml-dump-file-and-hash 
+      :parsed-class parsed-inventory-sales-order-record
+      :default-key-accessor order-number
+      :default-input-pathname-name \"orders-xml\"
+      :default-output-pathname-base-directory \(sub-path *xml-output-dir*\)
+      :default-output-pathname-sub-directory \(\"parsed-xml-inventory-sales-order-records\"\)
+      :default-output-pathname-name \"order-records\"\)\)~%~@
 
 :SEE-ALSO `print-sax-parsed-slots', `write-sax-parsed-slots-to-file',
 `write-sax-parsed-class-hash-to-files', `write-parsed-class-parse-table-to-file'.~%▶▶▶")
 
-(fundoc 'parsed-inventory-record-load-default-parsed-file-to-hash 
-        "Load slots of class inventory-record to parsed-class-parse-table from most recent parsed file.~%~@
+(fundoc 'parsed-inventory-record-load-default-parsed-file-to-hash
+        "Load slots of class parsed-inventory-record to its parsed-class-parse-table from most recent dump file.~%~@
+Loads file written with `write-parsed-inventory-record-parse-table-to-file'
+which have the `cl:pathname-type' \"pctd\".~%~@
 Signal an error if the parsed file or its containing directory can not be found.~%~@
+:NOTE This functionality is distinct from that of
+`load-sax-parsed-xml-file-to-parsed-class-hash' which loads the contents of a
+parsed XML file where each record is an alist with each element of the alist a
+mapping from a string to a slot-value where each string is a valid argument to
+`set-parsed-inventory-record-slot-value' and identifies an SQL table-column with
+a corresponding slot-name.~%~@
 :SEE-ALSO `parsed-inventory-record-xml-dump-file-and-hash',
 `load-sax-parsed-xml-file-to-parsed-class-hash',
 `write-sax-parsed-slots-to-file', `write-parsed-class-parse-table-to-file'.~%▶▶▶")
@@ -1202,19 +1211,72 @@ Return value is a list of the `cl:file-namestring's of each file written.~%~@
 `write-sax-parsed-inventory-record-hash-to-zero-padded-directory',.~%▶▶▶")
 
 (fundoc 'write-parsed-class-parse-table-to-file
-        "Ouput as if by `write-sax-parsed-slots-to-file' but instead of writing an individual file
-per object dumps the contents of a populated parsed-class-parse-table for
-PARSED-CLASS to one file such that the each object in the hash-table is written
+        "Ouput as if by `write-sax-parsed-slots-to-file', but instead of writing an individual file
+per object, dump the contents of a populated parsed-class-parse-table for
+PARSED-CLASS to a single file such that the each object in the hash-table is written
 as a plist of key/value pairs where each key is a keyword corresponding to a
 slot-initarg for PARSED-CLASS.~%~@
 :NOTE As compared to output of `write-sax-parsed-xml-to-file' there is an increase in
 the overall size of the file written because each object contains a dedicated
 plist of key/value pairs, so we are trading file size for human readability.~%~@
-:EXAMPLE~%~@
+PARSED-CLASS is a symbol designating a subclass of parsed-class.~%~@
+HASH-TABLE is a hash-table the hash-values of which are instance of PARSED-CASS.
+When ommitted hash-table defaults to the return value of
+`parsed-class-parse-table' for PARSED-CLASS. If provided each hash-value of
+HASH-TABLE must be an instance of PARSED-CLASS, an error is signaled if not.~%~@
+OUTPUT-SUB-DIRECTORY is a string or list of strings identifying any relative
+pathname directory components beneath BASE-OUTPUT-DIRECTORY.~%~@
+BASE-OUTPUT-DIRECTORY is a pathname designating the base directory beneath which
+to write the file. It is merged with OUTPUT-SUB-DIRECTORY to generate directory
+for the output file to be written. BASE-OUTPUT-DIRECTORY must satisfy
+`cl:probe-file', an error is signaled if not.%~@
+PATHNAME-TYPE is a string designating a cl:pathname-type. Default is \"pctd\".~%~@
+:EXAMPLE~%
  { ... <EXAMPLE> ... } ~%~@
+:NOTE The intendended functionality is different from
+`write-sax-parsed-slots-to-file' in that where that function transforms an SQL
+xml file to a lispy file for immediate loading to a hash-table this function is
+intented to dump the contents of that hash-table subesequent to any editing of
+the slot-values of the parsed-class such that we can persist the changes to a
+lispy format and are not required to contintually parse the XML file and
+therefor do not need to synchornize any changes made to the hash-table back to
+the parsed-class' sql XML file.~%~@
 :SEE-ALSO `write-sax-parsed-class-hash-to-files', `write-sax-parsed-slots-to-file',
 `write-sax-parsed-xml-file', `parsed-inventory-record-xml-dump-file-and-hash',
 `load-sax-parsed-xml-file-to-parsed-class-hash'.~%▶▶▶")
+
+(fundoc 'def-parsed-class-write-parse-table-to-file
+        "Return a function for writing contents of a `parsed-class-parse-table' to file as
+if by `write-parsed-class-parse-table-to-file'.~%~@
+DEFAULT-OUTPUT-PATHNAME-SUB-DIRECTORY is a string or list of strings identifying any relative
+pathname directory components beneath DEFAULT-OUTPUT-PATHNAME-BASE-DIRECTORY. 
+It is used as the default value for the OUTPUT-SUB-DIRECTORY parameter of the
+returned function.~%~@
+DEFAULT-OUTPUT-PATHNAME-BASE-DIRECTORY is a pathname identifying any relative
+pathname directory components beneath DEFAULT-OUTPUT-PATHNAME-BASE-DIRECTORY.~%~@
+DEFAULT-OUTPUT-PATHNAME-BASE-DIRECTORY is a pathname designating the base
+directory beneath which to write the file. It is used as the default value for
+the BASE-OUTPUT-DIRECTORY parameter of the returned function and will be merged
+with the OUTPUT-SUB-DIRECTORY parameter of the returned function when generating
+a directory pathname for its output file.~%~@
+DEFAULT-PATHNAME-TYPE is a string designating what the the default
+`cl:pathname-type' parameter will be for the returned function. Default is \"pctd\".~%~@
+Return function has a `cl:symbol-name' with the format:~%
+ WRITE-<PARSED-CLASS>-PARSE-TABLE-TO-FILE~%~@
+For example, if argument for PARSED-CLASS is parsed-inventory-record the
+returned function is `write-parsed-inventory-record-parse-table-to-file'.~%~@
+:EXAMPLE~%
+ \(macroexpand-1 
+  '\(def-parsed-class-write-parse-table-to-file
+    :parsed-class parsed-inventory-record
+    :default-output-pathname-sub-directory \"parsed-inventory-record\"
+    :default-output-pathname-base-directory \(merge-pathnames
+                                             \(make-pathname :directory '\(:relative \"parsed-class-table-dumps\"\)\)
+                                             \(sub-path *xml-output-dir*\)\)
+    :default-pathname-type \"pctd\"\)\)~%~@
+:SEE-ALSO `def-parsed-class-record-xml-dump-file-and-hash',
+`def-parsed-class-write-csv-file'.~%▶▶▶")
+
 
 
 ;;; ==============================

@@ -648,7 +648,7 @@
 ;;
 ;; (equal "ABC" "abc")
 ;; (equal (cons "a" nil) (list "a"))
-;;
+
 ;; :NOTE documented in dbc-specific/dbc-docs.lisp
 (defmacro def-parsed-class-record-xml-dump-file-and-hash (&key parsed-class
                                                           default-key-accessor
@@ -712,10 +712,6 @@
 
 ;; (parsed-class-parse-table 'parsed-inventory-sales-sold-in-store-record)
 ;; 981
-
- 
-          
-          
 
 
 ;; Next we need to map the hash-table values and for each object and each slot

@@ -92,6 +92,8 @@
 (defgeneric parsed-class-parse-table (object))
 (defgeneric (setf parsed-class-parse-table) (hash-table object))
 
+(defgeneric parsed-class-table-lookup (parsed-class hash-key))
+
 ;; These are common to class `parsed-class' and its subclasses
 (defgeneric naf-entity-author-coref (object))
 (defgeneric (setf naf-entity-author-coref) (coref-value object))

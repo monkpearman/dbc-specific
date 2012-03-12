@@ -381,15 +381,15 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
 ;; make-parsed-class-output-directory-ensuring-pathname
 ;; make-parsed-class-output-file-ensuring-pathname make-parsed-class-output-file-ensuring-pathname
 (defun make-parsed-class-output-file-ensuring-pathname (&key (pathname-name "parsed-xml")
-                                                         (pathname-name-dated-p t)
-                                                         (pathname-type "lisp")
-                                                         (pathname-sub-directory  (sub-name *xml-output-dir*))
-                                                         (pathname-base-directory (system-base-path *system-path*)))
+                                                             (pathname-name-dated-p t)
+                                                             (pathname-type "lisp")
+                                                             (pathname-sub-directory  (sub-name *xml-output-dir*))
+                                                             (pathname-base-directory (system-base-path *system-path*)))
   (declare ((or string list) pathname-sub-directory)
            (string pathname-name)
            (mon:pathname-or-namestring pathname-base-directory))
   (let ((sub-dir-ensured (make-parsed-class-output-directory-ensuring-pathname :pathname-sub-directory pathname-sub-directory
-                                                                      :pathname-base-directory pathname-base-directory)))
+                                                                               :pathname-base-directory pathname-base-directory)))
     (merge-pathnames (make-pathname :name (if pathname-name-dated-p 
                                               (%make-dated-parse-output-prefix-for-pathname pathname-name)
                                               (%make-parsed-output-trimmed-pathname pathname-name))
