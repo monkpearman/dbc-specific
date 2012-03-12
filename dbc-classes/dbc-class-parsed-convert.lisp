@@ -148,14 +148,15 @@
                       :element-type 'character
                       :external-format :UTF-8)
     (loop
-       for x = (read fl nil 'EOF)
-       until (eql x 'EOF)
-       do (loop 
-             with obj = (make-instance parsed-class)
-             for (field . val) in x
-             do (funcall slot-dispatch-function field val obj)
-             finally (setf (gethash (funcall key-accessor obj) hash-table) obj))
-       finally (return (values hash-table (hash-table-count hash-table))))))
+      for x = (read fl nil 'EOF)
+      until (eql x 'EOF)
+      do (and x ;; paranoia in case for some reason x was the empty list.
+              (loop 
+                with obj = (make-instance parsed-class)
+                for (field . val) in x
+                do (funcall slot-dispatch-function field val obj)
+                finally (setf (gethash (funcall key-accessor obj) hash-table) obj)))
+      finally (return (values hash-table (hash-table-count hash-table))))))
 
 ;; :EXAMPLE
 ;; (dbc::%print-sax-parsed-slots-calculate-padding-for-format-control-using-plist-keys '())
@@ -448,6 +449,87 @@
                                                :base-output-directory base-output-directory
                                                :pathname-type pathname-type))))
 
+(defun load-parsed-class-default-file-to-hash-table (&key parsed-class
+                                                          input-file
+                                                          hash-table ; (parsed-class-parse-table parsed-class)
+                                                          key-accessor)
+  (with-open-file (fl input-file
+                      :direction :input 
+                      :element-type 'character
+                      :external-format :UTF-8)
+    (loop
+      for x = (read fl nil 'EOF)
+      until (eql x 'EOF)
+      do (let ((obj (and x ;; paranoia in case x was the empty list.
+                         (apply #'make-instance parsed-class x))))
+           (and obj
+                (setf (gethash (funcall key-accessor obj) hash-table) obj)))
+      finally (return (values hash-table (hash-table-count hash-table))))))
+
+;; (macroexpand-1
+;;       '(def-parsed-class-load-default-parsed-file-to-hash 
+;;         :parsed-class parsed-inventory-record
+;;         :default-key-accessor inventory-number
+;;         :default-input-pathname-sub-directory "parsed-inventory-record"
+;;         :default-input-pathname-base-directory (default-input-pathname-base-directory
+;;                                                 (merge-pathnames
+;;                                                  (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+;;                                                  (dbc::sub-path dbc::*xml-output-dir*)))
+;;         :default-pathname-type "pctd"))
+(defmacro def-parsed-class-load-default-parsed-file-to-hash (&key parsed-class
+
+                                                                  ;; default-hash-table
+                                                                  default-input-pathname-sub-directory
+                                                                  (default-input-pathname-base-directory
+                                                                   (merge-pathnames
+                                                                    (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                                                    (dbc::sub-path dbc::*xml-output-dir*)))
+                                                                  (default-pathname-type "pctd"))
+
+  (let ((generated-name (alexandria:format-symbol (find-package "DBC")
+                                                  "~:@(LOAD-~A-DEFAULT-FILE-TO-PARSE-TABLE~)"
+                                                  parsed-class)))
+    `(let ((parsed-class-wild-pathname-pattern 
+             ;; regex matching pathname-names with the format "<parsed-class>-YYYY-MM-DDTHHSSMM"            
+             (cl-ppcre:create-scanner
+              (format nil "^~(~A~)-2[0-9]{3}?-[0-9]{2}?-[0-9]{2}?T[0-9]{6}?$" ',parsed-class))))
+       (defun ,generated-name (&key (key-accessor ,default-key-accessor)
+                                    (clear-existing-table nil)
+                                    (input-sub-directory ,default-input-pathname-sub-directory)
+                                    (base-input-directory ,default-input-pathname-base-directory)
+                                    (input-pathname-type ,default-pathname-type))
+         (declare (boolean clear-existing-table))
+         (let* ((maybe-wild-pathname 
+                  (merge-pathnames (make-pathname :name :wild 
+                                                  :type input-pathname-type)
+                                   (or (probe-file (merge-pathnames 
+                                                    (make-pathname :directory `(:relative ,@(alexandria::ensure-list input-sub-directory)))
+                                                    base-input-directory))
+                                       (error ":FUNCTION `~S'~% -- did not find suitable directory containing parsed-table-dump-file"
+                                              ,generated-name))))
+                (maybe-find-wilds 
+                  (directory maybe-wild-pathname))
+                ;; (parsed-class-wild-pathname-pattern 
+                ;;   ;; regex matching pathname-names with the format "<parsed-class>-YYYY-MM-DDTHHSSMM"            
+                ;;   (format nil "^~(~A~)-2[0-9]{3}?-[0-9]{2}?-[0-9]{2}?T[0-9]{6}?$" ',parsed-class))
+                (most-recent-parse-file
+                  (or (and maybe-find-wilds
+                           (car (sort 
+                                 (delete-if-not #'(lambda (x) (cl-ppcre:scan parsed-class-wild-pathname-pattern x))
+                                                maybe-find-wilds
+                                                :key #'pathname-name)
+                                 #'string>
+                                 :key #'pathname-name)))
+                      (error ":FUNCTION `~S'~% -- did not find suitable parsed file beneath directory:~% ~S"
+                             ,generated-name
+                             (pathname (directory-namestring maybe-wild-pathname))))))
+           (when most-recent-parse-file
+             (let ((table (parsed-class-parse-table ',parsed-class)))
+               (and clear-existing-table (clrhash table))
+               (load-parsed-class-default-file-to-hash-table :parsed-class ',parsed-class
+                                                             :input-file most-recent-parse-file
+                                                             :hash-table table
+                                                             :key-accessor key-accessor))))))))
 
 ;; (print-sax-parsed-slots object :stream fl :print-unbound print-unbound :pre-padded-format-control calculate-padding)
 

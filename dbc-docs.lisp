@@ -1274,6 +1274,37 @@ returned function is `write-parsed-inventory-record-parse-table-to-file'.~%~@
                                              \(make-pathname :directory '\(:relative \"parsed-class-table-dumps\"\)\)
                                              \(sub-path *xml-output-dir*\)\)
     :default-pathname-type \"pctd\"\)\)~%~@
+:SEE-ALSO `def-parsed-class-load-default-parsed-file-to-hash',
+`def-parsed-class-record-xml-dump-file-and-hash',
+`def-parsed-class-write-csv-file'.~%▶▶▶")
+
+(fundoc 'load-parsed-class-default-file-to-hash-table
+"Load the contents of INPUT-FILE to HASH-TABLE populating its hash-values with
+instances of PARSED-CLASS using KEY-ACCESSOR as the hash-key.~%~@
+:EXAMPLE~%~@
+ { ... <EXAMPLE> ... } ~%~@
+:SEE-ALSO `<XREF>'.~%▶▶▶"))
+
+(fundoc 'def-parsed-class-load-default-parsed-file-to-hash
+        "A wrapper macro around `load-parsed-class-default-file-to-hash-table'.~%~@
+Return a function which loads the contents of parsed-class-parse-table from a file written
+by a function returned by macro `def-parsed-class-write-parse-table-to-file'.~%~@
+Returned function has a symbol-name with the format:~%
+ load-<PARSED-CLASS-default-file-to-parse-table~%
+For example, if PARSED-CLASS is parsed-inventory-record returned function would
+have the symbol name:~%
+ load-parsed-inventory-record-default-file-to-parse-table~%~@
+:EXAMPLE~%~@
+  \(macroexpand-1
+   '\(def-parsed-class-load-default-parsed-file-to-hash 
+     :parsed-class parsed-inventory-record
+     :default-key-accessor inventory-number
+     :default-input-pathname-sub-directory \"parsed-inventory-record\"
+     :default-input-pathname-base-directory \(default-input-pathname-base-directory
+                                             \(merge-pathnames
+                                              \(make-pathname :directory '\(:relative \"parsed-class-table-dumps\"\)\)
+                                              \(dbc::sub-path dbc::*xml-output-dir*\)\)\)
+     :default-pathname-type \"pctd\"\)\)~%~@
 :SEE-ALSO `def-parsed-class-record-xml-dump-file-and-hash',
 `def-parsed-class-write-csv-file'.~%▶▶▶")
 
