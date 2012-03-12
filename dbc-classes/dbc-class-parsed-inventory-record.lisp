@@ -2,6 +2,10 @@
 ;;; :FILE dbc-classes/dbc-class-parsed-inventory-record.lisp
 ;;; ==============================
 
+;; :NOTE `set-parsed-inventory-record-slot-value' `parsed-inventory-record-xml-dump-file-and-hash'.
+;; `write-parsed-inventory-record-parse-table-to-file' are defined in loadtime-bind.lisp
+
+
 ;; NOTE Our largest item-ref from the xml/sql parse is 12416 our largest picture
 ;; in httpd/photos/big is 12415
 
@@ -212,7 +216,11 @@
     :accessor theme-entity-2-coref
     :documentation ":ORIGINAL-FIELD \"theme3\"")
  
-   (price-ask ;; The "-ask" suffix is for congruence with "price-ebay" :NOTE Need price-paid, price-sold,
+   ;; :NOTE Need price-sold and price-paid. However price-paid should really be
+   ;; prefixed as purchase-price-paid b/c there are also purchase-from,
+   ;; purchase-date-time, etc.
+   ;; :TODO This should really be named `price-ask-default'. Elsewhere we have price-ask-ebay, price-ask-trade-show, price-ask-client, et.c
+   (price-ask ;; The "-ask" suffix is for congruence with "price-ebay" 
     :initarg :price-ask
     :accessor price-ask
     :documentation ":ORIGINAL-FIELD \"price\"")
@@ -366,12 +374,14 @@
     :documentation ":ORIGINAL-FIELD \"keywords_seo\"")
 
    ;; shares-generic   
+   ;; :TODO this should be edit-timestamp-origin
    (edit-date-origin ;; IGNORABLE assuming date_edit is present and corresponds.
     :initarg :edit-date-origin
     :accessor edit-date-origin
     :documentation ":ORIGINAL-FIELD \"date\"")
 
-   ;; shares-generic   
+   ;; shares-generic
+   ;; :TODO This should be edit-timestamp to differentiate from publication-date, death-date, birth-date, etc.
    (edit-date 
     :initarg :edit-date
     :accessor edit-date
@@ -412,23 +422,10 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
                object chk-slot-value))))
 
 ;; (make-instance 'parsed-inventory-record)
-
-
-(print-unreadable-object ((make-instance 'parsed-inventory-record) nil :type t :identity t))
-
-(let* ((inv-num (and (slot-boundp object 'inventory-number)
-                     (slot-value object 'inventory-number)))
-       (inv-num-if (and (stringp inv-num)
-                            (control-id-indexed-number-zero-padded-string inv-num))))
-      (declare (mon:string-or-null inv-num-if))
-      (format stream "~S" inv-num-if)))
-
-;; (make-instance 'parsed-inventory-record)
 ;; => #<PARSED-INVENTORY-RECORD NIL {IDENTITY}>
 ;; (parsed-class-table-lookup 'parsed-inventory-record "9842")
 ;; => #<PARSED-INVENTORY-RECORD "009842">
 (defmethod print-object ((object parsed-inventory-record) stream)
-  ;; (print-unreadable-object (object stream :type t) 
   (let* ((inv-num (and (slot-boundp object 'inventory-number)
                        (slot-value object 'inventory-number)))
          (inv-num-if (and (stringp inv-num)
@@ -515,59 +512,6 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("edit_history"      . edit-history))
  )
 
-;; (defun parsed-inventory-record-xml-dump-file-and-hash (&key 
-;;                                                        (input-file (make-pathname 
-;;                                                                     :directory (pathname-directory (sub-path *xml-input-dir*)) 
-;;                                                                     :name "dump-refs-DUMPING"))
-;;                                                        ;; (output-pathname-sub-directory `(,(concatenate 'string "parsed-xml-inventory-records-"
-;;                                                        ;;                                                (mon:time-string-yyyy-mm-dd))))
-;;                                                        (output-pathname-sub-directory '("parsed-xml-inventory-records"))
-;;                                                        (output-pathname-base-directory (sub-path *xml-output-dir*))
-;;                                                        (output-pathname-name "inventory-records")
-;;                                                        (output-pathname-dated-p t)
-;;                                                        (output-pathname-type "lisp")
-;;                                                        (set-inventory-record-table t))
-;;   (let ((parsed-xml-file
-;;          (multiple-value-list 
-;;           (write-sax-parsed-xml-to-file
-;;            :input-file input-file
-;;            :output-file (make-parsed-class-output-file-ensuring-pathname
-;;                          :pathname-sub-directory output-pathname-sub-directory
-;;                          :pathname-base-directory output-pathname-base-directory
-;;                          :pathname-name output-pathname-name
-;;                          :pathname-name-dated-p output-pathname-dated-p
-;;                          :pathname-type output-pathname-type))))
-;;         (parsed-hash (make-hash-table :test 'equal)))
-;;     ;; (if (cadr parsed-xml-file)
-;;     (load-sax-parsed-xml-file-to-parsed-class-hash
-;;      :parsed-class 'parsed-inventory-record  
-;;      :input-file (cadr parsed-xml-file)
-;;      :hash-table  parsed-hash
-;;      :key-accessor  #'inventory-number
-;;      :slot-dispatch-function #'set-parsed-inventory-record-slot-value)
-;;     (values 
-;;      (if set-inventory-record-table
-;;          (setf (gethash 'parsed-inventory-record *parsed-class-parse-table*) parsed-hash)
-;;          parsed-hash)
-;;      (cadr parsed-xml-file))))
-;;
-;; :NOTE following supersedes definition above.
-;;  Returns the function `parsed-inventory-record-xml-dump-file-and-hash'.
-;; (def-parsed-class-record-xml-dump-file-and-hash
-;;     :parsed-class parsed-inventory-record
-;;   :default-key-accessor inventory-number
-;;   :default-input-pathname-name "dump-refs-DUMPING"
-;;   :default-output-pathname-base-directory (sub-path *xml-output-dir*)
-;;   :default-output-pathname-sub-directory (list "parsed-xml-inventory-records")
-;;   :default-output-pathname-name "inventory-records")
-(def-parsed-class-record-xml-dump-file-and-hash
-    :parsed-class parsed-inventory-record
-  :default-key-accessor inventory-number
-  :default-input-pathname-name "dump-refs-DUMPING"
-  :default-output-pathname-base-directory (sub-path *xml-output-dir*)
-  :default-output-pathname-sub-directory (list "parsed-xml-inventory-records")
-  :default-output-pathname-name "inventory-records")
-
 (defun parsed-inventory-record-null-prototype ()
   "Return an instance of parsed-inventory-record with all slot-values null.
 We do this rather than using :initform or :default-initargs for class
@@ -619,14 +563,18 @@ This function should only be used for instantiating instances created _outside_ 
 ;; (inspect (gethash "12000" (gethash 'parsed-inventory-record *parsed-class-parse-table*)))
 ;;
 
+;; (clrhash (parsed-class-parse-table 'dbc::parsed-inventory-record))
 ;; (parsed-inventory-record-load-default-parsed-file-to-hash)
-;;
-(defun parsed-inventory-record-load-default-parsed-file-to-hash ()
+;; (parsed-inventory-record-load-default-parsed-file-to-hash :clear-existing-table t)
+;; :TODO maybe rename this `load-parsed-inventory-record-default-file-to-parse-table' for congruence with
+;; `write-parsed-inventory-record-parse-table-to-file'
+(defun parsed-inventory-record-load-default-parsed-file-to-hash (&key (clear-existing-table nil))
+  (declare (boolean clear-existing-table))
   (let* ((maybe-wild-pathname 
            (merge-pathnames (make-pathname :name :wild 
-                                           :type "lisp")
+                                           :type "pctd")
                             (or (probe-file (merge-pathnames 
-                                             (make-pathname :directory '(:relative "parsed-xml-inventory-records"))
+                                             (make-pathname :directory '(:relative "parsed-class-table-dumps" "parsed-inventory-record"))
                                              (sub-path *xml-output-dir*)))
                                 (error ":FUNCTION `parsed-inventory-record-load-default-parsed-file-to-hash'~% ~
                                       did find suitable directory containing parsed-xml-inventory-records"))))
@@ -634,7 +582,7 @@ This function should only be used for instantiating instances created _outside_ 
          (most-recent-parse-file
            (or (and maybe-find-wilds
                     (car (sort 
-                          (remove-if-not #'(lambda (x) (pathname-match-p x "/**/inventory-records-*.lisp"))
+                          (remove-if-not #'(lambda (x) (pathname-match-p x "/**/inventory-record-*.pctd"))
                                          maybe-find-wilds)
                           #'string>
                           :key #'pathname-name)))
@@ -642,15 +590,51 @@ This function should only be used for instantiating instances created _outside_ 
                        did not find suitable parsed file beneath directory:~% ~S"
                       (pathname (directory-namestring maybe-wild-pathname))))))
     (when most-recent-parse-file
-      (load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-inventory-record
-                                                     :input-file most-recent-parse-file
-                                                     :hash-table (parsed-class-parse-table 'dbc::parsed-inventory-record)
-                                                     :key-accessor 'inventory-number
-                                                     :slot-dispatch-function #'set-parsed-inventory-record-slot-value))))
+      (let ((table (parsed-class-parse-table 'dbc::parsed-inventory-record)))
+        (and clear-existing-table (clrhash table))
+        (load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-inventory-record
+                                                       :input-file most-recent-parse-file
+                                                       :hash-table table ;(parsed-class-parse-table 'dbc::parsed-inventory-record)
+                                                       :key-accessor 'inventory-number
+                                                       :slot-dispatch-function #'set-parsed-inventory-record-slot-value)))))
 
-;; :NOTE `set-parsed-inventory-record-slot-value' is defined in loadtime-bind.lisp
-;; (def-set-parsed-class-record-slot-value 
-;;     parsed-inventory-record)
+#|
+(defun %%copy-hash (source-hash)
+  (loop 
+    with dest-hash = (make-hash-table :test (hash-table-test source-hash))
+    for keys being the hash-keys in source-hash using (hash-value vals)
+    do (setf (gethash keys dest-hash)
+             (mon:copy-instance-of-class-shallowly vals))
+    finally (return dest-hash)))
+
+(parsed-inventory-record-load-default-parsed-file-to-hash :clear-existing-table t)
+
+(defparameter *tt-hash* (%%copy-hash (parsed-class-parse-table 'parsed-inventory-record)))
+(setf *tt-hash* (%%copy-hash (parsed-class-parse-table 'parsed-inventory-record)))
+
+;; (parsed-class-parse-table 'parsed-inventory-record)
+
+(loop 
+  with change-count = 0
+  with null-count = 0
+  for obj being the hash-values in *tt-hash*
+  for date = (edit-date obj)
+  for date-convert = (field-convert-timestamp date)
+  if date-convert 
+    do (incf change-count)
+       (setf (edit-date obj) date-convert)
+  else
+    do (incf null-count)
+       (setf (edit-date obj) date-convert)
+  finally (return (list change-count null-count)))
+=> (2698 6271)
+
+"2004-08-11 15:50:25"
+
+
+|#
+
+
 
 ;;; ==============================
 ;; :NOTE Depreated use the macro'd version generated with `def-set-parsed-class-record-slot-value' instead. 
@@ -2514,7 +2498,16 @@ This function should only be used for instantiating instances created _outside_ 
 ;; - Convert "0000-00-00 00:00:00" to nil
 ;;
 ;; - :SEE edit_history below
+;; %convert-timestamp
 ;; (string= "0000-00-00 00:00:00")
+;; (cl-ppcre:scan-to-strings "^([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2})$"  "0000-00-00 00:00:00")
+
+;; (multiple-value-bind (matched values) 
+;;     (cl-ppcre:scan-to-strings "^([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2})$"  "2009-01-27 22:00:31")
+;;   (length values))
+
+;; (princ-to-string (local-time:universal-to-timestamp (field-convert-timestamp "2009-01-27 22:00:31")))
+
 
 
 ;;; ==============================
