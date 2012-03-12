@@ -216,6 +216,32 @@
 ;; (parsed-inventory-sales-order-record-xml-dump-file-and-hash)
 ;; (parsed-inventory-sales-sold-in-store-record-xml-dump-file-and-hash)
 
+(def-parsed-class-record-xml-dump-file-and-hash
+    :parsed-class parsed-inventory-record
+  :default-key-accessor inventory-number
+  :default-input-pathname-name "dump-refs-DUMPING"
+  :default-output-pathname-base-directory (sub-path *xml-output-dir*)
+  :default-output-pathname-sub-directory (list "parsed-xml-inventory-records")
+  :default-output-pathname-name "inventory-records")
+
+;; `write-parsed-inventory-record-parse-table-to-file'
+;; (write-parsed-inventory-record-parse-table-to-file 
+(def-parsed-class-write-parse-table-to-file
+    :parsed-class parsed-inventory-record
+  :default-output-pathname-sub-directory "parsed-inventory-record"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                           (sub-path *xml-output-dir*))
+  :default-pathname-type "pctd")
+
+(def-parsed-class-write-csv-file
+    :parsed-class parsed-inventory-record
+  :default-prefix-for-file-name "inventory-records"
+  :default-output-pathname-sub-directory "parsed-csv-inventory-records"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-csv-records"))
+                                           (sub-path *xml-output-dir*)))
+
 
 ;;; ==============================
 ;;; :EOF
