@@ -1,8 +1,8 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-10-11T16:33:32-04:00Z}#{11412} - by MON>
-;;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-doc-record.lisp
+;;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-documentation-record.lisp
 ;;; ==============================
 
-;; parsed-doc-record
+;; parsed-documenation-record
 
 (in-package #:dbc)
 
@@ -84,9 +84,9 @@
     :documentation ":ORIGINAL-FIELD \"content_fr\"")
 
    (;; The title for the meta-document
-    description-documentation-title
-    :initarg :description-documentation-title
-    :accessor description-documentation-title
+    description-documentation-document-title
+    :initarg :description-documentation-document-title
+    :accessor description-documentation-document-title
     :documentation ":ORIGINAL-FIELD \"title_en\"")
 
    (
@@ -118,10 +118,9 @@
     :documentation ":ORIGINAL-FIELD \"page\"")
 
    (;; when present, is a subtitle corresponding to pg N of N 
-    ;; which is better:
-    ;; description-documentation-sub-title | description-documentation-page-title
-    :initarg :
-    :accessor 
+    description-documentation-page-title
+    :initarg :description-documentation-page-title
+    :accessor description-documentation-page-title
     :documentation ":ORIGINAL-FIELD \"page_title\"")
 
    (ignorable-documentation-content-link
@@ -192,7 +191,7 @@
 
 ;; base-documentation-record
 (make-parsed-class-field-slot-accessor-mapping 
- 'parsed-doc-record
+ 'parsed-documentation-record
  '(
    ("doc_id"       . control-id-documentation-record-document-id)
    ("id"           . control-id-documentation-record-document-page-id) 
@@ -207,12 +206,12 @@
    ("general"      . ignorable-documentation-general)
    ("content_en"   . ignorable-documentation-content-english)
    ("content_fr"   . ignorable-documentation-content-french)
-   ("title_en"     . description-documentation-title)
+   ("title_en"     . description-documentation-document-title)
    ("doc_title"    . ignorable-documentation-title)
    ("doc_raw_en"   . documentation-content)
    ("lang"         . documentation-language-type)
    ("page"         . documentation-page-count-index)
-   ("page_title"   . )
+   ("page_title"   . description-documentation-page-title)
    ("content_link" . ignorable-documentation-content-link)
    ("categ"        . category-entity-0-coref)
    ("c1"           . category-entity-1-coref)
@@ -231,10 +230,10 @@
 
 
 
-;; :NOTE `set-parsed-inventory-record-slot-value' is defined in loadtime-bind.lisp
+;; :NOTE `set-parsed-documentation-record-slot-value' is defined in loadtime-bind.lisp
 ;; (def-set-parsed-class-record-slot-value 
 ;;      set-parsed-doc-record-slot-value
-;;      parsed-doc-record)
+;;      parsed-documentation-record)
 ;;
 ;;; *parsed-class-field-slot-accessor-mapping-table*
 

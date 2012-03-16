@@ -139,6 +139,7 @@
              (:file "dbc-class-parsed-technique-record")
              (:file "dbc-class-parsed-publication-record")
              (:file "dbc-class-parsed-theme-record")
+             (:file "dbc-class-parsed-documentation-record")
              (:file "dbc-class-parsed-inventory-sales-order-record")
              (:file "dbc-class-parsed-inventory-sales-sold-record")
              (:file "dbc-class-parsed-inventory-sales-sold-in-store-record")
