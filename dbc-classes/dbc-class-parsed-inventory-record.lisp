@@ -1,10 +1,13 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-01-06T13:37:33-05:00Z}#{11014} - by MON>
 ;;; :FILE dbc-classes/dbc-class-parsed-inventory-record.lisp
 ;;; ==============================
+;; keywords-sequence keyword-sequenced-entity-coref
 
-;; :NOTE `set-parsed-inventory-record-slot-value' `parsed-inventory-record-xml-dump-file-and-hash'.
-;; `write-parsed-inventory-record-parse-table-to-file' are defined in loadtime-bind.lisp
-
+;; :NOTE `set-parsed-inventory-record-slot-value'
+;; `parsed-inventory-record-xml-dump-file-and-hash'.
+;; `write-parsed-inventory-record-parse-table-to-file'
+;; `load-parsed-inventory-record-default-file-to-parse-table' are defined via
+;; macrology from in loadtime-bind.lisp
 
 ;; NOTE Our largest item-ref from the xml/sql parse is 12416 our largest picture
 ;; in httpd/photos/big is 12415
@@ -225,9 +228,10 @@
     :accessor price-ask
     :documentation ":ORIGINAL-FIELD \"price\"")
 
-   (keywords-sequence
-    :initarg :keywords-sequence
-    :accessor keywords-sequence
+   ;; :TODO this should be renamed to sequenced-keywords-entity-coref
+   (keyword-sequenced-entity-coref  
+    :initarg :keyword-sequenced-entity-coref
+    :accessor keyword-sequenced-entity-coref
     :documentation ":ORIGINAL-FIELD \"keywords\"")
 
    (description-inventory-condition ;; description-class
@@ -478,7 +482,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("theme2"            . theme-entity-1-coref)
    ("theme3"            . theme-entity-2-coref)
    ("price"             . price-ask)
-   ("keywords"          . keywords-sequence)
+   ("keywords"          . keyword-sequenced-entity-coref)
    ("condition"         . description-inventory-condition)
    ("onlinen"           . media-entity-mount)
    ("technique"         . media-entity-technique)
@@ -563,40 +567,47 @@ This function should only be used for instantiating instances created _outside_ 
 ;; (inspect (gethash "12000" (gethash 'parsed-inventory-record *parsed-class-parse-table*)))
 ;;
 
+;;; :NOTE now using the macrodefined version now `load-parsed-inventory-record-default-file-to-parse-table'
+
+;; 
 ;; (clrhash (parsed-class-parse-table 'dbc::parsed-inventory-record))
 ;; (parsed-inventory-record-load-default-parsed-file-to-hash)
 ;; (parsed-inventory-record-load-default-parsed-file-to-hash :clear-existing-table t)
 ;; :TODO maybe rename this `load-parsed-inventory-record-default-file-to-parse-table' for congruence with
 ;; `write-parsed-inventory-record-parse-table-to-file'
-(defun parsed-inventory-record-load-default-parsed-file-to-hash (&key (clear-existing-table nil))
-  (declare (boolean clear-existing-table))
-  (let* ((maybe-wild-pathname 
-           (merge-pathnames (make-pathname :name :wild 
-                                           :type "pctd")
-                            (or (probe-file (merge-pathnames 
-                                             (make-pathname :directory '(:relative "parsed-class-table-dumps" "parsed-inventory-record"))
-                                             (sub-path *xml-output-dir*)))
-                                (error ":FUNCTION `parsed-inventory-record-load-default-parsed-file-to-hash'~% ~
-                                      did find suitable directory containing parsed-xml-inventory-records"))))
-         (maybe-find-wilds (directory maybe-wild-pathname))
-         (most-recent-parse-file
-           (or (and maybe-find-wilds
-                    (car (sort 
-                          (remove-if-not #'(lambda (x) (pathname-match-p x "/**/inventory-record-*.pctd"))
-                                         maybe-find-wilds)
-                          #'string>
-                          :key #'pathname-name)))
-               (error ":FUNCTION `parsed-inventory-record-load-default-parsed-file-to-hash'~% ~
-                       did not find suitable parsed file beneath directory:~% ~S"
-                      (pathname (directory-namestring maybe-wild-pathname))))))
-    (when most-recent-parse-file
-      (let ((table (parsed-class-parse-table 'dbc::parsed-inventory-record)))
-        (and clear-existing-table (clrhash table))
-        (load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-inventory-record
-                                                       :input-file most-recent-parse-file
-                                                       :hash-table table ;(parsed-class-parse-table 'dbc::parsed-inventory-record)
-                                                       :key-accessor 'inventory-number
-                                                       :slot-dispatch-function #'set-parsed-inventory-record-slot-value)))))
+;; (defun parsed-inventory-record-load-default-parsed-file-to-hash (&key (clear-existing-table nil))
+;;   (declare (boolean clear-existing-table))
+;;   (let* ((maybe-wild-pathname 
+;;            (merge-pathnames (make-pathname :name :wild 
+;;                                            :type "pctd")
+;;                             (or (probe-file (merge-pathnames 
+;;                                              (make-pathname :directory '(:relative "parsed-class-table-dumps" "parsed-inventory-record"))
+;;                                              (sub-path *xml-output-dir*)))
+;;                                 (error ":FUNCTION `parsed-inventory-record-load-default-parsed-file-to-hash'~% ~
+;;                                       did find suitable directory containing parsed-table-dump-file"))))
+;;          (maybe-find-wilds (directory maybe-wild-pathname))
+;;          ;; regex matching pathname-names with the format "<parsed-class>-YYYY-MM-DDTHHSSMM"
+;;          (wild-pathname-pattern 
+;;            (format nil "^~(~A~)-2[0-9]{3}?-[0-9]{2}?-[0-9]{2}?T[0-9]{6}?$" 'parsed-inventory-record))
+;;          (most-recent-parse-file
+;;            (or (and maybe-find-wilds
+;;                     (car (sort 
+;;                           (delete-if-not #'(lambda (x) (cl-ppcre:scan wild-pathname-pattern x))
+;;                                          maybe-find-wilds
+;;                                          :key #'pathname-name)
+;;                           #'string>
+;;                           :key #'pathname-name)))
+;;                (error ":FUNCTION `parsed-inventory-record-load-default-parsed-file-to-hash'~% ~
+;;                         did not find suitable parsed file beneath directory:~% ~S"
+;;                       (pathname (directory-namestring maybe-wild-pathname))))))
+;;     (when most-recent-parse-file
+;;       (let ((table (parsed-class-parse-table 'dbc::parsed-inventory-record)))
+;;         (and clear-existing-table (clrhash table))
+;;         (load-parsed-class-default-file-to-hash-table  :parsed-class 'parsed-inventory-record
+;;                                                        :input-file most-recent-parse-file
+;;                                                        :hash-table table
+;;                                                        :key-accessor 'inventory-number)))))
+
 
 #|
 (defun %%copy-hash (source-hash)
@@ -612,6 +623,9 @@ This function should only be used for instantiating instances created _outside_ 
 (defparameter *tt-hash* (%%copy-hash (parsed-class-parse-table 'parsed-inventory-record)))
 (setf *tt-hash* (%%copy-hash (parsed-class-parse-table 'parsed-inventory-record)))
 
+(setf (parsed-class-parse-table 'parsed-inventory-record) (%%copy-hash *tt-hash*))
+
+;; (write-parsed-inventory-record-parse-table-to-file)
 ;; (parsed-class-parse-table 'parsed-inventory-record)
 
 (loop 
@@ -748,7 +762,7 @@ This function should only be used for instantiating instances created _outside_ 
 ;;      ("price"
 ;;       (setf (price-ask object) field-value))
 ;;      ("keywords"
-;;       (setf (keywords-sequence object) field-value))
+;;       (setf (keyword-sequenced-entity-coref object) field-value))
 ;;      ("condition"
 ;;       (setf (description-inventory-condition object) field-value))
 ;;      ("onlinen"
@@ -929,7 +943,7 @@ This function should only be used for instantiating instances created _outside_ 
 ;;  "theme2"           ;; theme-entity-1-coref
 ;;  "theme3"           ;; theme-entity-2-coref
 ;;
-;;  "keywords"         ;; keywords-sequence
+;;  "keywords"         ;; keyword-sequenced-entity-coref
 ;;
 ;;  "condition"        ;; description-inventory-condition  ;; description-class
 ;;  "onlinen"          ;; media-entity-mount
@@ -2126,7 +2140,7 @@ This function should only be used for instantiating instances created _outside_ 
 
 
 ;;; ==============================
-;; :FIELD "keywords" :TRANSFORM keywords-sequence
+;; :FIELD "keywords" :TRANSFORM keyword-sequenced-entity-coref
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
