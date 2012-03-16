@@ -128,8 +128,8 @@ base-uuid                                     (base-dbc)
 ---- control-id-documentation-record          (control-id-inventory-record-type)
 --- control-id-authority-record-type          (control-id-record-type)
 ---- control-id-authority-record              (control-id-authority-record-type)
-;; control-id-documentation-record-num        ;; reference to the id of the meta-doc
-;; control-id-documentation-record-sub-num
+;; control-id-documentation-record-document-id        ;; reference to the id of the meta-doc
+;; control-id-documentation-record-document-page-id
 -- control-id-entity-type                     (control-id-type)
 --- control-id-naf-entity-type                (control-id-entity-type)
 ---- control-id-naf-entity                    (control-id-naf-entity-type)
@@ -653,8 +653,8 @@ A mixin for subclasses of which identify classes containing \"record\" like data
 ;; base-sold-record (base-sales-order-record)
 ;; base-sold-record-in-store (base-sales-order-record)
 
-;; `parsed-doc-record' 
-;; control-id-documentation-record-num, control-id-documentation-record-sub-num
+;; `parsed-documentation-record' 
+;; control-id-documentation-record-document-page-id, control-id-documentation-record-document-id 
 (defclass control-id-documentation-record-type (control-id-record-type)
   ((control-id-of-class-type
     :initform (%find-control-id-class-or-lose 'base-documentation-record))))

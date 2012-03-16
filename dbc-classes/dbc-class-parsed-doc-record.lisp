@@ -1,50 +1,230 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-10-11T16:33:32-04:00Z}#{11412} - by MON>
-;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-classes/dbc-class-parsed-doc-record.lisp
+;;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-doc-record.lisp
 ;;; ==============================
 
 ;; parsed-doc-record
 
 (in-package #:dbc)
 
-(defclass parsed-doc-record (parsed-class)
-  ()
+(defclass parsed-documentation-record (parsed-class)
+  ( 
+   (;; reference to the id of the sub-doc of meta-doc e.g. doc 0001, 0002, 0003 are each a sub-docs of meta-doc 9999
+    ;; -- this is the tables primary key
+    control-id-documentation-record-document-page-id
+    :initarg :control-id-documentation-record-document-page-id
+    :accessor control-id-documentation-record-document-page-id
+    :documentation ":ORIGINAL-FIELD \"id\"")
+
+   (;; reference to the id of the meta-doc -- multiple documents share this key
+    ;; and are effectively aggregated beneath it as a single document.
+    ;; this was a fucking _BAD_ design!
+    control-id-documentation-record-document-id
+    :initarg :control-id-documentation-record-document-id
+    :accessor control-id-documentation-record-document-id
+    :documentation ":ORIGINAL-FIELD \"doc_id\"")
+
+   (naf-entity-artist-coref
+    :initarg :naf-entity-artist-coref
+    :accessor naf-entity-artist-coref
+    :documentation ":ORIGINAL-FIELD \"artist\"")
+
+   (naf-entity-author-coref
+    :initarg :naf-entity-author-coref
+    :accessor naf-entity-author-coref
+    :documentation ":ORIGINAL-FIELD \"author\"")
+
+   (naf-entity-person-coref
+    :initarg :naf-entity-person-coref
+    :accessor naf-entity-person-coref
+    :documentation ":ORIGINAL-FIELD \"people\"")
+
+   (naf-entity-author-coref
+    :initarg :naf-entity-author-coref
+    :accessor naf-entity-author-coref
+    :documentation ":ORIGINAL-FIELD \"brand\"")
+
+   (naf-entity-publication-coref
+    :initarg :naf-entity-publication-coref
+    :accessor naf-entity-publication-coref
+    :documentation ":ORIGINAL-FIELD \"book\"")
+
+   (media-entity-technique-coref
+    :initarg :media-entity-technique-coref
+    :accessor media-entity-technique-coref
+    :documentation ":ORIGINAL-FIELD \"technique\"")
+
+   (media-entity-paper-coref
+    :initarg :media-entity-paper-coref
+    :accessor media-entity-paper-coref
+    :documentation ":ORIGINAL-FIELD \"paper\"")
+
+   ( ;; | replaced 382 self references. IGNORABLE 
+    ignorable-documentation-site-doc
+    :initarg :ignorable-documentation-site-doc
+    :accessor ignorable-documentation-site-doc
+    :documentation ":ORIGINAL-FIELD \"sitedoc\"")
+
+   (;; | replaced 20 self references: <field name="general">general</field> IGNORABLE 
+    ignorable-documentation-general
+    :initarg :ignorable-documentation-general
+    :accessor ignorable-documentation-general
+    :documentation ":ORIGINAL-FIELD \"general\"")
+
+   ( ;; contains inlied href'd xrefs to entities -- likely out of date. useless
+    ignorable-documentation-content-english
+    :initarg :ignorable-documentation-content-english
+    :accessor ignorable-documentation-content-english
+    :documentation ":ORIGINAL-FIELD \"content_en\"")
+
+   ( ;;  <field name="content_fr">general</field> (search-forward-regexp "content_fr\">[^<]" nil t)
+    ;; (search-forward-regexp "content_fr\">" nil t)
+    ignorable-documentation-content-french
+    :initarg :ignorable-documentation-content-french
+    :accessor ignorable-documentation-content-french
+    :documentation ":ORIGINAL-FIELD \"content_fr\"")
+
+   (;; The title for the meta-document
+    description-documentation-title
+    :initarg :description-documentation-title
+    :accessor description-documentation-title
+    :documentation ":ORIGINAL-FIELD \"title_en\"")
+
+   (
+    ;; the only documents which have a doc_title value are the bofa docs 
+    ;; 34 255 256 259 260 261 262
+    ;; 2178 are empty
+    ;; (search-forward-regexp "doc_title\">[^<]" nil t) 
+    ignorable-documentation-title
+    :initarg :ignorable-documentation-title
+    :accessor ignorable-documentation-title
+    :documentation ":ORIGINAL-FIELD \"doc_title\"")
+
+   ( ;; contains actual content.
+    documentation-content
+    :initarg :documentation-content
+    :accessor documentation-content
+    :documentation ":ORIGINAL-FIELD \"doc_raw_en\"")
+
+   ( ;; en | fr
+    documentation-language-type
+    :initarg :documentation-language-type
+    :accessor documentation-language-type
+    :documentation ":ORIGINAL-FIELD \"lang\"")
+
+   ( ;; pg N of N
+    documentation-page-count-index
+    :initarg :documentation-page-count-index
+    :accessor documentation-page-count-index
+    :documentation ":ORIGINAL-FIELD \"page\"")
+
+   (;; when present, is a subtitle corresponding to pg N of N 
+    ;; which is better:
+    ;; description-documentation-sub-title | description-documentation-page-title
+    :initarg :
+    :accessor 
+    :documentation ":ORIGINAL-FIELD \"page_title\"")
+
+   (ignorable-documentation-content-link
+    :initarg :ignorable-documentation-content-link
+    :accessor ignorable-documentation-content-link
+    :documentation ":ORIGINAL-FIELD \"content_link\"")
+
+   (category-entity-0-coref
+    :initarg :category-entity-0-coref
+    :accessor category-entity-0-coref
+    :documentation ":ORIGINAL-FIELD \"categ\"")
+
+   (category-entity-1-coref
+    :initarg :category-entity-1-coref
+    :accessor category-entity-1-coref
+    :documentation ":ORIGINAL-FIELD \"c1\"")
+
+   (category-entity-2-coref
+    :initarg :category-entity-2-coref
+    :accessor category-entity-2-coref
+    :documentation ":ORIGINAL-FIELD \"c2\"")
+ 
+   (category-entity-3-coref
+    :initarg :category-entity-3-coref
+    :accessor category-entity-3-coref
+    :documentation ":ORIGINAL-FIELD \"c3\"")
+
+   (category-entity-4-coref
+    :initarg :category-entity-4-coref
+    :accessor category-entity-4-coref
+    :documentation ":ORIGINAL-FIELD \"c4\"")
+
+   (category-entity-5-coref
+    :initarg :category-entity-5-coref
+    :accessor category-entity-5-coref
+    :documentation ":ORIGINAL-FIELD \"c5\"")
+
+   (category-entity-6-coref
+    :initarg :category-entity-6-coref
+    :accessor category-entity-6-coref
+    :documentation ":ORIGINAL-FIELD \"c6\"")
+
+   (;; stan | constance 
+    edit-by-creator
+    :initarg :edit-by-creator
+    :accessor edit-by-creator
+    :documentation ":ORIGINAL-FIELD \"user\"")
+
+   (;; 1 | 0 | null
+    record-status-active
+    :initarg :record-status-active
+    :accessor record-status-active
+    :documentation ":ORIGINAL-FIELD \"on_line\"")
+
+   ( ;; ignorable
+    edit-timestamp-origin
+    :initarg :edit-timestamp-origin
+    :accessor edit-timestamp-origin
+    :documentation ":ORIGINAL-FIELD \"date_edit\"")
+
+   ( ;; the good one
+    edit-timestamp
+    :initarg :edit-timestamp
+    :accessor edit-timestamp
+    :documentation ":ORIGINAL-FIELD \"date_edt\"")
+   )
   )
 
 ;; base-documentation-record
 (make-parsed-class-field-slot-accessor-mapping 
  'parsed-doc-record
  '(
-   ("doc_id"       . control-id-documentation-record-num) ;; reference to the id of the meta-doc
-   ("id"           . control-id-documentation-record-sub-num) ;; reference to the id of the sub-doc of meta-doc e.g. doc 0001, 0002, 0003 are each a sub-docs of meta-doc 9999
-   ("artist"       . naf-entity-artist-coref) ;; | one of the following fields is populated: 
-   ("author"       . naf-entity-author-coref) ;; | artist, author, brand, book, technique, paper, sitedoc, gneral
-   ("people"       . naf-entity-people-coref) ;; |
-   ("brand"        . naf-entity-author-coref) ;; |
-   ("book"         . naf-entity-publication-coref) ;; | 
-   ("technique"    . media-entity-technique-coref) ;; | 
-   ("paper"        . media-entity-paper-coref) ;; |
-   ("sitedoc"      . ) ;; | replaced 382 self references. IGNORABLE 
-   ("general"      . ignorable-general) ;; | replaced 20 self references: <field name="general">general</field> IGNORABLE 
-   ("content_en"   . ignorable-content-english) ;; contains inlied href'd xrefs to entities -- likely out of date. useless
-   ("content_fr"   . ) ;;  <field name="content_fr">general</field> (search-forward-regexp "content_fr\">[^<]" nil t)
-   ("title_en"     . ) ;; The title for the meta-document
-   ("doc_title"    . )
-   ("doc_raw_en"   . ) ;; contains actual content.
-   ("lang"         . ) ;; en | fr
-   ("page"         . page-count-index) ;; pg N of N
-   ("page_title"   . ) ;; when present, is a subtitle corresponding to pg N of N ;; description-documentation-sub-title
-   ("content_link" . ignorable-content-link)
-   ("categ"        . category-entity-0-coref) ;; category-0
-   ("c1"           . category-entity-1-coref) ;;
+   ("doc_id"       . control-id-documentation-record-document-id)
+   ("id"           . control-id-documentation-record-document-page-id) 
+   ("artist"       . naf-entity-artist-coref)
+   ("author"       . naf-entity-author-coref)
+   ("people"       . naf-entity-person-coref)
+   ("brand"        . naf-entity-author-coref)
+   ("book"         . naf-entity-publication-coref)
+   ("technique"    . media-entity-technique-coref)
+   ("paper"        . media-entity-paper-coref)
+   ("sitedoc"      . ignorable-documentation-site-doc)
+   ("general"      . ignorable-documentation-general)
+   ("content_en"   . ignorable-documentation-content-english)
+   ("content_fr"   . ignorable-documentation-content-french)
+   ("title_en"     . description-documentation-title)
+   ("doc_title"    . ignorable-documentation-title)
+   ("doc_raw_en"   . documentation-content)
+   ("lang"         . documentation-language-type)
+   ("page"         . documentation-page-count-index)
+   ("page_title"   . )
+   ("content_link" . ignorable-documentation-content-link)
+   ("categ"        . category-entity-0-coref)
+   ("c1"           . category-entity-1-coref)
    ("c2"           . category-entity-2-coref) 
    ("c3"           . category-entity-3-coref)
    ("c4"           . category-entity-4-coref)
    ("c5"           . category-entity-5-coref)
    ("c6"           . category-entity-6-coref)
-   ("user"         . edit-by-creator) ;; stan | constance 
-   ("on_line"      . record-status-active) ;; 1 | 0 | null
-   ("date_edit"    . edit-timestamp-origin) ;; 
-   ("date_edt"     . edit-timestamp) ;; the good one
+   ("user"         . edit-by-creator)
+   ("on_line"      . record-status-active)
+   ("date_edit"    . edit-timestamp-origin)
+   ("date_edt"     . edit-timestamp)
    ))
 
 
@@ -66,7 +246,7 @@
 ;; (while (search-forward-regexp "^$" nil t) 
 ;;   (unless (or (eobp) (eq (point-max) (1+ (point)))) (delete-char 1)))
 
-(while (search-forward-regexp ".*<field name=\"c5\"></field>" nil t) (progn (beginning-of-line 1) ))(delete-char -1)
+;; (while (search-forward-regexp ".*<field name=\"c5\"></field>" nil t) (progn (beginning-of-line 1) ))(delete-char -1)
 
 ;;; ==============================
 
@@ -211,7 +391,7 @@
 ;;
 
 ;;; ==============================
-;; :FIELD "general" :TRANSFORM ignorable-general
+;; :FIELD "general" :TRANSFORM ignorable-documentation-general
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
@@ -321,7 +501,7 @@
 ;;         :EXTRA ""
 ;;
 ;; :EXAMPLE-VALUES 
-;;
+;; ;; en | fr
 ;;
 ;; -
 ;;
@@ -362,7 +542,7 @@
 ;;   Some of these have mostly useless values like "part 1" "part 13"
 
 ;;; ==============================
-;; :FIELD "content_link" :TRANSFORM ignorable-content-link
+;; :FIELD "content_link" :TRANSFORM ignorable-documentation-content-link
 ;;
 ;;         :TYPE "text"
 ;;         :NULL-P "NO"
