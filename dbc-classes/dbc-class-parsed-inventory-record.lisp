@@ -2,6 +2,7 @@
 ;;; :FILE dbc-classes/dbc-class-parsed-inventory-record.lisp
 ;;; ==============================
 ;; keywords-sequence keyword-sequenced-entity-coref
+;; keywords-seo      keyword-seo-sequenced-entity-coref
 
 ;; :NOTE `set-parsed-inventory-record-slot-value'
 ;; `parsed-inventory-record-xml-dump-file-and-hash'.
@@ -372,9 +373,9 @@
     :accessor description-inventory-seo
     :documentation ":ORIGINAL-FIELD \"description_seo\"")
 
-   (keywords-seo
-    :initarg :keywords-seo
-    :accessor keywords-seo
+   (keyword-seo-sequenced-entity-coref
+    :initarg :keyword-seo-sequenced-entity-coref
+    :accessor keyword-seo-sequenced-entity-coref
     :documentation ":ORIGINAL-FIELD \"keywords_seo\"")
 
    ;; shares-generic   
@@ -510,7 +511,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("ebay_id"           . control-id-ebay)
    ("seo_title"         . description-inventory-seo-title)
    ("description_seo"   . description-inventory-seo)
-   ("keywords_seo"      . keywords-seo)
+   ("keywords_seo"      . keyword-seo-sequenced-entity-coref)
    ("date"              . edit-timestamp-origin)
    ("date_edit"         . edit-timestamp)
    ("edit_history"      . edit-history))
@@ -818,7 +819,7 @@ This function should only be used for instantiating instances created _outside_ 
 ;;      ("description_seo"
 ;;       (setf (description-inventory-seo object) field-value))
 ;;      ("keywords_seo"
-;;       (setf (keywords-seo object) field-value))
+;;       (setf (keyword-seo-sequenced-entity-coref object) field-value))
 ;;      ("date"
 ;;       (setf (edit-timestamp-origin object) field-value))
 ;;      ("date_edit"
@@ -983,7 +984,7 @@ This function should only be used for instantiating instances created _outside_ 
 ;;  "ebay_id"          ;; id-ebay ??? uuid-ebay
 ;;  "seo_title"        ;; description-inventory-seo-title
 ;;  "description_seo"  ;; description-inventory-seo
-;;  "keywords_seo"     ;; keywords-seo
+;;  "keywords_seo"     ;; keyword-seo-sequenced-entity-coref
 ;;
 ;;  "date"             ;; edit-timestamp-origin  ;; IGNORABLE assuming date_edit is present and corresponds 
 ;;  "date_edit"        ;; edit-timestamp
