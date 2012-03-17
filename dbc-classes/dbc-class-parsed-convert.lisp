@@ -445,6 +445,7 @@
                 (mon:pathname-or-namestring base-output-directory)
                 (string pathname-type))
        (write-parsed-class-parse-table-to-file :parsed-class ',parsed-class
+                                               :hash-table hash-table
                                                :output-sub-directory  output-sub-directory
                                                :base-output-directory base-output-directory
                                                :pathname-type pathname-type))))
