@@ -409,7 +409,7 @@
                 class-string-name
                 (local-time:format-timestring nil (local-time:now)))
         (loop 
-          for obj being the hash-values of (parsed-class-parse-table parsed-class)
+          for obj being the hash-values of parsed-hash ;(parsed-class-parse-table parsed-class)
           do 
              (print-sax-parsed-slots obj :stream fl :print-unbound nil :pre-padded-format-control frmt-cntl)
              (write-char #\Newline fl)
@@ -477,7 +477,7 @@
 ;;                                                  (dbc::sub-path dbc::*xml-output-dir*)))
 ;;         :default-pathname-type "pctd"))
 (defmacro def-parsed-class-load-default-parsed-file-to-hash (&key parsed-class
-
+                                                                  default-key-accessor
                                                                   ;; default-hash-table
                                                                   default-input-pathname-sub-directory
                                                                   (default-input-pathname-base-directory
@@ -493,7 +493,7 @@
              ;; regex matching pathname-names with the format "<parsed-class>-YYYY-MM-DDTHHSSMM"            
              (cl-ppcre:create-scanner
               (format nil "^~(~A~)-2[0-9]{3}?-[0-9]{2}?-[0-9]{2}?T[0-9]{6}?$" ',parsed-class))))
-       (defun ,generated-name (&key (key-accessor ,default-key-accessor)
+       (defun ,generated-name (&key (key-accessor ',default-key-accessor)
                                     (clear-existing-table nil)
                                     (input-sub-directory ,default-input-pathname-sub-directory)
                                     (base-input-directory ,default-input-pathname-base-directory)
@@ -506,7 +506,7 @@
                                                     (make-pathname :directory `(:relative ,@(alexandria::ensure-list input-sub-directory)))
                                                     base-input-directory))
                                        (error ":FUNCTION `~S'~% -- did not find suitable directory containing parsed-table-dump-file"
-                                              ,generated-name))))
+                                              ',generated-name))))
                 (maybe-find-wilds 
                   (directory maybe-wild-pathname))
                 ;; (parsed-class-wild-pathname-pattern 
@@ -521,7 +521,7 @@
                                  #'string>
                                  :key #'pathname-name)))
                       (error ":FUNCTION `~S'~% -- did not find suitable parsed file beneath directory:~% ~S"
-                             ,generated-name
+                             ',generated-name
                              (pathname (directory-namestring maybe-wild-pathname))))))
            (when most-recent-parse-file
              (let ((table (parsed-class-parse-table ',parsed-class)))
