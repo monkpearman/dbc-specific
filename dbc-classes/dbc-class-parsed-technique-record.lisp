@@ -67,14 +67,14 @@
 
 ;; media-entity-technique
 (defclass parsed-technique-record (parsed-class)
-  ((conrtol-id-entity-num-technique
-    :initarg :conrtol-id-entity-num-technique
-    :accessor conrtol-id-entity-num-technique
+  ((control-id-entity-num-technique
+    :initarg :control-id-entity-num-technique
+    :accessor control-id-entity-num-technique
     :documentation ":ORIGINAL-FIELD \"id\"")
 
-   (conrtol-id-display-technique
-    :initarg :conrtol-id-display-technique
-    :accessor conrtol-id-display-technique
+   (control-id-display-technique
+    :initarg :control-id-display-technique
+    :accessor control-id-display-technique
     :documentation ":ORIGINAL-FIELD \"display\"")
 
    (technique-entity-display-name-coref 
@@ -140,14 +140,13 @@
 :NOTE the accessor `control-id-entity-num-technique' should be used as value for the
 KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 :SEE-ALSO `set-parsed-publication-record-slot-value', `load-sax-parsed-xml-file-to-parsed-class-hash',
-:SEE-ALSO `media-entity-technique',
-`load-sax-parsed-xml-file-to-parsed-class-hash',
+`media-entity-technique', `load-sax-parsed-xml-file-to-parsed-class-hash',
 `write-sax-parsed-xml-refs-file', `set-parse-ref-slot-value'.~%▶▶▶")))
 
 (make-parsed-class-field-slot-accessor-mapping 
  'parsed-technique-record
- '(("id"                . conrtol-id-entity-num-technique)
-   ("display"           . conrtol-id-display-technique)
+ '(("id"                . control-id-entity-num-technique)
+   ("display"           . control-id-display-technique)
    ("used_for"          . technique-entity-display-name-coref)
    ("technique_family"  . technique-entity-parent-type)
    ("variation_of"      . technique-entity-type-coref)
@@ -171,8 +170,8 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;; (defun set-parsed-technique-record-slot-value (field-string field-value object)
 ;;   (values
 ;;    (string-case:string-case (field-string)
-;;      ("id" (setf (conrtol-id-entity-num-technique object) field-value))
-;;      ("display" (setf (conrtol-id-display-technique object) field-value))
+;;      ("id" (setf (control-id-entity-num-technique object) field-value))
+;;      ("display" (setf (control-id-display-technique object) field-value))
 ;;      ("used_for"
 ;;       (setf (technique-entity-display-name-coref object) field-value))
 ;;      ("technique_family"
@@ -198,8 +197,8 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
   "date_edit" "user_name" "naf_creator" "notes" "default_pic" "online" "date_edt")
 
  <FIELD>              <TRANSFORM>
- "id"                ;; conrtol-id-entity-num-technique
- "display"           ;; conrtol-id-display-technique
+ "id"                ;; control-id-entity-num-technique
+ "display"           ;; control-id-display-technique
  "used_for"          ;; technique-entity-display-name-core
  "technique_family"  ;; technique-entity-parent-type
  "variation_of"      ;; technique-entity-type-coref
@@ -231,7 +230,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 
 
 ;;; ==============================
-;; :FIELD "id" :TRANSFORM conrtol-id-entity-num-technique
+;; :FIELD "id" :TRANSFORM control-id-entity-num-technique
 ;;
 ;;         :TYPE "int(4) unsigned"
 ;;         :NULL-P "NO"
@@ -245,7 +244,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;;
 
 ;;; ==============================
-;; :FIELD "display" :TRANSFORM conrtol-id-display-technique
+;; :FIELD "display" :TRANSFORM control-id-display-technique
 ;;
 ;;         :TYPE "varchar(255)"
 ;;         :NULL-P "NO"
