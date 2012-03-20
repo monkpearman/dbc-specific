@@ -56,7 +56,8 @@
   :license "BSD"
   :description "DBC agglomerated."
   :version "1.0.0"
-  :depends-on (:cxml
+  :depends-on (:puri
+               :cxml
 	       :closure-html
                :unicly
                :mon
