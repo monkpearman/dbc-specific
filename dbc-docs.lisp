@@ -1178,20 +1178,20 @@ keyword OUTPUT-PATHNAME-SUB-DIRECTORY of `make-parsed-class-output-file-ensuring
 :SEE-ALSO `print-sax-parsed-slots', `write-sax-parsed-slots-to-file',
 `write-sax-parsed-class-hash-to-files', `write-parsed-class-parse-table-to-file'.~%▶▶▶")
 
-(fundoc 'parsed-inventory-record-load-default-parsed-file-to-hash
-        "Load slots of class parsed-inventory-record to its parsed-class-parse-table from most recent dump file.~%~@
-Loads file written with `write-parsed-inventory-record-parse-table-to-file'
-which have the `cl:pathname-type' \"pctd\".~%~@
-Signal an error if the parsed file or its containing directory can not be found.~%~@
-:NOTE This functionality is distinct from that of
-`load-sax-parsed-xml-file-to-parsed-class-hash' which loads the contents of a
-parsed XML file where each record is an alist with each element of the alist a
-mapping from a string to a slot-value where each string is a valid argument to
-`set-parsed-inventory-record-slot-value' and identifies an SQL table-column with
-a corresponding slot-name.~%~@
-:SEE-ALSO `parsed-inventory-record-xml-dump-file-and-hash',
-`load-sax-parsed-xml-file-to-parsed-class-hash',
-`write-sax-parsed-slots-to-file', `write-parsed-class-parse-table-to-file'.~%▶▶▶")
+;; (fundoc 'parsed-inventory-record-load-default-parsed-file-to-hash
+;;         "Load slots of class parsed-inventory-record to its parsed-class-parse-table from most recent dump file.~%~@
+;; Loads file written with `write-parsed-inventory-record-parse-table-to-file'
+;; which have the `cl:pathname-type' \"pctd\".~%~@
+;; Signal an error if the parsed file or its containing directory can not be found.~%~@
+;; :NOTE This functionality is distinct from that of
+;; `load-sax-parsed-xml-file-to-parsed-class-hash' which loads the contents of a
+;; parsed XML file where each record is an alist with each element of the alist a
+;; mapping from a string to a slot-value where each string is a valid argument to
+;; `set-parsed-inventory-record-slot-value' and identifies an SQL table-column with
+;; a corresponding slot-name.~%~@
+;; :SEE-ALSO `parsed-inventory-record-xml-dump-file-and-hash',
+;; `load-sax-parsed-xml-file-to-parsed-class-hash',
+;; `write-sax-parsed-slots-to-file', `write-parsed-class-parse-table-to-file'.~%▶▶▶")
 
 (fundoc 'write-sax-parsed-class-hash-to-files
 "Write each parsed-class object of HASH-TABLE to a dedicated file beneath OUTPUT-DIRECTORY.~%~@
@@ -1283,18 +1283,18 @@ returned function is `write-parsed-inventory-record-parse-table-to-file'.~%~@
 instances of PARSED-CLASS using KEY-ACCESSOR as the hash-key.~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%▶▶▶"))
+:SEE-ALSO `<XREF>'.~%▶▶▶")
 
 (fundoc 'def-parsed-class-load-default-parsed-file-to-hash
         "A wrapper macro around `load-parsed-class-default-file-to-hash-table'.~%~@
 Return a function which loads the contents of parsed-class-parse-table from a file written
 by a function returned by macro `def-parsed-class-write-parse-table-to-file'.~%~@
 Returned function has a symbol-name with the format:~%
- load-<PARSED-CLASS-default-file-to-parse-table~%
+ load-\<PARSED-CLASS\>-default-file-to-parse-table~%
 For example, if PARSED-CLASS is parsed-inventory-record returned function would
 have the symbol name:~%
  load-parsed-inventory-record-default-file-to-parse-table~%~@
-:EXAMPLE~%~@
+:EXAMPLE~%
   \(macroexpand-1
    '\(def-parsed-class-load-default-parsed-file-to-hash 
      :parsed-class parsed-inventory-record
@@ -2084,18 +2084,19 @@ whereas this does not:~%
 ;;; dbc-specific/dbc-classes/dbc-class-parsed-csv-writer.lisp
 ;;; ==============================
 
-(fundoc 'parsed-inventory-record-write-parse-table-to-csv-file
-"Clean PREFIX-FOR-FILE-NAME for use with `write-parsed-class-parse-table-to-csv-file'.~%~@
-:EXAMPLE~%
- \(parsed-class-csv-clean-prefix-for-file-name \"parsed-inventory-record\"\)~%
- \(parsed-class-csv-clean-prefix-for-file-name \"parsed-inventory-record- \"\)~%
- \(parsed-class-csv-clean-prefix-for-file-name \" parsed-inventory-record-CSV \"\)~%
- \(parsed-class-csv-clean-prefix-for-file-name \"parsed-inventory-record-csv _-\"\)~%~@
-Following error successfully:~%
- \(parsed-class-csv-clean-prefix-for-file-name \"\"\)~%
- \(parsed-class-csv-clean-prefix-for-file-name \"-CSV\"\)~%
- \(parsed-class-csv-clean-prefix-for-file-name \"-csv\"\)~%~@
-:SEE-ALSO `<XREF>'.~%▶▶▶")
+;; deprecated now defined with `def-parsed-class-write-csv-file' macrology from loadtime-bind.lisp
+;; (fundoc 'write-parsed-inventory-record-parse-table-to-csv-file
+;; "Clean PREFIX-FOR-FILE-NAME for use with `write-parsed-class-parse-table-to-csv-file'.~%~@
+;; :EXAMPLE~%
+;;  \(parsed-class-csv-clean-prefix-for-file-name \"parsed-inventory-record\"\)~%
+;;  \(parsed-class-csv-clean-prefix-for-file-name \"parsed-inventory-record- \"\)~%
+;;  \(parsed-class-csv-clean-prefix-for-file-name \" parsed-inventory-record-CSV \"\)~%
+;;  \(parsed-class-csv-clean-prefix-for-file-name \"parsed-inventory-record-csv _-\"\)~%~@
+;; Following error successfully:~%
+;;  \(parsed-class-csv-clean-prefix-for-file-name \"\"\)~%
+;;  \(parsed-class-csv-clean-prefix-for-file-name \"-CSV\"\)~%
+;;  \(parsed-class-csv-clean-prefix-for-file-name \"-csv\"\)~%~@
+;; :SEE-ALSO `<XREF>'.~%▶▶▶")
 
 (fundoc 'write-parsed-class-parse-table-to-csv-file
         "Write the slot values of PARSED-CLASS to a csv file.
@@ -2134,6 +2135,28 @@ Returned function has a symbol-name with the format:~%
                                             \(make-pathname :directory '\(:relative \"parsed-csv-records\"\)\)
                                             \(dbc::sub-path dbc::*xml-output-dir*\)\)\)~%~@
 :SEE-ALSO `write-parsed-inventory-record-parse-table-to-csv-file'.~%▶▶▶")
+
+
+
+;;; ==============================
+;;; dbc-specific/dbc-classes/dbc-class-theme-entity.lisp
+;;; ==============================
+(fundoc 'dbc-theme-request-loc-x-uri
+        "Perform a `drakma:http-request' with THEME-STRING after percent-encoding it.~%~@
+Request has the format:~%
+ \"http://id.loc.gov/vocabulary/graphicMaterials/label/<PERCENT-ENCCODE-THEME-STRING>\"~%
+If we recieve a 200 response code return as if by cl:values as follows:~%
+ - nth-value 0 is the tgm-id assocated with THEME-STRING it is a string with the format:~%
+    tgmNNNNNN~%
+ - nth-value 1 is a puri:uri. It is the redirect uri for THEME-STRING.~%~@
+When keyword RENDER-URI (a boolean) is T it is returned as a string as if by `puri:render-uri'.~%~@
+:EXAMPLE~%
+ \(dbc::dbc-theme-request-loc-x-uri \"A la poupée prints\"\)
+ \(dbc::dbc-theme-request-loc-x-uri \"A la poupée prints\" :render-uri t\)
+the above is loosely equivalent to:~%
+ shell> curl -I http://id.loc.gov/vocabulary/graphicMaterials/label/A%20la%20poup%C3%A9e%20prints~%~@
+:SEE-ALSO `mon:string-percent-encode'.~%▶▶▶")
+
 
 ;;; ==============================
 
