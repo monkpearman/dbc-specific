@@ -350,14 +350,12 @@
                                               slot-name
                                               hash-key))
 
-(defmethod parsed-class-parse-table-lookup-slot-value ((object parsed-class)
+(defmethod parsed-class-parse-table-lookup-slot-value ((object symbol)
                                                        (slot-name symbol)
                                                        hash-key) 
   (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
                                               slot-name
                                               hash-key))
-
-;; (defgeneric (setf parsed-class-parse-table) (hash-table object))
 
 ;; (%parsed-class-parse-table-make-table)
 (defun %parsed-class-parse-table-make-table (&key 
