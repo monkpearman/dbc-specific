@@ -2,6 +2,15 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-brand-record.lisp
 ;;; ==============================
 
+;; following defined from loadtime-bind.lisp
+;; `set-parsed-brand-record-slot-value'
+;; `parsed-brand-record-xml-dump-file-and-hash'
+;; `write-parsed-brand-record-parse-table-to-csv-file'
+;; `load-parsed-brand-record-default-file-to-parse-table'
+;; `write-parsed-brand-record-parse-table-to-file'
+;;
+;;; *parsed-class-field-slot-accessor-mapping-table*
+
 
 (in-package #:dbc)
 ;; *package*
@@ -21,7 +30,7 @@
     :accessor control-id-doc-num-brand
     :documentation ":ORIGINAL-FIELD \"doc\"")
 
-   ;; control-id-entity-num
+   ;; control-id-entity-num ;; primary key
    (control-id-entity-num-brand
     :initarg :control-id-entity-num-brand
     :accessor control-id-entity-num-brand
@@ -153,13 +162,6 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("date_edt"           . edit-timestamp)
    ))
 
-
-;; :NOTE `set-parsed-inventory-record-slot-value' is defined in loadtime-bind.lisp
-;; (def-set-parsed-class-record-slot-value 
-;;      set-parsed-brand-record-slot-value
-;;      parsed-brand-record)
-;;
-;;; *parsed-class-field-slot-accessor-mapping-table*
 
 ;;; ==============================
 ;;
