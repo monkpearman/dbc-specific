@@ -14,17 +14,63 @@
               (string= slot-v match-string))
     count it))
 
+;; (parsed-class-slot-value-count-string/= 'parsed-inventory-record 'price-sold-ebay "0")
+(defun parsed-class-slot-value-count-string/= (class slot match-string)
+  (loop 
+    for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
+    for slot-v = (slot-value obj slot)
+    when (and (stringp slot-v) 
+              (string/= slot-v match-string))
+    count it))
+
+;; (parsed-class-slot-value-always-string= 'parsed-inventory-record 'price-sold-ebay "0")
+(defun parsed-class-slot-value-always-string= (class slot match-string)
+  (loop 
+    for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
+    for slot-v = (slot-value obj slot)
+    always (and (stringp slot-v) 
+                (string= slot-v match-string))))
+
+(defun parsed-class-slot-value-collect-string= (class slot match-string)
+  (loop 
+    for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
+    for slot-v = (slot-value obj slot)
+    when (and (stringp slot-v) 
+                (string= slot-v match-string))
+    count slot-v into cnt and
+    collect (cons obj-id slot-v) into gthr 
+    finally (return (values gthr cnt))))
+
+;; (parsed-class-slot-value-collect-string/= 'parsed-inventory-record 'price-sold-ebay "0")
+(defun parsed-class-slot-value-collect-string/= (class slot match-string)
+  (loop 
+    for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
+    for slot-v = (slot-value obj slot)
+    when (and (stringp slot-v) 
+                (string/= slot-v match-string))
+    count slot-v into cnt and
+    collect (cons obj-id slot-v) into gthr 
+    finally (return (values gthr cnt))))
+
+
 ;; (parsed-class-slot-value-set-when-string= 'parsed-inventory-record 'title-ebay "0" nil) => 232 
-(defun parsed-class-slot-value-set-when-string= (class slot match-string replacement-value)
+(defun parsed-class-slot-value-set-when-string= (class slot match-string replacement-value &key (return-object-id t))
+  (declare (boolean return-object-id))
   (loop 
     for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
     for slot-v = (slot-value obj slot)
     when (and (stringp slot-v) 
               (string= slot-v match-string))
     count slot-v into cnt and
-    do (setf (slot-value obj slot) replacement-value)
-    finally (return cnt)))
-
+    if return-object-id 
+    collect obj-id into gthr
+    end
+    and do (setf (slot-value obj slot) replacement-value)
+    finally (return 
+              (if return-object-id 
+                  (values cnt gthr)
+                  cnt))))
+;; parsed-class-parse-table-lookup
 ;; (parsed-class-slot-value-count-null 'parsed-inventory-record 'title-ebay)
 (defun parsed-class-slot-value-count-null (class slot)
   (loop 

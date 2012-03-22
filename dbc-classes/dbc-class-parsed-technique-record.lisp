@@ -158,35 +158,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("user_name"         . edit-by)
    ("naf_creator"       . edit-by-creator)))
 
-
-;; :NOTE `set-parsed-technique-record-slot-value' is defined in loadtime-bind.lisp
-;; (def-set-parsed-class-record-slot-value 
-;;     set-parsed-technique-record-slot-value
-;;     parsed-technique-record)
-;;
-;;; *parsed-class-field-slot-accessor-mapping-table*
-
-;; :NOTE Depreated use the macro'd version generated with `def-set-parsed-class-record-slot-value' instead.
-;; (defun set-parsed-technique-record-slot-value (field-string field-value object)
-;;   (values
-;;    (string-case:string-case (field-string)
-;;      ("id" (setf (control-id-entity-num-technique object) field-value))
-;;      ("display" (setf (control-id-display-technique object) field-value))
-;;      ("used_for"
-;;       (setf (technique-entity-display-name-coref object) field-value))
-;;      ("technique_family"
-;;       (setf (technique-entity-parent-type object) field-value))
-;;      ("variation_of" (setf (technique-entity-type-coref object) field-value))
-;;      ("notes"
-;;       (setf (description-media-entity-technique-note object) field-value))
-;;      ("default_pic" (setf (image-default-id object) field-value))
-;;      ("date_edt" (setf (edit-timestamp object) field-value))
-;;      ("date_edit" (setf (edit-timestamp-origin object) field-value))
-;;      ("online" (setf (record-status-active object) field-value))
-;;      ("user_name" (setf (edit-by object) field-value))
-;;      ("naf_creator" (setf (edit-by-creator object) field-value)))
-;;    object))
-
+;(parsed-class-parse-table 'parsed-technique-record)
                      
 #|                   
                      
