@@ -2,10 +2,15 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-translation-for-inventory-record.lisp
 ;;; ==============================
 
+;; note fixed items 4845, 4843, and 4810 by hand
+;; 4802 4793 4791 4785 4772 4771 4770 4769 4768 4766
 
 ;; these are translation records for the gil blas stuff
 ;; field ref corresponds with inventory-number of class `parsed-inventory-record'
-;; See the file dump-translations-xml for details.
+;; See the file dump-translations-xml for details. It contains 3807 records 2129
+;; have their extra or translation-append-for-record field with a 1 value
+
+(in-package #:dbc)
 
 ;; inventory-number
 (defclass parsed-translation-for-inventory-record (parsed-class)
@@ -57,11 +62,11 @@
     :documentation ":ORIGINAL-FIELD \"extra\"")
 
    (edit-timestamp
-   :initarg :edit-timestamp
-   :accessor edit-timestamp
-   :documentation ":ORIGINAL-FIELD \"date\"")
-  :documentation "Instances of this class correlate some longstanding translations
-for the Gil Blas inventory with their corresponding a `parsed-inventory-record'.")
+    :initarg :edit-timestamp
+    :accessor edit-timestamp
+    :documentation ":ORIGINAL-FIELD \"date\""))
+  (:documentation "Instances of this class correlate some longstanding translations
+for the Gil Blas inventory with their corresponding a `parsed-inventory-record'."))
 
 (make-parsed-class-field-slot-accessor-mapping 
  'parsed-translation-for-inventory-record
@@ -75,6 +80,20 @@ for the Gil Blas inventory with their corresponding a `parsed-inventory-record'.
    ("composer" . naf-entity-composer-coref) 
    ("extra"    . translation-append-for-record)
    ("date"     . edit-timestamp)))
+
+;; (defparameter *tt--translation-record-xref-table*
+
+;; (write-parsed-translation-for-inventory-record-parse-table-to-file  
+
+;; following will write all objects with `translation-append-for-record' slot
+;; value equal "1" to non-default parsed-class-table-dumps file
+;; (loop 
+;;   with hash = (make-hash-table :test #'equal)
+;;   for obj being the hash-value in (parsed-class-parse-table 'parsed-translation-for-inventory-record)
+;;   ;; when (equal (translation-append-for-record obj) "1") count obj ; => 2126
+;;   do (and (equal (translation-append-for-record obj) "1")
+;;           (setf (gethash (inventory-number obj) hash) obj))
+;;   finally (return (write-parsed-translation-for-inventory-record-parse-table-to-file :hash-table hash)))
 
 
 ;;; ==============================
