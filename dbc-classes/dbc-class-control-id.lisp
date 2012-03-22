@@ -105,6 +105,11 @@
  (make-v5-uuid *control-id-artist-namespace*  "Chanel (Gabrielle, \"Coco\"))
  (make-v5-uuid *fashion-designer-namespace*   "Chanel (Gabrielle, \"Coco\"))
 
+;;; ==============================
+Take a look at the xtuple manual it provides a fairly comprehensive overview of
+different processes related to accounting/inventory management:
+:SEE (URL `http://www.xtuple.org/sites/default/files/refguide/RefGuide-3.8/index.html')
+
  ; ==============================
 
 ;;; CPL's 

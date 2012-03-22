@@ -174,7 +174,7 @@ And more specifically we are concerned with the mapping from:~%~% ~
               \(mon:class-subclasses \(find-class 'base-media-entity\)\)
 :SEE-ALSO `media-entity-technique',`media-entity-material',
 `media-entity-mount', `media-entity-color',
-`base-description-entity-media-note', `naf-entity-type-regexp',
+`base-description-media-entity-note', `naf-entity-type-regexp',
 `naf-entity-control-name-regexp', `naf-entity-alt-name-regexp'.~%▶▶▶")))
 
 ;; base-entity                    (base-dbc)
