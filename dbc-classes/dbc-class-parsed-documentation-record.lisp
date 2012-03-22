@@ -2,7 +2,12 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-documentation-record.lisp
 ;;; ==============================
 
-;; parsed-documenation-record
+;; following defined in loadtime-bind.lisp
+;; `set-parsed-documentation-record-slot-value'
+;; `parsed-documentation-record-xml-dump-file-and-hash'
+;; `write-parsed-documentation-record-parse-table-to-file'
+;; `load-parsed-documentation-record-default-file-to-parse-table'
+;; `write-parsed-doc-record-parse-table-to-csv-file'
 
 (in-package #:dbc)
 
@@ -38,9 +43,9 @@
     :accessor naf-entity-person-coref
     :documentation ":ORIGINAL-FIELD \"people\"")
 
-   (naf-entity-author-coref
-    :initarg :naf-entity-author-coref
-    :accessor naf-entity-author-coref
+   (naf-entity-brand-coref
+    :initarg :naf-entity-brand-coref
+    :accessor naf-entity-brand-coref
     :documentation ":ORIGINAL-FIELD \"brand\"")
 
    (naf-entity-publication-coref
@@ -198,7 +203,7 @@
    ("artist"       . naf-entity-artist-coref)
    ("author"       . naf-entity-author-coref)
    ("people"       . naf-entity-person-coref)
-   ("brand"        . naf-entity-author-coref)
+   ("brand"        . naf-entity-brand-coref)
    ("book"         . naf-entity-publication-coref)
    ("technique"    . media-entity-technique-coref)
    ("paper"        . media-entity-paper-coref)
