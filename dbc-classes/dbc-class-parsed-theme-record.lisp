@@ -26,6 +26,9 @@
 ;; :TODO What about the stuff in the XML files dump-themes_fr-xml and dump-themes_active-xml ???
 ;;  
 
+;; for an early attempt at a theme index 
+;; :SEE dbc-specific/dbc-classes/record-type-scratch-2011-12-08.lisp
+
 ;;
 ;; base-theme-entity (base-entity)
 
@@ -33,16 +36,16 @@
 (in-package #:dbc)
 
 (defclass parsed-theme-record (parsed-class)
-  (;; control-id-entity-num
-   (conrtol-id-entity-num-
-    :initarg :conrtol-id-entity-num-technique
-    :accessor conrtol-id-entity-num-technique
+  (;; control-id-entity-num primary-key
+   (control-id-theme-entity-num
+    :initarg :control-id-theme-entity-num
+    :accessor control-id-theme-entity-num
     :documentation ":ORIGINAL-FIELD \"id\"")
 
    (
-    conrtol-id-display-theme
-    :initarg :conrtol-id-display-theme
-    :accessor conrtol-id-display-theme
+    control-id-display-theme
+    :initarg :control-id-display-theme
+    :accessor control-id-display-theme
     :documentation ":ORIGINAL-FIELD \"theme\"")
 
    ;; shares-generic
@@ -57,6 +60,7 @@
     :accessor image-default-xref
     :documentation ":ORIGINAL-FIELD \"display_pic\"")
 
+   ;; (image-coref  (parsed-class-parse-table-lookup 'parsed-theme-record "6963"))
    (image-coref
     :initarg :image-coref
     :accessor image-coref
@@ -103,17 +107,34 @@
    (ignorable-nt ;; theme-entity-nt-coref
     :initarg :ignorable-nt
     :accessor ignorable-nt
-    :documentation ":ORIGINAL-FIELD \"NT\""))
+    :documentation ":ORIGINAL-FIELD \"NT\"")
+
+   (control-id-theme-entity-loc-num
+    :initarg :control-id-theme-entity-loc-num
+    :accessor control-id-theme-entity-loc-num
+    :documentation "This does not occur in our original table.. 
+An LOC id is a string having the format: 
+ \"tgmNNNNNN\"
+These correlate our theme-ids with the LOC's cannonical ids.")
+
+   (control-id-theme-entity-loc-uri
+    :initarg :control-id-theme-entity-loc-uri
+    :accessor control-id-theme-entity-loc-uri
+    :documentation "This does not occur in our original table.
+A uri. Use it to grab LOC skos/rdf-xml data.")
+   )
   (:documentation
     #.(format nil
               "Class for parsed dbc XML `themes` table.~%~@
-  :SEE-ALSO `parsed-artist-record', `parsed-author-record',~%~@
-  `parsed-person-record', `parsed-brand-record', `parsed-publication-record'.~%▶▶▶")))
+:SEE-ALSO `dbc-theme-request-loc-x-uri', `parsed-inventory-record',
+`parsed-artist-record', `parsed-author-record', `parsed-person-record',
+`parsed-brand-record', `parsed-publication-record'.~%▶▶▶")))
 
+;; note everything above 13484 was added after the fact and isn't a TGM term
 
 (make-parsed-class-field-slot-accessor-mapping 
  'parsed-theme-record
- '(("id"                 . control-id-entity-num-theme)
+ '(("id"                 . control-id-theme-entity-num)
    ("theme"              . control-id-display-theme)
    ("active"             . record-status-active)
    ("display_pic"        . image-default-xref)
@@ -429,6 +450,8 @@
 ;;  Where the last char should always be #\|
 ;;  When not "0" value of field `display_pic` should be present as a member and `active` should "1".
 ;;  When "0" value of `display_pic` and `active` should also be "0" and value of `date_edit` will be "0000-00-00 00:00:00"
+;;
+;; (image-coref  (parsed-class-parse-table-lookup 'parsed-theme-record "6963"))
 
 ;;; ==============================
 ;; :FIELD "display_pic" :TRANSFORM image-default-xref

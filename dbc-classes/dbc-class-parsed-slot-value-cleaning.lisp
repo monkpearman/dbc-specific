@@ -5,8 +5,8 @@
 (in-package #:dbc)
 
 
-;; (parsed-class-slot-value-count-matching-string= 'parsed-inventory-record 'record-status-active "2")
-(defun parsed-class-slot-value-count-matching-string= (class slot match-string)
+;; (parsed-class-slot-value-count-string= 'parsed-inventory-record 'record-status-active "2")
+(defun parsed-class-slot-value-count-string= (class slot match-string)
   (loop 
     for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
     for slot-v = (slot-value obj slot)
@@ -77,6 +77,13 @@
     for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
     for slot-v = (slot-value obj slot)
     when (null slot-v) 
+    count it))
+;;
+(defun parsed-class-slot-value-count-non-null (class slot)
+  (loop 
+    for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
+    for slot-v = (slot-value obj slot)
+    when (not (null slot-v) )
     count it))
 
 ;; (parsed-class-slot-value-collect-non-null 'parsed-inventory-record 'title-ebay)

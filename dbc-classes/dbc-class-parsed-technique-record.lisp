@@ -93,7 +93,7 @@
     :documentation ":ORIGINAL-FIELD \"variation_of\"")
 
    (description-media-entity-technique-note
-    :initarg :description-technique-notes
+    :initarg :description-media-entity-technique-note
     :accessor description-media-entity-technique-note
     :documentation ":ORIGINAL-FIELD \"notes\"")
 
