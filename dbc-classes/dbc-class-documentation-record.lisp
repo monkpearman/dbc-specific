@@ -48,7 +48,7 @@
 
 ;; base-documentation-record (base-record)
 ;; documentation-record-sitedoc (base-documentation-record)
-
+;; *control-id-documentation-namespace*
 ;; `parsed-doc-record'
 (defclass base-documentation-record (base-record)
   ()
