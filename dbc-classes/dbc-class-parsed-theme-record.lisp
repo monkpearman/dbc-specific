@@ -125,9 +125,194 @@
    ("BT"                 . ignorable-bt) ;; theme-entity-bt-coref
    ("US"                 . ignorable-us) ;; theme-entity-use-coref
    ("UF"                 . ignorable-uf) ;; theme-entity-uf-coref
-   ("NT"                 . ignorable-nt)) ;; theme-entity-nt-coref
+   ("NT"                 . ignorable-nt) ;; theme-entity-nt-coref
+   ("__IGNORED-1"        . control-id-theme-entity-loc-num)
+   ("__IGNORED-2"        . control-id-theme-entity-loc-uri))
  )
 
+;; (dbc-theme-request-loc-x-uri "Marble")
+;; (dbc-theme-request-loc-x-uri "Cartouches (Architecture)")
+
+;; (parsed-class-parse-table 'parsed-theme-record)
+;; (control-id-display-theme (parsed-class-parse-table-lookup 'parsed-theme-record "13862"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "6823"))
+;; (control-id-theme-entity-loc-num (parsed-class-parse-table-lookup 'parsed-theme-record "7000"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "7000"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "7276"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "7365"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "7557"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "7701"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "7858"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "7954"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "8067"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "8086"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "8105"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "8150"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "8151"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "8152"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "8174"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "8177"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "8200"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "8249"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "8250"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "8275"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "8300"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "8400"))
+;; (control-id-theme-entity-loc-uri (parsed-class-parse-table-lookup 'parsed-theme-record "13474"))
+
+;; (image-coref (parsed-class-parse-table-lookup 'parsed-theme-record "8300"))
+
+;; (write-parsed-theme-record-parse-table-to-file)
+
+;; (cl-ppcre:split #\| "9190|9186|510|")
+
+#|
+
+ (loop 
+   for obj being the hash-values of (parsed-class-parse-table 'parsed-theme-record)
+   for stat = (record-status-active obj)
+   when (null stat)
+   collect (control-id-display-theme obj))
+
+ (loop 
+   for obj being the hash-values of (parsed-class-parse-table 'parsed-theme-record)
+   for stat = (record-status-active obj)
+  ;; always (or (string= "1" stat) (string= "0" stat)))
+  ;;
+  ;; do (if (string= stat "1")
+  ;;         (setf (record-status-active obj) t)
+  ;;         (setf (record-status-active obj) nil)))
+   when stat count it)
+  always (typep stat 'boolean))
+
+(loop 
+  for obj being the hash-values of (parsed-class-parse-table 'parsed-theme-record)
+  ;; always (stringp (image-default-xref obj)))
+  for idx = (image-default-xref obj)
+  when (not (stringp idx)) 
+  collect idx)
+
+
+
+  when (or (and (not (stringp stat)) stat)
+           (and (not (or (string= "1" stat) (string= "0" stat)))
+                stat))
+  collect it)
+           
+
+ ;populate the loc xrefs -- will take a long time!
+ (loop 
+   for obj being the hash-values of (parsed-class-parse-table 'parsed-theme-record)
+   do (multiple-value-bind (termid uri) (dbc-theme-request-loc-x-uri (control-id-display-theme obj) :render-uri t)
+        (when termid
+          (setf (control-id-theme-entity-loc-num obj) termid
+                (control-id-theme-entity-loc-uri obj) uri))))
+
+*parsed-class-parse-table*
+ ;;   with eg = '("id" "barlg") 
+ ;;   for (termid uri) = eg
+ ;;   collect termid)
+
+
+;; inactive themes => 4861
+(loop 
+  for obj being the hash-values of (parsed-class-parse-table 'parsed-theme-record)
+  for stat = (record-status-active obj)
+  when (null stat)
+  collect (control-id-display-theme obj))
+
+;; inactive themes with an loc number 4435
+(loop 
+  with innactive-loc-themes-count = 0
+  for obj being the hash-values of (parsed-class-parse-table 'parsed-theme-record)
+  do (with-slots (record-status-active
+                  control-id-theme-entity-loc-num
+                  );control-id-display-theme)
+         obj
+       (when (and (null record-status-active)
+                  control-id-theme-entity-loc-num)
+         (incf  innactive-loc-themes-count)))
+  finally (return  innactive-loc-themes-count))
+
+;; active themes without an loc number 69
+(loop 
+  with active-no-loc-themes-count = 0
+  with active-no-loc-themes = '()
+  for obj being the hash-values of (parsed-class-parse-table 'parsed-theme-record)
+  do (with-slots (record-status-active
+                  control-id-theme-entity-loc-num
+                  control-id-display-theme
+                  control-id-theme-entity-num
+                  image-coref)
+         obj
+       (when (and record-status-active
+                  (null control-id-theme-entity-loc-num))
+         (incf  active-no-loc-themes-count)
+         (push (list control-id-theme-entity-num control-id-display-theme image-coref) active-no-loc-themes)))
+  finally (return (values active-no-loc-themes active-no-loc-themes-count )))
+
+ ; colors
+ "Yellow" "White" "Seashell" "Ruby" "Rose" "Red" "Purple" "Primrose" "Pink"
+ "Orange" "Heather" "Green" "Grey" "Garnet" "Fawn" "Coral" "Chocolate"
+ "Chestnut" "Cardinal" "Canary" "Buff" "Brown" "Bronze" "Blue" "Blonde" "Black"
+ "Azure" "Auburn" 
+
+ ; countries 
+ "Turkey" "Morocco" "Japan" "India" "Egypt" "Canada"
+
+(write-parsed-theme-record-parse-table-to-file)
+(load-parsed-theme-record-default-file-to-parse-table)
+
+;; convert image-corefs to list
+(loop 
+  for obj being the hash-values of (parsed-class-parse-table 'parsed-theme-record)
+  for default-xref = (image-default-xref obj)
+  for coref = (image-coref obj)
+  for converting-coref = (if (string= coref "0")
+                             nil
+                             (remove-if #'mon:string-null-empty-or-all-whitespace-p (cl-ppcre:split #\| (image-coref obj))))
+  do (setf (image-coref obj) converting-coref))
+
+;; (write-parsed-theme-record-parse-table-to-file)
+;; remove "0" for image-default-xref
+(loop 
+  for obj being the hash-values of (parsed-class-parse-table 'parsed-theme-record)
+  for default-xref = (image-default-xref obj)
+  when (string= default-xref "0")
+     do (setf (image-default-xref obj) nil))
+
+  ;; for img = (image-coref obj)
+  do (with-slots (;; record-status-active
+                  ;; control-id-theme-entity-loc-num
+                  ;; control-id-display-theme
+                  ;; control-id-theme-entity-num
+                  (ic image-coref)
+                  (idx image-default-xref)
+                  )
+         obj
+       (when (and ic
+                  (stringp ic)
+                  (string= ic "0")
+                  (setf ic nil)))
+       ;; (remove-if #'mon:string-null-empty-or-all-whitespace-p (cl-ppcre:split #\| image-coref)))
+       (setf ic nil)
+       (when (and idx
+                  (stringp idx)
+                  (string= idx "0"))
+         (setf idx nil))))
+       
+         (incf with-image-corefs)))
+  finally (return with-image-corefs))
+=> 6893
+
+;; (remove-if #'mon:string-null-empty-or-all-whitespace-p (cl-ppcre:split #\| nil))
+
+;; (write-parsed-theme-record-parse-table-to-file)
+;; (load-parsed-theme-record-default-file-to-parse-table)
+
+|#
+
+;;; ==============================
 ;; "id"                 :TRANSFORM "control-id-entity-num-theme"
 ;; "theme"              :TRANSFORM "control-id-display-theme"
 ;; "active"             :TRANSFORM "record-status-active"

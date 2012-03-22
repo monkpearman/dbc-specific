@@ -25,8 +25,6 @@
 ;; http://id.loc.gov/vocabulary/graphicMaterials/label/Action%20%26%20adventure%20dramas
 ;; elisp (insert (concat "http://id.loc.gov/vocabulary/graphicMaterials/label/" (mon-encode-url "Action & adventure dramas")))
 ;; 
-;; :NOTE as of drakma 1.2.6 there appears to be a bug in drakma when url encoding "%20%26%20" but the following commit fixes it
-;; https://github.com/edicl/drakma/commit/f6a380940b2b69a700a9c91cd79532c0d1027a8c
 ;;
 ;; (http-request "http://id.loc.gov/vocabulary/graphicMaterials/label/Barnyards" :method :head) 
 ;; (http-request "http://id.loc.gov/vocabulary/graphicMaterials/label/Action%20%26%20adventure%20dramas" :preserve-uri t)
@@ -120,14 +118,26 @@
 
 ;; (URL `http://id.loc.gov/static/data/authoritiesnames.nt.skos.gz')
 
-;; :NOTE there is a per them XML file from db's php parse from the old dbc here:
+;;; ==============================
+
+;; :NOTE there is a per theme XML file from db's php parse from the old dcp here:
 ;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/tgm.tar
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/xslt/tgm_htm_details.php
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/xslt/tgm_htm_details.xslt
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/xslt/tgm_htm_feb_06.xslt
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/xslt/tgm_htm_results.xslt
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/xslt/tgm_htm.xslt
+
 ;;
 ;; Also, for a later Lisp parse see: 
 ;; :FILE dbc-specific/dbc-classes/dbc-tgm.lisp
 ;;
 ;; The newest TGM parse of the existing dbc related sql data is here:
 ;; dbc-specific/dbc-classes/dbc-class-parsed-theme-record.lisp
+
+
+;; for an early attempt at a theme index 
+;; :SEE dbc-specific/dbc-classes/record-type-scratch-2011-12-08.lisp
 
 ;;; ==============================
 ;;
@@ -152,6 +162,8 @@
   ()
   )
 
+;; :NOTE as of drakma 1.2.6 there appears to be a bug in drakma when url encoding "%20%26%20" but the following commit fixes it
+;; https://github.com/edicl/drakma/commit/f6a380940b2b69a700a9c91cd79532c0d1027a8c
 (defun dbc-theme-request-loc-x-uri (theme-string &key (render-uri nil))
   (declare (string theme-string)
            (boolean render-uri))

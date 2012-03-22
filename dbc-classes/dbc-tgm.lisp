@@ -2,8 +2,26 @@
 ;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-classes/dbc-tgm.lisp
 ;;; ==============================
 
+;; :NOTE as of 2012-03-17 the LOC now publish SKOS/RDF/N-TRIPLES and JSON data for themes
+;; :SEE (URL `http://id.loc.gov/vocabulary/graphicMaterials/tgm001002.html')
+;; (URL `http://id.loc.gov/download/')
+;; (URL `http://id.loc.gov/static/data/vocabularygraphicMaterials.nt.zip')
+;; (URL `http://id.loc.gov/static/data/vocabularygraphicMaterials.rdfxml.zip')
+;; (URL `http://id.loc.gov/static/data/vocabularygraphicMaterials.ttl.zip')
+
 ;; :NOTE there is a per them XML file from the old dcp here:
 ;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/tgm.tar
+
+;; :NOTE there is a per theme XML file from db's php parse from the old dcp here:
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/tgm.tar
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/xslt/tgm_htm_details.php
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/xslt/tgm_htm_details.xslt
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/xslt/tgm_htm_feb_06.xslt
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/xslt/tgm_htm_results.xslt
+;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/xslt/tgm_htm.xslt
+
+;; for an early attempt at a theme index 
+;; :SEE dbc-specific/dbc-classes/record-type-scratch-2011-12-08.lisp
 
 
 (in-package #:dbc)
