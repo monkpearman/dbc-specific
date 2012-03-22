@@ -1517,6 +1517,51 @@ Fails successfully:~%
 Fails successfully:~%
  \(%parsed-class-subtype-check \(make-instance 'parsed-class\)\)~%")
 
+(generic-doc #'%parsed-class-slot-exists-for-parsed-class-check
+"If SLOT-NAME is a valid slot for OBJECT return it, else signal an error.~%
+SLOT-NAME is a symbol~%
+OBJECT is either a symbol, a subclass of the class `parsed-class', or an
+instance of the class `parsed-class-field-slot-accessor-mapping'.~%
+:NOTE When OBJECT or SLOT-NAME are symbols they may need to be package qualified when
+invoked from outside the package DBC.~%
+:SEE-ALSO `%parsed-class-subtype-check', `accessor-to-field-mapping',
+`field-to-accessor-mapping', `field-to-accessor-table',
+`accessor-to-field-table', `parsed-class-mapped',
+`make-parsed-class-field-slot-accessor-mapping',
+`def-set-parsed-class-record-slot-value'.~%")
+
+(method-doc #'%parsed-class-slot-exists-for-parsed-class-check nil '(parsed-class-field-slot-accessor-mapping symbol)
+"~%:EXAMPLE~%
+ \(%parsed-class-slot-exists-for-parsed-class-check \(parsed-class-mapped 'parsed-inventory-record\) 
+                                                   'category-entity-0-coref\)~%
+ \(%parsed-class-slot-exists-for-parsed-class-check \(parsed-class-mapped 'parsed-inventory-record\)
+                                                   'dbc::category-entity-0-coref\)~%
+Following fail successfully:~%
+ \(%parsed-class-slot-exists-for-parsed-class-check \(parsed-class-mapped 'parsed-class\)
+                                                   'category-entity-0-coref\)~%
+ \(%parsed-class-slot-exists-for-parsed-class-check \(parsed-class-mapped 'parsed-inventory-record\)
+                                                   'foo\)~%")
+
+(method-doc #'%parsed-class-slot-exists-for-parsed-class-check nil '(parsed-class symbol)
+"~%:EXAMPLE~%
+\(%parsed-class-slot-exists-for-parsed-class-check \(make-instance 'parsed-inventory-record\) 
+                                                  'category-entity-0-coref\)~%
+\(%parsed-class-slot-exists-for-parsed-class-check \(make-instance 'parsed-inventory-record\) 
+                                                  'dbc::category-entity-0-coref\)~%
+Following fails successfully:~%
+ \(%parsed-class-slot-exists-for-parsed-class-check \(make-instance 'parsed-inventory-record\) 
+                                                   'foo\)~%")
+
+(method-doc #'%parsed-class-slot-exists-for-parsed-class-check nil '(symbol symbol)
+"~%:EXAMPLE~%
+\(%parsed-class-slot-exists-for-parsed-class-check 'parsed-inventory-record 
+                                                  'category-entity-0-coref\)~%
+\(%parsed-class-slot-exists-for-parsed-class-check 'parsed-inventory-record 
+                                                  'dbc::category-entity-0-coref\)~%
+Following fails successfully:~%
+ \(%parsed-class-slot-exists-for-parsed-class-check 'parsed-inventory-record 
+                                                   'foo\)~%")
+
 (generic-doc #'field-to-accessor-table
 "Return a hash-table mapping original SQL field strings to accessors of OBJECT's class.~%~@
 :SEE-ALSO `accessor-to-field-mapping', `field-to-accessor-mapping',
@@ -2141,19 +2186,20 @@ Returned function has a symbol-name with the format:~%
 ;;; ==============================
 ;;; dbc-specific/dbc-classes/dbc-class-theme-entity.lisp
 ;;; ==============================
+
 (fundoc 'dbc-theme-request-loc-x-uri
         "Perform a `drakma:http-request' with THEME-STRING after percent-encoding it.~%~@
 Request has the format:~%
  \"http://id.loc.gov/vocabulary/graphicMaterials/label/<PERCENT-ENCCODE-THEME-STRING>\"~%
 If we recieve a 200 response code return as if by cl:values as follows:~%
  - nth-value 0 is the tgm-id assocated with THEME-STRING it is a string with the format:~%
-    tgmNNNNNN~%
+    \"tgmNNNNNN\"~%
  - nth-value 1 is a puri:uri. It is the redirect uri for THEME-STRING.~%~@
 When keyword RENDER-URI (a boolean) is T it is returned as a string as if by `puri:render-uri'.~%~@
 :EXAMPLE~%
- \(dbc::dbc-theme-request-loc-x-uri \"A la poupée prints\"\)
- \(dbc::dbc-theme-request-loc-x-uri \"A la poupée prints\" :render-uri t\)
-the above is loosely equivalent to:~%
+ \(dbc::dbc-theme-request-loc-x-uri \"A la poupée prints\"\)~%
+ \(dbc::dbc-theme-request-loc-x-uri \"A la poupée prints\" :render-uri t\)~%~@
+The above is loosely equivalent to:~%
  shell> curl -I http://id.loc.gov/vocabulary/graphicMaterials/label/A%20la%20poup%C3%A9e%20prints~%~@
 :SEE-ALSO `mon:string-percent-encode'.~%▶▶▶")
 

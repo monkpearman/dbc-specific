@@ -34,7 +34,7 @@
 ;; `edit-timestamp-origin'              -> `edit-timestamp-origin'             ; parsed-class
 ;; `edit-timestamp'                     -> `edit-timestamp'                    ; parsed-class
 ;;
-
+;; control-id-
 ;; `control-id-display-name-for-entity-type' -> | `control-id-display-artist'       ; parsed-naf-entity
 ;;                                              | `control-id-display-author'       ; parsed-naf-entity
 ;;                                              | `control-id-display-person'       ; parsed-naf-entity
@@ -92,7 +92,18 @@
 (defgeneric parsed-class-parse-table (object))
 (defgeneric (setf parsed-class-parse-table) (hash-table object))
 
+;; parsed-class-table-lookup -> parsed-class-parse-table-lookup
 (defgeneric parsed-class-table-lookup (parsed-class hash-key))
+
+(defgeneric %parsed-class-slot-exists-for-parsed-class-check (object slot-name))
+
+;; (defgeneric parsed-class-parse-table-lookup-slot-value (parsed-class slot-name hash-key))
+;; (unless (member slot-name (accessors-of-parsed-class parsed-class))
+;; slot-exists-p
+
+;; (error ":method parsed-class-parse-table-lookup-slot-value
+;; (let ((maybe-object (parsed-class-parse-table (parsed-class-mapped object))))
+;;  (gethash hash-key (parsed-class-parse-table (parsed-class-mapped object))))
 
 ;; These are common to class `parsed-class' and its subclasses
 (defgeneric naf-entity-author-coref (object))
@@ -315,6 +326,12 @@
 (defmethod initargs-of-parsed-class ((object parsed-class))
   (initargs-of-parsed-class (parsed-class-mapped object)))
 
+(defmethod %parsed-class-slot-exists-for-parsed-class-check ((object parsed-class) (slot-name symbol))
+  (%parsed-class-slot-exists-for-parsed-class-check (parsed-class-mapped object) slot-name))
+
+(defmethod %parsed-class-slot-exists-for-parsed-class-check ((object symbol) (slot-name symbol))
+  (%parsed-class-slot-exists-for-parsed-class-check (parsed-class-mapped object) slot-name))
+
 ;; (parsed-class-parse-table (make-instance 'parsed-inventory-record))
 ;; Following fails successfully:
 ;; (parsed-class-parse-table (make-instance 'parsed-class))
@@ -332,6 +349,10 @@
 
 (defmethod parsed-class-table-lookup ((object parsed-class) hash-key)
   (gethash hash-key (parsed-class-parse-table (parsed-class-mapped object))))
+
+
+;; (defmethod parsed-class-table-lookup-slot-value ((object parsed-class) slot-name hash-key)
+;;  (gethash hash-key (parsed-class-parse-table (parsed-class-mapped object))))
 
 ;; (defgeneric (setf parsed-class-parse-table) (hash-table object))
 

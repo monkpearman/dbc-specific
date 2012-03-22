@@ -124,6 +124,15 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
 (defmethod accessors-of-parsed-class ((object parsed-class-field-slot-accessor-mapping))
   (alexandria:hash-table-keys (accessor-to-field-table object)))
 
+(defmethod %parsed-class-slot-exists-for-parsed-class-check ((object parsed-class-field-slot-accessor-mapping) (slot-name symbol))
+  (or (car (member slot-name (accessors-of-parsed-class object)))
+      (error ":METHOD `%parsed-class-slot-exists-for-parsed-class-check' -- ~
+               arg SLOT-NAME is not a valid slot for OBJECT~% ~
+               object: ~S~% ~
+               slot-name ~S~%"
+             object
+             slot-name)))
+
 ;; (initargs-of-parsed-class (parsed-class-mapped 'parsed-inventory-record))
 (defmethod initargs-of-parsed-class ((object parsed-class-field-slot-accessor-mapping))
   (loop 
