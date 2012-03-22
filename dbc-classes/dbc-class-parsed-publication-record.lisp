@@ -2,6 +2,14 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-publication-record.lisp
 ;;; ==============================
 
+;; Following defined in loadtime-bind.lisp
+;; `set-parsed-publication-record-slot-value'
+;; `parsed-publication-record-xml-dump-file-and-hash'
+;; `write-parsed-publication-record-parse-table-to-file'
+;; `load-parsed-publication-record-default-file-to-parse-table'
+;; `write-parsed-publication-record-parse-table-to-csv-file'
+
+
 ;;; ==============================
 ;;;
 ;; (let ((cnt 0)) (while (search-forward-regexp " xsi:nil=\"true\" />" nil t) (replace-match "></field>") (incf cnt)) cnt) => 333
@@ -102,7 +110,8 @@ scanned-date
     :accessor control-id-doc-num-publication
     :documentation ":ORIGINAL-FIELD \"bio\"")
 
-   (control-id-entity-num-publication
+   (;; primary key
+    control-id-entity-num-publication
     :initarg :control-id-entity-num-publication
     :accessor control-id-entity-num-publication
     :documentation ":ORIGINAL-FIELD \"id\"")
@@ -213,7 +222,6 @@ scanned-date
     :accessor edit-timestamp
     :documentation ":ORIGINAL-FIELD \"date_edt\"")
 
-
    (edit-by
     :initarg :edit-by
     :accessor edit-by
@@ -263,48 +271,6 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("naf_creator"        . edit-by-creator)))
 
 
-;; :NOTE `set-parsed-inventory-record-slot-value' is defined in loadtime-bind.lisp
-;; (def-set-parsed-class-record-slot-value 
-;;     set-parsed-publication-record-slot-value
-;;     parsed-publication-record)
-;;
-;;; *parsed-class-field-slot-accessor-mapping-table*
-;;
-;; :NOTE Depreated use the macro'd version generated with `def-set-parsed-class-record-slot-value' instead. 
-;; (defun set-parsed-publication-record-slot-value
-;;        (field-string field-value object)
-;;   (values
-;;    (string-case:string-case (field-string)
-;;      ("bio" (setf (control-id-doc-num-publication object) field-value))
-;;      ("id" (setf (control-id-entity-num-publication object) field-value))
-;;      ("display" (setf (control-id-display-publication object) field-value))
-;;      ("book_real"
-;;       (setf (control-id-display-publication-full object) field-value))
-;;      ("author" (setf (naf-entity-author-coref object) field-value))
-;;      ("illustrator" (setf (naf-entity-artist-coref object) field-value))
-;;      ("date_pub" (setf (publication-date object) field-value))
-;;      ("loc_pub" (setf (publication-location object) field-value))
-;;      ("volumes" (setf (publication-volumes object) field-value))
-;;      ("pages" (setf (publication-pages object) field-value))
-;;      ("illustrations" (setf (publication-illustrations object) field-value))
-;;      ("subjects" (setf (ignorable-publication-subjects object) field-value))
-;;      ("lc_class" (setf (control-id-authority-0 object) field-value))
-;;      ("ULAN_control" (setf (control-id-authority-1 object) field-value))
-;;      ("content"
-;;       (setf (description-publication-note-content object) field-value))
-;;      ("notes" (setf (description-publication-note-general object) field-value))
-;;      ("special_note"
-;;       (setf (description-publication-note-special object) field-value))
-;;      ("auction_records"
-;;       (setf (description-publication-note-sale-appearance object) field-value))
-;;      ("default_pic" (setf (image-default-id object) field-value))
-;;      ("print_default_pic" (setf (image-default-xref object) field-value))
-;;      ("online" (setf (record-status-active object) field-value))
-;;      ("date_edit" (setf (edit-timestamp-origin object) field-value))
-;;      ("date_edt" (setf (edit-timestamp object) field-value))
-;;      ("user_name" (setf (edit-by object) field-value))
-;;      ("naf_creator" (setf (edit-by-creator object) field-value)))
-;;    object))
 
 
 ;;; ==============================
