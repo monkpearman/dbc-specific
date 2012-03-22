@@ -56,14 +56,15 @@
   :license "BSD"
   :description "DBC agglomerated."
   :version "1.0.0"
-  :depends-on (:puri
-               :cxml
+  :depends-on (:cxml
 	       :closure-html
                :unicly
                :mon
                :mon-test
                :image-ops
                :csv-parser
+               :puri
+               :drakma 
                ;; :NOTE Following will be made available to system by :mon
 	       ;; :split-sequence
                ;; :string-case
@@ -77,7 +78,7 @@
                ;; :closer-mop
                ;; ==============================
                ;; :NOTE prob. better to use a separate system for drakma related dependencies. 
-	       ;; :drakma 
+               
                ;; ==============================
                ;; :NOTE Time related dependencies should maybe use a separate
                ;; time dedicated system for these (and others). 
@@ -153,6 +154,7 @@
              (:file "dbc-class-image-path-convert")
              (:file "dbc-class-image-path-inventory-record")
              (:file "dbc-class-parsed-csv-writer")
+             (:file "dbc-class-parsed-slot-value-cleaning")
              ))
    (:module "dbc-parse"
 	    :components
