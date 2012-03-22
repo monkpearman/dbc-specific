@@ -171,61 +171,53 @@
 ;;
 ;;; *parsed-class-field-slot-accessor-mapping-table*
 
-(def-set-parsed-class-record-slot-value
-    ;; set-parsed-inventory-record-slot-value
-    parsed-inventory-record)
-
-(def-set-parsed-class-record-slot-value
-    ;; set-parsed-inventory-sales-order-record-slot-value
-    parsed-inventory-sales-order-record)
-
-;; (def-set-parsed-class-record-slot-value
-;;     set-parsed-inventory-sales-sold-record-slot-value
-;;     parsed-inventory-sales-sold-record)
-
-;; `set-parsed-inventory-sales-sold-in-store-record-slot-value'
-(def-set-parsed-class-record-slot-value
-     parsed-inventory-sales-sold-in-store-record)
-
-;; `set-parsed-artist-record-slot-value'
-(def-set-parsed-class-record-slot-value
-    ;; set-parsed-artist-record-slot-value
-    parsed-artist-record)
-
-;; `set-parsed-technique-record-slot-value'
-(def-set-parsed-class-record-slot-value
-    ;; set-parsed-technique-record-slot-value
-    parsed-technique-record)
-
-;; `set-parsed-person-record-slot-value'
-(def-set-parsed-class-record-slot-value
-    ;; set-parsed-person-record-slot-value
-    parsed-person-record)
-
-;; `set-parsed-author-record-slot-value'
-(def-set-parsed-class-record-slot-value
-    ;; set-parsed-author-record-slot-value
-    parsed-author-record)
-
-;; `set-parsed-brand-record-slot-value'
-(def-set-parsed-class-record-slot-value
-    ;; set-parsed-brand-record-slot-value
-    parsed-brand-record)
+;;; ==============================
+;;; `parsed-inventory-sales-order-record'
+;;; `parsed-inventory-sales-sold-in-store-record'
+;;; ==============================
 
 ;; (parsed-inventory-record-xml-dump-file-and-hash)
 ;; (parsed-inventory-sales-order-record-xml-dump-file-and-hash)
 ;; (parsed-inventory-sales-sold-in-store-record-xml-dump-file-and-hash)
 
+;; `set-parsed-inventory-sales-order-record-slot-value'
+(def-set-parsed-class-record-slot-value
+    parsed-inventory-sales-order-record)
+
+;; `set-parsed-inventory-sales-sold-record-slot-value'
+;; (def-set-parsed-class-record-slot-value
+;;     parsed-inventory-sales-sold-record)
+
+;; `set-parsed-inventory-sales-sold-in-store-record-slot-value'
+(def-set-parsed-class-record-slot-value
+    parsed-inventory-sales-sold-in-store-record)
+
+;;; ==============================
+
+
+;; *parsed-class-parse-table*
+
+
+;;; ==============================
+;;; `parsed-inventory-record'
+;;; ==============================
+
+;; `set-parsed-inventory-record-slot-value'
+(def-set-parsed-class-record-slot-value
+    parsed-inventory-record)
+
+;; (parsed-inventory-record-xml-dump-file-and-hash)
+;; `parsed-inventory-record-xml-dump-file-and-hash'
 (def-parsed-class-record-xml-dump-file-and-hash
     :parsed-class parsed-inventory-record
   :default-key-accessor inventory-number
   :default-input-pathname-name "dump-refs-DUMPING"
   :default-output-pathname-base-directory (sub-path *xml-output-dir*)
-  :default-output-pathname-sub-directory (list "parsed-xml-inventory-records")
+  :default-output-pathname-sub-directory (list "parsed-xml-records" "parsed-xml-inventory-records")
   :default-output-pathname-name "inventory-records")
 
+;; (write-parsed-inventory-record-parse-table-to-file)
 ;; `write-parsed-inventory-record-parse-table-to-file'
-;; (write-parsed-inventory-record-parse-table-to-file 
 (def-parsed-class-write-parse-table-to-file
     :parsed-class parsed-inventory-record
   :default-output-pathname-sub-directory "parsed-inventory-record"
@@ -234,6 +226,18 @@
                                            (sub-path *xml-output-dir*))
   :default-pathname-type "pctd")
 
+;; (load-parsed-inventory-record-default-file-to-parse-table)
+;; `load-parsed-inventory-record-default-file-to-parse-table'
+(def-parsed-class-load-default-parsed-file-to-hash 
+    :parsed-class parsed-inventory-record
+  :default-key-accessor inventory-number
+  :default-input-pathname-sub-directory "parsed-inventory-record"
+  :default-input-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                           (sub-path *xml-output-dir*))
+  :default-pathname-type "pctd")
+
+;; `write-parsed-inventory-record-parse-table-to-csv-file'
 (def-parsed-class-write-csv-file
     :parsed-class parsed-inventory-record
   :default-prefix-for-file-name "inventory-records"
@@ -241,7 +245,488 @@
   :default-output-pathname-base-directory (merge-pathnames
                                            (make-pathname :directory '(:relative "parsed-csv-records"))
                                            (sub-path *xml-output-dir*)))
+
+;;; ==============================
+;;; `parsed-artist-record'
+;;; ==============================
+
+;; `set-parsed-artist-record-slot-value'
+(def-set-parsed-class-record-slot-value
+    parsed-artist-record)
+
+;; (parsed-artist-record-xml-dump-file-and-hash) => 1288
+;;; `parsed-artist-record-xml-dump-file-and-hash'
+(def-parsed-class-record-xml-dump-file-and-hash
+    :parsed-class parsed-artist-record
+  :default-key-accessor control-id-entity-num-artist
+  :default-input-pathname-name "dump-artist-infos-xml"
+  :default-output-pathname-base-directory (sub-path *xml-output-dir*)
+  :default-output-pathname-sub-directory (list "parsed-xml-records" "parsed-xml-artist-records")
+  :default-output-pathname-name "artist-records")
+
+;; (write-parsed-artist-record-parse-table-to-file)
+;; `write-parsed-artist-record-parse-table-to-file'
+(def-parsed-class-write-parse-table-to-file
+    :parsed-class parsed-artist-record
+  :default-output-pathname-sub-directory "parsed-artist-record"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                           (sub-path *xml-output-dir*))
+  :default-pathname-type "pctd")
+
+;; (load-parsed-artist-record-default-file-to-parse-table)
+;; `load-parsed-artist-record-default-file-to-parse-table'
+(def-parsed-class-load-default-parsed-file-to-hash 
+    :parsed-class parsed-artist-record
+  :default-key-accessor control-id-entity-num-artist
+  :default-input-pathname-sub-directory "parsed-artist-record"
+  :default-input-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                           (sub-path *xml-output-dir*))
+  :default-pathname-type "pctd")
+
+;; `write-parsed-artist-record-parse-table-to-csv-file'
+(def-parsed-class-write-csv-file
+    :parsed-class parsed-artist-record
+  :default-prefix-for-file-name "artist-records"
+  :default-output-pathname-sub-directory "parsed-csv-artist-records"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-csv-records"))
+                                           (sub-path *xml-output-dir*)))
+
+
+
+;;; ==============================
+;;; `parsed-author-record'
+;;; ==============================
+
+;; `set-parsed-author-record-slot-value'
+(def-set-parsed-class-record-slot-value
+    parsed-author-record)
+
+;; (parsed-author-record-xml-dump-file-and-hash) => 471
+;;; `parsed-author-record-xml-dump-file-and-hash'
+(def-parsed-class-record-xml-dump-file-and-hash
+    :parsed-class parsed-author-record
+  :default-key-accessor control-id-entity-num-author
+  :default-input-pathname-name "dump-author-infos-xml"
+  :default-output-pathname-base-directory (sub-path *xml-output-dir*)
+  :default-output-pathname-sub-directory (list "parsed-xml-records" "parsed-xml-author-records")
+  :default-output-pathname-name "author-records")
+
+;; (write-parsed-author-record-parse-table-to-file)
+;; `write-parsed-author-record-parse-table-to-file'
+(def-parsed-class-write-parse-table-to-file
+    :parsed-class parsed-author-record
+  :default-output-pathname-sub-directory "parsed-author-record"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                           (sub-path *xml-output-dir*))
+  :default-pathname-type "pctd")
+
+;; (naf-entity-author-display-name-coref (parsed-class-parse-table-lookup 'parsed-author-record "298"))
+;; (naf-entity-author-display-name-coref (parsed-class-parse-table-lookup 'parsed-author-record "39"))
+;; (load-parsed-author-record-default-file-to-parse-table)
+;; `load-parsed-author-record-default-file-to-parse-table'
+(def-parsed-class-load-default-parsed-file-to-hash 
+    :parsed-class parsed-author-record
+  :default-key-accessor control-id-entity-num-author
+  :default-input-pathname-sub-directory "parsed-author-record"
+  :default-input-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                           (sub-path *xml-output-dir*))
+  :default-pathname-type "pctd")
+
+;; `write-parsed-author-record-parse-table-to-csv-file'
+(def-parsed-class-write-csv-file
+    :parsed-class parsed-author-record
+  :default-prefix-for-file-name "author-records"
+  :default-output-pathname-sub-directory "parsed-csv-author-records"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-csv-records"))
+                                           (sub-path *xml-output-dir*)))
+
+;;; ==============================
+;;; `parsed-brand-record'
+;;; ==============================
+
+;; `set-parsed-brand-record-slot-value'
+(def-set-parsed-class-record-slot-value
+    parsed-brand-record)
+
+;; (parsed-brand-record-xml-dump-file-and-hash) => 660
+;; `parsed-brand-record-xml-dump-file-and-hash'
+(def-parsed-class-record-xml-dump-file-and-hash
+    :parsed-class parsed-brand-record
+  :default-key-accessor control-id-entity-num-brand
+  :default-input-pathname-name "dump-brand-infos-xml"
+  :default-output-pathname-base-directory (sub-path *xml-output-dir*)
+  :default-output-pathname-sub-directory (list "parsed-xml-records" "parsed-xml-brand-records")
+  :default-output-pathname-name "brand-records")
+
+;; (write-parsed-brand-record-parse-table-to-file)
+;; `write-parsed-brand-record-parse-table-to-file'
+(def-parsed-class-write-parse-table-to-file
+    :parsed-class parsed-brand-record
+  :default-output-pathname-sub-directory "parsed-brand-record"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                           (sub-path *xml-output-dir*))
+  :default-pathname-type "pctd")
+
+;; (load-parsed-brand-record-default-file-to-parse-table)
+;; `load-parsed-brand-record-default-file-to-parse-table'
+(def-parsed-class-load-default-parsed-file-to-hash 
+    :parsed-class parsed-brand-record
+  :default-key-accessor control-id-entity-num-brand
+  :default-input-pathname-sub-directory "parsed-brand-record"
+  :default-input-pathname-base-directory (merge-pathnames
+                                          (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                          (dbc::sub-path dbc::*xml-output-dir*))
+  :default-pathname-type "pctd")
+
+
+;; `write-parsed-brand-record-parse-table-to-csv-file'
+(def-parsed-class-write-csv-file
+    :parsed-class parsed-brand-record
+  :default-prefix-for-file-name "brand-records"
+  :default-output-pathname-sub-directory "parsed-csv-brand-records"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-csv-records"))
+                                           (sub-path *xml-output-dir*)))
+
+
+;;; ==============================
+;;; `parsed-person-record'
+;;; ==============================
+
+;; `set-parsed-person-record-slot-value'
+(def-set-parsed-class-record-slot-value
+    parsed-person-record)
+
+;; (parsed-person-record-xml-dump-file-and-hash)
+;; `parsed-person-record-xml-dump-file-and-hash'
+(def-parsed-class-record-xml-dump-file-and-hash
+    :parsed-class parsed-person-record
+  :default-key-accessor control-id-entity-num-person
+  :default-input-pathname-name "dump-person-infos-xml"
+  :default-output-pathname-base-directory (sub-path *xml-output-dir*)
+  :default-output-pathname-sub-directory (list "parsed-xml-records" "parsed-xml-person-records")
+  :default-output-pathname-name "person-records")
+
+;; (write-parsed-person-record-parse-table-to-file)
+;; `write-parsed-person-record-parse-table-to-file'
+(def-parsed-class-write-parse-table-to-file
+    :parsed-class parsed-person-record
+  :default-output-pathname-sub-directory "parsed-person-record"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                           (sub-path *xml-output-dir*))
+  :default-pathname-type "pctd")
+
+;; (load-parsed-person-record-default-file-to-parse-table)
+;; `load-parsed-person-record-default-file-to-parse-table'
+(def-parsed-class-load-default-parsed-file-to-hash 
+    :parsed-class parsed-person-record
+  :default-key-accessor control-id-entity-num-person
+  :default-input-pathname-sub-directory "parsed-person-record"
+  :default-input-pathname-base-directory (merge-pathnames
+                                          (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                          (dbc::sub-path dbc::*xml-output-dir*))
+  :default-pathname-type "pctd")
+
+;; `write-parsed-person-record-parse-table-to-csv-file'
+(def-parsed-class-write-csv-file
+    :parsed-class parsed-person-record
+  :default-prefix-for-file-name "person-records"
+  :default-output-pathname-sub-directory "parsed-csv-person-records"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-csv-records"))
+                                           (sub-path *xml-output-dir*)))
+
+
+
+;;; ==============================
+;;; `parsed-publication-record'
+;;; ==============================
+
+;; `set-parsed-publication-record-slot-value'
+(def-set-parsed-class-record-slot-value 
+    parsed-publication-record)
+
+;; (parsed-publication-record-xml-dump-file-and-hash) => 179 
+;; `parsed-publication-record-xml-dump-file-and-hash'
+(def-parsed-class-record-xml-dump-file-and-hash
+    :parsed-class parsed-publication-record
+  :default-key-accessor control-id-entity-num-publication
+  :default-input-pathname-name "dump-publication-infos-xml"
+  :default-output-pathname-base-directory (sub-path *xml-output-dir*)
+  :default-output-pathname-sub-directory (list "parsed-xml-records" "parsed-xml-publication-records")
+  :default-output-pathname-name "publication-records")
+
+;; (write-parsed-publication-record-parse-table-to-file)
+;; `write-parsed-publication-record-parse-table-to-file'
+(def-parsed-class-write-parse-table-to-file
+    :parsed-class parsed-publication-record
+  :default-output-pathname-sub-directory "parsed-publication-record"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                           (sub-path *xml-output-dir*))
+  :default-pathname-type "pctd")
+
+;; (load-parsed-publication-record-default-file-to-parse-table)
+;; `load-parsed-publication-record-default-file-to-parse-table'
+(def-parsed-class-load-default-parsed-file-to-hash 
+    :parsed-class parsed-publication-record
+  :default-key-accessor control-id-entity-num-publication
+  :default-input-pathname-sub-directory "parsed-publication-record"
+  :default-input-pathname-base-directory (merge-pathnames
+                                          (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                          (dbc::sub-path dbc::*xml-output-dir*))
+  :default-pathname-type "pctd")
+
+;; `write-parsed-publication-record-parse-table-to-csv-file'
+(def-parsed-class-write-csv-file
+    :parsed-class parsed-publication-record
+  :default-prefix-for-file-name "publication-records"
+  :default-output-pathname-sub-directory "parsed-csv-publication-records"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-csv-records"))
+                                           (sub-path *xml-output-dir*)))
+
+
+;;; ==============================
+;;; `parsed-technique-record'
+;;; ==============================
+
+;; `set-parsed-technique-record-slot-value'
+(def-set-parsed-class-record-slot-value
+    parsed-technique-record)
+
+;; (parsed-technique-record-xml-dump-file-and-hash) ;=> 31
+;; `parsed-technique-record-xml-dump-file-and-hash'
+(def-parsed-class-record-xml-dump-file-and-hash
+    :parsed-class parsed-technique-record
+  :default-key-accessor control-id-entity-num-technique
+  :default-input-pathname-name "dump-technique-infos-xml"
+  :default-output-pathname-base-directory (sub-path *xml-output-dir*)
+  :default-output-pathname-sub-directory (list "parsed-xml-records" "parsed-xml-technique-records")
+  :default-output-pathname-name "technique-records")
+
+;; (write-parsed-technique-record-parse-table-to-file)
+;; `write-parsed-technique-record-parse-table-to-file'
+(def-parsed-class-write-parse-table-to-file
+    :parsed-class parsed-technique-record
+  :default-output-pathname-sub-directory "parsed-technique-record"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                           (sub-path *xml-output-dir*))
+  :default-pathname-type "pctd")
+
+;; (load-parsed-technique-record-default-file-to-parse-table)
+;; `load-parsed-technique-record-default-file-to-parse-table'
+(def-parsed-class-load-default-parsed-file-to-hash 
+    :parsed-class parsed-technique-record
+  :default-key-accessor control-id-entity-num-technique
+  :default-input-pathname-sub-directory "parsed-technique-record"
+  :default-input-pathname-base-directory (merge-pathnames
+                                          (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                          (sub-path *xml-output-dir*))
+  :default-pathname-type "pctd")
+
+;; `write-parsed-technique-record-parse-table-to-csv-file'
+(def-parsed-class-write-csv-file
+    :parsed-class parsed-technique-record
+  :default-prefix-for-file-name "technique-records"
+  :default-output-pathname-sub-directory "parsed-csv-technique-records"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-csv-records"))
+                                           (sub-path *xml-output-dir*)))
+
+
+;;; ==============================
+;;; `parsed-documentation-record'
+;;; ==============================
+
+;; `set-parsed-documentation-record-slot-value'
+(def-set-parsed-class-record-slot-value 
+    parsed-documentation-record)
+
+;; (parsed-documentation-record-xml-dump-file-and-hash) => 2185
+;; `parsed-documentation-record-xml-dump-file-and-hash'
+(def-parsed-class-record-xml-dump-file-and-hash
+    :parsed-class parsed-documentation-record
+  :default-key-accessor control-id-documentation-record-document-page-id
+  :default-input-pathname-name "dump-docs-xml"
+  :default-output-pathname-base-directory (sub-path *xml-output-dir*)
+  :default-output-pathname-sub-directory (list "parsed-xml-records" "parsed-xml-documentation-records")
+  :default-output-pathname-name "documentation-records")
+
+;; (write-parsed-documentation-record-parse-table-to-file)
+;; `write-parsed-documentation-record-parse-table-to-file'
+(def-parsed-class-write-parse-table-to-file
+    :parsed-class parsed-documentation-record
+  :default-output-pathname-sub-directory "parsed-documentation-record"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                           (sub-path *xml-output-dir*))
+  :default-pathname-type "pctd")
+
+;; (load-parsed-documentation-record-default-file-to-parse-table)
+;; `load-parsed-documentation-record-default-file-to-parse-table'
+(def-parsed-class-load-default-parsed-file-to-hash 
+    :parsed-class parsed-documentation-record
+  :default-key-accessor control-id-documentation-record-document-page-id
+  :default-input-pathname-sub-directory "parsed-documentation-record"
+  :default-input-pathname-base-directory (merge-pathnames
+                                          (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                          (dbc::sub-path dbc::*xml-output-dir*))
+  :default-pathname-type "pctd")
+
+;; `write-parsed-doc-record-parse-table-to-csv-file'
+(def-parsed-class-write-csv-file
+    :parsed-class parsed-documentation-record
+  :default-prefix-for-file-name "documentation-records"
+  :default-output-pathname-sub-directory "parsed-csv-documentation-records"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-csv-records"))
+                                           (sub-path *xml-output-dir*)))
+
+
+;;; ==============================
+;;; `parsed-theme-record'
+;;; ==============================
+
+;; `set-parsed-theme-record-slot-value'
+(def-set-parsed-class-record-slot-value 
+    parsed-theme-record)
+
+;; (parsed-theme-record-xml-dump-file-and-hash)
+;; `parsed-theme-record-xml-dump-file-and-hash'
+(def-parsed-class-record-xml-dump-file-and-hash
+    :parsed-class parsed-theme-record
+  :default-key-accessor control-id-theme-entity-num
+  :default-input-pathname-name "dump-themes-DUMPING"
+  :default-output-pathname-base-directory (sub-path *xml-output-dir*)
+  :default-output-pathname-sub-directory (list "parsed-xml-records" "parsed-xml-theme-records")
+  :default-output-pathname-name "theme-records")
+
+;; (write-parsed-theme-record-parse-table-to-file)
+;; `write-parsed-theme-record-parse-table-to-file'
+(def-parsed-class-write-parse-table-to-file
+    :parsed-class parsed-theme-record
+  :default-output-pathname-sub-directory "parsed-theme-record"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                           (sub-path *xml-output-dir*))
+  :default-pathname-type "pctd")
+
+;; (load-parsed-theme-record-default-file-to-parse-table)
+;; `load-parsed-theme-record-default-file-to-parse-table'
+(def-parsed-class-load-default-parsed-file-to-hash 
+    :parsed-class parsed-theme-record
+  :default-key-accessor control-id-theme-entity-num
+  :default-input-pathname-sub-directory "parsed-theme-record"
+  :default-input-pathname-base-directory (merge-pathnames
+                                          (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                          (dbc::sub-path dbc::*xml-output-dir*))
+  :default-pathname-type "pctd")
+
+;; `write-parsed-doc-record-parse-table-to-csv-file'
+(def-parsed-class-write-csv-file
+    :parsed-class parsed-theme-record
+  :default-prefix-for-file-name "theme-records"
+  :default-output-pathname-sub-directory "parsed-csv-theme-records"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-csv-records"))
+                                           (sub-path *xml-output-dir*)))
+
+
+;;; ==============================
+;;; `parsed-translation-for-inventory-record'
+;;; ==============================
+;; 
+;; inventory-number
+;; dbc-class-parsed-inventory-translation-record.lisp
+
+;; `set-parsed-translation-for-inventory-record-slot-value'
+(def-set-parsed-class-record-slot-value
+    parsed-translation-for-inventory-record)
+
+
+;; (parsed-translation-for-inventory-record-xml-dump-file-and-hash)
+;;; `parsed-translation-for-inventory-record-xml-dump-file-and-hash'
+(def-parsed-class-record-xml-dump-file-and-hash
+    :parsed-class parsed-translation-for-inventory-record
+  :default-key-accessor inventory-number
+  :default-input-pathname-name "dump-translations-xml"
+  :default-output-pathname-base-directory (sub-path *xml-output-dir*)
+  :default-output-pathname-sub-directory (list "parsed-xml-records" "parsed-xml-translation-for-inventory-records")
+  :default-output-pathname-name "translation-for-inventory-records")
+
+;; (write-parsed-translation-for-inventory-record-parse-table-to-file)
+;; (parsed-class-parse-table 'parsed-translation-for-inventory-record)
+;; (describe *)
+;; `write-parsed-translation-for-inventory-record-parse-table-to-file'
+(def-parsed-class-write-parse-table-to-file
+    :parsed-class parsed-translation-for-inventory-record
+  :default-output-pathname-sub-directory "parsed-translation-for-inventory-record"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                           (sub-path *xml-output-dir*))
+  :default-pathname-type "pctd")
+
+;; (load-parsed-translation-for-inventory-record-default-file-to-parse-table)
+;; `load-parsed-translation-for-inventory-record-default-file-to-parse-table'
+(def-parsed-class-load-default-parsed-file-to-hash 
+    :parsed-class parsed-translation-for-inventory-record
+  :default-key-accessor inventory-number
+  :default-input-pathname-sub-directory "parsed-translation-for-inventory-record"
+  :default-input-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                           (sub-path *xml-output-dir*))
+  :default-pathname-type "pctd")
+
+;; `write-parsed-translation-for-inventory-record-parse-table-to-csv-file'
+(def-parsed-class-write-csv-file
+    :parsed-class parsed-translation-for-inventory-record
+  :default-prefix-for-file-name "translation-for-inventory-records"
+  :default-output-pathname-sub-directory "parsed-csv-translation-for-inventory-records"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-csv-records"))
+                                           (sub-path *xml-output-dir*)))
+
+
+;;; ==============================
+
+;; *parsed-class-parse-table*
+
+;; loaders
+;; (load-parsed-inventory-record-default-file-to-parse-table)
+;; (load-parsed-artist-record-default-file-to-parse-table)
+;; (load-parsed-author-record-default-file-to-parse-table)
+;; (load-parsed-brand-record-default-file-to-parse-table)
+;; (load-parsed-person-record-default-file-to-parse-table)
+;; (load-parsed-publication-record-default-file-to-parse-table)
+;; (load-parsed-theme-record-default-file-to-parse-table)
+;; (load-parsed-technique-record-default-file-to-parse-table)
+;; (load-parsed-documentation-record-default-file-to-parse-table)
+;; (load-parsed-translation-for-inventory-record-default-file-to-parse-table)
+
+;; writers
+;; (write-parsed-inventory-record-parse-table-to-file)
+;; (write-parsed-artist-record-parse-table-to-file)
+;; (write-parsed-author-record-parse-table-to-file)
+;; (write-parsed-brand-record-parse-table-to-file)
+;; (write-parsed-person-record-parse-table-to-file)
+;; (write-parsed-publication-record-parse-table-to-file)
+;; (write-parsed-theme-record-parse-table-to-file)
+;; (write-parsed-technique-record-parse-table-to-file)
+;; (write-parsed-documentation-record-parse-table-to-file)
+;; (write-parsed-translation-for-inventory-record-parse-table-to-file)
+
 
 
 ;;; ==============================
 ;;; :EOF
+ 
