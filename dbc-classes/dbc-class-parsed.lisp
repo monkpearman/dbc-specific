@@ -92,8 +92,7 @@
 (defgeneric parsed-class-parse-table (object))
 (defgeneric (setf parsed-class-parse-table) (hash-table object))
 
-;; parsed-class-table-lookup -> parsed-class-parse-table-lookup
-(defgeneric parsed-class-table-lookup (parsed-class hash-key))
+(defgeneric parsed-class-parse-table-lookup (parsed-class hash-key))
 
 (defgeneric %parsed-class-slot-exists-for-parsed-class-check (object slot-name))
 
@@ -344,14 +343,14 @@
 (defmethod parsed-class-parse-table ((object symbol))
   (parsed-class-parse-table (parsed-class-mapped object)))
 
-(defmethod parsed-class-table-lookup ((object symbol) hash-key)
+(defmethod parsed-class-parse-table-lookup ((object symbol) hash-key)
   (gethash hash-key (parsed-class-parse-table (parsed-class-mapped object))))
 
-(defmethod parsed-class-table-lookup ((object parsed-class) hash-key)
+(defmethod parsed-class-parse-table-lookup ((object parsed-class) hash-key)
   (gethash hash-key (parsed-class-parse-table (parsed-class-mapped object))))
 
 
-;; (defmethod parsed-class-table-lookup-slot-value ((object parsed-class) slot-name hash-key)
+;; (defmethod parsed-class-parse-table-lookup-slot-value ((object parsed-class) slot-name hash-key)
 ;;  (gethash hash-key (parsed-class-parse-table (parsed-class-mapped object))))
 
 ;; (defgeneric (setf parsed-class-parse-table) (hash-table object))
