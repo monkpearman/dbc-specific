@@ -95,10 +95,6 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
             class-symbol
             class-object)))
 
-;; (description-inventory-title (parsed-class-parse-table-lookup 'parsed-inventory-record "3566"))
-(defmethod parsed-class-parse-table-lookup ((object parsed-class-field-slot-accessor-mapping) hash-key)
-  (gethash hash-key (parsed-class-parse-table object)))
-
 (defmethod accessor-to-field-table ((object parsed-class-field-slot-accessor-mapping))
   (slot-value object 'accessor-to-field-table))
 
@@ -124,15 +120,6 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
 (defmethod accessors-of-parsed-class ((object parsed-class-field-slot-accessor-mapping))
   (alexandria:hash-table-keys (accessor-to-field-table object)))
 
-(defmethod %parsed-class-slot-exists-for-parsed-class-check ((object parsed-class-field-slot-accessor-mapping) (slot-name symbol))
-  (or (car (member slot-name (accessors-of-parsed-class object)))
-      (error ":METHOD `%parsed-class-slot-exists-for-parsed-class-check' -- ~
-               arg SLOT-NAME is not a valid slot for OBJECT~% ~
-               object: ~S~% ~
-               slot-name ~S~%"
-             object
-             slot-name)))
-
 ;; (initargs-of-parsed-class (parsed-class-mapped 'parsed-inventory-record))
 (defmethod initargs-of-parsed-class ((object parsed-class-field-slot-accessor-mapping))
   (loop 
@@ -140,6 +127,44 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
     for slot in (accessors-of-parsed-class object)
     for name = (symbol-name slot)
     collect (find-symbol name key-package)))
+
+(defmethod %parsed-class-slot-exists-for-parsed-class-check ((object parsed-class-field-slot-accessor-mapping) (slot-name symbol))
+  (values 
+   (or (and (member slot-name (accessors-of-parsed-class object))
+            slot-name)
+       (error ":METHOD `%parsed-class-slot-exists-for-parsed-class-check' -- ~
+               arg SLOT-NAME is not a valid slot for OBJECT's associated class~% ~
+               class: ~S~% ~
+               slot-name: ~S~%"
+              (class-name (slot-value object 'parsed-class-mapped))
+              slot-name))
+   (fdefinition slot-name)))
+
+(defmethod parsed-class-parse-table-lookup ((object parsed-class-field-slot-accessor-mapping) hash-key)
+  (gethash hash-key (parsed-class-parse-table object)))
+
+(defmethod parsed-class-parse-table-lookup-slot-value ((object parsed-class-field-slot-accessor-mapping)
+                                                       (slot-name symbol)
+                                                       hash-key)
+  (let* ((obj (parsed-class-parse-table-lookup object hash-key))
+         ;; we check that the slot exists at the class level and for the object if either fails we loose.
+         (verify-slot-for-parsed-class (nth-value 0 (%parsed-class-slot-exists-for-parsed-class-check object slot-name)))
+         (slot-exists-and-bound-with-value
+           (and obj
+                (or (slot-exists-p obj verify-slot-for-parsed-class)
+                    (error ":METHOD `parsed-class-parse-table-lookup-slot-value' -- ~
+                             Arg SLOT-NAME did not satisfy `cl:slot-exists-p' for object associated with HASH-KEY~% ~
+                             object:    ~S~% slot-name: ~S~% hash-key:  ~S~%"
+                           obj slot-name hash-key))
+                (or (slot-boundp obj slot-name)
+                    (error ":METHOD `parsed-class-parse-table-lookup-slot-value' -- ~
+                            Arg SLOT-NAME not `cl:slot-boundp' for object associated with HASH-KEY~% ~
+                            object:    ~S~% slot-name: ~S~% hash-key:  ~S~%"
+                           obj slot-name hash-key))
+                (slot-value obj slot-name))))
+    (if obj
+        (values slot-exists-and-bound-with-value t)
+        (values nil nil))))
 
 (defmethod parsed-class-slot-dispatch-function ((object parsed-class-field-slot-accessor-mapping))
   (or (and (slot-boundp object 'parsed-class-slot-dispatch-function)

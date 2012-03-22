@@ -96,13 +96,7 @@
 
 (defgeneric %parsed-class-slot-exists-for-parsed-class-check (object slot-name))
 
-;; (defgeneric parsed-class-parse-table-lookup-slot-value (parsed-class slot-name hash-key))
-;; (unless (member slot-name (accessors-of-parsed-class parsed-class))
-;; slot-exists-p
-
-;; (error ":method parsed-class-parse-table-lookup-slot-value
-;; (let ((maybe-object (parsed-class-parse-table (parsed-class-mapped object))))
-;;  (gethash hash-key (parsed-class-parse-table (parsed-class-mapped object))))
+(defgeneric parsed-class-parse-table-lookup-slot-value (object slot-name hash-key))
 
 ;; These are common to class `parsed-class' and its subclasses
 (defgeneric naf-entity-author-coref (object))
@@ -349,9 +343,19 @@
 (defmethod parsed-class-parse-table-lookup ((object parsed-class) hash-key)
   (gethash hash-key (parsed-class-parse-table (parsed-class-mapped object))))
 
+(defmethod parsed-class-parse-table-lookup-slot-value ((object parsed-class)
+                                                       (slot-name symbol)
+                                                       hash-key) 
+  (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
+                                              slot-name
+                                              hash-key))
 
-;; (defmethod parsed-class-parse-table-lookup-slot-value ((object parsed-class) slot-name hash-key)
-;;  (gethash hash-key (parsed-class-parse-table (parsed-class-mapped object))))
+(defmethod parsed-class-parse-table-lookup-slot-value ((object parsed-class)
+                                                       (slot-name symbol)
+                                                       hash-key) 
+  (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
+                                              slot-name
+                                              hash-key))
 
 ;; (defgeneric (setf parsed-class-parse-table) (hash-table object))
 

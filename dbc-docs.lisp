@@ -1518,13 +1518,15 @@ Fails successfully:~%
  \(%parsed-class-subtype-check \(make-instance 'parsed-class\)\)~%")
 
 (generic-doc #'%parsed-class-slot-exists-for-parsed-class-check
-"If SLOT-NAME is a valid slot for OBJECT return it, else signal an error.~%
+"If SLOT-NAME is a valid slot for OBJECT return as if by cl:values OBJECT and
+its `cl:fdefinition', else signal an error.~%
 SLOT-NAME is a symbol~%
 OBJECT is either a symbol, a subclass of the class `parsed-class', or an
 instance of the class `parsed-class-field-slot-accessor-mapping'.~%
 :NOTE When OBJECT or SLOT-NAME are symbols they may need to be package qualified when
 invoked from outside the package DBC.~%
-:SEE-ALSO `%parsed-class-subtype-check', `accessor-to-field-mapping',
+:SEE-ALSO `%parsed-class-subtype-check',
+`parsed-class-parse-table-lookup-slot-value', `accessor-to-field-mapping',
 `field-to-accessor-mapping', `field-to-accessor-table',
 `accessor-to-field-table', `parsed-class-mapped',
 `make-parsed-class-field-slot-accessor-mapping',
@@ -1561,6 +1563,93 @@ Following fails successfully:~%
 Following fails successfully:~%
  \(%parsed-class-slot-exists-for-parsed-class-check 'parsed-inventory-record 
                                                    'foo\)~%")
+
+(generic-doc #'parsed-class-parse-table-lookup
+"Get the HASH-KEY from OBJECT's `parsed-class-parse-table-lookup'
+Return value is as if by cl:gethash.
+When HASH-KEY is present nth-value 0 is an instance of a subclass of parsed-class.~%
+OBJECT is either a symbol, a subclass of the class `parsed-class', or an
+instance of the class `parsed-class-field-slot-accessor-mapping'.~%
+HASH-KEY is a key into OJBECT's `parsed-class-parse-table'.~%~
+:SEE-ALSO `parsed-class-parse-table-lookup-slot-value', `accessor-to-field-mapping',
+`field-to-accessor-mapping', `field-to-accessor-table',
+`accessor-to-field-table', `initargs-of-parsed-class', `parsed-class-mapped',
+`make-parsed-class-field-slot-accessor-mapping',
+`def-set-parsed-class-record-slot-value'.~%")
+
+(method-doc #'parsed-class-parse-table-lookup nil '(symbol t)
+"~%:EXAMPLE~%
+ \(parsed-class-parse-table-lookup 'parsed-inventory-record \"3566\"\)~%
+ \(parsed-class-parse-table-lookup 'parsed-inventory-record \"not-there\"\)~%")
+
+(method-doc #'parsed-class-parse-table-lookup nil '(parsed-class t)
+"~%:EXAMPLE~%
+ \(parsed-class-parse-table-lookup \(closer-mop:class-prototype \(find-class 'parsed-inventory-record\)\) \"3566\"\)~%
+ \(parsed-class-parse-table-lookup \(closer-mop:class-prototype \(find-class 'parsed-inventory-record\)\) \"not-there\"\)~%")
+
+(method-doc #'parsed-class-parse-table-lookup nil '(parsed-class-field-slot-accessor-mapping t)
+"~%:EXAMPLE~%
+ \(parsed-class-parse-table-lookup \(parsed-class-mapped 'parsed-inventory-record\) \"3566\"\)~% 
+ \(parsed-class-parse-table-lookup \(parsed-class-mapped 'parsed-inventory-record\) \"not-there\"\)~%")
+
+(generic-doc #'parsed-class-parse-table-lookup-slot-value 
+"Lookup the SLOT-NAME slot-value of OBJECT with HASH-KEY.~%~@
+Return as if by cl:values the slot-value for OBJECT with HASH-KEY.~%
+ - nth-value 0 is the slot-value or nil
+ - nth-value 1 is a boolean indicating HASH-KEY's presence in OBJECT's `parsed-class-parse-table'~%
+OBJECT is either a symbol, a subclass of the class `parsed-class', or an
+instance of the class `parsed-class-field-slot-accessor-mapping'.~%
+SLOT-NAME is a symbol. 
+An error is signaled if SLOT-NAME does not satisfy
+`%parsed-class-slot-exists-for-parsed-class-check'.~%
+HASH-KEY is a key into OJBECT's `parsed-class-parse-table'.~%~
+If HASH-KEY maps to an hash-value in the `parsed-class-parse-table' for OBJECT's
+class that hash-value must satisfy both `cl:slot-exists-p' and `cl:slot-boundp'
+for SLOT-NAME, when either fails an error is signaled.~%~@
+:NOTE When OBJECT or SLOT-NAME are symbols they may need to be package qualified
+when invoked from outside the package DBC.~%
+:SEE-ALSO `parsed-class-parse-table-lookup', `accessor-to-field-mapping',
+`field-to-accessor-mapping', `field-to-accessor-table',
+`accessor-to-field-table', `initargs-of-parsed-class', `parsed-class-mapped',
+`make-parsed-class-field-slot-accessor-mapping',
+`def-set-parsed-class-record-slot-value'.~%")
+
+(method-doc #'parsed-class-parse-table-lookup-slot-value nil '(parsed-class-field-slot-accessor-mapping symbol t) 
+"~%:EXAMPLE~%
+ \(parsed-class-parse-table-lookup-slot-value \(parsed-class-mapped 'parsed-inventory-record\)
+                                             'naf-entity-publication-coref
+                                             \"2766\"\)~%
+ \(parsed-class-parse-table-lookup-slot-value \(parsed-class-mapped 'parsed-inventory-record\)
+                                             'naf-entity-publication-coref
+                                             \"blarg\"\)~%
+Following errors successfully:~%
+ \(parsed-class-parse-table-lookup-slot-value \(parsed-class-mapped 'parsed-inventory-record\)
+                                             'foo
+                                             \"blarg\"\)~%")
+
+
+(method-doc #'parsed-class-parse-table-lookup-slot-value nil '(symbol symbol t) 
+"~%:EXAMPLE~%
+ \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'naf-entity-publication-coref \"2766\"\)~%
+ \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'naf-entity-publication-coref \"blarg\"\)~%
+                                             
+Following errors successfully:~%
+ \(parsed-class-parse-table-lookup-slot-value \(parsed-class-mapped 'parsed-inventory-record\)
+                                             'foo
+                                             \"blarg\"\)~%")
+
+(method-doc #'parsed-class-parse-table-lookup-slot-value nil '(parsed-class symbol t) 
+"~%:EXAMPLE~%
+ \(parsed-class-parse-table-lookup-slot-value \(closer-mop:class-prototype \(find-class 'parsed-inventory-record\)\)
+                                             'naf-entity-publication-coref
+                                             \"2766\"\)~%
+ \(parsed-class-parse-table-lookup-slot-value \(closer-mop:class-prototype \(find-class 'parsed-inventory-record\)\)
+                                             'naf-entity-publication-coref
+                                             \"blarg\"\)~%
+Following errors successfully:~%
+ \(parsed-class-parse-table-lookup-slot-value \(closer-mop:class-prototype \(find-class 'parsed-inventory-record\)\)
+                                             'foo
+                                             \"blarg\"\)~%")
 
 (generic-doc #'field-to-accessor-table
 "Return a hash-table mapping original SQL field strings to accessors of OBJECT's class.~%~@
