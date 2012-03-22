@@ -3,6 +3,13 @@
 ;;; ==============================
 ;; 
 
+;; following defined in loadtime-bind.lisp
+;; `set-parsed-artist-record-slot-value'
+;; `parsed-artist-record-xml-dump-file-and-hash'
+;; `write-parsed-artist-record-parse-table-to-file'
+;; `load-parsed-artist-record-default-file-to-parse-table'
+;; `write-parsed-artist-record-parse-table-to-csv-file'
+
 ;;; ==============================
 ;;; Clean these up first with emacs regexp: 
 ;;;  (while (search-forward-regexp " xsi:nil=\"true\" />" nil t) (replace-match "></field>"))
