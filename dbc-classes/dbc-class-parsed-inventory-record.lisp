@@ -26,17 +26,19 @@
     :initarg :inventory-number
     :accessor inventory-number
     :documentation ":ORIGINAL-FIELD \"ref\"")
-
+   ;; :NOTE `parsed-translation-for-inventory-record' may have values corresponding with this slot
    (description-inventory-title
     :initarg :description-inventory-title
     :accessor description-inventory-title
     :documentation  ":ORIGINAL-FIELD \"title\"")
 
+   ;; :NOTE `parsed-translation-for-inventory-record' may have values for this slot
    (description-inventory-french ;; description-class
     :initarg :description-inventory-french
     :accessor description-inventory-french
     :documentation ":ORIGINAL-FIELD \"desc_fr\"")
 
+   ;; :NOTE `parsed-translation-for-inventory-record' may have values for this slot
    (description-inventory-english ;; description-class
     :initarg :description-inventory-english
     :accessor description-inventory-english
@@ -259,12 +261,12 @@
     :initarg :media-entity-color
     :accessor media-entity-color
     :documentation ":ORIGINAL-FIELD \"color\"")
-
+   ;; unit-of-measure-width
    (unit-width
     :initarg :unit-width
     :accessor unit-width
     :documentation ":ORIGINAL-FIELD \"w\"")
-
+   ;; unit-of-measure-height
    (unit-height
     :initarg :unit-height
     :accessor unit-height
@@ -288,6 +290,7 @@
    ;; :NOTE See ignorable-shipping-weight-combined, ignorable-shipping-weight-combined-pounds,
    ;; ignorable-shipping-weight-combined-ounces slot in class
    ;; `parsed-inventory-record'
+   ;; unit-of-measure-weight
    (unit-weight 
     :initarg :unit-weight
     :accessor unit-weight
@@ -412,7 +415,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;;   (setf (inventory-number obj) "42")
 ;;   (control-id-indexed-number-zero-padded-string obj))
 ;;
-;;  (control-id-indexed-number-zero-padded-string (parsed-class-table-lookup 'parsed-inventory-record "3566"))
+;;  (control-id-indexed-number-zero-padded-string (parsed-class-parse-table-lookup 'parsed-inventory-record "3566"))
 ;;
 ;; Following errors successfully:
 ;;  (control-id-indexed-number-zero-padded-string (make-instance 'parsed-inventory-record))
@@ -428,7 +431,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 
 ;; (make-instance 'parsed-inventory-record)
 ;; => #<PARSED-INVENTORY-RECORD NIL {IDENTITY}>
-;; (parsed-class-table-lookup 'parsed-inventory-record "9842")
+;; (parsed-class-parse-table-lookup 'parsed-inventory-record "9842")
 ;; => #<PARSED-INVENTORY-RECORD "009842">
 (defmethod print-object ((object parsed-inventory-record) stream)
   (let* ((inv-num (and (slot-boundp object 'inventory-number)
@@ -1125,13 +1128,24 @@ This function should only be used for instantiating instances created _outside_ 
 ;;
 ;; - Remove all occurences of "rare!"
 ;;
+;; - what about these:
+;;   [This is an original vintage illustrated New Yorker Magazine Cover, it is more than 75 years old.]"
+;;   [Vintage magazine cover over 75 years old]
+;;
 ;; - Remove occurences of "<br>"
 ;; - Remove occurences of "&lt;br&gt"
+;; - remove occurences of double escaped quotes \\'<foo>\\'
+;;   (princ (description-inventory-english (parsed-class-parse-table-lookup 'parsed-inventory-record  "10918")))
+;;
 ;; - Replace occurences of "&quot; -> #\" e.g.:
 ;;   (let ((str "&quot;The Arabians called it the 'Column of Columns'... 88 ft tall and 8 ft
 ;; in Diameter...&quot; it was located in Alexandria Egypt. Vol VI No. 39."))
 ;;     (setf str (cl-ppcre:regex-replace-all "&quot;" str "\"")) 
 ;;     (print str))
+;; - what to do about this in item 10970
+;;  See additional pictures of the car and the original Lepape gouache <a href=\"http://www.derbycityprints.com/doc-details-1642-artist.htm\">here:</a>
+;;   (princ (description-inventory-english (parsed-class-parse-table-lookup 'parsed-inventory-record  "10932")))
+
 
 ;;; ==============================
 ;; :FIELD "translation" :TRANSFORM description-inventory-translation
@@ -1259,7 +1273,12 @@ This function should only be used for instantiating instances created _outside_ 
 ;; - Replace the 0 default with T/NIL
 ;;   Use `field-convert-1-0-x'
 ;; :NOTE stripping X may not be possible if this is "PLATE X" the Roman numeral!
-;;
+;;  990 plates have "x" as a value non have "X"
+;; (loop 
+;;   for obj-id being the hash-keys in (parsed-class-parse-table 'parsed-inventory-record) using (hash-value obj)
+;;   for pubplt = (publication-plates obj)
+;;   when (and (stringp pubplt) (string= pubplt "x"))
+;;   collect (list obj-id pubplt))
 ;; :NOTE Why is this the only field containing a capitalized name, e.g. "Plate" in "Plate_number"?
 ;; - `mon:string-trim-whitespace'
 ;;
@@ -1733,6 +1752,8 @@ This function should only be used for instantiating instances created _outside_ 
 ;;
 ;; - remove trailing period, e.g.: (string-right-trim "#\." <FIELD>)
 ;;
+;; - should we remove occurences of: " Archival Conservation and Mounted on Linen." ??
+;;
 ;; - remove occurences of string: "For details, see zoom scan."
 ;;
 ;; - remove occurences of  "Please see Zoom In for details."
@@ -1852,6 +1873,10 @@ This function should only be used for instantiating instances created _outside_ 
 ;; - Replace the 0 default with NIL
 ;;
 ;; - Not sure how much this was used. It is effectively a class-precedence list.
+;;
+;; - :NOTE apertif in following bct is mis-spelled:
+;; "Advertising and Graphics" "Periodical Ads" "Liquor and Beverage" "Alcohol and Spirits" "Apertifs Cordials and Liqueurs"
+;; it should be "aperitif" or better still "apéritif"
 ;;
 ;; - (search-forward-regexp "bct\">[^<0].*<" nil t)
 
@@ -2063,7 +2088,7 @@ This function should only be used for instantiating instances created _outside_ 
 ;; - Remove occurences of "_No-Signature_", "Unknown", "No_Signature" 
 ;;
 ;; - Remove the ".htm" extension we can always add it back in as needed.
-;;
+;; - Remove leading occurences of "__" e.g. with "^--.*"
 
 ;;; ==============================
 ;; :FIELD "seo_title" :TRANSFORM description-inventory-seo-title
@@ -2197,13 +2222,21 @@ This function should only be used for instantiating instances created _outside_ 
 ;;
 ;; - Remove dups should catch all but the last:  " x "
 ;;
+;; - Remove occurencs of " 1   Translation "
+;; - then remove occurencs of "   Translation "
+
+;; - Remove occurences of "\( 0, \)+"
+;;   (search-forward-regexp "\\( 0, \\)\\(0, \\)+" nil t)
+;; - Remove occurences of "\\( , \\)\\(, \\)+"
+;;   (search-forward-regexp "\\( , \\)\\(, \\)+" nil t)
+;;
 ;; - Remove occurences of "x" "1" "0" "..." "---" 
 ;;   Note, we can't always safely remove "1" (and possibly also "0") where the
 ;;   string contains "free" date strings formatted as: "December, 1, 1894"
 ;;   b/c, where this was previously split on commas we might potentially have subseqs of
 ;;   a list which contains: (... "December" "1" "1894" ...) and the "1" in this position is 
 ;;   contextually relevant information which should not be elided. 
-;;   Possible solutions, query the existing 
+;;   Possible solutions, query the existing object for its date value remove that first then take the #\1 and #\0
 ;;   
 ;;
 ;; - see ref 8785 for Gould's items having big long year range lists which should
@@ -2225,7 +2258,7 @@ This function should only be used for instantiating instances created _outside_ 
 ;;; 
 
 ;;; ==============================
-;; :FIELD "keywords_type" :TRANSFORM 
+;; :FIELD "keywords_type" :TRANSFORM ignorable-keywords-type
 ;;
 ;;         :TYPE "varchar(100)"
 ;;         :NULL-P "NO"
@@ -2382,39 +2415,13 @@ This function should only be used for instantiating instances created _outside_ 
 ;;        for sold-xml-pathnames in (list "orders-xml" "sold-in-store-xml" "sold-refs-xml")
 ;;        collect (merge-pathnames (make-pathname :name sold-xml-pathnames) base-dir))
 ;; 
-
-;;
-
-;;
-;; (let ((not-online     (list))
-;;       (sold           (list))
-;;       (duplicate      (list))
-;;       (online         (list))
-;;       (something-else (list)))
-;;   (loop 
-;;      for record-key being the hash-keys in (gethash 'dbc::parsed-inventory-record dbc::*parsed-class-parse-table*) using (hash-value record-value)
-;;      for status = (dbc::record-status-active record-value)
-;;      do (cond ((equal status "0")
-;;                (push (inventory-number record-value) not-online))
-;;               ((equal status "1")
-;;                (push (inventory-number record-value) sold))
-;;               ((equal status "2")
-;;                (push (inventory-number record-value) duplicate))
-;;               ((equal status "3")
-;;                (push (inventory-number record-value) online))
-;;               (t
-;;                (push (inventory-number record-value) something-else))))
-;;   (list 
-;;    :not-online        not-online
-;;    :sold              sold          
-;;    :duplicate         duplicate     
-;;    :online            online        
-;;    :something-else    something-else))
+;; - for notes on which objects have 0 1 2 3 as their value and some loops for finding them 
+;;   :SEE :FILE notes-versioned/parsed-class-cleaning-notes/parsed-inventory-record-cleaning-notes/parsed-inventory-record-status-notes-2012-03-21.lisp
 ;; 
-;; :NOT-ONLINE <- "0" seems correct 
-;; :SOLD       <- "1" has length 7466
-;; :DUPLICATE  <- "2" has length 338
-;; :ONLINE     <- "3" has length 667
+;;  status 0 => 518
+;;  status 1 => 7466
+;;  status 2 => 318
+;;  status 3 => 667
 
 
 ;;; ==============================
