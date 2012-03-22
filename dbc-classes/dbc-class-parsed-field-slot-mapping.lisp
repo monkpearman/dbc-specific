@@ -86,10 +86,6 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
             name
             class-name-if)))
 
-;; (description-inventory-title (parsed-class-parse-table-lookup 'parsed-inventory-record "3566"))
-(defmethod parsed-class-parse-table-lookup ((object parsed-class-field-slot-accessor-mapping) hash-key)
-  (gethash hash-key (parsed-class-parse-table object)))
-
 ;; (setf (parsed-class-parse-table (parsed-class-mapped 'parsed-artist-record))
 ;;       (%parsed-class-parse-table-make-table))
 (defmethod (setf parsed-class-parse-table) (hash-table (object parsed-class-field-slot-accessor-mapping))
@@ -98,6 +94,10 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
     (values (setf (gethash class-symbol *parsed-class-parse-table*) hash-table)
             class-symbol
             class-object)))
+
+;; (description-inventory-title (parsed-class-parse-table-lookup 'parsed-inventory-record "3566"))
+(defmethod parsed-class-parse-table-lookup ((object parsed-class-field-slot-accessor-mapping) hash-key)
+  (gethash hash-key (parsed-class-parse-table object)))
 
 (defmethod accessor-to-field-table ((object parsed-class-field-slot-accessor-mapping))
   (slot-value object 'accessor-to-field-table))
