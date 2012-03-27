@@ -1071,145 +1071,6 @@ their slot-value as #<UNBOUND>.~%~@
 `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files',
 `write-sax-parsed-inventory-record-hash-to-zero-padded-directory'.~%▶▶▶")
 
-(fundoc 'parsed-inventory-record-null-prototype-to-file
-        "Write slot values of OBJECT to a file in directory corresponding to object's
-inventory-number slot value beneath BASE-OUTPUT-DIRECTORY.~%~@
-Return pathname of file written.~%~@
-Keyword args PREFIX-FOR-FILE-NAME, SUFFIX-FOR-FILE-NAME, PATHNAME-TYPE, and
-PRINT-UNBOUND are as per `dbc::write-sax-parsed-slots-to-file'.~%~@
-:SEE-ALSO `parsed-inventory-record-xml-dump-file-and-hash'.~%▶▶▶")
-
-(fundoc 'write-sax-parsed-inventory-record-hash-to-zero-padded-directory
-        "Write all parsed-inventory-records in HASH-TABLE to a relative sub-directory
-pathname of the form 0NNNNN beneath BASE-OUTPUT-DIRECTORY. If sub-directory does
-not exist it will be created as if by `cl:ensure-directories-exist'.~%~@
-:EXAMPLE~%
- \(write-sax-parsed-inventory-record-hash-to-per-image-directory 
-  *tt--parse-table*
-  :base-output-directory \(merge-pathnames 
-                          \(make-pathname 
-                           :directory `\(:relative ,\(concatenate 'string 
-                                                                \"individual-parse-refs-zero-padded-\"
-                                                                \(mon:time-string-yyyy-mm-dd\)\)\)\)
-                          \(sub-path *xml-output-dir*\)\)\)~%~@
-:SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
-`write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
-
-;; (fundoc 'parsed-inventory-record-xml-dump-file-and-hash
-;;         "Parse XML contents of INPUT-FILE and write a lispy version to disk as per
-;; `write-sax-parsed-xml-to-file' then feed the contents of the lisp file into a
-;; hash-table with `load-sax-parsed-xml-file-to-parsed-class-hash'.~%~@
-;; Return cl:values a hash-table and the output pathname written to.
-;; Keyword input-file is an XML file containing inventory-records to be parsed.
-;; Keywords OUTPUT-PATHNAME-SUB-DIRECTORY, OUTPUT-PATHNAME-BASE-DIRECTORY,
-;; OUTPUT-PATHNAME-NAME, OUTPUT-PATHNAME-DATED-P, and OUTPUT-PATHNAME-TYPE are as
-;; per `make-parsed-class-output-file-ensuring-pathname'.~%~@
-;; When set-inventory-record-table is non-nil nth-value 1 is the return value of
-;; setting the 'parsed-inventory-record key in variable `*parsed-class-parse-table*' to the
-;; hash-table populated from the contents of INPUPT-FILE, else return a hash-table.~%
-;; :EXAMPLE~% \(parsed-inventory-record-xml-dump-file-and-hash\)~%~@
-;; :SEE-ALSO `parsed-inventory-record-null-prototype-to-file'.~%▶▶▶")
-
-(fundoc 'def-parsed-class-record-xml-dump-file-and-hash
-        "Return a function which consolidates functionality of both
-`write-sax-parsed-xml-to-file' and `load-sax-parsed-xml-file-to-parsed-class-hash'
-such that evalauting the returned function will for a given subclass parsed-<FOO> of
-`parsed-class' perform the following:~%
- - Parse an XML input file~%~% ~
- - For each parsed record write a Lispy sexp of the parsed XML input file to
-   disk (i.e. serialize the parse)~%~% ~
- - Load the contents of the Lispy file \(i.e. deserialize the parse\)~%~% ~
- - For each deserialized sexp create an instance of parsed-<FOO>~%~% ~
- - Add the created instance to a hash-table keyed by some unique value of a
-   slot of parsed-<FOO>~%~@
-Keyword PARSED-CLASS is an unquoted symbol designating a class which subclasses `parsed-class'.~%~@
-Its symbol-name is concatenated with \"-xml-dump-file-and-hash\" as per return
-value of `%parsed-class-dumper-format-and-intern-symbol' to form the returned
-symbol-name of the defined function. For example the following pair:~%~% ~
- :PARSED-CLASS parsed-inventory-record~%~@
-generates a function with the `cl:symbol-name' \"PARSED-INVENTORY-RECORD-XML-DUMP-FILE-AND-HASH\".~%~@
-
-Keyword DEFAULT-KEY-ACCESSOR is a symbol designating a method specialized on PARSED-CLASS
-as per`load-sax-parsed-xml-file-to-parsed-class-hash'.
-
-Keyword DEFAULT-INPUT-PATHNAME-NAME is a pathname-name \(a string\) naming
-the default xml file to parse, e.g.:~%
- :DEFAULT-INPUT-PATHNAME-NAME \"dump-refs-DUMPING\"~%~@
-At runtime it is merged with the pathname value of the following form:~%
-  \(sub-path *xml-input-dir*\)~%~@
-to form a pathname for which `cl:probe-file' returns true.~%~@
-It becomes the defined functions default value for use with the keyword INPUT-FILE
-for both `write-sax-parsed-xml-to-file' and `load-sax-parsed-xml-file-to-parsed-class-hash'.~%~@
-
-Keyword DEFAULT-OUTPUT-PATHNAME-BASE-DIRECTORY is a pathname naming a default
-base directory, e.g.:~%
- :DEFAULT-OUTPUT-PATHNAME-BASE-DIRECTORY \(sub-path *xml-output-dir*\)\)~%~@
-
-It is merged with the subdirectories specified by
-DEFAULT-OUTPUT-PATHNAME-SUB-DIRECTORY when writing the dumped file.~%~@
-
-It becomes the defined functions default value for use with the keyword
-OUTPUT-PATHNAME-BASE-DIRECTORY of `make-parsed-class-output-file-ensuring-pathname'.~%~@
-
-Keyword DEFAULT-OUTPUT-PATHNAME-SUB-DIRECTORY is an unquoted list of strings each
-designating a sub directory of DEFAULT-OUTPUT-PATHNAME-BASE-DIRECTORY e.g.:~%
- :DEFAULT-OUTPUT-PATHNAME-SUB-DIRECTORY \(\"parsed-xml-inventory-records\"\)~%~@
-It becomes the defined functions default value for use with the keyword
-OUTPUT-PATHNAME-SUB-DIRECTORY of `make-parsed-class-output-file-ensuring-pathname'.~%~@
-Keyword DEFAULT-OUTPUT-PATHNAME-NAME is a string to use as the prefix when
-generating the dumped-file's dated pathname-name, e.g.:~%~% ~
- :DEFAULT-OUTPUT-PATHNAME-NAME \"inventory-records\"~%~@
-would at runtime expand to a pathname-name having the form:~%~% ~
- \"inventory-records-<YYYY>-<MM>-<DD>\"~%~@
-It becomes the defined functions default value for use with the
-keyword OUTPUT-PATHNAME-NAME of `write-sax-parsed-xml-to-file' and the
-keyword OUTPUT-PATHNAME-SUB-DIRECTORY of `make-parsed-class-output-file-ensuring-pathname'.~%~@
-
-:EXAMPLE~%~@
- \(macroexpand-1
-  '\(def-parsed-class-record-xml-dump-file-and-hash 
-      :parsed-class parsed-inventory-sales-order-record
-      :default-key-accessor order-number
-      :default-input-pathname-name \"orders-xml\"
-      :default-output-pathname-base-directory \(sub-path *xml-output-dir*\)
-      :default-output-pathname-sub-directory \(\"parsed-xml-inventory-sales-order-records\"\)
-      :default-output-pathname-name \"order-records\"\)\)~%~@
-
-:SEE-ALSO `print-sax-parsed-slots', `write-sax-parsed-slots-to-file',
-`write-sax-parsed-class-hash-to-files', `write-parsed-class-parse-table-to-file'.~%▶▶▶")
-
-;; (fundoc 'parsed-inventory-record-load-default-parsed-file-to-hash
-;;         "Load slots of class parsed-inventory-record to its parsed-class-parse-table from most recent dump file.~%~@
-;; Loads file written with `write-parsed-inventory-record-parse-table-to-file'
-;; which have the `cl:pathname-type' \"pctd\".~%~@
-;; Signal an error if the parsed file or its containing directory can not be found.~%~@
-;; :NOTE This functionality is distinct from that of
-;; `load-sax-parsed-xml-file-to-parsed-class-hash' which loads the contents of a
-;; parsed XML file where each record is an alist with each element of the alist a
-;; mapping from a string to a slot-value where each string is a valid argument to
-;; `set-parsed-inventory-record-slot-value' and identifies an SQL table-column with
-;; a corresponding slot-name.~%~@
-;; :SEE-ALSO `parsed-inventory-record-xml-dump-file-and-hash',
-;; `load-sax-parsed-xml-file-to-parsed-class-hash',
-;; `write-sax-parsed-slots-to-file', `write-parsed-class-parse-table-to-file'.~%▶▶▶")
-
-(fundoc 'write-sax-parsed-class-hash-to-files
-"Write each parsed-class object of HASH-TABLE to a dedicated file beneath OUTPUT-DIRECTORY.~%~@
-Return value is a list of the `cl:file-namestring's of each file written.~%~@
-:EXAMPLE~%
- \(write-sax-parsed-class-hash-to-files 
-  <HASH-TABLE> 
-  :parse-class 'parsed-inventory-record
-  :slot-for-file-name 'inventory-number 
-  :prefix-for-file-name \"inventory-number\"
-  :output-directory \(merge-pathnames #P\"individual-parse-refs-2011-10-01/\" 
-                                     \(sub-path *xml-output-dir*\)\)\)~%~@
-:SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash',
-`print-sax-parsed-slots', `write-sax-parsed-slots-to-file',
-`write-sax-parsed-class-hash-to-files',
-`write-parsed-class-parse-table-to-file',
-`write-sax-parsed-inventory-record-hash-to-zero-padded-directory',.~%▶▶▶")
-
 (fundoc 'write-parsed-class-parse-table-to-file
         "Ouput as if by `write-sax-parsed-slots-to-file', but instead of writing an individual file
 per object, dump the contents of a populated parsed-class-parse-table for
@@ -2292,6 +2153,208 @@ The above is loosely equivalent to:~%
  shell> curl -I http://id.loc.gov/vocabulary/graphicMaterials/label/A%20la%20poup%C3%A9e%20prints~%~@
 :SEE-ALSO `mon:string-percent-encode'.~%▶▶▶")
 
+;;; ==============================
+;;; dbc-classes/dbc-class-parsed-inventory-record.lisp
+;;; ==============================
+
+(generic-doc #'parsed-inventory-record-parse-table-lookup-slot-value
+"Do not specialize methods directly!
+Methods are specialized on an existing slot-name with the
+`accessors-of-parsed-class' for `parsed-inventory-record' at loadtime using
+macro `def-parsed-inventory-record-parse-table-lookup-slot-value'.~%~@
+SLOT-NAME is a symbol corresponding to an existing slot of class `parsed-inventory-record'.
+HASH-KEY is a string for `parsed-class-parse-table' possibly mapping to an instance of `parsed-inventory-record'.
+:EXAMPLE~%
+ \(loop 
+   for fun in \(accessors-of-parsed-class 'parsed-inventory-record\)
+   collect \(find-method #'parsed-inventory-record-parse-table-lookup-slot-value nil `\(\(eql ,fun\) string\)\)\)~%~@
+:SEE-ALSO `parsed-inventory-record-parse-table-lookup',
+`parsed-class-parse-table', `parsed-class-parse-table-lookup',
+`parsed-class-parse-table-lookup-slot-value'.~%▶▶▶")
+
+(fundoc 'parsed-inventory-record-parse-table-lookup
+"Find HASH-KEY in the `parsed-class-parse-table' for class `parsed-inventory-record'.~%~@
+Like `parsed-class-parse-table-lookup' but specifically for class `parsed-inventory-record'.~%~@
+Return values as if by `cl:gethash'.~%~@
+If HASH-KEY is found nth-value 0 is an instance of class `parsed-inventory-record'.~%~@
+Arg HASH-KEY is a string.~%~@
+:EXAMPLE~%
+  \(parsed-class-parse-table-lookup 'parsed-inventory-record \"1692\"\)~%
+  \(parsed-class-parse-table-lookup 'parsed-inventory-record \"1692m\"\)~%~@
+:SEE-ALSO `parsed-inventory-record-parse-table-lookup-slot-value',
+`parsed-class-parse-table-lookup-slot-value'.~%▶▶▶")
+
+(fundoc 'def-parsed-inventory-record-parse-table-lookup-slot-value
+"loadtime macro for specializing generic `parsed-inventory-record-parse-table-lookup-slot-value'.~%~@
+For each slot-name in `accessors-of-parsed-class' for class `parsed-inventory-record'
+define a function and a method with an eql specializer for the accessor.~%~@
+Defined function accepts a single argument HASH-KEY which is a string mapping to
+an instance of in the parsed-class-parse-table for `parsed-inventory-record'.
+Each defined function has a sybmol name with the format:~%
+ PARSED-INVENTORY-RECORD-<SLOT-NAME>-LOOKUP~%~@
+Defined method has a signature of the form:~%
+ \(\(eql <SLOT-NAME>\) \(string hash-key\)\)~%~@
+:EXAMPLE~%~@
+ \(macroexpand '\(def-parsed-inventory-record-parse-table-lookup-slot-value description-inventory-english\)\)~%
+ \(loop 
+   for fun in \(accessors-of-parsed-class 'parsed-inventory-record\)
+   collect \(find-method #'parsed-inventory-record-parse-table-lookup-slot-value nil `\(\(eql ,fun\) string\)\)\)~%~@
+:NOTE `%parsed-inventory-record-parse-table-lookup-slot-value-maybe-remove'
+evaluated at loadtime will remove any pre-existing functions/methods defined
+with this macro.~%
+:SEE-ALSO `<XREF>'.~%▶▶▶")
+
+(fundoc '%parsed-inventory-record-parse-table-lookup-slot-value-maybe-remove
+"Remove any existing functions/methods which may have been previously defined
+with `def-parsed-inventory-record-parse-table-lookup-slot-value' prior to
+\(re\)defining new ones at system loadtime.~%
+:EXAMPLE~%
+ (def-parsed-inventory-record-parse-table-lookup-slot-value not-a-real-slot)~%
+ \(find-method #'parsed-inventory-record-parse-table-lookup-slot-value nil '\(\(eql not-a-real-slot\) string\)\)~%
+ \(fboundp 'parsed-inventory-record-not-a-real-slot-lookup\)~%
+ \(%parsed-inventory-record-parse-table-lookup-slot-value-maybe-remove\)~%
+ \(find-method #'parsed-inventory-record-parse-table-lookup-slot-value nil '\(\(eql not-a-real-slot\) string\) nil\)~%
+ \(fboundp 'parsed-inventory-record-not-a-real-slot-lookup\)~%
+:SEE-ALSO `parsed-inventory-record-parse-table-lookup-slot-value'.~%▶▶▶")
+
+(fundoc 'parsed-inventory-record-null-prototype-to-file
+        "Write slot values of OBJECT to a file in directory corresponding to object's
+inventory-number slot value beneath BASE-OUTPUT-DIRECTORY.~%~@
+Return pathname of file written.~%~@
+Keyword args PREFIX-FOR-FILE-NAME, SUFFIX-FOR-FILE-NAME, PATHNAME-TYPE, and
+PRINT-UNBOUND are as per `dbc::write-sax-parsed-slots-to-file'.~%~@
+:SEE-ALSO `parsed-inventory-record-xml-dump-file-and-hash'.~%▶▶▶")
+
+(fundoc 'write-sax-parsed-inventory-record-hash-to-zero-padded-directory
+        "Write all parsed-inventory-records in HASH-TABLE to a relative sub-directory
+pathname of the form 0NNNNN beneath BASE-OUTPUT-DIRECTORY. If sub-directory does
+not exist it will be created as if by `cl:ensure-directories-exist'.~%~@
+:EXAMPLE~%
+ \(write-sax-parsed-inventory-record-hash-to-per-image-directory 
+  *tt--parse-table*
+  :base-output-directory \(merge-pathnames 
+                          \(make-pathname 
+                           :directory `\(:relative ,\(concatenate 'string 
+                                                                \"individual-parse-refs-zero-padded-\"
+                                                                \(mon:time-string-yyyy-mm-dd\)\)\)\)
+                          \(sub-path *xml-output-dir*\)\)\)~%~@
+:SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
+`write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files'.~%▶▶▶")
+
+;; (fundoc 'parsed-inventory-record-xml-dump-file-and-hash
+;;         "Parse XML contents of INPUT-FILE and write a lispy version to disk as per
+;; `write-sax-parsed-xml-to-file' then feed the contents of the lisp file into a
+;; hash-table with `load-sax-parsed-xml-file-to-parsed-class-hash'.~%~@
+;; Return cl:values a hash-table and the output pathname written to.
+;; Keyword input-file is an XML file containing inventory-records to be parsed.
+;; Keywords OUTPUT-PATHNAME-SUB-DIRECTORY, OUTPUT-PATHNAME-BASE-DIRECTORY,
+;; OUTPUT-PATHNAME-NAME, OUTPUT-PATHNAME-DATED-P, and OUTPUT-PATHNAME-TYPE are as
+;; per `make-parsed-class-output-file-ensuring-pathname'.~%~@
+;; When set-inventory-record-table is non-nil nth-value 1 is the return value of
+;; setting the 'parsed-inventory-record key in variable `*parsed-class-parse-table*' to the
+;; hash-table populated from the contents of INPUPT-FILE, else return a hash-table.~%
+;; :EXAMPLE~% \(parsed-inventory-record-xml-dump-file-and-hash\)~%~@
+;; :SEE-ALSO `parsed-inventory-record-null-prototype-to-file'.~%▶▶▶")
+
+(fundoc 'def-parsed-class-record-xml-dump-file-and-hash
+        "Return a function which consolidates functionality of both
+`write-sax-parsed-xml-to-file' and `load-sax-parsed-xml-file-to-parsed-class-hash'
+such that evalauting the returned function will for a given subclass parsed-<FOO> of
+`parsed-class' perform the following:~%
+ - Parse an XML input file~%~% ~
+ - For each parsed record write a Lispy sexp of the parsed XML input file to
+   disk (i.e. serialize the parse)~%~% ~
+ - Load the contents of the Lispy file \(i.e. deserialize the parse\)~%~% ~
+ - For each deserialized sexp create an instance of parsed-<FOO>~%~% ~
+ - Add the created instance to a hash-table keyed by some unique value of a
+   slot of parsed-<FOO>~%~@
+Keyword PARSED-CLASS is an unquoted symbol designating a class which subclasses `parsed-class'.~%~@
+Its symbol-name is concatenated with \"-xml-dump-file-and-hash\" as per return
+value of `%parsed-class-dumper-format-and-intern-symbol' to form the returned
+symbol-name of the defined function. For example the following pair:~%~% ~
+ :PARSED-CLASS parsed-inventory-record~%~@
+generates a function with the `cl:symbol-name' \"PARSED-INVENTORY-RECORD-XML-DUMP-FILE-AND-HASH\".~%~@
+
+Keyword DEFAULT-KEY-ACCESSOR is a symbol designating a method specialized on PARSED-CLASS
+as per`load-sax-parsed-xml-file-to-parsed-class-hash'.
+
+Keyword DEFAULT-INPUT-PATHNAME-NAME is a pathname-name \(a string\) naming
+the default xml file to parse, e.g.:~%
+ :DEFAULT-INPUT-PATHNAME-NAME \"dump-refs-DUMPING\"~%~@
+At runtime it is merged with the pathname value of the following form:~%
+  \(sub-path *xml-input-dir*\)~%~@
+to form a pathname for which `cl:probe-file' returns true.~%~@
+It becomes the defined functions default value for use with the keyword INPUT-FILE
+for both `write-sax-parsed-xml-to-file' and `load-sax-parsed-xml-file-to-parsed-class-hash'.~%~@
+
+Keyword DEFAULT-OUTPUT-PATHNAME-BASE-DIRECTORY is a pathname naming a default
+base directory, e.g.:~%
+ :DEFAULT-OUTPUT-PATHNAME-BASE-DIRECTORY \(sub-path *xml-output-dir*\)\)~%~@
+
+It is merged with the subdirectories specified by
+DEFAULT-OUTPUT-PATHNAME-SUB-DIRECTORY when writing the dumped file.~%~@
+
+It becomes the defined functions default value for use with the keyword
+OUTPUT-PATHNAME-BASE-DIRECTORY of `make-parsed-class-output-file-ensuring-pathname'.~%~@
+
+Keyword DEFAULT-OUTPUT-PATHNAME-SUB-DIRECTORY is an unquoted list of strings each
+designating a sub directory of DEFAULT-OUTPUT-PATHNAME-BASE-DIRECTORY e.g.:~%
+ :DEFAULT-OUTPUT-PATHNAME-SUB-DIRECTORY \(\"parsed-xml-inventory-records\"\)~%~@
+It becomes the defined functions default value for use with the keyword
+OUTPUT-PATHNAME-SUB-DIRECTORY of `make-parsed-class-output-file-ensuring-pathname'.~%~@
+Keyword DEFAULT-OUTPUT-PATHNAME-NAME is a string to use as the prefix when
+generating the dumped-file's dated pathname-name, e.g.:~%~% ~
+ :DEFAULT-OUTPUT-PATHNAME-NAME \"inventory-records\"~%~@
+would at runtime expand to a pathname-name having the form:~%~% ~
+ \"inventory-records-<YYYY>-<MM>-<DD>\"~%~@
+It becomes the defined functions default value for use with the
+keyword OUTPUT-PATHNAME-NAME of `write-sax-parsed-xml-to-file' and the
+keyword OUTPUT-PATHNAME-SUB-DIRECTORY of `make-parsed-class-output-file-ensuring-pathname'.~%~@
+
+:EXAMPLE~%~@
+ \(macroexpand-1
+  '\(def-parsed-class-record-xml-dump-file-and-hash 
+      :parsed-class parsed-inventory-sales-order-record
+      :default-key-accessor order-number
+      :default-input-pathname-name \"orders-xml\"
+      :default-output-pathname-base-directory \(sub-path *xml-output-dir*\)
+      :default-output-pathname-sub-directory \(\"parsed-xml-inventory-sales-order-records\"\)
+      :default-output-pathname-name \"order-records\"\)\)~%~@
+
+:SEE-ALSO `print-sax-parsed-slots', `write-sax-parsed-slots-to-file',
+`write-sax-parsed-class-hash-to-files', `write-parsed-class-parse-table-to-file'.~%▶▶▶")
+
+;; (fundoc 'parsed-inventory-record-load-default-parsed-file-to-hash
+;;         "Load slots of class parsed-inventory-record to its parsed-class-parse-table from most recent dump file.~%~@
+;; Loads file written with `write-parsed-inventory-record-parse-table-to-file'
+;; which have the `cl:pathname-type' \"pctd\".~%~@
+;; Signal an error if the parsed file or its containing directory can not be found.~%~@
+;; :NOTE This functionality is distinct from that of
+;; `load-sax-parsed-xml-file-to-parsed-class-hash' which loads the contents of a
+;; parsed XML file where each record is an alist with each element of the alist a
+;; mapping from a string to a slot-value where each string is a valid argument to
+;; `set-parsed-inventory-record-slot-value' and identifies an SQL table-column with
+;; a corresponding slot-name.~%~@
+;; :SEE-ALSO `parsed-inventory-record-xml-dump-file-and-hash',
+;; `load-sax-parsed-xml-file-to-parsed-class-hash',
+;; `write-sax-parsed-slots-to-file', `write-parsed-class-parse-table-to-file'.~%▶▶▶")
+
+(fundoc 'write-sax-parsed-class-hash-to-files
+"Write each parsed-class object of HASH-TABLE to a dedicated file beneath OUTPUT-DIRECTORY.~%~@
+Return value is a list of the `cl:file-namestring's of each file written.~%~@
+:EXAMPLE~%
+ \(write-sax-parsed-class-hash-to-files 
+  <HASH-TABLE> 
+  :parse-class 'parsed-inventory-record
+  :slot-for-file-name 'inventory-number 
+  :prefix-for-file-name \"inventory-number\"
+  :output-directory \(merge-pathnames #P\"individual-parse-refs-2011-10-01/\" 
+                                     \(sub-path *xml-output-dir*\)\)\)~%~@
+:SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash',
+`print-sax-parsed-slots', `write-sax-parsed-slots-to-file',
+`write-sax-parsed-class-hash-to-files',
+`write-parsed-class-parse-table-to-file',
+`write-sax-parsed-inventory-record-hash-to-zero-padded-directory',.~%▶▶▶")
 
 ;;; ==============================
 

@@ -202,6 +202,17 @@
 ;;; `parsed-inventory-record'
 ;;; ==============================
 
+;; define the `parsed-inventory-record-<FOO>-lookup' functions/methods
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (%parsed-inventory-record-parse-table-lookup-slot-value-maybe-remove)
+  (loop 
+    for def-slot in (accessors-of-parsed-class 'parsed-inventory-record)
+    collect (list 'def-parsed-inventory-record-parse-table-lookup-slot-value def-slot) into def-forms
+    finally (return
+              (values 
+               (loop for form in def-forms collect (eval form))
+               (closer-mop:generic-function-methods #'parsed-inventory-record-parse-table-lookup-slot-value)))))
+
 ;; `set-parsed-inventory-record-slot-value'
 (def-set-parsed-class-record-slot-value
     parsed-inventory-record)

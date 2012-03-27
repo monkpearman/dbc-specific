@@ -17,6 +17,8 @@
 (in-package #:dbc)
 ;; *package*
 
+(defgeneric parsed-inventory-record-parse-table-lookup-slot-value (slot-name hash-key))
+
 ;; (make-instance 'parsed-inventory-record)
 
 ;;; ==============================
@@ -242,6 +244,7 @@
     :accessor description-inventory-condition
     :documentation ":ORIGINAL-FIELD \"condition\"")
 
+   ;; :linenbacked | nil
    (media-entity-mount
     :initarg :media-entity-mount
     :accessor media-entity-mount
@@ -257,6 +260,10 @@
     :accessor media-entity-paper
     :documentation ":ORIGINAL-FIELD \"paper\"")
 
+   ;; possible values are :polychromatic :monochromatic :bichromatic
+   ;; :monochromatic was originally "0"
+   ;; :polychromatic was originally "1" 
+   ;; :bichromatic was never distinguished so some adjustment will likely be required.
    (media-entity-color
     :initarg :media-entity-color
     :accessor media-entity-color
@@ -442,8 +449,6 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
     (print-unreadable-object (object stream :type t :identity (not inv-num-if)) 
       (format stream "~S" inv-num-if))))
 
-;; control-id-entity-num-artist
-
 (make-parsed-class-field-slot-accessor-mapping
  'parsed-inventory-record
  '(("ref"               . inventory-number)
@@ -519,6 +524,73 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("date_edit"         . edit-timestamp)
    ("edit_history"      . edit-history))
  )
+
+(defun parsed-inventory-record-parse-table-lookup (hash-key)
+  (declare (string hash-key))
+  (parsed-class-parse-table-lookup (parsed-class-mapped 'parsed-inventory-record) hash-key))
+
+(defun %parsed-inventory-record-parse-table-lookup-slot-value (slot-name hash-key)
+  ;; lets assume that any additional callers of this method are specialized as (eql '<FOO>)
+  ;; and will always have membership in `accessors-of-parsed-class'
+  ;;
+  ;; (unless (member slot-name (accessors-of-parsed-class 'parsed-inventory-record))
+  ;;   (error ":METHOD `parsed-inventory-record-parse-table-lookup-slot-value' ~
+  ;;                         -- arg SLOT-NAME is not a member of the accessors-of-parsed-class for class parsed-inventory-record.
+  ;;                         slot-name: ~S~%"
+  ;;          slot-name))
+  ;;
+  (declare (symbol slot-name)
+           (string hash-key)
+           (optimize (speed 3)))
+  (multiple-value-bind (maybe-find-object found-p) (parsed-class-parse-table-lookup 'parsed-inventory-record hash-key)
+    (if (and maybe-find-object found-p)
+        (and (or (slot-exists-p maybe-find-object slot-name)
+                 (error ":METHOD `parsed-inventory-record-parse-table-lookup-slot-value' ~
+                          -- arg SLOT-NAME does not satisfy cl:slot-exists-p for OBJECT associated with HASH-KEY~% ~
+                          slot-name: ~S~% object:    ~S~% hash-key:  ~S~%"
+                        slot-name maybe-find-object hash-key))
+             (or (slot-boundp maybe-find-object slot-name)
+                 (error ":METHOD `parsed-inventory-record-parse-table-lookup-slot-value' ~
+                          -- arg SLOT-NAME does not satisfy cl:slot-boundp for OBJECT associated with HASH-KEY~% ~
+                          slot-name: ~S~% object:    ~S~% hash-key:  ~S~%"
+                        slot-name maybe-find-object hash-key))
+             (values (slot-value maybe-find-object slot-name)
+                     maybe-find-object))
+        (values maybe-find-object found-p))))
+
+(defmacro def-parsed-inventory-record-parse-table-lookup-slot-value (slot-name)
+  (let ((generated-name (alexandria:format-symbol (find-package "DBC")
+                                                  "~:@(PARSED-INVENTORY-RECORD-~A-LOOKUP~)"
+                                                  slot-name)))
+    ;; defining specializers doesn't work!
+    `(progn
+       (defmethod parsed-inventory-record-parse-table-lookup-slot-value ((slot-name (eql ',slot-name))
+                                                                         (hash-key string))
+         (%parsed-inventory-record-parse-table-lookup-slot-value ',slot-name hash-key))
+       (defun ,generated-name (hash-key)
+         (declare (string hash-key))
+         (parsed-inventory-record-parse-table-lookup-slot-value ',slot-name hash-key)))))
+
+(defun %parsed-inventory-record-parse-table-lookup-slot-value-maybe-remove ()
+  (loop
+    with current-accessors = (accessors-of-parsed-class 'parsed-inventory-record)
+    for gf-method in (closer-mop:generic-function-methods #'parsed-inventory-record-parse-table-lookup-slot-value)
+    for specializers = (closer-mop:method-specializers gf-method)
+    do (and specializers 
+            (typep (car specializers) 'closer-mop:eql-specializer) 
+            (eql (class-name (cadr specializers)) 'string)
+            (unless (member (closer-mop:eql-specializer-object (car specializers)) current-accessors)
+              
+              (let ((maybe-remove-function (alexandria:format-symbol (find-package "DBC")
+                                                                     "~:@(PARSED-INVENTORY-RECORD-~A-LOOKUP~)"
+                                                                     (closer-mop:eql-specializer-object (car specializers)))))
+                (and (fboundp maybe-remove-function)
+                     (fmakunbound maybe-remove-function))
+                ;; this isn't a good idea because the symbol may be needed elsewhere.
+                (when (boundp maybe-remove-function)
+                  (makunbound maybe-remove-function)
+                  (unintern maybe-remove-function)))
+              (remove-method #'parsed-inventory-record-parse-table-lookup-slot-value gf-method)))))
 
 (defun parsed-inventory-record-null-prototype ()
   "Return an instance of parsed-inventory-record with all slot-values null.
@@ -1790,7 +1862,13 @@ This function should only be used for instantiating instances created _outside_ 
 ;;
 ;; - This is the "height" field 
 ;;
-;; - Use `mon:number-to-string' or `parse-integer'
+;; - Use `mon:number-to-string' or `parse-integer', `mon:parse-float'
+;;  No parse-integer is not what is wanted:
+;; (parse-integer  "13.75" :junk-allowed t)
+;;  => 13, 2
+;; (mon:parse-float "13.75")
+;; => 13.75
+
 
 ;;; ==============================
 ;; :FIELD "color"  :TRANSFORM media-entity-color
@@ -1809,13 +1887,20 @@ This function should only be used for instantiating instances created _outside_ 
 ;; TRUE indicates a non greyscale image.
 ;; FALSE indicates a greyscale or monochromatic image.
 ;; Better, would be to indicate as follows:
-;; - polychromatic-multi  -- a polychromatic multi-colored imaged
-;; - polychromatic-grey   -- a polychromatic grayscale (greyscale) image
-;; - monochromatic-binary -- a binary image black and white
-;; These would map as:
+;; - polychromatic  -- an image with more multi-colored imaged
+;; - monochromatic -- a single color across a some narrow frequence range e.g. grayscale (greyscale) or sepia cyanotype ("blueprint") images, and early photographic methods such as daguerreotypes, ambrotypes, and tintypes, 
+;; - bichromatic -- a binary image having two colors each of which does not deviate in tonality a black and white is bichromatic a woodcut impression with blue lines on a red ground is bichromatic
+;;
+;; These could map as:
 ;;  0 - black and white
 ;;  1 - greyscale
 ;;  2 - color 
+;; :polychromatic
+;; :monochromatic
+;; :bichromatic
+;;
+;;; ==============================
+
 
 ;;; ==============================
 ;; :FIELD "onlinen" :TRANSFORM media-entity-mount
