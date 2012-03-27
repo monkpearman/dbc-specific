@@ -96,6 +96,9 @@
 
 (defgeneric %parsed-class-slot-exists-for-parsed-class-check (object slot-name))
 
+;; what we'd really like to have is something like this:
+;; (setf (parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'media-entity-color "652") "1")
+;; however, to do it right means introspecting on SLOT-NAME for an effective-slot-definition... 
 (defgeneric parsed-class-parse-table-lookup-slot-value (object slot-name hash-key))
 
 ;; These are common to class `parsed-class' and its subclasses

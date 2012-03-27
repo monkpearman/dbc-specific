@@ -223,9 +223,6 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
           (setf (parsed-class-parse-table parsed-class-subclass)
                 (%parsed-class-parse-table-make-table)))))))
         
-
-;; (setf (gethash *parsed-class-field-slot-accessor-mapping-table*
-
 ;; :EXAMPLE
 ;;  (%parsed-class-record-setf-slot-value-forms 'parsed-inventory-record)
 ;; :NOTE Arg HASH-TABLE will always be `*parsed-class-field-slot-accessor-mapping-table*'

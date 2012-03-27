@@ -326,8 +326,7 @@
 
 (defun parsed-class-slot-value-collect-string= (class slot match-string &key (sort-object-ids nil))
   (declare (symbol class slot)
-           (string match-string)
-           ((or null (eql #'>) (eql #'<)) sort-object-ids))
+           (string match-string))
   (loop 
     for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
     for slot-v = (slot-value obj slot)
@@ -355,8 +354,7 @@
 
 ;; (parsed-class-slot-value-collect-null 'parsed-inventory-record 'title-ebay)
 (defun parsed-class-slot-value-collect-null (class slot &key (sort-object-ids nil))
-  (declare (symbol class slot)
-           ((or null (eql #'>) (eql #'<)) sort-object-ids))
+  (declare (symbol class slot))
   (loop 
     for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
     for slot-v = (slot-value obj slot)
@@ -380,8 +378,7 @@
     finally (return (values gthr cnt))))
 
 (defun parsed-class-slot-value-collect-eql (class slot match-value &key (sort-object-ids nil))
-  (declare (symbol class slot)
-           ((or null (eql #'>) (eql #'<)) sort-object-ids))
+  (declare (symbol class slot))
   (loop 
     for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
     for slot-v = (slot-value obj slot)
@@ -394,8 +391,7 @@
                             cnt))))
 
 (defun parsed-class-slot-value-collect-equal (class slot match-value &key (sort-object-ids nil))
-  (declare (symbol class slot)
-           ((or null (eql #'>) (eql #'<)) sort-object-ids))
+  (declare (symbol class slot))
   (loop 
     for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
     for slot-v = (slot-value obj slot)
@@ -408,8 +404,7 @@
                             cnt))))
 
 (defun parsed-class-slot-value-collect-equalp (class slot match-value &key (sort-object-ids nil))
-  (declare (symbol class slot)
-           ((or null (eql #'>) (eql #'<)) sort-object-ids))
+  (declare (symbol class slot))
   (loop 
     for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
     for slot-v = (slot-value obj slot)
@@ -455,8 +450,7 @@
                                               &key (return-object-id t)
                                                    (sort-object-ids nil))
   (declare (symbol class slot)
-           (boolean return-object-id)
-           ((or null (eql #'>) (eql #'<)) sort-object-ids))
+           (boolean return-object-id))
   (loop 
     for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
     for slot-v = (slot-value obj slot)
@@ -481,8 +475,7 @@
                                                       (sort-object-ids nil))
   (declare (symbol class slot)
            (string match-string)
-           (boolean return-object-id)
-           ((or null (eql #'>) (eql #'<)) sort-object-ids))
+           (boolean return-object-id))
   (loop 
     for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
     for slot-v = (slot-value obj slot)
@@ -506,8 +499,7 @@
                                              &key (return-object-id t)
                                                   (sort-object-ids nil))
   (declare (symbol class slot)
-           (boolean return-object-id)
-           ((or null (eql #'>) (eql #'<)) sort-object-ids))
+           (boolean return-object-id))
   (loop 
     for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
     for slot-v = (slot-value obj slot)
@@ -528,8 +520,7 @@
 (defun parsed-class-slot-value-set-when-equal (class slot match-value replacement-value &key (return-object-id t)
                                                                                              (sort-object-ids nil))
   (declare (symbol class slot)
-           (boolean return-object-id)
-           ((or null (eql #'>) (eql #'<)) sort-object-ids))
+           (boolean return-object-id))
   (loop 
     for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
     for slot-v = (slot-value obj slot)
@@ -551,8 +542,7 @@
                                                 &key (return-object-id t)
                                                      (sort-object-ids nil))
   (declare (symbol class slot)
-           (boolean return-object-id)
-           ((or null (eql #'>) (eql #'<)) sort-object-ids))
+           (boolean return-object-id))
   (loop 
     for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
     for slot-v = (slot-value obj slot)
@@ -574,8 +564,7 @@
                                                   &key (return-object-id t)
                                                        (sort-object-ids nil))
   (declare (symbol class slot)
-           (boolean return-object-id)
-           ((or null (eql #'>) (eql #'<)) sort-object-ids))
+           (boolean return-object-id))
   (loop 
     for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
     for slot-v = (slot-value obj slot)
