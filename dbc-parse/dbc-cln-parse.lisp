@@ -41,15 +41,17 @@
      (list 0 (type-of field-str) field-str))
     (cons
      (list (length field-str) (list (type-of field-str)) field-str))
-    (t             (list 0 (list (type-of field-str)) field-str))))
+    (t
+     (list 0 (list (type-of field-str)) field-str))))
 
 (defun field-cln-x  (field-string-cons)
   (let ((chk (field-string-cons field-string-cons)))
     (unless (and (= (car chk) 1)
                  ;; (type-of '"bubba") (aref "bubba" 0) 
                  (eq (caadr chk) 'simple-array)
-                 (eq (aref (caddr chk) 0) #\x))
+                 (eq (aref (caddr chk) 0) (the character #\x)))
       field-string-cons)))
+
 
 (defun split-used-fors (used-for-string &key (split-on "|"))
   ;; Is there a reason why we shouldn't be using this instead:
@@ -60,15 +62,16 @@
             (mon:string-all-whitespace-p used-for-string))
     (return-from split-used-fors (values nil used-for-string)))
   (loop 
-     :with split = (mon:string-split-on-chars used-for-string split-on)
-     :for x in split 
-     :for y = (string-trim " " x)
-     :unless (or (null y) (eql (length y) 0)) 
-     ;; Do we need to check for #\Newline #\Return? 
-     ;; If so maybe use `mon:string-trim-whitespace' here as well.
-     ;; :collect (mon:string-trim-whitespace y)
-     :collect (mon:string-trim-whitespace y) into rtn
-     :finally (return (values rtn used-for-string))))
+    with split = (mon:string-split-on-chars used-for-string split-on)
+    for x in split 
+    for y = (string-trim (the (simple-vector 1) #(#\SPACE)) x)
+    unless (or (null y)
+               (eql (length y) 0)) 
+    ;; Do we need to check for #\Newline #\Return? 
+    ;; If so maybe use `mon:string-trim-whitespace' here as well.
+    ;; :collect (mon:string-trim-whitespace y)
+    collect (mon:string-trim-whitespace y) into rtn
+    finally (return (values rtn used-for-string))))
 
 ;;mon:string-
 ;; :NOTE This can be adapted if/when we ever split the found_in field to work on
@@ -79,24 +82,24 @@
             (mon:string-all-whitespace-p appeared-in-string))
     (return-from split-appeared-in (values nil appeared-in-string)))
   (loop 
-     :with split = (mon:string-split-on-chars appeared-in-string split-on)
-     :for x in split 
-     :for y = (string-trim " " x)
-     :unless (or (null y) (eql (length y) 0)) 
-     :collect (mon:string-trim-whitespace y) into rtn
-     :finally (return (values rtn appeared-in-string))))
+    with split = (mon:string-split-on-chars appeared-in-string split-on)
+    for x in split 
+    for y = (string-trim (the (simple-vector 1) #(#\SPACE)) x)
+    unless (or (null y) (eql (length y) 0)) 
+    collect (mon:string-trim-whitespace y) into rtn
+    finally (return (values rtn appeared-in-string))))
 
 (defun format-entity-role (entity-roles
-                               &key 
-                               (stream nil)
-                               (entity-role-prefix ":ROLE")
-                               (prefix-min-pad 14))
+                           &key 
+                           (stream nil)
+                           (entity-role-prefix ":ROLE")
+                           (prefix-min-pad 14))
   (format stream (mon:make-string* nil "~{~" prefix-min-pad "A~A~^~%~}")
 	  (loop
-	     :for roles :in entity-roles
-	     :for role = entity-role-prefix
-	     :appending (list role roles) :into results
-	     :finally (return results))))
+            for roles in entity-roles
+            for role = entity-role-prefix
+            appending (list role roles) into results
+            finally (return results))))
 
 ;; :NOTE This is actually a bad idea as the "n 95121069" is canonical...
 (defun split-loc-pre (loc-string)
@@ -105,14 +108,21 @@
             (mon:string-all-whitespace-p loc-string))
     (return-from split-loc-pre (values nil loc-string)))
   (values 
-   (string-left-trim "n " (string-right-trim  " " loc-string))
+   (string-left-trim (the (simple-vector 2) #(#\n #\SPACE)) 
+                     (string-right-trim  (the (simple-vector 1) #(#\SPACE))
+                                         loc-string))
    loc-string))
 
 
 ;; :NOTE Don't forget to use `cl:search', `cl:find', etc.!
 ;;; ==============================
-(defun split-comma-field-if (comma-string &key keep-duplicates keep-first)
-  (split-field-on-char-if comma-string #\, :keep-duplicates keep-duplicates :keep-first keep-first))
+(defun split-comma-field-if (comma-string &key (keep-duplicates nil)
+                                               (keep-first nil))
+  (declare (boolean keep-duplicates keep-first))
+  (split-field-on-char-if comma-string
+                          (the character #\,)
+                          :keep-duplicates keep-duplicates
+                          :keep-first keep-first))
 
 ;; (split-comma-field-if "air, plane, airplane, Biplane,, aircraft, expo, , dirigible,")
 ;; (split-comma-field-if nil)
@@ -122,13 +132,14 @@
   (unless ;; (mon:simple-string-null-or-empty-p comma-string)
       (mon:string-null-or-empty-p comma-string)
     (loop 
-       :with split-comma = (mon:string-split-on-chars (the string comma-string) ",")
-       :for x :in split-comma
-       :for y = (mon:string-trim-whitespace (the string x))
-       :unless (or 
-                (eql (length y) 0) 
-                (notany #'alpha-char-p y))
-       :collect y)))
+      with split-comma = (mon:string-split-on-chars (the string comma-string)
+                                                    (the character #\,))
+      for x in split-comma
+      for y = (mon:string-trim-whitespace (the string x))
+      unless (or 
+              (eql (length y) 0) 
+              (notany #'alpha-char-p y))
+      collect y)))
 
 (defun split-roles (role-string)
   (declare (type mon:string-or-null role-string))
@@ -136,20 +147,24 @@
             (mon:string-all-whitespace-p role-string))
     (return-from split-roles (values nil role-string)))
   (loop 
-     :with split = (mon:string-split-on-chars role-string ",")
-     :for x in split 
-     :for y = (string-left-trim " " (string-right-trim  " ." x))
-     :unless (eql (length y) 0)
-     :collect (string-capitalize y) into rtn
-     :finally (return (values rtn role-string))))
+    with split = (mon:string-split-on-chars role-string (the character #\,))
+    for x in split 
+    for y = (string-left-trim (the (simple-vector 1) #(#\SPACE)) 
+                              (string-right-trim (the (simple-vector 2) #(#\SPACE #\.))
+                                                 x))
+    unless (eql (length y) 0)
+    collect (string-capitalize y) into rtn
+    finally (return (values rtn role-string))))
 
 (defun split-piped-field-if (piped-string &key keep-duplicates
                                                known-field-hashtable)
   (declare (mon:hash-table-or-symbol known-field-hashtable)
            (optimize (speed 3)))
-  (split-field-on-char-if piped-string #\| 
+  (split-field-on-char-if piped-string (the character #\|)
                           :keep-duplicates keep-duplicates 
                           :known-field-hashtable known-field-hashtable))
+
+
 
 ;; (split-piped-field-if "ref" :known-field-hashtable *xml-refs-match-table*)
 ;; (split-piped-field-if "ref" :known-field-hashtable *xml-refs-match-table*)
@@ -307,7 +322,7 @@
     (return-from field-convert-remove-duplicates
       (values string-list-maybe (type-of string-list-maybe))))
   (let ((str-lst-trans 
-         (remove-if #'mon:string-null-empty-or-all-whitespace-p string-list-maybe)))
+          (remove-if #'mon:string-null-empty-or-all-whitespace-p string-list-maybe)))
     (when (null str-lst-trans)
       (return-from field-convert-remove-duplicates 
         (values nil string-list-maybe)))
@@ -342,10 +357,11 @@
 ;; :NOTE has regression tests:
 ;; split-field-on-char-if-TEST.0 split-field-on-char-if-TEST.1
 ;; split-field-on-char-if-TEST.2 split-field-on-char-if-TEST.3
-(defun split-field-on-char-if (split-string char &key keep-duplicates
-                               keep-first
-                               known-field-hashtable)
+(defun split-field-on-char-if (split-string char &key (keep-duplicates nil)
+                                                      (keep-first nil)
+                                                      known-field-hashtable)
   (declare (character char)
+           (boolean keep-duplicates keep-first)
            (mon:hash-table-or-symbol known-field-hashtable)
            (inline mon:whitespace-char-p 
                    field-convert-1-0-x-empty)
@@ -381,17 +397,17 @@
                        v2
                        t2)
                       (loop 
-                         :with split = (mon:string-split-on-chars simple (make-string 1 :initial-element char))
-                         :for x simple-string in split ;; each elt of mon:string-split-on-chars is from a copy-seq.
-                         :for y simple-string = (mon:string-trim-whitespace x)
-                         ;; :unless (eql (the mon:array-length (length (the simple-string y))) 0)
-                         :unless (zerop (the mon:array-length (length y)))
-                         :collect y :into rtn
-                         :finally (if keep-duplicates
-                                      (return (values rtn (type-of rtn) v1 t1)) ;; v1 t1))
-                                      (progn 
-                                        (setf rtn (field-convert-remove-duplicates rtn))
-                                        (return (values rtn (type-of rtn) v1 t1))))))))))))
+                        with split = (mon:string-split-on-chars simple (make-string 1 :initial-element char))
+                        for x simple-string in split ;; each elt of mon:string-split-on-chars is from a copy-seq.
+                        for y simple-string = (mon:string-trim-whitespace x)
+                        ;; unless (eql (the mon:array-length (length (the simple-string y))) 0)
+                        unless (zerop (the mon:array-length (length y)))
+                        collect y into rtn
+                        finally (if keep-duplicates
+                                    (return (values rtn (type-of rtn) v1 t1)) ;; v1 t1))
+                                    (progn 
+                                      (setf rtn (field-convert-remove-duplicates rtn))
+                                      (return (values rtn (type-of rtn) v1 t1))))))))))))
 
 (declaim (inline %field-name-underscore-to-dash-if))
 (defun %field-name-underscore-to-dash-if (field-name)
@@ -399,13 +415,13 @@
            (optimize (speed 3)))
   (when (or (mon:string-null-empty-or-all-whitespace-p field-name)
             (and (= (length field-name) 1)
-                 (char= (char field-name 0) #\_))) 
+                 (char= (char field-name 0) (the character #\_)))) 
     (return-from %field-name-underscore-to-dash-if (values nil field-name)))
   (locally (declare (mon:string-not-null-or-empty field-name))
     (let ((trim-field (the simple-string (mon:string-trim-whitespace (copy-seq field-name)))))
       (declare (simple-string trim-field))
       (when (and (= (length trim-field) 1)
-                 (char= (schar trim-field 0) #\_))
+                 (char= (schar trim-field 0) (the character #\_)))
         (return-from %field-name-underscore-to-dash-if (values nil field-name)))
       (locally 
           (declare (mon:simple-string-not-empty trim-field))
@@ -464,27 +480,33 @@
 
 ;;; ==============================
 ;; artist lifespan-date
-;; 
-(defun split-lifespan (lifespan-str)
+
+;; :NOTE Is this the desired behavior?
+;; (split-date-range "-1840--")
+;; => ("?" . "1840?")
+(defun split-date-range (lifespan-str)
   (declare (type mon:string-or-null lifespan-str))
   (or (and (or (null lifespan-str)
 	       (eql (length lifespan-str) 0))
 	   (cons nil nil))
-      (let ((frob lifespan-str))
+      (let ((frob lifespan-str)
+            (concat-char #\-)
+            (question-char #\?))
+        (declare (character concat-char question-char))
 	(setf frob (mon:string-trim-whitespace frob))
-	(when (char=  #\- (char frob 0))
-	  (setf frob (mon:concat "?"  frob)))
-	(when (char= #\- (char frob (1- (length frob))))
-	  (setf frob (mon:concat frob "?")))
+	(when (char= (char frob 0) concat-char)
+	  (setf frob (mon:concat question-char  frob)))
+	(when (char= (char frob (1- (length frob))) concat-char)
+	  (setf frob (mon:concat frob question-char)))
 	(or (and (> (length frob) 0)
 		 (setf frob (mapcar #'mon:string-trim-whitespace
-				    (mon:string-split-on-chars frob "-"))))	    
+				    (mon:string-split-on-chars frob concat-char))))
 	    (setf frob (cons nil nil)))
 	(if (and (null (car frob))
 		 (null (cdr frob)))
 	    frob
 	    (or (and (eql (length frob) 1) frob)
-		     (and (eql (length frob) 2)
+                (and (eql (length frob) 2)
 		     (stringp (car frob))
 		     (stringp (cadr frob))
 		     (setf frob (cons (car frob) (cadr frob))))
@@ -494,49 +516,52 @@
 				      (apply #'concatenate 'string (cdr frob)))))
 		frob)))))
 
-(defun split-lifespan-string-int-pairs (lifespan-str-pair)
+(defun split-date-range-string-int-pairs (lifespan-str-pair)
   (declare (type (cons mon:string-or-null mon:string-or-null)
 		 lifespan-str-pair)
 	   ;; (optimize (speed 3) (safety 1) (space 0) (compilation-speed 0))
 	   )
   (let ((cons-str lifespan-str-pair)
-	(chk-digit (cons nil nil)))
+	(chk-digit (cons nil nil))
+        (question-char #\?)
+        (zero-char #\0))
+    (declare (character question-char zero-char))
     (and (stringp (car cons-str))
 	 (stringp (cdr cons-str))
 	 (setf chk-digit
 	       (list (or 
                       (and (loop 
-                              :for chars :across (the string (car cons-str))
-                              :always (digit-char-p chars))
+                             for chars across (the string (car cons-str))
+                             always (digit-char-p chars))
                            (not (or 
                                  (and (loop 
-                                         :for chars :across (the string (car cons-str)) 
-                                         :always (char= #\0 chars))
-                                      (setf (car chk-digit) #\?))
+                                        for chars across (the string (car cons-str)) 
+                                        always (char= chars zero-char))
+                                      (setf (car chk-digit) question-char))
                                  (and (not (eql (length (car cons-str)) 4))
-                                      (setf (car chk-digit) #\?)))))
+                                      (setf (car chk-digit) question-char)))))
                       (car chk-digit)
                       (and (loop 
-                              :for chars :across (the string (car cons-str)) 
-                              :thereis (char= #\? chars))
-                           #\?)
+                             for chars across (the string (car cons-str)) 
+                             thereis (char= chars question-char))
+                           question-char)
                       (car chk-digit))
 		     (or 
                       (and (loop 
-                              :for chars :across (the string (cdr cons-str)) 
-                              :always (digit-char-p chars))
+                             for chars across (the string (cdr cons-str)) 
+                             always (digit-char-p chars))
                            (not (or 
                                  (and (loop 
-                                         :for chars :across (the string (cdr cons-str)) 
-                                         :always (char= #\0 chars))
-                                      (setf (cdr chk-digit) #\?))
+                                        for chars across (the string (cdr cons-str)) 
+                                        always (char= chars zero-char))
+                                      (setf (cdr chk-digit) question-char))
                                  (and (not (eql (length (cdr cons-str)) 4))
-                                      (setf (cdr chk-digit) #\?)))))
+                                      (setf (cdr chk-digit) question-char)))))
                       (cdr chk-digit)
                       (and (loop 
-                              :for chars :across (the string (cdr cons-str)) 
-                              :thereis (char= #\? chars))
-                           #\?)
+                             for chars across (the string (cdr cons-str)) 
+                             thereis (char= chars question-char))
+                           question-char)
                       (cdr chk-digit)))))
 
     (and (car chk-digit)

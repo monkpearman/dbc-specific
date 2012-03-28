@@ -189,7 +189,7 @@ When USED-FOR-STRING is either `mon:string-null-or-empty-p' or
  \(split-used-fors \"\"\)~%
  \(split-used-fors nil\)~%~@
 :SEE-ALSO `split-piped-field-if', `mon:string-split-on-chars', `split-roles',
-`split-appeared-in', `split-loc-pre', `split-lifespan', `split-comma-field'.~%▶▶▶")
+`split-appeared-in', `split-loc-pre', `split-date-range', `split-comma-field'.~%▶▶▶")
 
 (fundoc 'split-field-on-char-if
 "SPLIT-STRING on CHAR returning a list of strings.~%~@
@@ -269,7 +269,7 @@ elements from first value ruturned.  Default is to process nth-value 0 with
            \(split-piped-field-if \"ref\" 
                                  :known-field-hashtable *xml-refs-match-table*\)\)\)~%~@
 :SEE-ALSO `split-used-fors', `split-roles', `split-appeared-in',
-`split-loc-pre', `split-lifespan', `split-comma-field',
+`split-loc-pre', `split-date-range', `split-comma-field',
 `mon:string-split-on-chars'.~%▶▶▶")
  
 (fundoc 'split-appeared-in
@@ -288,7 +288,7 @@ When APPEARED-IN-STRING is either `mon:string-null-or-empty-p' or
  \(split-appeared-in \"\"\)~%
  \(split-appeared-in \"     \"\)~%~@
 :SEE-ALSO `split-roles', `split-used-fors', `split-loc-pre',
-`split-lifespan'`mon:string-split-on-chars', `mon:string-trim-whitespace',
+`split-date-range'`mon:string-split-on-chars', `mon:string-trim-whitespace',
 `mon:*whitespace-chars*'.~%▶▶▶")
  
 (fundoc 'split-roles
@@ -308,7 +308,7 @@ When ROLE-STRING is either `mon:string-null-or-empty-p' or
  \(split-roles \"\"\)~%
  \(split-roles \"       \"\)~%~@
 :SEE-ALSO `split-piped-field-if', `split-used-fors', `split-appeared-in',
-`split-loc-pre', `split-lifespan', `split-comma-field'.~%▶▶▶")
+`split-loc-pre', `split-date-range', `split-comma-field'.~%▶▶▶")
 
 (fundoc 'split-loc-pre
         "Trim leading \"n \" prefix from loc-control fields.~%~@
@@ -325,9 +325,9 @@ When LOC-STRING is either `mon:string-null-or-empty-p' or
  \(split-loc-pre nil\)~%~@
 :NOTE This is actually a bad idea as the \"n 95121069\" is canonical...~%~@
 :SEE-ALSO `split-roles', `split-used-fors', `split-piped-field-if',
-`split-appeared-in', `split-lifespan'.~%▶▶▶")
+`split-appeared-in', `split-date-range'.~%▶▶▶")
 
-(fundoc 'split-lifespan
+(fundoc 'split-date-range
 "Split LIFESPAN-STR into a consed pair.~%~@
 LIFESPAN-STR should have one of the formats:~% 
  <YYYY>-<YYYY>~% -<YYYY>~% <YYYY>-~% <YYYY>-?~% ?-<YYYY>~%~@
@@ -338,26 +338,26 @@ Return value has the form:~%
  \(\"?\" . \"<YYYY>\"\)~% 
  \(NIL\)~%
 :EXAMPLE~%
- \(split-lifespan \"1843-1908\"\)~%
- \(split-lifespan \"1848-\"\)~%
- \(split-lifespan \"-1848\"\)~%
- \(split-lifespan \"?-1848\"\)~%
- \(split-lifespan \"-1848-?\"\)~%
- \(split-lifespan \"-1848?\"\)~%
- \(split-lifespan \"-1848?\"\)~%
- \(split-lifespan \"1848 - 1942\"\)
- \(split-lifespan \" 1848 - 1942 \"\)
- \(split-lifespan \"1848 -- ??\"\)~%
- \(split-lifespan \" 1848-?? \"\)~%~@
+ \(split-date-range \"1843-1908\"\)~%
+ \(split-date-range \"1848-\"\)~%
+ \(split-date-range \"-1848\"\)~%
+ \(split-date-range \"?-1848\"\)~%
+ \(split-date-range \"-1848-?\"\)~%
+ \(split-date-range \"-1848?\"\)~%
+ \(split-date-range \"-1848?\"\)~%
+ \(split-date-range \"1848 - 1942\"\)
+ \(split-date-range \" 1848 - 1942 \"\)
+ \(split-date-range \"1848 -- ??\"\)~%
+ \(split-date-range \" 1848-?? \"\)~%~@
 ;; Pathological:~%
- \(split-lifespan \"1940s-60s\"\)~%
- \(split-lifespan \"Active 1940s-60s\"\)~%~@
+ \(split-date-range \"1940s-60s\"\)~%
+ \(split-date-range \"Active 1940s-60s\"\)~%~@
 :NOTE Doesn't catch the #\\[ #\\] chars in \"[?]-1900\" or \"1900-[?]\".~%~@
 :SEE-ALSO `split-roles', `split-used-fors', `split-piped-field-if',
 `split-appeared-in', `split-loc-pre'.~%▶▶▶")
 
-(fundoc 'split-lifespan-string-int-pairs
-"Attempt integer extraction from cons strings returned by `split-lifespan'.~%~@
+(fundoc 'split-date-range-string-int-pairs
+"Attempt integer extraction from cons strings returned by `split-date-range'.~%~@
 LIFESPAN-STR-PAIR is a consed pair with the value of each conscell satisfying
 either null or `simple-stringp', signal an error if not.~%~@
 First cons pair of return value is LIFESPAN-STR-PAIR second cons pair is its
@@ -375,29 +375,35 @@ And should match one of the following patterns:~%
  \(\(\"<0+>\"   . \"<YYYY>\"\)  \(-1     . YYYY\)\)~%
  \(\(\"<YYYY>\" . \"<0+>\"\)    \(YYYY-1 . \(lognot YYYY-1\)\)~%
 :EXAMPLE~%
- \(split-lifespan-string-int-pairs \(split-lifespan \"\"\)\)~%
- \(split-lifespan-string-int-pairs \(split-lifespan \"1843-1943\"\)\)~%
- \(split-lifespan-string-int-pairs \(split-lifespan \"1843-\"\)\)~%
- \(split-lifespan-string-int-pairs \(split-lifespan \"-1843\"\)\)~%
- \(split-lifespan-string-int-pairs \(split-lifespan \"1843-??\"\)\)~%
- \(split-lifespan-string-int-pairs \(split-lifespan \"??-1843\"\)\)~%
+ \(split-date-range-string-int-pairs \(split-date-range \"\"\)\)~%
+ \(split-date-range-string-int-pairs \(split-date-range \"1843-1943\"\)\)~%
+ \(split-date-range-string-int-pairs \(split-date-range \"1843-\"\)\)~%
+ \(split-date-range-string-int-pairs \(split-date-range \"-1843\"\)\)~%
+ \(split-date-range-string-int-pairs \(split-date-range \"1843-??\"\)\)~%
+ \(split-date-range-string-int-pairs \(split-date-range \"??-1843\"\)\)~%
 ;; Following cases are pathological and reasonably acounted for:~%
- \(split-lifespan-string-int-pairs \(split-lifespan \"??-??\"\)\)~%
- \(split-lifespan-string-int-pairs \(split-lifespan \"00-??\"\)\)~%
- \(split-lifespan-string-int-pairs \(split-lifespan \"00-00\"\)\)~%
- \(split-lifespan-string-int-pairs \(split-lifespan \"00-1843\"\)\)~%
- \(split-lifespan-string-int-pairs \(split-lifespan \"1843-00\"\)\)~%
+ \(split-date-range-string-int-pairs \(split-date-range \"00\"\)\)~%
+ \(split-date-range-string-int-pairs \(split-date-range \"??-??\"\)\)~%
+ \(split-date-range-string-int-pairs \(split-date-range \"00-??\"\)\)~%
+ \(split-date-range-string-int-pairs \(split-date-range \"00-00\"\)\)~%
+ \(split-date-range-string-int-pairs \(split-date-range \"00-1843\"\)\)~%
+ \(split-date-range-string-int-pairs \(split-date-range \"1843-00\"\)\)~%
+ \(split-date-range-string-int-pairs \(split-date-range \"1866-1866\"\)\)~%
+ \(split-date-range-string-int-pairs \(split-date-range \"1866--\"\)\)~%
+ \(split-date-range-string-int-pairs \(split-date-range \"1866-?-\"\)\)~%
+ \(split-date-range-string-int-pairs \(split-date-range \"1866--??-\"\)\))~%~@
 ;; Following case is pathological and without a clear solution:~%
- \(split-lifespan-string-int-pairs \(split-lifespan \"1843\"\)\)~%
- \(split-lifespan-string-int-pairs \(split-lifespan \"3001-88\"\)\)~%
- \(split-lifespan-string-int-pairs \(split-lifespan \"88-3001\"\)\)~%~@
+ \(split-date-range-string-int-pairs \(split-date-range \"1843\"\)\)~%
+ \(split-date-range-string-int-pairs \(split-date-range \"1866-1865\"\)\)~%
+ \(split-date-range-string-int-pairs \(split-date-range \"3001-88\"\)\)~%
+ \(split-date-range-string-int-pairs \(split-date-range \"88-3001\"\)\)~%~@
 When the car of LIFESPAN-STR-PAIR is a string indicating the beginning of
 lifespan is an \"unknown\", the car of the second cons of return value is -1.
 The intent in using a negative is to allow later callers the oppurtunity to
 optimize their checks. For example:~%
  \(let* \(\(w-str \"1843-??\"\)
-        \(both-lifespan \(split-lifespan-string-int-pairs
- 		       \(split-lifespan w-str\)\)\)
+        \(both-lifespan \(split-date-range-string-int-pairs
+ 		       \(split-date-range w-str\)\)\)
         \(hd-ls \(caadr both-lifespan\)\)
         \(tl-ls \(cdadr both-lifespan\)\)\)
    \(and \(integerp tl-ls\)
@@ -410,20 +416,22 @@ optimize their checks. For example:~%
 Likewise, when the cdr of LIFESPAN-STR-PAIR is a string indicating the end of 
 lifespan is \"unknown\", the cdr of the second cons of return value is `lognot'
 the integer value in the car cell. IOW, if there is a known beginning of
-lifespan i.e. the string passed from `split-lifespan' was \"1843-?\", we
+lifespan i.e. the string passed from `split-date-range' was \"1843-?\", we
 don't want inferences about an entities lifespan to return misleadingly and
 guard against that by making it difficult for forms such as:~% 
  \(- <END-LIFESPAN> <BEG-LIFESPAN>\)~%~@
 to return a value that is `plusp'. For example:~% 
- \(let* \(\(both-lifespan \(split-lifespan-string-int-pairs
-			\(split-lifespan \"1843-??\"\)\)\)
+ \(let* \(\(both-lifespan \(split-date-range-string-int-pairs
+			\(split-date-range \"1843-??\"\)\)\)
 	\(hd-ls \(caadr both-lifespan\)\)
 	\(tl-ls \(cdadr both-lifespan\)\)\)
    \(and \(integerp tl-ls\)
 	\(eql \(signum \(- tl-ls hd-ls\)\) -1\)\)\)~%~@
 When coupled with the string values in the cons at the first elt in return value
 we can be reasonably sure that the integer parse is correct.~%~@
-:SEE-ALSO `<XREF>'.~%▶▶▶")
+:SEE-ALSO `split-roles', `split-used-fors', `split-piped-field-if',
+`split-appeared-in', `split-loc-pre'.~%▶▶▶")
+
 
 (fundoc 'split-comma-field
 "Split a comma delimited string COMMA-STRING.~%~@
@@ -441,7 +449,7 @@ Intended for use with SEO and \"keyword\" like fields in the `refs` table.~%~@
 used in a non-delimiting position, e.g. the following string will not parse correctly:~% 
  \(split-comma-field  \"Havell \(Robert, Jr.\), Havell \(Robert, Sr.\), Havell Lithograph, \"\)~%~@
 :SEE-ALSO `split-used-fors', `split-piped-field-if', `split-roles',
-`split-appeared-in', `split-loc-pre', `split-lifespan', `split-comma-field',
+`split-appeared-in', `split-loc-pre', `split-date-range', `split-comma-field',
 `mon:string-split-on-chars'.~%▶▶▶")
 
 (fundoc 'format-entity-role

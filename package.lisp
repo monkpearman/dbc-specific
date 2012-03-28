@@ -214,9 +214,9 @@
 	     #:format-entity-role
 	     ;;
 	     ;; mon:string-trim-whitespace, mon:concat, mon:string-split-on-chars
-	     #:split-lifespan
+	     #:split-date-range
 	     ;;
-	     #:split-lifespan-string-int-pairs
+	     #:split-date-range-string-int-pairs
 	     ;;
 	     ;; mon:string-null-or-empty-p, mon:string-split-on-chars, mon:string-trim-whitespace
 	     #:split-comma-field

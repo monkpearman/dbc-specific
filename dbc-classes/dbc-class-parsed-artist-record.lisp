@@ -539,7 +539,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;; :EXAMPLE-VALUES 
 ;;
 ;;         "1866-?"
-;;         "1889-[?]"    
+;;         "1889-[?]"
 ;;         "1864-[19??]"
 ;;         "1848-1934"
 ;;         "-1866"
@@ -554,13 +554,35 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 ;;      NNNN-
 ;; 
 ;;     -  Call a follow up function when both car/cdr of
-;;       `split-lifespan' are each "NNNN" and normalize these to integer
+;;       `split-date-range' are each "NNNN" and normalize these to integer
 ;;       values. This will allow numeric lifespan range functions, e.g. 
 ;;        (- <DEATH> <BIRTH>) 
 ;;       Or, queries of type: "Find all artists born between 1850 and 1900"
 ;;       The latter is important for any indexing scheme using btrees (i.e. Rucksack)
-;;     - Use `split-lifespan'/`split-lifespan-string-int-pairs' functions are written. 
+;;     - Use `split-date-range'/`split-date-range-string-int-pairs' functions are written. 
 ;;       :Note does not check replace for `#\[' `#\]' for frob strings of type "[?+]".
+
+;; (split-date-range "1864-[19??]")
+;; (split-date-range "1866-?")
+;; (split-date-range "1866-??")
+;; (split-date-range "1866")
+;; (split-date-range "1866-")
+;; (split-date-range "1866--")
+;; (split-date-range "1866-?-")
+;; (split-date-range "1866--?")
+;; (split-date-range "-1866")
+;; (split-date-range "1866-185?")
+;; (split-date-range "1866-185?-")
+;; (split-date-range "1889-[?]")
+;; (split-date-range "Active 1940s-60s")
+;; (split-date-range-string-int-pairs (split-date-range "1866-187?"))
+;; (split-date-range-string-int-pairs (split-date-range "1866-1872"))
+;; (split-date-range-string-int-pairs (split-date-range "1866-1865"))
+;; (split-date-range-string-int-pairs (split-date-range "1866-??"))
+;; (split-date-range-string-int-pairs (split-date-range "1843-00"))
+;; (split-date-range-string-int-pairs (split-date-range "1866--"))
+;; (split-date-range-string-int-pairs (split-date-range "1866-1866"))
+;; (split-date-range-string-int-pairs (split-date-range "00"))
 
 ;;; ==============================
 ;;  :FIELD "date_born" :TRANSFORM "birth-date"

@@ -13,16 +13,23 @@
 ;; NOTE Our largest item-ref from the xml/sql parse is 12416 our largest picture
 ;; in httpd/photos/big is 12415
 
+;; :TODO
+;; - slots to add
+;;
+;; DESCRIPTION-INVENTORY-SHIPPING-NOTE
+;; :SEE description-inventory-condtion "Shipped rolled."|"Shipped Rolled."
+;;
+
+
 
 (in-package #:dbc)
 ;; *package*
 
 (defgeneric parsed-inventory-record-parse-table-lookup-slot-value (slot-name hash-key))
 
-;; (make-instance 'parsed-inventory-record)
+
 
 ;;; ==============================
-
 (defclass parsed-inventory-record (parsed-class)
   ((inventory-number  ;; control-id-indexed-inventory-record
     :initarg :inventory-number
@@ -916,8 +923,8 @@ This function should only be used for instantiating instances created _outside_ 
 ;; `split-appeared-in'
 ;; `split-roles'
 ;; `split-loc-pre'
-;; `split-lifespan'
-;; `split-lifespan-string-int-pairs'
+;; `split-date-range'
+;; `split-date-range-string-int-pairs'
 ;; `split-comma-field'
 ;; `field-convert-1-0-x'
 ;; `format-entity-role'
