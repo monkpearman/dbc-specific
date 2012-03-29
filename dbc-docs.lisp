@@ -176,7 +176,7 @@ When MAYBE-VALID-TIME-STRING is a string of length 14 with every character
 cl:digit-char-p and has the format:~%
 \"20040812082333\"
  YYYYMMDDhhmmss~%
- - where YYYY represent an integer value the range [2004,2012]
+ - where YYYY represent an integer value the range [2004,<CURRENT-YEAR>]
  - where MM represent an integer value the range [1,13]
  - where DD represent an integer value the range [1,31]
  - where hh represent an integer value the range [0,24]

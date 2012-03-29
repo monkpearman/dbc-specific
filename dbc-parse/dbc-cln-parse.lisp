@@ -329,12 +329,13 @@
                (pi-all-subseqs ()
                  (let* ((pi-subseq-applied
                           (map 'list #'pi-subseq-apply
-                               '((12 14 (integer 0 60))          ; second
-                                 (10 12 (integer 0 60))          ; minute
-                                 (8 10  (integer 0 24))          ; hour
-                                 (6 8   (integer 1 31))          ; day 
-                                 (4 6   (integer 1 13))          ; month
-                                 (0 4   (integer 2004 2013)))))  ; year
+                               `((12 14 (integer 0 60)) ; second
+                                 (10 12 (integer 0 60)) ; minute
+                                 (8 10  (integer 0 24)) ; hour
+                                 (6 8   (integer 1 31)) ; day 
+                                 (4 6   (integer 1 13)) ; month
+                                 (0 4   (integer 2004   ; year between 2004 and current-year
+                                                 ,(1+ (nth-value 5 (get-decoded-time)))))))) 
                         (maybe-encoded-pi 
                           (and (notany #'null pi-subseq-applied)
                                (apply #'encode-universal-time pi-subseq-applied)))
