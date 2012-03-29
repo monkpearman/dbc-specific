@@ -58,36 +58,39 @@
   ;; (declare (type (or null simple-string) used-for-string)) 
   ;; (declare (type string used-for-string))
   (declare (type mon:string-or-null used-for-string))
-  (when (or (mon:string-null-or-empty-p used-for-string)
-            (mon:string-all-whitespace-p used-for-string))
-    (return-from split-used-fors (values nil used-for-string)))
-  (loop 
-    with split = (mon:string-split-on-chars used-for-string split-on)
-    for x in split 
-    for y = (string-trim (the (simple-vector 1) #(#\SPACE)) x)
-    unless (or (null y)
-               (eql (length y) 0)) 
-    ;; Do we need to check for #\Newline #\Return? 
-    ;; If so maybe use `mon:string-trim-whitespace' here as well.
-    ;; :collect (mon:string-trim-whitespace y)
-    collect (mon:string-trim-whitespace y) into rtn
-    finally (return (values rtn used-for-string))))
+  (if (or (mon:string-null-or-empty-p used-for-string)
+          (mon:string-all-whitespace-p used-for-string))
+      (values nil used-for-string)
+      (flet ((%trimmer (x)
+               (declare (string x))
+               (string-trim (the (simple-vector 1) #(#\SPACE)) x)))
+        (loop 
+          with split = (mon:string-split-on-chars used-for-string split-on)
+          for x in split 
+          for y = (%trimmer x)
+          unless (or (null y)
+                     (eql (length y) 0)) 
+          ;; Do we need to check for #\Newline #\Return? 
+          ;; If so maybe use `mon:string-trim-whitespace' here as well.
+          ;; :collect (mon:string-trim-whitespace y)
+          collect (mon:string-trim-whitespace y) into rtn
+          finally (return (values rtn used-for-string))))))
 
 ;;mon:string-
 ;; :NOTE This can be adapted if/when we ever split the found_in field to work on
 ;; the for "^Appeared-in:" fields there as well.
 (defun split-appeared-in (appeared-in-string &key (split-on "|"))
   (declare (type mon:string-or-null appeared-in-string))
-  (when (or (mon:string-null-or-empty-p appeared-in-string)
-            (mon:string-all-whitespace-p appeared-in-string))
-    (return-from split-appeared-in (values nil appeared-in-string)))
-  (loop 
-    with split = (mon:string-split-on-chars appeared-in-string split-on)
-    for x in split 
-    for y = (string-trim (the (simple-vector 1) #(#\SPACE)) x)
-    unless (or (null y) (eql (length y) 0)) 
-    collect (mon:string-trim-whitespace y) into rtn
-    finally (return (values rtn appeared-in-string))))
+  (if (or (mon:string-null-or-empty-p appeared-in-string)
+          (mon:string-all-whitespace-p appeared-in-string))
+      (values nil appeared-in-string)
+      (loop 
+        with split = (mon:string-split-on-chars appeared-in-string split-on)
+        for x in split 
+        for y = (string-trim (the (simple-vector 1) #(#\SPACE)) x)
+        unless (or (null y) (eql (length y) 0)) 
+        collect (mon:string-trim-whitespace y) into rtn
+        finally (return (values rtn appeared-in-string)))))
 
 (defun format-entity-role (entity-roles
                            &key 
@@ -104,14 +107,14 @@
 ;; :NOTE This is actually a bad idea as the "n 95121069" is canonical...
 (defun split-loc-pre (loc-string)
   (declare (mon:string-or-null loc-string))
-  (when (or (mon:string-null-or-empty-p loc-string)
-            (mon:string-all-whitespace-p loc-string))
-    (return-from split-loc-pre (values nil loc-string)))
-  (values 
-   (string-left-trim (the (simple-vector 2) #(#\n #\SPACE)) 
-                     (string-right-trim  (the (simple-vector 1) #(#\SPACE))
-                                         loc-string))
-   loc-string))
+  (if (or (mon:string-null-or-empty-p loc-string)
+          (mon:string-all-whitespace-p loc-string))
+      (values nil loc-string)
+      (values 
+       (string-left-trim (the (simple-vector 2) #(#\n #\SPACE)) 
+                         (string-right-trim  (the (simple-vector 1) #(#\SPACE))
+                                             loc-string))
+       loc-string)))
 
 
 ;; :NOTE Don't forget to use `cl:search', `cl:find', etc.!
@@ -126,6 +129,8 @@
 
 ;; (split-comma-field-if "air, plane, airplane, Biplane,, aircraft, expo, , dirigible,")
 ;; (split-comma-field-if nil)
+;; (split-comma-field "air, plane, airplane, Biplane,, aircraft, expo, , dirigible,")
+;; (split-comma-field-if "0 , 0 ," :keep-duplicates t)
 
 (defun split-comma-field (comma-string)
   ;;(split-comma-field-if comma-string)
@@ -143,27 +148,27 @@
 
 (defun split-roles (role-string)
   (declare (type mon:string-or-null role-string))
-  (when (or (mon:string-null-or-empty-p role-string)
-            (mon:string-all-whitespace-p role-string))
-    (return-from split-roles (values nil role-string)))
-  (loop 
-    with split = (mon:string-split-on-chars role-string (the character #\,))
-    for x in split 
-    for y = (string-left-trim (the (simple-vector 1) #(#\SPACE)) 
-                              (string-right-trim (the (simple-vector 2) #(#\SPACE #\.))
-                                                 x))
-    unless (eql (length y) 0)
-    collect (string-capitalize y) into rtn
-    finally (return (values rtn role-string))))
+  (if (or (mon:string-null-or-empty-p role-string)
+          (mon:string-all-whitespace-p role-string))
+      (values nil role-string)
+      (loop 
+        with split = (mon:string-split-on-chars role-string (the character #\,))
+        for x in split 
+        for y = (string-left-trim (the (simple-vector 1) #(#\SPACE)) 
+                                  (string-right-trim (the (simple-vector 2) #(#\SPACE #\.))
+                                                     x))
+        unless (eql (length y) 0)
+        collect (string-capitalize y) into rtn
+        finally (return (values rtn role-string)))))
 
-(defun split-piped-field-if (piped-string &key keep-duplicates
+(defun split-piped-field-if (piped-string &key (keep-duplicates nil)
                                                known-field-hashtable)
-  (declare (mon:hash-table-or-symbol known-field-hashtable)
+  (declare (boolean keep-duplicates)
+           (mon:hash-table-or-symbol known-field-hashtable)
            (optimize (speed 3)))
   (split-field-on-char-if piped-string (the character #\|)
                           :keep-duplicates keep-duplicates 
                           :known-field-hashtable known-field-hashtable))
-
 
 
 ;; (split-piped-field-if "ref" :known-field-hashtable *xml-refs-match-table*)
@@ -306,6 +311,44 @@
                       encoded
                       maybe-string)))))))))
 
+(defun field-convert-edit-timestamp-origin-14 (maybe-valid-time-string)
+  (if (and (stringp maybe-valid-time-string) 
+           (eql (length maybe-valid-time-string) 14)
+           (every #'digit-char-p maybe-valid-time-string))
+      (labels ((pi-subseq (start end range-expected);(args)
+                 (declare ((unsigned-byte 4) start end))
+                 (let ((expect-len (- end start)))
+                   (multiple-value-bind (parsed-int parsed-len) (parse-integer 
+                                                                 (subseq maybe-valid-time-string start end)
+                                                                 :junk-allowed t)
+                     (and (eql expect-len parsed-len)
+                          (typep parsed-int range-expected)
+                          parsed-int))))
+               (pi-subseq-apply (args)
+                 (apply #'pi-subseq args))
+               (pi-all-subseqs ()
+                 (let* ((pi-subseq-applied
+                          (map 'list #'pi-subseq-apply
+                               '((12 14 (integer 0 60))          ; second
+                                 (10 12 (integer 0 60))          ; minute
+                                 (8 10  (integer 0 24))          ; hour
+                                 (6 8   (integer 1 31))          ; day 
+                                 (4 6   (integer 1 13))          ; month
+                                 (0 4   (integer 2004 2013)))))  ; year
+                        (maybe-encoded-pi 
+                          (and (notany #'null pi-subseq-applied)
+                               (apply #'encode-universal-time pi-subseq-applied)))
+                        (lt-timestamp (and maybe-encoded-pi
+                                           (local-time:universal-to-timestamp maybe-encoded-pi)))
+                        (lt-timestamp-string (and lt-timestamp (princ-to-string lt-timestamp))))
+                   (values 
+                    lt-timestamp-string         ; local-time as string
+                    lt-timestamp                ; local-time object
+                    maybe-encoded-pi            ; universal-time
+                    maybe-valid-time-string)))) ; the timestring unparsed
+        (pi-all-subseqs))
+      (values nil nil nil maybe-valid-time-string)))
+
 ;;(defun %field-convert-timestamp-edit-timestamp-origin ()
 ;; (gethash "5512" *tt-hash*)
 
@@ -331,8 +374,6 @@
        (delete-duplicates str-lst-trans :test #'string= :from-end t) 
        ;; (remove-duplicates str-lst-trans :test #'string=) 
        string-list-maybe))))
-
-
  
 ;;; ==============================
 ;;
@@ -403,11 +444,17 @@
                         ;; unless (eql (the mon:array-length (length (the simple-string y))) 0)
                         unless (zerop (the mon:array-length (length y)))
                         collect y into rtn
-                        finally (if keep-duplicates
-                                    (return (values rtn (type-of rtn) v1 t1)) ;; v1 t1))
-                                    (progn 
-                                      (setf rtn (field-convert-remove-duplicates rtn))
-                                      (return (values rtn (type-of rtn) v1 t1))))))))))))
+                        ;; :WAS
+                        ;; finally (if keep-duplicates
+                        ;;             (values rtn (type-of rtn) v1 t1) ;; v1 t1))
+                        ;;             (progn 
+                        ;;               (setf rtn (field-convert-remove-duplicates rtn))
+                        ;;               (return (values rtn (type-of rtn) v1 t1))))))))))))
+                        finally (return (if keep-duplicates
+                                            (values rtn (type-of rtn) v1 t1) ;; v1 t1))
+                                            (progn 
+                                              (setf rtn (field-convert-remove-duplicates rtn))
+                                              (values rtn (type-of rtn) v1 t1))))))))))))
 
 (declaim (inline %field-name-underscore-to-dash-if))
 (defun %field-name-underscore-to-dash-if (field-name)

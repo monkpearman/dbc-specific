@@ -144,6 +144,51 @@ define functions which map setf slot-value forms for use with `string-case:strin
 ;;; dbc-parse/dbc-cln-parse.lisp
 ;;; ==============================
 
+(fundoc 'field-convert-edit-timestamp
+        "Return a string representation of a `local-time:timestamp' as if by cl:values
+when MAYBE-TIMESTAMP satisfies certain constraints.
+Return values have the form:~%
+ - nth-value 0 is a local-time timestamp ojbect formatted as a string | NIL  
+ - nth-value 1 is a local-time timestamp object | NIL
+ - nth-value 2 is a universal-time | NIL     
+ - nth-value 3 is MAYBE-VALID-TIME-STRING
+MAYBE-TIMESTAMP is a string having the form:~%
+\"2009-01-27 22:00:31\"
+  YYYY-MM-DD hh:mm:ss~%
+:EXAMPLE~%
+ \(field-convert-edit-timestamp \"2009-01-27 22:00:31\"\)~%
+ \(field-convert-edit-timestamp \"\"\)~%
+ \(field-convert-edit-timestamp \"  \"\)~%
+ \(field-convert-edit-timestamp \"0000-00-00 00:00:00\"\)~%
+Following errors successfully:~%
+ \(field-convert-edit-timestamp \" _\"\)~%
+:SEE-ALSO `field-convert-edit-timestamp-origin-14'.~%▶▶▶")
+
+(fundoc 'field-convert-edit-timestamp-origin-14
+        "Return a string representation of a `local-time:timestamp' as if by cl:values
+if MAYBE-VALID-TIME-STRING satisfies certain constraints.~%~@
+Return values have the form:~%
+ - nth-value 0 is a local-time timestamp ojbect formatted as a string | NIL  
+ - nth-value 1 is a local-time timestamp object | NIL
+ - nth-value 2 is a universal-time | NIL     
+ - nth-value 3 is MAYBE-VALID-TIME-STRING~%
+When MAYBE-VALID-TIME-STRING is a string of length 14 with every character
+cl:digit-char-p and has the format:~%
+\"20040812082333\"
+ YYYYMMDDhhmmss~%
+ - where YYYY represent an integer value the range [2004,2012]
+ - where MM represent an integer value the range [1,13]
+ - where DD represent an integer value the range [1,31]
+ - where hh represent an integer value the range [0,24]
+ - where mm and ss represent an integer value the range [0,60]~%
+:EXAMPLE~%
+ \(field-convert-edit-timestamp-origin-14 \"20040812082333\"\)~%
+Following shouldn't parse correctly and return as values nil, nil, nil, <TIMESTRING>~%
+ \(field-convert-edit-timestamp-origin-14 \"20040812082333m\"\)~%
+ \(field-convert-edit-timestamp-origin-14 \"20030812082333\"\)~%
+ \(field-convert-edit-timestamp-origin-14 \"20031312082333\"\)~%
+:SEE-ALSO `field-convert-edit-timestamp'.~%▶▶▶")
+
 (fundoc 'field-name-underscore-to-dash
  "Convert string FIELD-NAME with `cl:string-upcase'd removing any #\\_.~%~@
 Return as if by `cl:values'.~%~@
@@ -196,11 +241,12 @@ When USED-FOR-STRING is either `mon:string-null-or-empty-p' or
 Do not return a list if no occurences of CHAR are found.~%~@
 SPLIT-STRING may be an object of any type not just a `cl:string'.~%~@
 Return 4 values as if by `cl:values' in a like manner as `dbc:field-convert-1-0-x-empty'.~%~@
-When keyword KEEP-DUPLICATES is non-nil do not remove as if by the duplicate
-elements from first value ruturned.  Default is to process nth-value 0 with
-`field-convert-remove-duplicates' prior to returning.~%~@
+Keywords KEEP-FIRST and KEEP-DUPLICATES are booleans.
+When keyword KEEP-DUPLICATES is non-nil do not remove duplicate elements from
+first value ruturned.  Default is to process nth-value 0 with
+`field-convert-remove-duplicates' prior to returning.~%
 When keyword KEEP-FIRST is non-nil do not return nil for nth-value 0 if string
-is contained of only `mon:whitespace-char-p' and CHAR.~%~@
+is contained of only `mon:whitespace-char-p' and CHAR.~%
 :NOTE The call chain is as follows:~%~@
  `split-field-on-char-if' :keep-first { T | NIL } :keep-duplicates { T | NIL }
   `- `field-convert-1-0-x-empty'
@@ -237,13 +283,13 @@ is contained of only `mon:whitespace-char-p' and CHAR.~%~@
 :NOTE Has regression tests:
  `split-field-on-char-if-TEST.0' `split-field-on-char-if-TEST.1'
  `split-field-on-char-if-TEST.2' `split-field-on-char-if-TEST.3'
-:SEE-ALSO `split-piped-field-if'.~%▶▶▶")
+:SEE-ALSO `split-piped-field-if', `split-comma-field' `split-comma-field-if'.~%▶▶▶")
 
 (fundoc 'split-piped-field-if
         "Like `split-used-fors' but do not return a list if no #\\| are found.~%~@
 Unlike `split-used-fors' arg PIPED-STRING may be an object of any type not just a `cl:string'.~%~@
 Return 4 values as if by `cl:values' in a like manner as `dbc:field-convert-1-0-x-empty'.~%~@
-When keyword KEEP-DUPLICATES is non-nil do not remove as if by the duplicate
+When keyword KEEP-DUPLICATES (a boolean) is non-nil do not remove as if by the duplicate
 elements from first value ruturned.  Default is to process nth-value 0 with
 `field-convert-remove-duplicates' prior to returning.~%~@
 :EXAMPLE~%
@@ -432,6 +478,42 @@ we can be reasonably sure that the integer parse is correct.~%~@
 :SEE-ALSO `split-roles', `split-used-fors', `split-piped-field-if',
 `split-appeared-in', `split-loc-pre'.~%▶▶▶")
 
+(fundoc 'split-comma-field-if
+"If COMMA-STRING is `cl:stringp' split it at #\\, comma delimiters.~%~@
+Return 4 values as if by `cl:values' in a like manner as `dbc:field-convert-1-0-x-empty'.~%~@
+Keywords KEEP-FIRST and KEEP-DUPLICATES are booleans.
+When keyword KEEP-DUPLICATES is non-nil do not remove duplicate elements from
+first value ruturned.  Default is to process nth-value 0 with
+`field-convert-remove-duplicates' prior to returning.~%
+When keyword KEEP-FIRST is non-nil do not return nil for nth-value 0 if string
+is contained of only `mon:whitespace-char-p' and CHAR.~%
+:EXAMPLE~%
+ \(split-comma-field-if \"air, air,\"\)~%
+ \(split-comma-field-if nil\)~%
+ \(split-comma-field-if \(\)\)~%
+ \(split-comma-field-if \(cons nil nil\)\)~%
+ \(split-comma-field-if \(list nil\)\)~%
+ \(split-comma-field-if \"air, plane, airplane, Biplane,, aircraft, expo, , dirigible,\"\)~%
+ \(count \"air\"  \(split-comma-field-if \"air, aircraft, air, \"\)  :test #'string=\)~%
+ \(count \"air\" \(split-comma-field-if \"air, airplane, air,\" :keep-duplicates t\)  :test #'string=\)~%
+ \(split-comma-field-if \",\"\)~%
+ \(split-comma-field-if \",\" :keep-first t\)~%
+ \(split-comma-field-if \",,\"\)~%
+ \(split-comma-field-if \",,\" :keep-first t\)~%
+ \(split-comma-field-if \", ,\"\)~%
+ \(eql \(null \(split-comma-field-if \", ,\"\)\)
+      \(null \(split-comma-field-if \", ,\" :keep-duplicates t\)\)\)~%
+ \(split-comma-field-if \"\"\)~%
+ \(split-comma-field-if  \"   \"\)~%
+ \(every #'null
+        \(split-comma-field-if \"\"\)
+        \(split-comma-field-if  \"   \"\)
+        \(split-comma-field-if  \"   \" :keep-first t\)
+        \(split-comma-field-if  \"   \" :keep-duplicates t\)
+        \(split-comma-field-if  \"   \" :keep-first t :keep-duplicates t\)\)~%
+:SEE-ALSO `split-used-fors', `split-piped-field-if', `split-roles',
+`split-appeared-in', `split-loc-pre', `split-date-range', `split-comma-field',
+`mon:string-split-on-chars'.~%▶▶▶")
 
 (fundoc 'split-comma-field
 "Split a comma delimited string COMMA-STRING.~%~@
