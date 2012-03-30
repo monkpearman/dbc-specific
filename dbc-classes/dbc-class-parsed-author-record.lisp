@@ -99,6 +99,7 @@
     :accessor image-default-id
     :documentation ":ORIGINAL-FIELD \"default_pic\"")
 
+   ;; NIL | :ACTIVE
    (record-status-active
     :initarg :record-status-active
     :accessor record-status-active

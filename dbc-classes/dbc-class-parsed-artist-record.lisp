@@ -243,9 +243,10 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("special_note"      . ignorable-special-note)))
 
 (defun parsed-artist-record-collect-control-id-display ()
-  (map 'list #'cdr 
-       (parsed-class-slot-value-collect-non-null 'parsed-artist-record 'control-id-display-artist)
-       #'string>))
+  (sort
+   (map 'list #'cdr 
+        (parsed-class-slot-value-collect-non-null 'parsed-artist-record 'control-id-display-artist))
+   #'string<))
 
 ;; :NOTE `set-parsed-inventory-record-slot-value' is defined in loadtime-bind.lisp
 ;; (def-set-parsed-class-record-slot-value 
