@@ -155,6 +155,11 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("online"            . record-status-active)
    ("date_edt"          . edit-timestamp)))
 
+(defun parsed-author-record-collect-control-id-display ()
+  (map 'list #'cdr 
+       (parsed-class-slot-value-collect-non-null 'parsed-author-record 'control-id-display-author)
+       #'string>))
+
 ;; :NOTE `set-parsed-inventory-record-slot-value' is defined in loadtime-bind.lisp
 ;; (def-set-parsed-class-record-slot-value 
 ;;      set-parsed-author-record-slot-value
