@@ -56,6 +56,9 @@
     :accessor naf-entity-composer-coref
     :documentation ":ORIGINAL-FIELD \"composer\"")
  
+   ;; when 'translation-append-for-record was "0" it indicated there wasn't an
+   ;; english translation yet.  when "1" it indicated we could use the english
+   ;; translation _somewhere_ it isn't yet clear where/how this was done.
    (translation-append-for-record
     :initarg :translation-append-for-record
     :accessor translation-append-for-record
