@@ -599,5 +599,57 @@
     when obj
     do (setf (slot-value obj slot-name) new-value)))
 
+;; :NOTE There is no longer any reason to call this it is left here as a
+;; reminder of the idiom we used to clean up edit-history junk
+(defun %parsed-inventory-record-processs-edit-history ()
+  (let ((targets (parsed-class-slot-value-collect-non-null 'parsed-inventory-record 'edit-history))
+        (month-names local-time:+month-names+))
+    (labels ((month-to-int-string (month-thing)
+               (princ-to-string (position month-thing month-names :test #'string=)))
+             (reduce-date (year month day)
+               (car (mon::string-reduce 
+                     (list year "-" (month-to-int-string month) "-" day))))
+             (convert-time-edit (y m d)
+               (princ-to-string
+                (local-time:parse-timestring (reduce-date y m d))))
+             (dbind-edit-timestamp (edit)
+               (when edit 
+                 (destructuring-bind ((month day year) by) edit
+                   (list :edit-by by 
+                         :edit-timestamp (convert-time-edit year month day)))))
+             (unspace-edit (space-thing)
+               (list* (split-sequence:split-sequence #\SPACE (car space-thing) :remove-empty-subseqs t)
+                      (cdr space-thing)))
+             (undash-edit (dash-thing)
+               (reverse (split-sequence:split-sequence #\- dash-thing :remove-empty-subseqs t)))
+             (comma= (c)
+               (char= c #\,))
+             (uncomma-edit (comma-thing)
+               (and (stringp (cdr comma-thing))
+                    (remove-if #'comma= (cdr comma-thing))))
+             (unpipe-edit (pipe-thing)
+               (split-sequence:split-sequence #\| (uncomma-edit pipe-thing)
+                                              :remove-empty-subseqs t))
+             (dedup-edit (edits)
+               (delete-duplicates edits :test #'equal))
+             (process-edit (edit-thing)
+               (let ((maybe-parsed (map 'list #'dbind-edit-timestamp
+                                        (map 'list #'unspace-edit
+                                             (map 'list #'undash-edit
+                                                  (unpipe-edit edit-thing))))))
+                 (when maybe-parsed (list (car edit-thing) 
+                                          (dedup-edit maybe-parsed)))))
+             (process-all-edits (all-edits)
+               (map 'list #'process-edit all-edits)))
+      (loop 
+        with ht = (parsed-class-parse-table 'parsed-inventory-record)
+        with big-edit-conversion = (process-all-edits targets)
+        for edit in big-edit-conversion
+        for obj-id = (car edit)
+        for edit-hist = (cadr edit)
+        for obj = (gethash obj-id ht)
+        do (setf (edit-history obj) edit-hist)
+        finally (return (values big-edit-conversion targets))))))
+
 ;;; ==============================
 ;;; EOF
