@@ -53,21 +53,35 @@
     :accessor description-inventory-english
     :documentation ":ORIGINAL-FIELD \"desc_en\"")
 
-   (ignorable-history-french
-    :initarg :ignorable-history-french
-    :accessor ignorable-history-french
-    :documentation ":ORIGINAL-FIELD \"histo_fr\"")
+   ;; description-translation-french
+   ;; (ignorable-history-french
+   ;;  :initarg :ignorable-history-french
+   ;;  :accessor ignorable-history-french
+   ;;  :documentation ":ORIGINAL-FIELD \"histo_fr\"")
 
-   (ignorable-history-english
-    :initarg  :ignorable-history-english
-    :accessor ignorable-history-english
+   ;; description-translation-english
+   ;; (ignorable-history-english
+   ;;  :initarg  :ignorable-history-english
+   ;;  :accessor ignorable-history-english
+   ;;  :documentation ":ORIGINAL-FIELD \"histo_en\"")
+
+   ;; :WAS ignorable-history-french
+   (description-inventory-translation-french
+    :initarg :description-inventory-translation-french
+    :accessor description-inventory-translation-french
+    :documentation ":ORIGINAL-FIELD \"histo_fr\"")
+   
+   ;; :WAS ignorable-history-english
+   (description-inventory-translation-english
+    :initarg  :description-inventory-translation-english
+    :accessor description-inventory-translation-english
     :documentation ":ORIGINAL-FIELD \"histo_en\"")
 
    (description-inventory-quote
     :initarg :description-inventory-quote
     :accessor description-inventory-quote
     :documentation ":ORIGINAL-FIELD \"text_quote\"")
-
+   
    (description-inventory-translation
     :initarg  :description-inventory-translation
     :accessor description-inventory-translation
@@ -462,8 +476,11 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("title"             . description-inventory-title)
    ("desc_fr"           . description-inventory-french)
    ("desc_en"           . description-inventory-english)
-   ("histo_fr"          . ignorable-history-french)
-   ("histo_en"          . ignorable-history-english)
+   ;; ("histo_fr"          . ignorable-history-french)
+   ;; ("histo_en"          . ignorable-history-english)
+   ;; 
+   ("histo_fr"          . description-inventory-translation-french)
+   ("histo_en"          . description-inventory-translation-english)
    ("text_quote"        . description-inventory-quote)
    ("translation"       . description-inventory-translation)
    ("people"            . naf-entity-person-coref)
