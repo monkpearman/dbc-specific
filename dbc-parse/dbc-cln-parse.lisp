@@ -279,12 +279,7 @@
                (values nil string-field-maybe)))))
     (values string-field-maybe (type-of string-field-maybe))))
 
-;; (field-convert-edit-timestamp "")
-;; (field-convert-edit-timestamp "  ")
-;; (field-convert-edit-timestamp "0000-00-00 00:00:00")
-;; (field-convert-edit-timestamp "2009-01-27 22:00:31")
-;; following errors successfully:
-;; (field-convert-edit-timestamp " _")
+
 (let ((edit-timestamp-regex 
         (cl-ppcre:create-scanner "^([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2})$")))
   (defun field-convert-edit-timestamp (maybe-timestamp)
@@ -311,7 +306,7 @@
                       encoded
                       maybe-string)))))))))
 
-(defun field-convert-edit-timestamp-origin-14 (maybe-valid-time-string)
+(defun field-convert-edit-timestamp-origin-14 (maybe-valid-time-string &key (hour-offset 0))
   (if (and (stringp maybe-valid-time-string) 
            (eql (length maybe-valid-time-string) 14)
            (every #'digit-char-p maybe-valid-time-string))
@@ -338,6 +333,14 @@
                                                  ,(1+ (nth-value 5 (get-decoded-time)))))))) 
                         (maybe-encoded-pi 
                           (and (notany #'null pi-subseq-applied)
+                               ;; allow for manually fixing a weird off by N
+                               ;; errors in the hour field due to poor timezone
+                               ;; conversions occuring prior.
+                               (or (and hour-offset 
+                                        (incf (elt pi-subseq-applied 2) hour-offset))
+                                   t)
+                               ;; account for a timezone offset
+                               ;; (apply #'encode-universal-time `(,@pi-subseq-applied 4)))
                                (apply #'encode-universal-time pi-subseq-applied)))
                         (lt-timestamp (and maybe-encoded-pi
                                            (local-time:universal-to-timestamp maybe-encoded-pi)))
@@ -349,6 +352,7 @@
                     maybe-valid-time-string)))) ; the timestring unparsed
         (pi-all-subseqs))
       (values nil nil nil maybe-valid-time-string)))
+
 
 ;;(defun %field-convert-timestamp-edit-timestamp-origin ()
 ;; (gethash "5512" *tt-hash*)
