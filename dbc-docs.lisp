@@ -140,6 +140,103 @@ define functions which map setf slot-value forms for use with `string-case:strin
 
 
 ;;; ==============================
+;; dbc-specific/dbc-classes/dbc-class-parsed-slot-value-cleaning.lisp
+;;; ==============================
+
+(fundoc 'parsed-class-slot-value-sort-unique-numeric-string-sequence
+        "Return a copy of STRING-SEQUENCE  sorted according to TEST.~%
+STRING-SEQUENCE is a list or simple-vector.
+When STRING-SEQUENCE has length zerop return it, else each element of
+string-sequence must be a non-empty string with 0 every character satsifying
+cl:digit-char-p such that the parse-integer representation of string is a unique
+integer value for the set of parse-integer elements represented by
+STRING-SEQUENCE, an error is signalled if not (possibly leaving
+STRING-SEQUENCE in a corrupted state).~%~@
+Keyword TEST is a function either #'> or #'<. An error is signaled if not.~%~@
+:EXAMPLE~%
+ \(parsed-class-slot-value-sort-unique-numeric-string-sequence  '\(\"1\" \"1000\" \"100\"  \"0002\"\) :test #'>\)~%
+ \(parsed-class-slot-value-sort-unique-numeric-string-sequence  '\(\"1\" \"1000\" \"100\"  \"0002\"\) :test #'>\)~%
+ \(parsed-class-slot-value-sort-unique-numeric-string-sequence  #\(\"1\" \"1000\" \"100\"  \"0002\"\) :test #'<\)~%
+ \(parsed-class-slot-value-sort-unique-numeric-string-sequence  #\(\"1\" \"1000\" \"100\"  \"0002\"\) :test #'>\)~%
+ \(parsed-class-slot-value-sort-unique-numeric-string-sequence  \(\) :test #'<\)~%
+ \(parsed-class-slot-value-sort-unique-numeric-string-sequence  #\(\) :test #'<\)~%~@
+Following error succesfully:~%
+ \(parsed-class-slot-value-sort-unique-numeric-string-sequence  #\(\"1\" \"1000\" \"100\"  \"0002\"\) :test #'<=\)~%
+ \(parsed-class-slot-value-sort-unique-numeric-string-sequence  '\(\"\" \"1000\" \"100\"  \"0002\"\) :test #'>\)~%
+ \(parsed-class-slot-value-sort-unique-numeric-string-sequence  '\(\"1.8\" \"1000\" \"100\"  \"0002\"\) :test #'>\)~%
+ \(parsed-class-slot-value-sort-unique-numeric-string-sequence  #\(\"1\" \"1000\" \"100\" \"0001\" \"0002\"\) :test #'>\)~%~@
+:SEE-ALSO `parsed-class-slot-value-compare-count', `parsed-class-slot-value-count-null',
+`parsed-class-slot-value-count-non-null', `parsed-class-slot-value-count-string=',
+`parsed-class-slot-value-count-eql', `parsed-class-slot-value-count-equal',
+`parsed-class-slot-value-count-equalp', `parsed-class-slot-value-count-string/=',
+`parsed-class-slot-value-count-not-eql', `parsed-class-slot-value-count-not-equal',
+`parsed-class-slot-value-count-not-equalp', `parsed-class-slot-value-always-string=',
+`parsed-class-slot-value-always-null', `parsed-class-slot-value-always-eql',
+`parsed-class-slot-value-always-equal', `parsed-class-slot-value-always-equalp',
+`parsed-class-slot-value-never-null', `parsed-class-slot-value-never-string=',
+`parsed-class-slot-value-never-eql', `parsed-class-slot-value-never-equal',
+`parsed-class-slot-value-never-equalp', `parsed-class-slot-value-thereis-null',
+`parsed-class-slot-value-thereis-string=', `parsed-class-slot-value-thereis-eql',
+`parsed-class-slot-value-thereis-equal', `parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-string=',
+`parsed-class-slot-value-collect-string/=', `parsed-class-slot-value-collect-null',
+`parsed-class-slot-value-collect-non-null', `parsed-class-slot-value-collect-eql',
+`parsed-class-slot-value-collect-equal', `parsed-class-slot-value-collect-equalp',
+`parsed-class-slot-value-collect-not-eql', `parsed-class-slot-value-collect-not-equal',
+`parsed-class-slot-value-collect-not-equalp', `parsed-class-slot-value-set-when-null',
+`parsed-class-slot-value-set-when-string=', `parsed-class-slot-value-set-when-eql',
+`parsed-class-slot-value-set-when-equal', `parsed-class-slot-value-set-when-equalp',
+`parsed-class-slot-value-set-when-string/=', `parsed-class-set-slot-value-from-consed-pairs'.~%▶▶▶")
+
+;; :TODO Document these:
+;; parsed-class-slot-value-compare-count (class slot)
+;; parsed-class-slot-value-count-null (class slot)
+;; parsed-class-slot-value-count-non-null (class slot)
+;; parsed-class-slot-value-count-string= (class slot match-string)
+;; parsed-class-slot-value-count-eql (class slot match-value)
+;; parsed-class-slot-value-count-equal (class slot match-value)
+;; parsed-class-slot-value-count-equalp (class slot match-value)
+;; parsed-class-slot-value-count-string/= (class slot match-string)
+;; parsed-class-slot-value-count-not-eql (class slot match-value)
+;; parsed-class-slot-value-count-not-equal (class slot match-value)
+;; parsed-class-slot-value-count-not-equalp (class slot match-value)
+;; parsed-class-slot-value-always-string= (class slot match-string)
+;; parsed-class-slot-value-always-null (class slot)
+;; parsed-class-slot-value-always-eql (class slot match-value)
+;; parsed-class-slot-value-always-equal (class slot match-value)
+;; parsed-class-slot-value-always-equalp (class slot match-value)
+;; parsed-class-slot-value-never-null (class slot)
+;; parsed-class-slot-value-never-string= (class slot match-string)
+;; parsed-class-slot-value-never-eql (class slot match-value)
+;; parsed-class-slot-value-never-equal (class slot match-value)
+;; parsed-class-slot-value-never-equalp (class slot match-value)
+;; parsed-class-slot-value-thereis-null (class slot)
+;; parsed-class-slot-value-thereis-string= (class slot match-string)
+;; parsed-class-slot-value-thereis-eql (class slot match-value)
+;; parsed-class-slot-value-thereis-equal (class slot match-value)
+;; parsed-class-slot-value-thereis-equalp (class slot match-value)
+;; parsed-class-slot-value-collect-all (class slot)
+;; parsed-class-slot-value-collect-string= (class slot match-string &key (sort-object-ids nil))
+;; parsed-class-slot-value-collect-string/= (class slot match-string)
+;; parsed-class-slot-value-collect-null (class slot &key (sort-object-ids nil))
+;; parsed-class-slot-value-collect-non-null (class slot)
+;; parsed-class-slot-value-collect-eql (class slot match-value &key (sort-object-ids nil))
+;; parsed-class-slot-value-collect-equal (class slot match-value &key (sort-object-ids nil))
+;; parsed-class-slot-value-collect-equalp (class slot match-value &key (sort-object-ids nil))
+;; parsed-class-slot-value-collect-not-eql (class slot match-value)
+;; parsed-class-slot-value-collect-not-equal (class slot match-value)
+;; parsed-class-slot-value-collect-not-equalp (class slot match-value)
+;; parsed-class-slot-value-set-when-null (class slot replacement-value 
+;; parsed-class-slot-value-set-when-string= (class slot match-string replacement-value 
+;; parsed-class-slot-value-set-when-eql (class slot match-value replacement-value 
+;; parsed-class-slot-value-set-when-equal (class slot match-value replacement-value &key (return-object-id t)
+;; parsed-class-slot-value-set-when-equalp (class slot match-value replacement-value
+;;
+;; parsed-class-slot-value-set-when-string/= (class slot match-string replacement-value
+;; parsed-class-set-slot-value-from-consed-pairs (parsed-class slot-name hash-key-and-new-value)
+
+
+;;; ==============================
 ;;; :DBC-CLN-PARSE-DOCUMENTATION
 ;;; dbc-parse/dbc-cln-parse.lisp
 ;;; ==============================
@@ -148,20 +245,20 @@ define functions which map setf slot-value forms for use with `string-case:strin
         "Return a string representation of a `local-time:timestamp' as if by cl:values
 when MAYBE-TIMESTAMP satisfies certain constraints.
 Return values have the form:~%
- - nth-value 0 is a local-time timestamp ojbect formatted as a string | NIL  
+ - nth-value 0 is a local-time timestamp ojbect formatted as a string | NIL
  - nth-value 1 is a local-time timestamp object | NIL
- - nth-value 2 is a universal-time | NIL     
- - nth-value 3 is MAYBE-VALID-TIME-STRING
+ - nth-value 2 is a universal-time | NIL
+ - nth-value 3 is MAYBE-VALID-TIME-STRING~%~@
 MAYBE-TIMESTAMP is a string having the form:~%
-\"2009-01-27 22:00:31\"
-  YYYY-MM-DD hh:mm:ss~%
+ \"2009-01-27 22:00:31\"
+  YYYY-MM-DD hh:mm:ss~%~@
 :EXAMPLE~%
  \(field-convert-edit-timestamp \"2009-01-27 22:00:31\"\)~%
  \(field-convert-edit-timestamp \"\"\)~%
  \(field-convert-edit-timestamp \"  \"\)~%
- \(field-convert-edit-timestamp \"0000-00-00 00:00:00\"\)~%
+ \(field-convert-edit-timestamp \"0000-00-00 00:00:00\"\)~%~@
 Following errors successfully:~%
- \(field-convert-edit-timestamp \" _\"\)~%
+ \(field-convert-edit-timestamp \" _\"\)~%~@
 :SEE-ALSO `field-convert-edit-timestamp-origin-14'.~%▶▶▶")
 
 (fundoc 'field-convert-edit-timestamp-origin-14

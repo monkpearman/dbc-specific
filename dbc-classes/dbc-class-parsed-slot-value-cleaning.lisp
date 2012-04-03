@@ -18,30 +18,6 @@
 ;; :PASTED #{2012-03-23T14:56:07-04:00Z}#{12125}
 ;; :PASTE-URL (URL `http://paste.lisp.org/display/128524')
 ;; :PASTE-TITLE `sort-unique-numeric-string-sequence'
-;;
-;; Return a copy of STRING-SEQUENCE  sorted according to TEST.
-;; STRING-SEQUENCE is a list or simple-vector. 
-;; When STRING-SEQUENCE has length zerop return it, else each element of
-;; string-sequence must be a non-empty string with 0 every character satsifying
-;; cl:digit-char-p such that the parse-integer representation of string is a unique
-;; integer value for the set of parse-integer elements represented by
-;; STRING-SEQUENCE, an error is signalled if not (possibly leaving
-;; STRING-SEQUENCE in a corrupted state).
-;;
-;; Keyword TEST is a function either #'> or #'<. An error is signaled if not.
-;; :EXAMPLE
-;;  (parsed-class-slot-value-sort-unique-numeric-string-sequence  '("1" "1000" "100"  "0002") :test #'>)
-;;  (parsed-class-slot-value-sort-unique-numeric-string-sequence  '("1" "1000" "100"  "0002") :test #'>)
-;;  (parsed-class-slot-value-sort-unique-numeric-string-sequence  #("1" "1000" "100"  "0002") :test #'<)
-;;  (parsed-class-slot-value-sort-unique-numeric-string-sequence  #("1" "1000" "100"  "0002") :test #'>)
-;;  (parsed-class-slot-value-sort-unique-numeric-string-sequence  () :test #'<)
-;;  (parsed-class-slot-value-sort-unique-numeric-string-sequence  #() :test #'<)
-;; Following error succesfully:
-;;  (parsed-class-slot-value-sort-unique-numeric-string-sequence  #("1" "1000" "100"  "0002") :test #'<=)
-;;  (parsed-class-slot-value-sort-unique-numeric-string-sequence  '("" "1000" "100"  "0002") :test #'>)
-;;  (parsed-class-slot-value-sort-unique-numeric-string-sequence  '("1.8" "1000" "100"  "0002") :test #'>)
-;;  (parsed-class-slot-value-sort-unique-numeric-string-sequence  #("1" "1000" "100" "0001" "0002") :test #'>)
-;; 
 (defun parsed-class-slot-value-sort-unique-numeric-string-sequence (string-sequence &key (test #'<))
   (declare 
    ;; (sequence string-sequence)
