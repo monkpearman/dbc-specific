@@ -87,6 +87,12 @@
     :accessor description-inventory-translation
     :documentation ":ORIGINAL-FIELD \"translation\"")
 
+   ;; naf-entity-<FOO>-coref which may reference more than one entity are either a list or nil
+   ;; naf-entity-artist-coref, naf-entity-author-coref
+   ;; naf-entity-person-coref, naf-entity-brand-coref, naf-entity-composer-coref, 
+   ;; (position "Abel-Truchet (Louis)"  nil :test #'string=)
+   ;; (position "Abel-Truchet (Louis)" #("Adams (John Wolcott)" "Agostini (Tony)" "Abel-Truchet (Louis)") :test #'string=)
+
    (naf-entity-person-coref
     :initarg :naf-entity-person-coref
     :accessor naf-entity-person-coref
@@ -149,11 +155,13 @@
     :accessor publication-pages
     :documentation ":ORIGINAL-FIELD \"page\"")
 
-   (publication-plates ;; :NOTE this is the only field which has its first character capitalized
+   ;; :NOTE this is the only field which has its first character capitalized
+   (publication-plates
     :initarg :publication-plates
     :accessor publication-plates
     :documentation    ":ORIGINAL-FIELD \"Plate_number\"")
 
+   ;; :NOTE There really ought t be a distinction made between an issue and an edition
    (publication-issue
     :initarg :publication-issue
     :accessor publication-issue
@@ -210,6 +218,11 @@
     :accessor category-entity-precedence-list
     :documentation ":ORIGINAL-FIELD \"bct\"")
 
+   ;; the documentation-category-entity-<FOO>-coref refers to stuff in
+   ;; dbc-specific/notes-versioned/dbc-xml-categs-as-lisp/xml-files/sitedoc.xml
+   ;; they xref the parsed-documentation-record slot
+   ;; control-id-documentation-record-document-id but their primary key is the
+   ;; control-id-documentation-record-document-page-id slot
    (documentation-category-entity-0-coref
     :initarg :documentation-category-entity-0-coref
     :accessor documentation-category-entity-0-coref
@@ -478,7 +491,6 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("desc_en"           . description-inventory-english)
    ;; ("histo_fr"          . ignorable-history-french)
    ;; ("histo_en"          . ignorable-history-english)
-   ;; 
    ("histo_fr"          . description-inventory-translation-french)
    ("histo_en"          . description-inventory-translation-english)
    ("text_quote"        . description-inventory-quote)
