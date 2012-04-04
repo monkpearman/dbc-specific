@@ -28,6 +28,9 @@
 ;; (fmakunbound #'parsed-inventory-record-parse-table-lookup-slot-value)
 (defgeneric parsed-inventory-record-parse-table-lookup-slot-value (slot-name hash-key &key with-string-integer-coercion))
 
+;; (remove-method #'parsed-inventory-record-parse-table-lookup-slot-value
+;;                (find-method #'parsed-inventory-record-parse-table-lookup-slot-value nil '((eql image-base-pathname) t)))
+
 
 
 ;;; ==============================
@@ -441,7 +444,19 @@
    (edit-history
     :initarg :edit-history
     :accessor edit-history
-    :documentation ":ORIGINAL-FIELD \"edit_history\""))
+    :documentation ":ORIGINAL-FIELD \"edit_history\"")
+
+   (image-directory-pathname
+    :initarg :image-directory-pathname
+    :accessor image-directory-pathname
+    :documentation "A pathname designating the base directory holding images associated with this record.")
+
+   (image-file-pathnames
+    :initarg :image-file-pathnames
+    :accessor image-file-pathnames
+    :documentation "A list of pathname formatted as file-namestrings each element is an image associated with this record.")
+   )
+
   (:documentation 
    #.(format nil
              "Class for parsed dbc xml `refs` table.~%~@
@@ -549,12 +564,15 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("keywords_seo"      . keyword-seo-sequenced-entity-coref)
    ("date"              . edit-timestamp-origin)
    ("date_edit"         . edit-timestamp)
-   ("edit_history"      . edit-history))
+   ("edit_history"      . edit-history)
+   ("__IGNORED-1"       . image-directory-pathname)
+   ("__IGNORED-2"       . image-file-pathnames)
+   )
  )
 
 (defun parsed-inventory-record-parse-table-lookup (hash-key)
-  ;; (declare (string hash-key))
-  (declare ((or string integer) hash-key))
+  (declare (string hash-key))
+  ;; (declare ((or string integer) hash-key))
   (parsed-class-parse-table-lookup (parsed-class-mapped 'parsed-inventory-record) hash-key))
 
 ;; :DEPRECATED!!!!
