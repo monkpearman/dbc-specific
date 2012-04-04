@@ -346,6 +346,20 @@
 (defmethod parsed-class-parse-table-lookup ((object parsed-class) hash-key)
   (gethash hash-key (parsed-class-parse-table (parsed-class-mapped object))))
 
+;; for parsed-class classes which use integer strings as their primary key what
+;; we'd really like to do is have each of these three return meaningfully.
+;; esp. wrt `control-id-indexed-number-zero-padded-string'
+;; (princ-to-string 10591)
+;; (every-digit-char-p "010591")
+;; (typep 1000000 '(integer 1 999999))
+;; (typep 999999 '(integer 1 999999))
+;;
+;; (parsed-class-parse-table-lookup-slot-value 'parsed-<FOO> '<PRIMARY-KEY-SLOT> "10591") ; works
+;; (parsed-class-parse-table-lookup-slot-value 'parsed-<FOO> '<PRIMARY-KEY-SLOT> 10591) ;works
+;; (parsed-class-parse-table-lookup-slot-value 'parsed-<FOO> '<PRIMARY-KEY-SLOT> "010591")
+
+;;
+;; parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 
 (defmethod parsed-class-parse-table-lookup-slot-value ((object parsed-class)
                                                        (slot-name symbol)
                                                        hash-key) 
@@ -359,6 +373,45 @@
   (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
                                               slot-name
                                               hash-key))
+
+;; These methods specialized on string and integer will never return
+;; meaningfully if we should ever convert to hash-keys as zero-padded strings!
+;; Additionally, there is a performance hit for the methods specialized on
+;; string b/c we're converting all strings to zero-padded strings then stripping
+;; away the zero-padding...
+
+(defmethod parsed-class-parse-table-lookup-slot-value ((object parsed-class)
+                                                       (slot-name symbol)
+                                                       (hash-key integer))
+  (control-id-indexed-number-for-zero-padded-string-integer-range-validate hash-key)
+  (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
+                                              slot-name
+                                              (princ-to-string hash-key)))
+
+(defmethod parsed-class-parse-table-lookup-slot-value ((object symbol)
+                                                       (slot-name symbol)
+                                                       (hash-key integer))
+  (control-id-indexed-number-for-zero-padded-string-integer-range-validate hash-key)
+  (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
+                                              slot-name
+                                              (princ-to-string hash-key)))
+
+
+(defmethod parsed-class-parse-table-lookup-slot-value ((object symbol)
+                                                       (slot-name symbol)
+                                                       (hash-key string))
+  (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
+                                              slot-name
+                                              (string-left-trim #(#\0)
+                                                                (control-id-indexed-number-zero-padded-string hash-key))))
+
+(defmethod parsed-class-parse-table-lookup-slot-value ((object parsed-class)
+                                                       (slot-name symbol)
+                                                       (hash-key string))
+  (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
+                                              slot-name
+                                              (string-left-trim #(#\0)
+                                                                (control-id-indexed-number-zero-padded-string hash-key))))
 
 ;; (%parsed-class-parse-table-make-table)
 (defun %parsed-class-parse-table-make-table (&key 

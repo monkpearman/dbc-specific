@@ -460,39 +460,6 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
                    OBJECT with invalid inventory-number slot-value~% got-object: ~S~% with-slot-value: ~S"
                object chk-slot-value))))
 
-;; Following no longer needed because we're now specializing further up with:
-;;  (PARSED-CLASS-FIELD-SLOT-ACCESSOR-MAPPING SYMBOL INTEGER)
-;;
-;; (remove-method #'parsed-class-parse-table-lookup-slot-value
-;;                (find-method #'parsed-class-parse-table-lookup-slot-value nil '(parsed-inventory-record symbol integer)))
-;; :EXAMPLE
-;;  (parsed-class-parse-table-lookup-slot-value (make-instance 'parsed-inventory-record) 'inventory-number 3099)
-;;  (let* ((obj (make-instance 'parsed-inventory-record :inventory-number "99999"))
-;;         (as-int (parse-integer (slot-value obj 'inventory-number))))
-;;    (parsed-class-parse-table-lookup-slot-value obj 'inventory-number as-int))
-;; (defmethod parsed-class-parse-table-lookup-slot-value ((object parsed-inventory-record)
-;;                                                        (slot-name symbol)
-;;                                                        (hash-key integer))
-;;   (assert (typep hash-key 'control-id-indexed-number-for-zero-padded-string-integer-range) nil)
-;;   (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
-;;                                               slot-name
-;;                                               (princ-to-string hash-key)))
-;;
-;; (remove-method #'parsed-class-parse-table-lookup-slot-value
-;;                (find-method #'parsed-class-parse-table-lookup-slot-value nil '((eql parsed-inventory-record) symbol integer)))
-;; :EXAMPLE
-;;  (parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'inventory-number 0)
-;; Following errors succesfully:~%
-;;  (parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'inventory-number 0)
-;;
-;; (defmethod parsed-class-parse-table-lookup-slot-value ((object    (eql 'parsed-inventory-record))
-;;                                                        (slot-name symbol)
-;;                                                        (hash-key integer))
-;;   (assert (typep hash-key 'control-id-indexed-number-for-zero-padded-string-integer-range) nil)
-;;   (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
-;;                                               slot-name
-;;                                               (princ-to-string hash-key)))
-
 ;; (make-instance 'parsed-inventory-record)
 ;; => #<PARSED-INVENTORY-RECORD NIL {IDENTITY}>
 ;; (parsed-class-parse-table-lookup 'parsed-inventory-record "9842")
