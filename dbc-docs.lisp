@@ -1194,11 +1194,11 @@ Signal an error if not.~%~@
 `control-id-indexed-number-for-zero-padded-string-integer-string-length'.~%▶▶▶")
 
 (fundoc 'control-id-indexed-number-for-zero-padded-string-integer-string-length-validate
-"Return STRING-LENGTH if it is of type `control-id-indexed-number-for-zero-padded-string-length'.~%~@
+"Return MAYBE-VALID-STRING if it is of type `control-id-indexed-number-for-zero-padded-string-length'.~%~@
 Signal an error if not.~%~@
 :EXAMPLE~%
- \(control-id-indexed-number-for-zero-padded-string-integer-string-length-validate \"000113\" 6\)~%
- \(control-id-indexed-number-for-zero-padded-string-integer-string-length-validate \"0000113\" 7\)~%~@
+ \(control-id-indexed-number-for-zero-padded-string-integer-string-length-validate \"000113\"\)~%
+ \(control-id-indexed-number-for-zero-padded-string-integer-string-length-validate \"0000113\"\)~%~@
 :SEE-ALSO `control-id-indexed-number-for-zero-padded-string',
 `control-id-indexed-number-for-zero-padded-string-integer-string-length-validate',
 `control-id-indexed-number-for-zero-padded-string-integer-range-validate',
@@ -1762,8 +1762,11 @@ HASH-KEY is a key into OJBECT's `parsed-class-parse-table'.~%~
 (generic-doc #'parsed-class-parse-table-lookup-slot-value 
 "Lookup the SLOT-NAME slot-value of OBJECT with HASH-KEY.~%~@
 Return as if by cl:values the slot-value for OBJECT with HASH-KEY.~%
- - nth-value 0 is the slot-value or nil
+ - nth-value 0 is the slot-value or nil~%
  - nth-value 1 is a boolean indicating HASH-KEY's presence in OBJECT's `parsed-class-parse-table'~%
+ - nth-value 2 when non-nil is the value of HASH-KEY after coercion from a string or integer~%
+ - nth-value 3 when non-nil is a parsed-class-table hash-value associated with
+   HASH-KEY (maybe after coercion)~%~@
 OBJECT is either a symbol, a subclass of the class `parsed-class', or an
 instance of the class `parsed-class-field-slot-accessor-mapping'.~%
 SLOT-NAME is a symbol. 
@@ -1773,6 +1776,11 @@ HASH-KEY is a key into OJBECT's `parsed-class-parse-table'.~%~
 If HASH-KEY maps to an hash-value in the `parsed-class-parse-table' for OBJECT's
 class that hash-value must satisfy both `cl:slot-exists-p' and `cl:slot-boundp'
 for SLOT-NAME, when either fails an error is signaled.~%~@
+Keyword WITH-STRING-INTEGER-COERCION is a generalized boolean indicating whether
+HASH-KEY should be coerced to/from a zero-padded string.
+When non-null and HASH-KEY is of type integer or string returned values are
+contingent on the coercion of HASH-KEY with
+`control-id-indexed-number-zero-padded-string'.~%
 :NOTE When OBJECT or SLOT-NAME are symbols they may need to be package qualified
 when invoked from outside the package DBC.~%
 :SEE-ALSO `parsed-class-parse-table-lookup', `accessor-to-field-mapping',
@@ -1786,20 +1794,14 @@ when invoked from outside the package DBC.~%
  \(parsed-class-parse-table-lookup-slot-value \(parsed-class-mapped 'parsed-inventory-record\)
                                              'naf-entity-publication-coref
                                              \"2766\"\)~%
- \(parsed-class-parse-table-lookup-slot-value \(parsed-class-mapped 'parsed-inventory-record\)
-                                             'naf-entity-publication-coref
-                                             \"blarg\"\)~%
 Following errors successfully:~%
  \(parsed-class-parse-table-lookup-slot-value \(parsed-class-mapped 'parsed-inventory-record\)
                                              'foo
                                              \"blarg\"\)~%")
 
-
 (method-doc #'parsed-class-parse-table-lookup-slot-value nil '(symbol symbol t) 
-"~%:EXAMPLE~%
+            "~%:EXAMPLE~%
  \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'naf-entity-publication-coref \"2766\"\)~%
- \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'naf-entity-publication-coref \"blarg\"\)~%
-                                             
 Following errors successfully:~%
  \(parsed-class-parse-table-lookup-slot-value \(parsed-class-mapped 'parsed-inventory-record\)
                                              'foo
@@ -1810,9 +1812,6 @@ Following errors successfully:~%
  \(parsed-class-parse-table-lookup-slot-value \(closer-mop:class-prototype \(find-class 'parsed-inventory-record\)\)
                                              'naf-entity-publication-coref
                                              \"2766\"\)~%
- \(parsed-class-parse-table-lookup-slot-value \(closer-mop:class-prototype \(find-class 'parsed-inventory-record\)\)
-                                             'naf-entity-publication-coref
-                                             \"blarg\"\)~%
 Following errors successfully:~%
  \(parsed-class-parse-table-lookup-slot-value \(closer-mop:class-prototype \(find-class 'parsed-inventory-record\)\)
                                              'foo
@@ -1822,51 +1821,96 @@ Following errors successfully:~%
             "~%Integer should be of type `control-id-indexed-number-for-zero-padded-string-integer-range' an
 error is signaled if not.~%~@
 :EXAMPLE~%
- \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'description-inventory-title 3999\)~%
+ \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record
+                                             'description-inventory-title
+                                             3999\)~%
+ \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 
+                                              'description-inventory-title
+                                              3999
+                                              :with-string-integer-coercion t\)~%
 Following error succesfully:~%
- \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'description-inventory-title 0\)~%
- \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'description-inventory-title 100000\)~%")
+ \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record
+                                             'description-inventory-title
+                                             100000
+                                             :with-string-integer-coercion t\)~%
+ \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record
+                                             'description-inventory-title 
+                                             0
+                                             :with-string-integer-coercion t\)~%")
 
 (method-doc #'parsed-class-parse-table-lookup-slot-value nil '(parsed-class symbol integer)
             "~%Integer should be of type `control-id-indexed-number-for-zero-padded-string-integer-range' an
 error is signaled if not.~%~@
 :EXAMPLE~%
- (parsed-class-parse-table-lookup-slot-value (make-instance 'parsed-inventory-record)
+ \(parsed-class-parse-table-lookup-slot-value \(make-instance 'parsed-inventory-record\)
                                              'description-inventory-title
-                                             3999)~%
+                                             3999\)~%
+ \(parsed-class-parse-table-lookup-slot-value \(make-instance 'parsed-inventory-record\)
+                                             'description-inventory-title
+                                             3999 
+                                             :with-string-integer-coercion t\)~%
 Following error succesfully:~%
- (parsed-class-parse-table-lookup-slot-value (make-instance 'parsed-inventory-record)
+ \(parsed-class-parse-table-lookup-slot-value \(make-instance 'parsed-inventory-record\)
                                             'description-inventory-title
-                                             0)~%
- (parsed-class-parse-table-lookup-slot-value (make-instance 'parsed-inventory-record)
+                                             0
+                                             :with-string-integer-coercion t\)~%
+ \(parsed-class-parse-table-lookup-slot-value \(make-instance 'parsed-inventory-record\)
                                              'description-inventory-title
-                                             100000)~%")
-
+                                             100000
+                                             :with-string-integer-coercion t\)~%")
+ 
 (method-doc #'parsed-class-parse-table-lookup-slot-value nil '(symbol symbol string)
 "~%EXAMPLE~%
-  \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'description-inventory-title \"003009\"\)~%
-  \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'description-inventory-title \"3009\"\)~%
+ \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record
+                                             'description-inventory-title
+                                             \"3009\"\)~%
+ \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record
+                                             'description-inventory-title
+                                             \"003009\"\)~%
+ \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record
+                                             'description-inventory-title
+                                             \"003009\"
+                                             :with-string-integer-coercion t\)~%
 Following error succesfully:~%
-  \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'description-inventory-title \"0\"\)~%
-  \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'description-inventory-title \"100000\"\)~%
-  \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'description-inventory-title \"99m\"\)~%")
+ \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record
+                                             'description-inventory-title
+                                             \"100000\"
+                                             :with-string-integer-coercion t\)~%
+ \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record
+                                             'description-inventory-title 
+                                             \"0\"
+                                             :with-string-integer-coercion t\)~%
+ \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record
+                                             'description-inventory-title 
+                                             \"99m\"
+                                             :with-string-integer-coercion t\)~%")
 
 (method-doc #'parsed-class-parse-table-lookup-slot-value nil '(parsed-class symbol string)
             "~%EXAMPLE~%
  \(parsed-class-parse-table-lookup-slot-value \(make-instance 'parsed-inventory-record\)
                                              'description-inventory-title
+                                             \"3009\"\)~%
+ \(parsed-class-parse-table-lookup-slot-value \(make-instance 'parsed-inventory-record\)
+                                             'description-inventory-title
                                              \"003009\"\)~%
  \(parsed-class-parse-table-lookup-slot-value \(make-instance 'parsed-inventory-record\)
                                              'description-inventory-title
-                                             \"3009\"\)~%~@
+                                             \"003009\"
+                                             :with-string-integer-coercion t\)~%
 Following error succesfully:~%
  \(parsed-class-parse-table-lookup-slot-value \(make-instance 'parsed-inventory-record\)
                                              'description-inventory-title
-                                             \"0\"\)~%
+                                             \"100000\"
+                                             :with-string-integer-coercion t\)~%
  \(parsed-class-parse-table-lookup-slot-value \(make-instance 'parsed-inventory-record\)
-                                             'description-inventory-title
-                                             \"99m\"\)~%
- \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'description-inventory-title \"100000\"\)~%")
+                                             'description-inventory-title 
+                                             \"0\"
+                                             :with-string-integer-coercion t\)~%
+ \(parsed-class-parse-table-lookup-slot-value \(make-instance 'parsed-inventory-record\)
+                                             'description-inventory-title 
+                                             \"99m\"
+                                             :with-string-integer-coercion t\)~%")
+
 
 (generic-doc #'field-to-accessor-table
 "Return a hash-table mapping original SQL field strings to accessors of OBJECT's class.~%~@

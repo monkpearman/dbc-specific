@@ -17,20 +17,23 @@
 (deftype control-id-indexed-number-for-zero-padded-string-integer-string-length () 
   '(integer 1 6))
 
+;; (control-id-indexed-number-for-zero-padded-string-integer-range-validate 0)
+
 (defun control-id-indexed-number-for-zero-padded-string-integer-range-validate (maybe-valid-integer)
   (assert (typep maybe-valid-integer 'control-id-indexed-number-for-zero-padded-string-integer-range)
-          nil
+          (maybe-valid-integer)
           ":FUNCTION `control-id-indexed-number-for-zero-padded-string-integer-range-validate' --~% ~
             Arg MAYBE-VALID-INTEGER not of type (integer 1 99999)~% got: ~S~% type: ~S~%"
           maybe-valid-integer (type-of maybe-valid-integer))
   maybe-valid-integer)
 
-(defun control-id-indexed-number-for-zero-padded-string-integer-string-length-validate (maybe-valid-string string-length)
-  (assert (typep string-length 'control-id-indexed-number-for-zero-padded-string-integer-string-length) nil
+(defun control-id-indexed-number-for-zero-padded-string-integer-string-length-validate (maybe-valid-string)
+  (assert (typep (length maybe-valid-string) 'control-id-indexed-number-for-zero-padded-string-integer-string-length)
+          (maybe-valid-string)
           ":FUNCTION `control-id-indexed-number-for-zero-padded-string-integer-string-length-validate' --~% ~
           Arg MAYBE-VALID-STRING with STRING-LENGTH not of type '(integer 1 6)~% got: ~S~% length: ~S~%"
-          maybe-valid-string string-length)
-  string-length)
+          maybe-valid-string (length maybe-valid-string))
+  maybe-valid-string)
 
 ;; :NOTE for use with examples defined in 
 ;; :FILE dbc-specific/dbc-classes/dbc-class-parse-EXAMPLE.lisp
@@ -48,7 +51,6 @@
 
 (defmethod control-id-indexed-number-zero-padded-string ((integer-or-string null))
   (error ":METHOD `control-id-indexed-number-zero-padded-string' -- arg INTEGER-OR-STRING must not be null"))
-
 
 (defmethod control-id-indexed-number-zero-padded-string ((integer-or-string list))
   (error ":METHOD `control-id-indexed-number-zero-padded-string' -- arg INTEGER-OR-STRING must not be a list"))
@@ -80,36 +82,33 @@
           (control-id-indexed-number-for-zero-padded-string-integer-range-validate integer-or-string)))
 
 (defmethod control-id-indexed-number-zero-padded-string ((integer-or-string string))
-  (let ((len (length integer-or-string)))
-    ;; (assert (typep len '(integer 1 6)) nil 
-    ;; (assert (typep len 'control-id-indexed-number-for-zero-padded-string-integer-string-length) nil
-    ;;         ":METHOD `control-id-indexed-number-zero-padded-string'~% ~
-    ;;          arg INTEGER-OR-STRING with length not of type '(integer 1 6)~% got: ~S~% length: ~S~%" 
-    ;;         integer-or-string len)
-    (control-id-indexed-number-for-zero-padded-string-integer-string-length-validate integer-or-string len) 
+  (let* ((validated-string (control-id-indexed-number-for-zero-padded-string-integer-string-length-validate integer-or-string))
+         (len (length validated-string)))
     (assert (every-digit-char-p integer-or-string) nil
             ":METHOD `control-id-indexed-number-zero-padded-string'~% ~
              arg INTEGER-OR-STRING did not satisfy `every-digit-char-p'~% got: ~S~%" 
-            integer-or-string)
+            ;;integer-or-string)
+            validated-string)
     (assert (%not-every-char-zero-p integer-or-string) nil
             ":METHOD `control-id-indexed-number-zero-padded-string'~% ~
              arg INTEGER-OR-STRING with every character `cl:char=' #\\0~% got: ~S~%" 
-            integer-or-string)
+            ;;integer-or-string)
+            validated-string)
     (ecase len
       (6 
-       (assert (char= (char integer-or-string 0) #\0) nil
+       (assert (char= (char validated-string 0) #\0) nil
                ":METHOD `control-id-indexed-number-zero-padded-string'~% ~
-                  arg INTEGER-OR-STRING with length 6 but char at index 0 not `cl:char=' #\\0~% got: ~S~%" 
-               integer-or-string)
-       integer-or-string)
+                arg INTEGER-OR-STRING with length 6 but char at index 0 not `cl:char=' #\\0~% got: ~S~%" 
+               validated-string)
+       validated-string)
       (1 
        (let ((new (make-array 6 :element-type 'character :initial-element #\0)))
-         (setf (aref new 5) (char integer-or-string 0))
+         (setf (aref new 5) (char validated-string 0))
          new))
       ((2 3 4 5)
        (loop 
          with new = (make-array 6 :element-type 'character :initial-element #\0)
-         for chars across integer-or-string
+         for chars across validated-string
          for idx from (- 6 len)  below 6
          do (setf (aref new idx) chars)
          finally (return new))))))

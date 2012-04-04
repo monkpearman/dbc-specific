@@ -99,7 +99,22 @@
 ;; what we'd really like to have is something like this:
 ;; (setf (parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'media-entity-color "652") "1")
 ;; however, to do it right means introspecting on SLOT-NAME for an effective-slot-definition... 
-(defgeneric parsed-class-parse-table-lookup-slot-value (object slot-name hash-key))
+(defgeneric parsed-class-parse-table-lookup-slot-value (object slot-name hash-key &key with-string-integer-coercion))
+
+
+;; (remove-method #'parsed-class-parse-table-lookup-slot-value
+;;                (find-method #'parsed-class-parse-table-lookup-slot-value nil '(parsed-class symbol t)))
+;; (remove-method #'parsed-class-parse-table-lookup-slot-value
+;;                (find-method #'parsed-class-parse-table-lookup-slot-value nil '(symbol symbol string)))
+;; (remove-method #'parsed-class-parse-table-lookup-slot-value
+;;                (find-method #'parsed-class-parse-table-lookup-slot-value nil '(symbol symbol integer)))
+;; (remove-method #'parsed-class-parse-table-lookup-slot-value
+;;                (find-method #'parsed-class-parse-table-lookup-slot-value nil '(parsed-class symbol integer)))
+;; (remove-method #'parsed-class-parse-table-lookup-slot-value
+;;                (find-method #'parsed-class-parse-table-lookup-slot-value nil '(parsed-class-field-slot-accessor-mapping symbol t)))
+
+
+
 
 ;; These are common to class `parsed-class' and its subclasses
 (defgeneric naf-entity-author-coref (object))
@@ -346,72 +361,98 @@
 (defmethod parsed-class-parse-table-lookup ((object parsed-class) hash-key)
   (gethash hash-key (parsed-class-parse-table (parsed-class-mapped object))))
 
-;; for parsed-class classes which use integer strings as their primary key what
-;; we'd really like to do is have each of these three return meaningfully.
-;; esp. wrt `control-id-indexed-number-zero-padded-string'
-;; (princ-to-string 10591)
-;; (every-digit-char-p "010591")
-;; (typep 1000000 '(integer 1 999999))
-;; (typep 999999 '(integer 1 999999))
-;;
-;; (parsed-class-parse-table-lookup-slot-value 'parsed-<FOO> '<PRIMARY-KEY-SLOT> "10591") ; works
-;; (parsed-class-parse-table-lookup-slot-value 'parsed-<FOO> '<PRIMARY-KEY-SLOT> 10591) ;works
-;; (parsed-class-parse-table-lookup-slot-value 'parsed-<FOO> '<PRIMARY-KEY-SLOT> "010591")
-
-;;
-;; parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 
 (defmethod parsed-class-parse-table-lookup-slot-value ((object parsed-class)
                                                        (slot-name symbol)
-                                                       hash-key) 
+                                                       hash-key
+                                                       &key with-string-integer-coercion)
+  (declare (ignore with-string-integer-coercion))
   (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
                                               slot-name
-                                              hash-key))
+                                              hash-key
+                                              :with-string-integer-coercion nil))
 
 (defmethod parsed-class-parse-table-lookup-slot-value ((object symbol)
                                                        (slot-name symbol)
-                                                       hash-key) 
+                                                       hash-key
+                                                       &key with-string-integer-coercion)
+  (declare (ignore with-string-integer-coercion))
   (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
                                               slot-name
-                                              hash-key))
+                                              hash-key
+                                              :with-string-integer-coercion nil))
 
-;; These methods specialized on string and integer will never return
+;; :NOTE These methods specialized on string and integer will never return
 ;; meaningfully if we should ever convert to hash-keys as zero-padded strings!
 ;; Additionally, there is a performance hit for the methods specialized on
 ;; string b/c we're converting all strings to zero-padded strings then stripping
 ;; away the zero-padding...
-
 (defmethod parsed-class-parse-table-lookup-slot-value ((object parsed-class)
                                                        (slot-name symbol)
-                                                       (hash-key integer))
-  (control-id-indexed-number-for-zero-padded-string-integer-range-validate hash-key)
-  (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
-                                              slot-name
-                                              (princ-to-string hash-key)))
+                                                       (hash-key integer)
+                                                       &key (with-string-integer-coercion nil))
+  ;; (declare ((or null string integer) with-string-integer-coercion))
+  (if with-string-integer-coercion
+      (let ((maybe-coerced 
+              (princ-to-string (control-id-indexed-number-for-zero-padded-string-integer-range-validate hash-key))))
+        (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
+                                                    slot-name
+                                                    maybe-coerced
+                                                    :with-string-integer-coercion maybe-coerced))
+      (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
+                                                  slot-name
+                                                  hash-key
+                                                  :with-string-integer-coercion nil)))
 
 (defmethod parsed-class-parse-table-lookup-slot-value ((object symbol)
                                                        (slot-name symbol)
-                                                       (hash-key integer))
-  (control-id-indexed-number-for-zero-padded-string-integer-range-validate hash-key)
-  (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
-                                              slot-name
-                                              (princ-to-string hash-key)))
-
+                                                       (hash-key integer)
+                                                       &key (with-string-integer-coercion nil))
+  (if with-string-integer-coercion
+      (let ((maybe-coerced 
+              (princ-to-string (control-id-indexed-number-for-zero-padded-string-integer-range-validate hash-key))))
+        (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
+                                                    slot-name
+                                                    maybe-coerced 
+                                                    :with-string-integer-coercion maybe-coerced))
+      (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
+                                                  slot-name
+                                                  hash-key
+                                                  :with-string-integer-coercion nil)))
 
 (defmethod parsed-class-parse-table-lookup-slot-value ((object symbol)
                                                        (slot-name symbol)
-                                                       (hash-key string))
-  (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
-                                              slot-name
-                                              (string-left-trim #(#\0)
-                                                                (control-id-indexed-number-zero-padded-string hash-key))))
+                                                       (hash-key string)
+                                                       &key (with-string-integer-coercion nil))
+  (if with-string-integer-coercion
+      (let ((maybe-coerced (string-left-trim #(#\0)
+                                             (control-id-indexed-number-zero-padded-string hash-key))))
+        (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
+                                                    slot-name
+                                                    maybe-coerced
+                                                    :with-string-integer-coercion maybe-coerced))
+      (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
+                                                  slot-name
+                                                  hash-key
+                                                  :with-string-integer-coercion nil)))
 
 (defmethod parsed-class-parse-table-lookup-slot-value ((object parsed-class)
                                                        (slot-name symbol)
-                                                       (hash-key string))
-  (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
-                                              slot-name
-                                              (string-left-trim #(#\0)
-                                                                (control-id-indexed-number-zero-padded-string hash-key))))
+                                                       (hash-key string)
+                                                       &key (with-string-integer-coercion nil))
+  (if with-string-integer-coercion
+      (let ((maybe-coerced (string-left-trim #(#\0)
+                                             (control-id-indexed-number-zero-padded-string hash-key))))
+        (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
+                                                    slot-name
+                                                    maybe-coerced
+                                                    :with-string-integer-coercion maybe-coerced))
+      (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
+                                                  slot-name
+                                                  hash-key
+                                                  :with-string-integer-coercion nil)))
+
+;; (parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'description-inventory-title 3999 :with-string-integer-coercion t)
+;; (parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'description-inventory-title "0003999" :with-string-integer-coercion t)
 
 ;; (%parsed-class-parse-table-make-table)
 (defun %parsed-class-parse-table-make-table (&key 

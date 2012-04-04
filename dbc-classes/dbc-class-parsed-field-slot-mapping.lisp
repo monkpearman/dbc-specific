@@ -145,7 +145,8 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
 
 (defmethod parsed-class-parse-table-lookup-slot-value ((object parsed-class-field-slot-accessor-mapping)
                                                        (slot-name symbol)
-                                                       hash-key)
+                                                       hash-key
+                                                       &key (with-string-integer-coercion nil))
   (let* ((obj (parsed-class-parse-table-lookup object hash-key))
          ;; we check that the slot exists at the class level and for the object if either fails we loose.
          (verify-slot-for-parsed-class (nth-value 0 (%parsed-class-slot-exists-for-parsed-class-check object slot-name)))
@@ -163,8 +164,16 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
                            obj slot-name hash-key))
                 (slot-value obj slot-name))))
     (if obj
-        (values slot-exists-and-bound-with-value t)
-        (values nil nil))))
+        (values slot-exists-and-bound-with-value
+                t
+                (or (and with-string-integer-coercion with-string-integer-coercion)
+                    hash-key)
+                obj)
+        (values nil
+                nil
+                (or (and with-string-integer-coercion with-string-integer-coercion)
+                    hash-key)
+                obj))))
 
 (defmethod parsed-class-slot-dispatch-function ((object parsed-class-field-slot-accessor-mapping))
   (or (and (slot-boundp object 'parsed-class-slot-dispatch-function)

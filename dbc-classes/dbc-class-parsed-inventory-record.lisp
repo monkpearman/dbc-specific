@@ -24,8 +24,9 @@
 
 (in-package #:dbc)
 ;; *package*
-
-(defgeneric parsed-inventory-record-parse-table-lookup-slot-value (slot-name hash-key))
+;; parsed-class-parse-table-lookup-slot-value
+;; (fmakunbound #'parsed-inventory-record-parse-table-lookup-slot-value)
+(defgeneric parsed-inventory-record-parse-table-lookup-slot-value (slot-name hash-key &key with-string-integer-coercion))
 
 
 
@@ -552,9 +553,11 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
  )
 
 (defun parsed-inventory-record-parse-table-lookup (hash-key)
-  (declare (string hash-key))
+  ;; (declare (string hash-key))
+  (declare ((or string integer) hash-key))
   (parsed-class-parse-table-lookup (parsed-class-mapped 'parsed-inventory-record) hash-key))
 
+;; :DEPRECATED!!!!
 (defun %parsed-inventory-record-parse-table-lookup-slot-value (slot-name hash-key)
   ;; lets assume that any additional callers of this method are specialized as (eql '<FOO>)
   ;; and will always have membership in `accessors-of-parsed-class'
@@ -566,9 +569,11 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
   ;;          slot-name))
   ;;
   (declare (symbol slot-name)
-           (string hash-key)
+           ((or string integer) hash-key)
            (optimize (speed 3)))
-  (multiple-value-bind (maybe-find-object found-p) (parsed-class-parse-table-lookup 'parsed-inventory-record hash-key)
+  (multiple-value-bind (maybe-find-object found-p) 
+      ;; (parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record  slot-name hash-key :with-string-integer-coercion with-string-integer-coercion)
+      (parsed-class-parse-table-lookup 'parsed-inventory-record hash-key)
     (if (and maybe-find-object found-p)
         (and (or (slot-exists-p maybe-find-object slot-name)
                  (error ":METHOD `parsed-inventory-record-parse-table-lookup-slot-value' ~
@@ -591,11 +596,18 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
     ;; defining specializers doesn't work!
     `(progn
        (defmethod parsed-inventory-record-parse-table-lookup-slot-value ((slot-name (eql ',slot-name))
-                                                                         (hash-key string))
-         (%parsed-inventory-record-parse-table-lookup-slot-value ',slot-name hash-key))
-       (defun ,generated-name (hash-key)
-         (declare (string hash-key))
-         (parsed-inventory-record-parse-table-lookup-slot-value ',slot-name hash-key)))))
+                                                                         ;;(hash-key string)
+                                                                         hash-key
+                                                                         &key (with-string-integer-coercion nil))
+         (declare ((or string integer) hash-key))
+         (parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record
+                                                     ',slot-name
+                                                     hash-key
+                                                     :with-string-integer-coercion with-string-integer-coercion))
+       ;; (%parsed-inventory-record-parse-table-lookup-slot-value ',slot-name hash-key))
+       (defun ,generated-name (hash-key &key (with-string-integer-coercion nil))
+         (declare ((or string integer) hash-key))
+         (parsed-inventory-record-parse-table-lookup-slot-value ',slot-name hash-key :with-string-integer-coercion with-string-integer-coercion)))))
 
 (defun %parsed-inventory-record-parse-table-lookup-slot-value-maybe-remove ()
   (loop
