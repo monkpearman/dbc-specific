@@ -145,6 +145,14 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
 
 (defmethod parsed-class-parse-table-lookup-slot-value ((object parsed-class-field-slot-accessor-mapping)
                                                        (slot-name symbol)
+                                                       (hash-key integer))
+  (control-id-indexed-number-for-zero-padded-string-integer-range-validate hash-key)
+  (parsed-class-parse-table-lookup-slot-value object
+                                              slot-name
+                                              (princ-to-string hash-key)))
+
+(defmethod parsed-class-parse-table-lookup-slot-value ((object parsed-class-field-slot-accessor-mapping)
+                                                       (slot-name symbol)
                                                        hash-key)
   (let* ((obj (parsed-class-parse-table-lookup object hash-key))
          ;; we check that the slot exists at the class level and for the object if either fails we loose.

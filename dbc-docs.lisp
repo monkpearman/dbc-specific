@@ -1818,6 +1818,19 @@ Following errors successfully:~%
                                              'foo
                                              \"blarg\"\)~%")
 
+(method-doc #'parsed-class-parse-table-lookup-slot-value nil
+            '(parsed-class-field-slot-accessor-mapping  symbol integer)
+            "~%Integer should be of type `control-id-indexed-number-for-zero-padded-string-integer-range' an
+error is signaled if not.~%~@
+:EXAMPLE~%
+ \(parsed-class-parse-table-lookup-slot-value
+  \(make-instance 'parsed-inventory-record\) 'inventory-number 3099\)~%
+ \(let* \(\(obj \(make-instance 'parsed-inventory-record :inventory-number \"99999\"\)\)
+        \(as-int \(parse-integer \(slot-value obj 'inventory-number\)\)\)\)
+   \(parsed-class-parse-table-lookup-slot-value obj 'inventory-number as-int\)\)~%
+Following errors successfully:~%
+ \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'inventory-number 0\)~%")
+
 (generic-doc #'field-to-accessor-table
 "Return a hash-table mapping original SQL field strings to accessors of OBJECT's class.~%~@
 :SEE-ALSO `accessor-to-field-mapping', `field-to-accessor-mapping',

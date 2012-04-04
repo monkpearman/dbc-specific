@@ -18,7 +18,7 @@
 ;;
 ;; DESCRIPTION-INVENTORY-SHIPPING-NOTE
 ;; :SEE description-inventory-condtion "Shipped rolled."|"Shipped Rolled."
-;;
+
 
 
 
@@ -261,7 +261,7 @@
    ;; :NOTE Need price-sold and price-paid. However price-paid should really be
    ;; prefixed as purchase-price-paid b/c there are also purchase-from,
    ;; purchase-date-time, etc.
-   ;; :TODO This should really be named `price-ask-default'. Elsewhere we have price-ask-ebay, price-ask-trade-show, price-ask-client, et.c
+   ;; :TODO This should really be named `price-ask-default'. Elsewhere we have price-ask-ebay, price-ask-trade-show, price-ask-client, etc.
    (price-ask ;; The "-ask" suffix is for congruence with "price-ebay" 
     :initarg :price-ask
     :accessor price-ask
@@ -302,6 +302,7 @@
     :initarg :media-entity-color
     :accessor media-entity-color
     :documentation ":ORIGINAL-FIELD \"color\"")
+
    ;; unit-of-measure-width
    (unit-width
     :initarg :unit-width
@@ -458,6 +459,39 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
         (error ":METHOD `control-id-indexed-number-zero-padded-string' specializing class `parsed-inventory-record'~% ~
                    OBJECT with invalid inventory-number slot-value~% got-object: ~S~% with-slot-value: ~S"
                object chk-slot-value))))
+
+;; Following no longer needed because we're now specializing further up with:
+;;  (PARSED-CLASS-FIELD-SLOT-ACCESSOR-MAPPING SYMBOL INTEGER)
+;;
+;; (remove-method #'parsed-class-parse-table-lookup-slot-value
+;;                (find-method #'parsed-class-parse-table-lookup-slot-value nil '(parsed-inventory-record symbol integer)))
+;; :EXAMPLE
+;;  (parsed-class-parse-table-lookup-slot-value (make-instance 'parsed-inventory-record) 'inventory-number 3099)
+;;  (let* ((obj (make-instance 'parsed-inventory-record :inventory-number "99999"))
+;;         (as-int (parse-integer (slot-value obj 'inventory-number))))
+;;    (parsed-class-parse-table-lookup-slot-value obj 'inventory-number as-int))
+;; (defmethod parsed-class-parse-table-lookup-slot-value ((object parsed-inventory-record)
+;;                                                        (slot-name symbol)
+;;                                                        (hash-key integer))
+;;   (assert (typep hash-key 'control-id-indexed-number-for-zero-padded-string-integer-range) nil)
+;;   (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
+;;                                               slot-name
+;;                                               (princ-to-string hash-key)))
+;;
+;; (remove-method #'parsed-class-parse-table-lookup-slot-value
+;;                (find-method #'parsed-class-parse-table-lookup-slot-value nil '((eql parsed-inventory-record) symbol integer)))
+;; :EXAMPLE
+;;  (parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'inventory-number 0)
+;; Following errors succesfully:~%
+;;  (parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'inventory-number 0)
+;;
+;; (defmethod parsed-class-parse-table-lookup-slot-value ((object    (eql 'parsed-inventory-record))
+;;                                                        (slot-name symbol)
+;;                                                        (hash-key integer))
+;;   (assert (typep hash-key 'control-id-indexed-number-for-zero-padded-string-integer-range) nil)
+;;   (parsed-class-parse-table-lookup-slot-value (parsed-class-mapped object)
+;;                                               slot-name
+;;                                               (princ-to-string hash-key)))
 
 ;; (make-instance 'parsed-inventory-record)
 ;; => #<PARSED-INVENTORY-RECORD NIL {IDENTITY}>
@@ -954,11 +988,6 @@ This function should only be used for instantiating instances created _outside_ 
 ;;; ==============================
 ;; :TODO We need to match all occurences of in all parsed-classes where the "field-name" is also the "field-value"
 ;; e.g. situations like this: ("ebay_price" . "ebay_price")
-;; (defun filter-field-name-value-is-field-name (object )
-;;   )
-
-
-
 
 
 ;;; ==============================
