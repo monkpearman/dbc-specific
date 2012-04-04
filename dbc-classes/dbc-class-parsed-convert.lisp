@@ -17,6 +17,21 @@
 (deftype control-id-indexed-number-for-zero-padded-string-integer-string-length () 
   '(integer 1 6))
 
+(defun control-id-indexed-number-for-zero-padded-string-integer-range-validate (maybe-valid-integer)
+  (assert (typep maybe-valid-integer 'control-id-indexed-number-for-zero-padded-string-integer-range)
+          nil
+          ":FUNCTION `control-id-indexed-number-for-zero-padded-string-integer-range-validate' --~% ~
+            Arg MAYBE-VALID-INTEGER not of type (integer 1 99999)~% got: ~S~% type: ~S~%"
+          maybe-valid-integer (type-of maybe-valid-integer))
+  maybe-valid-integer)
+
+(defun control-id-indexed-number-for-zero-padded-string-integer-string-length-validate (maybe-valid-string string-length)
+  (assert (typep string-length 'control-id-indexed-number-for-zero-padded-string-integer-string-length) nil
+          ":FUNCTION `control-id-indexed-number-for-zero-padded-string-integer-string-length-validate' --~% ~
+          Arg MAYBE-VALID-STRING with STRING-LENGTH not of type '(integer 1 6)~% got: ~S~% length: ~S~%"
+          maybe-valid-string string-length)
+  string-length)
+
 ;; :NOTE for use with examples defined in 
 ;; :FILE dbc-specific/dbc-classes/dbc-class-parse-EXAMPLE.lisp
 (defun %ensure-dated-parsed-directory (&key directory-prefix)
@@ -58,17 +73,20 @@
 ;;                            control-id-doc-num-publication does (although this isn't a primary key.)
 (defmethod control-id-indexed-number-zero-padded-string ((integer-or-string integer))
   ;; (assert (typep integer-or-string '(integer 0 99999)))
-  ;; (assert (typep 0 'control-id-indexed-number-for-zero-padded-string-integer-range) nil)
-  (assert (typep integer-or-string 'control-id-indexed-number-for-zero-padded-string-integer-range) nil)
-  (format nil "~V,'0d" 6 integer-or-string))
+  ;;
+  ;; (assert (typep integer-or-string 'control-id-indexed-number-for-zero-padded-string-integer-range) nil)
+  ;; (format nil "~V,'0d" 6 integer-or-string)
+  (format nil "~V,'0d" 6
+          (control-id-indexed-number-for-zero-padded-string-integer-range-validate integer-or-string)))
 
 (defmethod control-id-indexed-number-zero-padded-string ((integer-or-string string))
   (let ((len (length integer-or-string)))
     ;; (assert (typep len '(integer 1 6)) nil 
-    (assert (typep len 'control-id-indexed-number-for-zero-padded-string-integer-string-length) nil
-            ":METHOD `control-id-indexed-number-zero-padded-string'~% ~
-             arg INTEGER-OR-STRING with length not of type '(integer 1 6)~% got: ~S~% length: ~S~%" 
-            integer-or-string len)
+    ;; (assert (typep len 'control-id-indexed-number-for-zero-padded-string-integer-string-length) nil
+    ;;         ":METHOD `control-id-indexed-number-zero-padded-string'~% ~
+    ;;          arg INTEGER-OR-STRING with length not of type '(integer 1 6)~% got: ~S~% length: ~S~%" 
+    ;;         integer-or-string len)
+    (control-id-indexed-number-for-zero-padded-string-integer-string-length-validate integer-or-string len) 
     (assert (every-digit-char-p integer-or-string) nil
             ":METHOD `control-id-indexed-number-zero-padded-string'~% ~
              arg INTEGER-OR-STRING did not satisfy `every-digit-char-p'~% got: ~S~%" 

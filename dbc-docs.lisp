@@ -1181,6 +1181,30 @@ For use with method `control-id-indexed-number-zero-padded-string' specialized o
  \(null \(typep 7 'control-id-indexed-number-for-zero-padded-string-integer-string-length\)\)~%~@
 :SEE-ALSO `every-digit-char-p', `notevery-digit-char-p'.~%▶▶▶")
 
+(fundoc 'control-id-indexed-number-for-zero-padded-string-integer-range-validate
+        "Return MAYBE-VALID-INTEGER if it is of type `control-id-indexed-number-for-zero-padded-string-integer-range'.~%~@
+Signal an error if not.~%~@
+:EXAMPLE~%
+ \(control-id-indexed-number-for-zero-padded-string-integer-range-validate 8\)~%
+ \(control-id-indexed-number-for-zero-padded-string-integer-range-validate \"foo\"\)~%~@
+:SEE-ALSO `control-id-indexed-number-for-zero-padded-string',
+`control-id-indexed-number-for-zero-padded-string-integer-string-length-validate',
+`control-id-indexed-number-for-zero-padded-string-integer-range-validate',
+`control-id-indexed-number-for-zero-padded-string-integer-range',
+`control-id-indexed-number-for-zero-padded-string-integer-string-length'.~%▶▶▶")
+
+(fundoc 'control-id-indexed-number-for-zero-padded-string-integer-string-length-validate
+"Return STRING-LENGTH if it is of type `control-id-indexed-number-for-zero-padded-string-length'.~%~@
+Signal an error if not.~%~@
+:EXAMPLE~%
+ \(control-id-indexed-number-for-zero-padded-string-integer-string-length-validate \"000113\" 6\)~%
+ \(control-id-indexed-number-for-zero-padded-string-integer-string-length-validate \"0000113\" 7\)~%~@
+:SEE-ALSO `control-id-indexed-number-for-zero-padded-string',
+`control-id-indexed-number-for-zero-padded-string-integer-string-length-validate',
+`control-id-indexed-number-for-zero-padded-string-integer-range-validate',
+`control-id-indexed-number-for-zero-padded-string-integer-range',
+`control-id-indexed-number-for-zero-padded-string-integer-string-length'.~%▶▶▶")
+
 (generic-doc #'control-id-indexed-number-zero-padded-string
              "Convert INTEGER-OR-STRING to a zero-padded string of length 6.~%
 INTEGER-OR-STRING is a positive integer or a string.~%
