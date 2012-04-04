@@ -1158,6 +1158,89 @@ variable `*parsed-data-current-row*'.~%~@
 ;;   (setf (inventory-number obj) "88")
 ;;   (funcall (fdefinition (field-to-accessor-mapping "ref" 'parsed-inventory-record)) obj))
 ;;
+(typedoc 'control-id-indexed-number-for-zero-padded-string-integer-range
+         "The valid range of positive integers which can succesfully be converted to a zero-padded string.~%~@
+An integer in the range [1,99999].~%
+For use with method `control-id-indexed-number-zero-padded-string' specialized on integers.~%~@
+:EXAMPLE~%
+ \(typep 000001 'control-id-indexed-number-for-zero-padded-string-integer-range\)~%
+ \(typep 099999 'control-id-indexed-number-for-zero-padded-string-integer-range\)~%
+ \(null \(typep 100000 'control-id-indexed-number-for-zero-padded-string-integer-range\)\)~%
+ \(null \(typep 000000 'control-id-indexed-number-for-zero-padded-string-integer-range\)\)~%~@
+:SEE-ALSO `every-digit-char-p', `notevery-digit-char-p'.~%▶▶▶")
+
+(typedoc 'control-id-indexed-number-for-zero-padded-string-integer-string-length
+         "The valid length of a string representing an integer of type ~
+`control-id-indexed-number-for-zero-padded-string-integer-range'.~%~@
+An integer in the range [1,6].~%
+For use with method `control-id-indexed-number-zero-padded-string' specialized on strings.~%~@
+:EXAMPLE~%
+ \(typep 1 'control-id-indexed-number-for-zero-padded-string-integer-string-length\)~%
+ \(typep 6 'control-id-indexed-number-for-zero-padded-string-integer-string-length\)~%
+ \(null \(typep 0 'control-id-indexed-number-for-zero-padded-string-integer-string-length\)\)~%
+ \(null \(typep 7 'control-id-indexed-number-for-zero-padded-string-integer-string-length\)\)~%~@
+:SEE-ALSO `every-digit-char-p', `notevery-digit-char-p'.~%▶▶▶")
+
+(generic-doc #'control-id-indexed-number-zero-padded-string
+             "Convert INTEGER-OR-STRING to a zero-padded string of length 6.~%
+INTEGER-OR-STRING is a positive integer or a string.~%
+When INTEGER-OR-STRING is an integer it should be of type 
+`control-id-indexed-number-for-zero-padded-string-integer-range' an error is signaled if not.~%
+When INTEGER-OR-STRING is string an error is signalled if it does not satisfy
+the following constraints:~%
+ - it should not be cl:string= \"0\"
+ - it should have a length of type `control-id-indexed-number-for-zero-padded-string-integer-string-length' 
+ - it should have a `cl:parse-integer' representation of type `control-id-indexed-number-for-zero-padded-string-integer-range'~%")
+
+(method-doc #'control-id-indexed-number-zero-padded-string nil '(null)
+"~%An error is signaled.~%~@
+:EXAMPLE~%
+ \(control-id-indexed-number-zero-padded-string nil\)~%")
+
+(method-doc #'control-id-indexed-number-zero-padded-string nil '(list)
+"~%An error is signaled.~%~@
+:EXAMPLE~%
+ \(control-id-indexed-number-zero-padded-string \(list nil\)\)~%")
+
+(method-doc #'control-id-indexed-number-zero-padded-string nil '(symbol)
+            "~%An error is signaled.~%~@
+:EXAMPLE~%
+ \(control-id-indexed-number-zero-padded-string 'foo\)~%
+ \(control-id-indexed-number-zero-padded-string t\)~%")
+
+(method-doc #'control-id-indexed-number-zero-padded-string nil '(integer)
+"~%:EXAMPLE~%
+ \(control-id-indexed-number-zero-padded-string 1\)~%
+ \(control-id-indexed-number-zero-padded-string 42\)~%
+ \(control-id-indexed-number-zero-padded-string 111\)~%
+ \(control-id-indexed-number-zero-padded-string 1111\)~%
+ \(control-id-indexed-number-zero-padded-string 99999\)~%
+ \(control-id-indexed-number-zero-padded-string 5432\)~%~@
+Following fail successfully:~%
+ \(control-id-indexed-number-zero-padded-string 0\)~%
+ \(control-id-indexed-number-zero-padded-string -1\)~%
+ \(control-id-indexed-number-zero-padded-string 100000\)~%")
+
+(method-doc #'control-id-indexed-number-zero-padded-string nil '(string)
+"~%:EXAMPLE~%
+ \(control-id-indexed-number-zero-padded-string \"99999\"\)~%
+ \(control-id-indexed-number-zero-padded-string \"010000\"\)~%
+ \(control-id-indexed-number-zero-padded-string \"10000\"\)~%
+ \(control-id-indexed-number-zero-padded-string \"1\"\)~%
+ \(control-id-indexed-number-zero-padded-string \"12\"\)~%
+ \(control-id-indexed-number-zero-padded-string \"123\"\)~%
+ \(control-id-indexed-number-zero-padded-string \"1234\"\)~%
+ \(control-id-indexed-number-zero-padded-string \"12345\"\)~%~@
+Following fail successfully:~%
+ \(control-id-indexed-number-zero-padded-string \"100000\"\)~%
+ \(control-id-indexed-number-zero-padded-string \"0\"\)~%
+ \(control-id-indexed-number-zero-padded-string \"00\"\)~%
+ \(control-id-indexed-number-zero-padded-string \"000\"\)~%
+ \(control-id-indexed-number-zero-padded-string \"0000\"\)~%
+ \(control-id-indexed-number-zero-padded-string \"00000\"\)~%
+ \(control-id-indexed-number-zero-padded-string \"000000\"\)~%
+ \(control-id-indexed-number-zero-padded-string \"\"\)~%")
+
 (fundoc 'load-sax-parsed-xml-file-to-parsed-class-hash
 "Arg PARSED-CLASS a symbol designating the class we are parsing.~%~@
 Arg INPUT-FILE the file containing field/value consed pairs.~%

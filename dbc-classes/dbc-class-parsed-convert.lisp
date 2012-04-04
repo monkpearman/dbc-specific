@@ -11,6 +11,12 @@
 (in-package #:dbc)
 ;; *package*
 
+(deftype control-id-indexed-number-for-zero-padded-string-integer-range ()
+  '(integer 1 99999))
+
+(deftype control-id-indexed-number-for-zero-padded-string-integer-string-length () 
+  '(integer 1 6))
+
 ;; :NOTE for use with examples defined in 
 ;; :FILE dbc-specific/dbc-classes/dbc-class-parse-EXAMPLE.lisp
 (defun %ensure-dated-parsed-directory (&key directory-prefix)
@@ -25,56 +31,41 @@
 
 (defgeneric control-id-indexed-number-zero-padded-string (integer-or-string))
 
-;; :EXAMPLE
-;; (control-id-indexed-number-zero-padded-string nil)
 (defmethod control-id-indexed-number-zero-padded-string ((integer-or-string null))
   (error ":METHOD `control-id-indexed-number-zero-padded-string' -- arg INTEGER-OR-STRING must not be null"))
 
-;; :EXAMPLE
-;; (control-id-indexed-number-zero-padded-string (list nil))
+
 (defmethod control-id-indexed-number-zero-padded-string ((integer-or-string list))
   (error ":METHOD `control-id-indexed-number-zero-padded-string' -- arg INTEGER-OR-STRING must not be a list"))
 
-;; :EXAMPLE
-;; (control-id-indexed-number-zero-padded-string 'foo)
-;; (control-id-indexed-number-zero-padded-string t)
 (defmethod control-id-indexed-number-zero-padded-string ((integer-or-string symbol))
   (error ":METHOD `control-id-indexed-number-zero-padded-string' -- arg INTEGER-OR-STRING must not be a symbol"))
 
-;; :EXAMPLE
-;;  (control-id-indexed-number-zero-padded-string 1)
-;;  (control-id-indexed-number-zero-padded-string 42)
-;;  (control-id-indexed-number-zero-padded-string 111)
-;;  (control-id-indexed-number-zero-padded-string 1111)
-;;  (control-id-indexed-number-zero-padded-string 99999)
-;; Following fail successfully:
-;;  (control-id-indexed-number-zero-padded-string -1)
-;;  (control-id-indexed-number-zero-padded-string 100000)
+;; :NOTE In lieu of a previous type assertion '(integer 0 99999) this was allowed:
+;;  (control-id-indexed-number-zero-padded-string 0) => "000000"
+;; However, this was prob. an oversight as there don't seem to be any valid
+;; cases were we want to allow 0 as a valid control id and we now required.
+;; We've verfied that changing the assertion to '(integer 1 99999) should not
+;; affect the control-id-entity-num-<FOO> slot-values for any of the following
+;; classes:
+;; parsed-author-record control-id-entity-num-author does not contain "0"
+;; parsed-artist-record control-id-entity-num-artist does not contain "0"
+;; parsed-person-record control-id-entity-num-person does not contain "0"
+;; parsed-theme-record control-id-theme-entity-num does not contain "0"
+;; parsed-brand-record control-id-entity-num-brand does not contain "0"
+;; parsed-technique-record control-id-entity-num-technique does not contain "0"
+;; parsed-publication-record control-id-entity-num-publication does not contain "0" 
+;;                            control-id-doc-num-publication does (although this isn't a primary key.)
 (defmethod control-id-indexed-number-zero-padded-string ((integer-or-string integer))
-  (assert (typep integer-or-string '(integer 0 99999)))
+  ;; (assert (typep integer-or-string '(integer 0 99999)))
+  ;; (assert (typep 0 'control-id-indexed-number-for-zero-padded-string-integer-range) nil)
+  (assert (typep integer-or-string 'control-id-indexed-number-for-zero-padded-string-integer-range) nil)
   (format nil "~V,'0d" 6 integer-or-string))
 
-;; :EXAMPLE
-;; (control-id-indexed-number-zero-padded-string "99999")
-;; (control-id-indexed-number-zero-padded-string "010000")
-;; (control-id-indexed-number-zero-padded-string "10000")
-;; (control-id-indexed-number-zero-padded-string "1")
-;; (control-id-indexed-number-zero-padded-string "12")
-;; (control-id-indexed-number-zero-padded-string "123")
-;; (control-id-indexed-number-zero-padded-string "1234")
-;; (control-id-indexed-number-zero-padded-string "12345")
-;; Following fail successfully:
-;; (control-id-indexed-number-zero-padded-string "100000")
-;; (control-id-indexed-number-zero-padded-string "0")
-;; (control-id-indexed-number-zero-padded-string "00")
-;; (control-id-indexed-number-zero-padded-string "000")
-;; (control-id-indexed-number-zero-padded-string "0000")
-;; (control-id-indexed-number-zero-padded-string "00000")
-;; (control-id-indexed-number-zero-padded-string "000000")
-;; (control-id-indexed-number-zero-padded-string "")
 (defmethod control-id-indexed-number-zero-padded-string ((integer-or-string string))
   (let ((len (length integer-or-string)))
-    (assert (typep len '(integer 1 6)) nil 
+    ;; (assert (typep len '(integer 1 6)) nil 
+    (assert (typep len 'control-id-indexed-number-for-zero-padded-string-integer-string-length) nil
             ":METHOD `control-id-indexed-number-zero-padded-string'~% ~
              arg INTEGER-OR-STRING with length not of type '(integer 1 6)~% got: ~S~% length: ~S~%" 
             integer-or-string len)
