@@ -450,17 +450,6 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash',
 `write-sax-parsed-xml-refs-file', `set-parsed-inventory-record-slot-value'.~%▶▶▶")))
 
-
-;; :EXAMPLE
-;; (let ((obj (make-instance 'parsed-inventory-record)))
-;;   (setf (inventory-number obj) "42")
-;;   (control-id-indexed-number-zero-padded-string obj))
-;;
-;;  (control-id-indexed-number-zero-padded-string (parsed-class-parse-table-lookup 'parsed-inventory-record "3566"))
-;;
-;; Following errors successfully:
-;;  (control-id-indexed-number-zero-padded-string (make-instance 'parsed-inventory-record))
-;;
 (defmethod control-id-indexed-number-zero-padded-string ((object parsed-inventory-record))
   (let ((chk-slot-value (and (slot-boundp object 'inventory-number) ;; should we check slot-boundp or let it fail?
                              (inventory-number object))))

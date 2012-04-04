@@ -1241,6 +1241,18 @@ Following fail successfully:~%
  \(control-id-indexed-number-zero-padded-string \"000000\"\)~%
  \(control-id-indexed-number-zero-padded-string \"\"\)~%")
 
+(method-doc #'control-id-indexed-number-zero-padded-string nil '(parsed-inventory-record)
+"~%:EXAMPLE~%
+ \(control-id-indexed-number-zero-padded-string 
+  \(make-instance 'parsed-inventory-record :inventory-number 42\)\)~%
+ \(control-id-indexed-number-zero-padded-string 
+  \(make-instance 'parsed-inventory-record :inventory-number \"42\"\)\)~%
+ \(control-id-indexed-number-zero-padded-string 
+  \(parsed-class-parse-table-lookup 'parsed-inventory-record \"3566\"\)\)~%~@
+Following errors successfully:~%
+ \(control-id-indexed-number-zero-padded-string
+  \(make-instance 'parsed-inventory-record\)\)~%")
+
 (fundoc 'load-sax-parsed-xml-file-to-parsed-class-hash
 "Arg PARSED-CLASS a symbol designating the class we are parsing.~%~@
 Arg INPUT-FILE the file containing field/value consed pairs.~%
