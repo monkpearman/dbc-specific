@@ -381,11 +381,12 @@
                                               hash-key
                                               :with-string-integer-coercion nil))
 
-;; :NOTE These methods specialized on string and integer will never return
-;; meaningfully if we should ever convert to hash-keys as zero-padded strings!
-;; Additionally, there is a performance hit for the methods specialized on
-;; string b/c we're converting all strings to zero-padded strings then stripping
-;; away the zero-padding...
+;; :NOTE These methods specialized on string and integer directly but that meant
+;; they would never return meaningfully if we should ever convert to hash-keys
+;; as zero-padded strings!  Additionally, there was a performance hit for the
+;; methods specialized on string b/c we're converting all strings to zero-padded
+;; strings then stripping away the zero-padding...
+;; We (somewhat) skirt around these issues by adding a keyword WITH-STRING-INTEGER-COERCION
 (defmethod parsed-class-parse-table-lookup-slot-value ((object parsed-class)
                                                        (slot-name symbol)
                                                        (hash-key integer)

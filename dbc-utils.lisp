@@ -10,11 +10,6 @@
   (unless (zerop (length string))
     (every #'digit-char-p string)))
 
-;; (every-digit-char-p "0")
-;; (every-digit-char-p "0")
-;; (notevery-digit-char-p "aaiac")
-;; (notevery-digit-char-p "")
-
 (defun notevery-digit-char-p (string)
   (declare (string string)
            (optimize (speed 3)))

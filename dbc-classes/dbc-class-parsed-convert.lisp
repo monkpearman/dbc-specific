@@ -11,6 +11,18 @@
 (in-package #:dbc)
 ;; *package*
 
+;; :NOTE for use with examples defined in 
+;; :FILE dbc-specific/dbc-classes/dbc-class-parse-EXAMPLE.lisp
+(defun %ensure-dated-parsed-directory (&key directory-prefix)
+  (declare (type mon:string-not-empty directory-prefix))
+  (ensure-directories-exist
+   (merge-pathnames 
+    (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*) 
+                                          ,(format nil "~A-~A"
+                                                   (string-trim #(#\- #\space) directory-prefix)
+                                                   (mon:time-string-yyyy-mm-dd))))
+    (system-path *system-path*))))
+
 (deftype control-id-indexed-number-for-zero-padded-string-integer-range ()
   '(integer 1 99999))
 
@@ -34,18 +46,6 @@
           Arg MAYBE-VALID-STRING with STRING-LENGTH not of type '(integer 1 6)~% got: ~S~% length: ~S~%"
           maybe-valid-string (length maybe-valid-string))
   maybe-valid-string)
-
-;; :NOTE for use with examples defined in 
-;; :FILE dbc-specific/dbc-classes/dbc-class-parse-EXAMPLE.lisp
-(defun %ensure-dated-parsed-directory (&key directory-prefix)
-  (declare (type mon:string-not-empty directory-prefix))
-  (ensure-directories-exist
-   (merge-pathnames 
-    (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*) 
-                                          ,(format nil "~A-~A"
-                                                   (string-trim #(#\- #\space) directory-prefix)
-                                                   (mon:time-string-yyyy-mm-dd))))
-    (system-path *system-path*))))
 
 (defgeneric control-id-indexed-number-zero-padded-string (integer-or-string))
 
