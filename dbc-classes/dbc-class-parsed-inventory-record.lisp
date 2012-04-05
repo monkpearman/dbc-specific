@@ -648,6 +648,24 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
                   (unintern maybe-remove-function)))
               (remove-method #'parsed-inventory-record-parse-table-lookup-slot-value gf-method)))))
 
+;; set the image-file-pathnames image-directory-pathname slot-values for all
+;; parsed-inventory-record objects in the parse-class-parse-table.
+(defun parsed-inventory-record-image-file-pathnames-update ()
+  (let ((ht (parsed-class-parse-table 'parsed-inventory-record)))
+    (unless (zerop (hash-table-count ht))
+      (loop
+        for obj being the hash-values of (parsed-class-parse-table 'parsed-inventory-record)
+        when (with-slots ((idp image-directory-pathname)
+                          (ifp image-file-pathnames))
+                 obj
+               (multiple-value-bind (files dir name) (inventory-record-image-jpg-probe-all obj :pathname-return-style :file-pathname)
+                 (declare (ignore name))
+                 (and files (setf ifp files))
+                 (and dir (setf ifp 
+                                (pathname (enough-namestring dir
+                                                             *dbc-base-item-number-image-pathname*))))))
+        count it))))
+
 (defun parsed-inventory-record-null-prototype ()
   "Return an instance of parsed-inventory-record with all slot-values null.
 We do this rather than using :initform or :default-initargs for class
