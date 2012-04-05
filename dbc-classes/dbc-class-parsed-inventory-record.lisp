@@ -659,7 +659,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
                (multiple-value-bind (files dir name) (inventory-record-image-jpg-probe-all obj :pathname-return-style :file-pathname)
                  (declare (ignore name))
                  (and files (setf ifp files))
-                 (and dir (setf ifp 
+                 (and dir (setf idp
                                 (pathname (enough-namestring dir
                                                              *dbc-base-item-number-image-pathname*))))))
         count it))))
