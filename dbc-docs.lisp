@@ -2617,6 +2617,12 @@ with `def-parsed-inventory-record-parse-table-lookup-slot-value' prior to
  \(fboundp 'parsed-inventory-record-not-a-real-slot-lookup\)~%
 :SEE-ALSO `parsed-inventory-record-parse-table-lookup-slot-value'.~%▶▶▶")
 
+(fundoc 'parsed-inventory-record-image-file-pathnames-update
+"Set the image-file-pathnames image-directory-pathname slot-values for all
+parsed-inventory-record objects in the parse-class-parse-table according to
+the return values of `inventory-record-image-jpg-probe-all'.~%~@
+:SEE-ALSO `inventory-record-image-jpg-probe' `inventory-record-image-directory-probe'.~%▶▶▶")
+
 (fundoc 'parsed-inventory-record-null-prototype-to-file
         "Write slot values of OBJECT to a file in directory corresponding to object's
 inventory-number slot value beneath BASE-OUTPUT-DIRECTORY.~%~@

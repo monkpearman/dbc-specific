@@ -648,8 +648,6 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
                   (unintern maybe-remove-function)))
               (remove-method #'parsed-inventory-record-parse-table-lookup-slot-value gf-method)))))
 
-;; set the image-file-pathnames image-directory-pathname slot-values for all
-;; parsed-inventory-record objects in the parse-class-parse-table.
 (defun parsed-inventory-record-image-file-pathnames-update ()
   (let ((ht (parsed-class-parse-table 'parsed-inventory-record)))
     (unless (zerop (hash-table-count ht))
