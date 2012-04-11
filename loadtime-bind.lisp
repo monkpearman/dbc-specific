@@ -712,6 +712,11 @@
 
 ;; *parsed-class-parse-table*
 
+;; write all values of parsed-class-parse-table to directories beneath *dbc-base-item-number-image-pathname*
+;; (when (>= (hash-table-count (parsed-class-parse-table 'parsed-inventory-record)) 8969)
+;;   (write-sax-parsed-inventory-record-hash-to-zero-padded-directory  (parsed-class-parse-table 'parsed-inventory-record)))
+
+
 ;; loaders
 ;; (load-parsed-inventory-record-default-file-to-parse-table)
 ;; (load-parsed-artist-record-default-file-to-parse-table)
