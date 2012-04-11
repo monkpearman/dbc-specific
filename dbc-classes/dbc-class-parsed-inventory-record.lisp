@@ -16,9 +16,31 @@
 ;; :TODO
 ;; - slots to add
 ;;
+;; Split existing slot :DESCRIPTION-INVENTORY-CONDITION to two separate slots:
+;; DESCRIPTION-INVENTORY-CONDITION-NOTE
+;; DESCRIPTION-INVENTORY-CONDITION-RATING
+;;
 ;; DESCRIPTION-INVENTORY-SHIPPING-NOTE
 ;; :SEE description-inventory-condtion "Shipped rolled."|"Shipped Rolled."
-
+;;
+;; :PRICE-SOLD
+;; :PRICE-REALIZED-DATE ???
+;;
+;; Maybe do this:
+;; :THEME-SEQUENCED-ENTITY-COREF #("Skiers" "Speeding" "Athletes")
+;; instead of this:
+;; :THEME-ENTITY-0-COREF "Skiers"
+;; :THEME-ENTITY-1-COREF "Speeding"
+;; :THEME-ENTITY-2-COREF "Athletes"
+;;
+;; :UNIT-ORIENTATION :horizontal :vertical
+;;
+;; :UNIT-DIMENSIONS (:UNIT-WIDTH 9 :UNIT-HEIGHT 12)
+;;
+;;
+;; :IMAGE-FILE-SOURCE-PATHNAME
+;; for each object find the source bmp/nef images beneath /mnt/LV-NEF-DRV-B/ and
+;; populate the path for it as well.
 
 
 
@@ -172,6 +194,7 @@
     :documentation ":ORIGINAL-FIELD \"issue\"")
 
    ;; It isn't totally clear yet if this is neccesarrily a publication related field
+   ;; NIL | (:YEAR INTEGER :MONTH INTEGER | NIL :DAY INTEGER | NIL)
    (publication-date ;; For congruence with birth-date death-date 
     :initarg :publication-date
     :accessor publication-date  
@@ -272,7 +295,7 @@
     :documentation ":ORIGINAL-FIELD \"price\"")
 
    ;; :TODO this should be renamed to sequenced-keywords-entity-coref
-   (keyword-sequenced-entity-coref  
+   (keyword-sequenced-entity-coref
     :initarg :keyword-sequenced-entity-coref
     :accessor keyword-sequenced-entity-coref
     :documentation ":ORIGINAL-FIELD \"keywords\"")
@@ -308,11 +331,14 @@
     :documentation ":ORIGINAL-FIELD \"color\"")
 
    ;; unit-of-measure-width
+   ;; a real either a single-float or an integer
    (unit-width
     :initarg :unit-width
     :accessor unit-width
     :documentation ":ORIGINAL-FIELD \"w\"")
-   ;; unit-of-measure-height
+
+   ;; unit-of-measure-height 
+   ;; a real either a single-float or an integer
    (unit-height
     :initarg :unit-height
     :accessor unit-height
@@ -323,6 +349,7 @@
     :accessor ignorable-number
     :documentation ":ORIGINAL-FIELD \"nbre\"")
 
+   ;; currently always :LAPP
    (inventory-seller
     :initarg :inventory-seller
     :accessor inventory-seller
@@ -337,11 +364,12 @@
    ;; ignorable-shipping-weight-combined-ounces slot in class
    ;; `parsed-inventory-record'
    ;; unit-of-measure-weight
-   (unit-weight 
+   (unit-weight
     :initarg :unit-weight
     :accessor unit-weight
     :documentation ":ORIGINAL-FIELD \"weight\"")
 
+   ;; currently one of (:constance :stan :bigstan)
    (edit-by-creator
     :initarg :edit-by-creator
     :accessor edit-by-creator
@@ -361,6 +389,12 @@
     :initarg :job-locked
     :accessor job-locked
     :documentation ":ORIGINAL-FIELD \"locked\"")
+
+   ;;  status "0" => 518  ; not-online? but why? maybe pending? :INACTIVE-PENDING
+   ;;  status "1" => 7466 ; set these to :ACTIVE
+   ;;  status "2" => 318  ; sold? looks like it. set these to :SOLD
+   ;;  status "3" => 667  ; duplicate?? pretty sure this is duplicate and/or editing :INACTIVE-DUPLICATE
+   ;; :Note However, That Nouvelle Geographie Universelle have status 3 and were never place online.
 
    (record-status-active
     :initarg :record-status-active
@@ -436,7 +470,7 @@
 
    ;; shares-generic
    ;; :TODO This should be edit-timestamp to differentiate from publication-date, death-date, birth-date, etc.
-   (edit-timestamp 
+   (edit-timestamp
     :initarg :edit-timestamp
     :accessor edit-timestamp
     :documentation ":ORIGINAL-FIELD \"date_edit\"")
@@ -574,6 +608,10 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
   (declare (string hash-key))
   ;; (declare ((or string integer) hash-key))
   (parsed-class-parse-table-lookup (parsed-class-mapped 'parsed-inventory-record) hash-key))
+
+;; convenience function
+(defun %get-inventory-record (hash-key)
+  (parsed-inventory-record-parse-table-lookup hash-key))
 
 ;; :DEPRECATED!!!!
 (defun %parsed-inventory-record-parse-table-lookup-slot-value (slot-name hash-key)
