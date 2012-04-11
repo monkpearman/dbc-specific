@@ -100,6 +100,9 @@
    ;;
    (:file "conditions")
    (:file "dbc-utils")
+   (:module "dbc-time"
+    :components
+    ((:file "date-localtime-utils")))
    (:module "dbc-classes"
             :components                 
             ((:file "dbc-docstrings-for-class")
