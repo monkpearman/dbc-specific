@@ -600,6 +600,9 @@
 ;;                                                                 y 
 ;;                                                                 (+ (or y 0) x 2)))) y) :y 4) => 4
 ;;
+;; :NOTE At this point call this a sax related function is a complete
+;; misnomer... we're no longer really using the early raw sax parses _AT ALL_
+;;
 ;; If we make HASH-TABLE a keyword we can default to (parsed-class-parse-table 'parsed-inventory-record)
 (defun write-sax-parsed-inventory-record-hash-to-zero-padded-directory (hash-table &key
                                                                         (base-output-directory *dbc-base-item-number-image-pathname*)
@@ -799,19 +802,6 @@
                parsed-hash)
            (cadr  parsed-xml-file)
            (caddr parsed-xml-file))))))
-
-
-;; (parsed-class-parse-table 'parsed-inventory-sales-sold-in-store-record)
-;; 981
-
-
-;; Next we need to map the hash-table values and for each object and each slot
-;; of object clean up the crap in the fields.
-;;
-;; One way to do this is to build mapping functions that dump all instances
-;; slot-values for a particular slot to a hast-table and then inspect these
-;; manually.
-
 
 ;;; ==============================
 
