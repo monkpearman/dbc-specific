@@ -2,6 +2,26 @@
 ;;; :FILE dbc-classes/dbc-class-themes-convert.lisp
 ;;; ==============================
 
+;; theme "9457" "Goldenrod" occurs twice - once officially and a second time internally as "13763" use "9457"
+;;
+;; items using "seals" theme 12070 should use "Coats of arms" instead.
+;;  ("10324" "9972" "10056" "10324")
+;;
+;; themes with names comprised of three character words these are certainly unsafe:
+;; ("Air") ("Art") ("Elk") ("War") ("Fur")("Hay") ("Ice") ("Men") ("Mud") ("Sex")("Sun") ("Tea")
+;;
+;; following is a list of currently active themes which coref a the string identity of another theme
+;; these are not safe even when matching against themes as " <THEME> "
+;; 
+;; ("People" "Bathing" "Advertising" "Aircraft" "Ballet" "Automobile equipment & supplies" "Automobile racing"
+;;  "Beauty" "Beer" "Birds" "Carnival" "Children" "Cleaning" "Coats" "Construction" "Dance" "Design" "Dirt"
+;;  "Drawing" "Employment" "Fire" "Fish" "Fishing" "Food" "Football" "Gardening" "Graphic design"
+;;  "Hair" "Honor" "Hunting" "Ice skating" "Light" "Love" "Marching" "Marriage" "Meat" "Morning"
+;;  "Music" "Peace" "Police" "Pottery" "Printing" "Racing" "Sailing" "Sand" "Sculpture" "Sewing"
+;;  "Shaving" "Smoking" "Spinning" "Sports" "Steam" "Supernatural" "Tennis" "Visiting" "Water" 
+;;  "Wine" "Winter" "Women" "Writing")
+
+
 ;; :NOTE there is a per them XML file from db's php parse from the old dcp here:
 ;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/tgm.tar
 ;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/xslt/tgm_htm_details.php
