@@ -13,7 +13,7 @@
 "The base dbc-sytsem path.~%~@
 An instance of the system-path class holds the class allocated slot system-path
 :EXAMPLE~%
- \(and \(eql \(mon:class-name-of *system-path*\) 
+ \(and \(eql \(mon:class-name-of *system-path*\)
           \(class-name \(find-class 'system-path\)\)\)
      \(system-base-path *system-path*\)\)~%~@
 :SEE-ALSO `dbc:system-path'.~%▶▶▶")
@@ -54,7 +54,7 @@ Once set the parameter is an instance of `dbc:system-subdir' with a parent-path
 relative to `dbc:*system-tests-dir*' which has a parent-path relative to return
 value of `dbc:find-system-path', e.g.:~%
  \(equal \(find-system-path\)
-   \(and \(equal 
+   \(and \(equal
          \(dbc:parent-path dbc::*system-tests-temp-dir*\)
          \(dbc:sub-path dbc::*system-tests-dir*\)\)
         \(slot-value dbc::*system-tests-temp-dir* 'system-path\)\)\)~%~@
@@ -226,9 +226,9 @@ Following error succesfully:~%
 ;; parsed-class-slot-value-collect-not-eql (class slot match-value)
 ;; parsed-class-slot-value-collect-not-equal (class slot match-value)
 ;; parsed-class-slot-value-collect-not-equalp (class slot match-value)
-;; parsed-class-slot-value-set-when-null (class slot replacement-value 
-;; parsed-class-slot-value-set-when-string= (class slot match-string replacement-value 
-;; parsed-class-slot-value-set-when-eql (class slot match-value replacement-value 
+;; parsed-class-slot-value-set-when-null (class slot replacement-value
+;; parsed-class-slot-value-set-when-string= (class slot match-string replacement-value
+;; parsed-class-slot-value-set-when-eql (class slot match-value replacement-value
 ;; parsed-class-slot-value-set-when-equal (class slot match-value replacement-value &key (return-object-id t)
 ;; parsed-class-slot-value-set-when-equalp (class slot match-value replacement-value
 ;;
@@ -265,9 +265,9 @@ Following errors successfully:~%
         "Return a string representation of a `local-time:timestamp' as if by cl:values
 if MAYBE-VALID-TIME-STRING satisfies certain constraints.~%~@
 Return values have the form:~%
- - nth-value 0 is a local-time timestamp ojbect formatted as a string | NIL  
+ - nth-value 0 is a local-time timestamp ojbect formatted as a string | NIL
  - nth-value 1 is a local-time timestamp object | NIL
- - nth-value 2 is a universal-time | NIL     
+ - nth-value 2 is a universal-time | NIL
  - nth-value 3 is MAYBE-VALID-TIME-STRING~%
 When MAYBE-VALID-TIME-STRING is a string of length 14 with every character
 cl:digit-char-p and has the format:~%
@@ -406,15 +406,15 @@ elements from first value ruturned.  Default is to process nth-value 0 with
  \(split-piped-field-if \"ref\" :known-field-hashtable *xml-refs-match-table*\)~%
  \(split-piped-field-if \"ref\"\)~%
  \(funcall \(complement #'equalp\)
-          \(multiple-value-list 
-           \(split-piped-field-if \"ref\"\)\) 
-          \(multiple-value-list 
-           \(split-piped-field-if \"ref\" 
+          \(multiple-value-list
+           \(split-piped-field-if \"ref\"\)\)
+          \(multiple-value-list
+           \(split-piped-field-if \"ref\"
                                  :known-field-hashtable *xml-refs-match-table*\)\)\)~%~@
 :SEE-ALSO `split-used-fors', `split-roles', `split-appeared-in',
 `split-loc-pre', `split-date-range', `split-comma-field',
 `mon:string-split-on-chars'.~%▶▶▶")
- 
+
 (fundoc 'split-appeared-in
 "Split APPEARED-IN-STRING on \"|\" barriers.~%~@
 Return value is a list of strings.~%~@
@@ -433,7 +433,7 @@ When APPEARED-IN-STRING is either `mon:string-null-or-empty-p' or
 :SEE-ALSO `split-roles', `split-used-fors', `split-loc-pre',
 `split-date-range'`mon:string-split-on-chars', `mon:string-trim-whitespace',
 `mon:*whitespace-chars*'.~%▶▶▶")
- 
+
 (fundoc 'split-roles
         "Split ROLE-STRING on \",\" barriers.~%~@
 Strip leading/trailing whitespace and \".\". Capitalize all roles.~%~@
@@ -472,13 +472,13 @@ When LOC-STRING is either `mon:string-null-or-empty-p' or
 
 (fundoc 'split-date-range
 "Split LIFESPAN-STR into a consed pair.~%~@
-LIFESPAN-STR should have one of the formats:~% 
+LIFESPAN-STR should have one of the formats:~%
  <YYYY>-<YYYY>~% -<YYYY>~% <YYYY>-~% <YYYY>-?~% ?-<YYYY>~%~@
 LIFESPAN-STR is either `null' or `simple-string-p', signal an error if not.~%~@
-Return value has the form:~% 
- \(\"<YYYY>\" . \"<YYYY>\"\)~% 
- \(\"<YYYY>\" . \"?\"\)~% 
- \(\"?\" . \"<YYYY>\"\)~% 
+Return value has the form:~%
+ \(\"<YYYY>\" . \"<YYYY>\"\)~%
+ \(\"<YYYY>\" . \"?\"\)~%
+ \(\"?\" . \"<YYYY>\"\)~%
  \(NIL\)~%
 :EXAMPLE~%
  \(split-date-range \"1843-1908\"\)~%
@@ -504,8 +504,8 @@ Return value has the form:~%
 LIFESPAN-STR-PAIR is a consed pair with the value of each conscell satisfying
 either null or `simple-stringp', signal an error if not.~%~@
 First cons pair of return value is LIFESPAN-STR-PAIR second cons pair is its
-interpolated parsed value.  Return value is a list of conses with the form:~% 
- \(<LIFESPAN-STR-PAIR>    <PARSED-VALUE>\)~% 
+interpolated parsed value.  Return value is a list of conses with the form:~%
+ \(<LIFESPAN-STR-PAIR>    <PARSED-VALUE>\)~%
 And should match one of the following patterns:~%
  \(\(\"<YYYY>\" . \"<YYYY>\"\)  \(YYYY   . YYYY\)\)~%
  \(\(\"<YYYY>\" . \"?\"\)       \(YYYY-1 . \(lognot YYYY-1\)\)\)~%
@@ -556,14 +556,14 @@ optimize their checks. For example:~%
  	       \"~~20T~~S~~%End-of-Life: ~~20T~~S~~%Calcuation: ~~20t~~S ;=> ~~S~~%\")
      	  w-str both-lifespan hd-ls tl-ls
      	  \(list '- tl-ls hd-ls\) \(- tl-ls hd-ls\)\)\)~%~@
-Likewise, when the cdr of LIFESPAN-STR-PAIR is a string indicating the end of 
+Likewise, when the cdr of LIFESPAN-STR-PAIR is a string indicating the end of
 lifespan is \"unknown\", the cdr of the second cons of return value is `lognot'
 the integer value in the car cell. IOW, if there is a known beginning of
 lifespan i.e. the string passed from `split-date-range' was \"1843-?\", we
 don't want inferences about an entities lifespan to return misleadingly and
-guard against that by making it difficult for forms such as:~% 
+guard against that by making it difficult for forms such as:~%
  \(- <END-LIFESPAN> <BEG-LIFESPAN>\)~%~@
-to return a value that is `plusp'. For example:~% 
+to return a value that is `plusp'. For example:~%
  \(let* \(\(both-lifespan \(split-date-range-string-int-pairs
 			\(split-date-range \"1843-??\"\)\)\)
 	\(hd-ls \(caadr both-lifespan\)\)
@@ -619,13 +619,13 @@ Intended for use with SEO and \"keyword\" like fields in the `refs` table.~%~@
  \(split-comma-field \"air, plane, airplane, Biplane,, aircraft, expo, , dirigible,\"\)~%
  \(split-comma-field \",\"\)~%
  \(split-comma-field \",,\"\)~%
- \(split-comma-field \", ,\"\)~% 
+ \(split-comma-field \", ,\"\)~%
  \(split-comma-field \"\"\)~%
  \(split-comma-field  \"   \"\)~%
  \(split-comma-field  nil\)~%
  \(split-comma-field  \(\)\)~%~@
 :NOTE Do not call unless reasonably sure sure that there are never free commas
-used in a non-delimiting position, e.g. the following string will not parse correctly:~% 
+used in a non-delimiting position, e.g. the following string will not parse correctly:~%
  \(split-comma-field  \"Havell \(Robert, Jr.\), Havell \(Robert, Sr.\), Havell Lithograph, \"\)~%~@
 :SEE-ALSO `split-used-fors', `split-piped-field-if', `split-roles',
 `split-appeared-in', `split-loc-pre', `split-date-range', `split-comma-field',
@@ -662,7 +662,7 @@ should suffix ENTITY-ROLE-PREFIX.  Default is 14.~%~@
 "Return STRING-FIELD-MAYBE if it is a string and not null or empty.~%~@
 Return as if by cl:values.~%~@
 When optional arg KNOWN-FIELD-HASHTABLE is non-nil it is a hash-table the keys
-of which are strings identifiying known fields. 
+of which are strings identifying known fields.
 If a field is found as key in hash-table return nil, STRING-FIELD-MAYBE.~%~@
 :EXAMPLE~%
  \(field-convert-verify-string nil\)~%
@@ -697,7 +697,7 @@ When STRING-LIST-MAYBE is not `mon:each-a-string-p' return:~%
 
 (fundoc 'field-convert-1-0-x
         "Attept to CONVERT-FIELD to a boolean.~%~@
-CONVERT-FIELD is a dbc field string value of length one satisfying 
+CONVERT-FIELD is a dbc field string value of length one satisfying
 `mon:simple-string-or-null'.~%~@
 When CONVERT-FIELD is any of the following  return T:~%
  \"1\" #\\1 1 T
@@ -924,9 +924,9 @@ Keywords :COMMENT :DTD :START-DOCUMENT are booleans.~%~@
 When true \(the default\) these indicate that their corresponding XML event
 types should be consumed of as well.~%
 :EXAMPLE
- \(klacks:with-open-source \(s \(cxml:make-source 
+ \(klacks:with-open-source \(s \(cxml:make-source
                               \"<row name=\\\"row\\\"><!-- bubba  --> <!-- bubba2  --></row>\"\)\)
-   \(list 
+   \(list
     :peek \(multiple-value-list \(klacks:peek s\)\)
     :consume-whitespace \(consume-whitespace s\)
     :consume \(multiple-value-list \(klacks:consume s\)\)
@@ -962,12 +962,12 @@ If so retrun value is a list of elements each the form:~%
   \(:VALUE         . \"<VALUE>\"\)
   \(:SPECIFIED-P   . <BOOLEAN>\)\)~%~@
 :EXAMPLE~%
- \(klacks:with-open-source 
-     \(s \(cxml:make-source \"<field name=\\\"name 1\\\" name2=\\\"name 2\\\" name3=\\\"\\\">10</field>\"\)\) 
+ \(klacks:with-open-source
+     \(s \(cxml:make-source \"<field name=\\\"name 1\\\" name2=\\\"name 2\\\" name3=\\\"\\\">10</field>\"\)\)
    \(klacks:find-element s \"field\"\)
    \(field-parse-attribs s\)\)~%
- \(klacks:with-open-source 
-     \(s \(cxml:make-source \"<field name=\\\"name 1\\\" name2=\\\"name 2\\\" name3=\\\"\\\">10</field>\"\)\) 
+ \(klacks:with-open-source
+     \(s \(cxml:make-source \"<field name=\\\"name 1\\\" name2=\\\"name 2\\\" name3=\\\"\\\">10</field>\"\)\)
    \(klacks:find-element s \"field\"\)
    \(klacks:list-attributes s\)\)~%~@
 :NOTE Like `klacks:list-attributes' but does not returns a list of conses
@@ -1004,24 +1004,24 @@ Arg SOURCE is the current cxml-source being parsed.
 It is an object suitable for use an argument to `klacks:peek'.~%~@
 Keyword ELEMENT-LOCAL default is a string naming an elments lname \(Local Name\).
 Default is \"field\".~%~@
-Keyword ATTRIB-LOCAL is a string naming an attribute of element. 
+Keyword ATTRIB-LOCAL is a string naming an attribute of element.
 Default is \"name\".~%~@
 Keyword ATTRIB-EXPECT is a string naming an attribute value expected.~%~@
 :EXAMPLE~%
  \(klacks:with-open-source \(s \(cxml:make-source \"<field name=\\\"ref\\\">2766</field>\"\)\)
    \(klacks:find-event s :start-element\) ;; :NOTE Usage of `klacks:find-event' ;
    \(start-element-and-attribute-present-p s
-                                          :element-local \"field\" 
+                                          :element-local \"field\"
                                           :attrib-local \"name\"
                                           :attrib-expect \"ref\"\)\)~%
  \(klacks:with-open-source \(s \(cxml:make-source \"<field name=\\\"ref\\\">2766</field>\"\)\)
    \(start-element-and-attribute-present-p s
-                                          :element-local \"field\" 
+                                          :element-local \"field\"
                                           :attrib-local \"name\"
                                           :attrib-expect \"ref\"\)\)~%~@
 :SEE-ALSO `start-element-and-attribute-value-present-p'.~%▶▶▶")
 
-;;; 
+;;;
 ;; (fundoc 'start-element-and-attribute-value-present-p
 ;; "Like `start-element-and-attribute-present-p' but also checks that
 ;; ATTRIB-LOCAL's value is `cl:string=' ATTRIB-EXPECT.~%~@
@@ -1032,13 +1032,13 @@ Keyword ATTRIB-EXPECT is a string naming an attribute value expected.~%~@
 ;;  \(klacks:with-open-source \(s \(cxml:make-source \"<field name=\\\"ref\\\">2766</field>\"\)\)
 ;;    \(klacks:find-event s :start-element\)
 ;;    \(start-element-and-attribute-value-present-p s
-;;                                           :element-local \"field\" 
+;;                                           :element-local \"field\"
 ;;                                           :attrib-local \"name\"
 ;;                                           :attrib-expect \"ref\"\)\)~%~@
 ;;  \(klacks:with-open-source \(s \(cxml:make-source \"<field name=\\\"ref\\\">2766</field>\"\)\)
 ;;    \(klacks:find-event s :start-element\)
 ;;    \(start-element-and-attribute-value-present-p s
-;;                                           :element-local \"field\" 
+;;                                           :element-local \"field\"
 ;;                                           :attrib-local \"name\"
 ;;                                           :attrib-expect \"not-ref\"\)\)~%
 ;; :SEE-ALSO `<XREF>'.~%▶▶▶")
@@ -1048,7 +1048,7 @@ Keyword ATTRIB-EXPECT is a string naming an attribute value expected.~%~@
 If event is found consume it with `klacks:consume' and evaluate
 `klacks:close-source' making sure that source is close.~%~@
 Return value when source is closed. is as if by the form: (values) e.g.:~%
- => ; No value 
+ => ; No value
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `<XREF>'.~%▶▶▶")
@@ -1063,7 +1063,7 @@ Return value when source is closed. is as if by the form: (values) e.g.:~%
 State held by instances of class `%parsed-data-state'.~%~@
 :SEE-ALSO `<XREF>'.~%▶▶▶")
 
-(fundoc 'write-sax-parsed-delimiter 
+(fundoc 'write-sax-parsed-delimiter
 "Write a commented delimiter line to OUTPUT-STREAM.
 Commented delimiter is written as a `cl:fresh-line' followed by a string of
 68 #\\; characters followed by a newline.
@@ -1077,7 +1077,7 @@ Commented delimiter is written as a `cl:fresh-line' followed by a string of
 If PATHNAME-SUB-DIRECTORY does not exist in PATHNAME-BASE-DIRECTORY it is created as if by `cl:ensure-directories-exist'.~%
 If PATHNAME-BASE-DIRECTORY does not satisfy `osicat:directory-exists-p' an error is signaled.~%
 :EXAMPLE~%
- \(make-parsed-class-output-directory-ensuring-pathname :pathname-sub-directory \"new-sax-parser\" 
+ \(make-parsed-class-output-directory-ensuring-pathname :pathname-sub-directory \"new-sax-parser\"
                                                         :pathname-base-directory \(sub-path *xml-output-dir*\)\)~%
 :SEE-ALSO `make-parsed-class-output-directory-ensuring-pathname'.~%▶▶▶")
 
@@ -1117,7 +1117,7 @@ where each property of list is a keyword/value argument to `make-parsed-class-ou
  \(write-sax-parsed-xml-to-file
   :input-file  \(merge-pathnames \(make-pathname :name \"dump-themes-DUMPING\"\)
                                 \(sub-path *xml-input-dir*\)\)
-  :output-file \(merge-pathnames 
+  :output-file \(merge-pathnames
                 \(make-pathname :directory `\(:relative ,(sub-name *xml-output-dir*\)\)
                                :name \(concatenate 'string \"sax-themes-test-\" \(mon:time-string-yyyy-mm-dd\)\)
                                :type \"lisp\"\)
@@ -1134,7 +1134,7 @@ Current XML row data is comprised of all the <field> elements data encounered
 inside an XML <row> element where a <row> has the form:~%~
  <row>
  <field name=\"<NAME>\"><FIELD-VALUE></field>
-  ... 
+  ...
  <field name=\"<NAME>\"><FIELD-VALUE></field>
  </row>~%~@
 While parsing the current instance of class `dbc-sax-parsing-class' is held by
@@ -1208,12 +1208,12 @@ Signal an error if not.~%~@
 (generic-doc #'control-id-indexed-number-zero-padded-string
              "Convert INTEGER-OR-STRING to a zero-padded string of length 6.~%
 INTEGER-OR-STRING is a positive integer or a string.~%
-When INTEGER-OR-STRING is an integer it should be of type 
+When INTEGER-OR-STRING is an integer it should be of type
 `control-id-indexed-number-for-zero-padded-string-integer-range' an error is signaled if not.~%
 When INTEGER-OR-STRING is string an error is signalled if it does not satisfy
 the following constraints:~%
  - it should not be cl:string= \"0\"
- - it should have a length of type `control-id-indexed-number-for-zero-padded-string-integer-string-length' 
+ - it should have a length of type `control-id-indexed-number-for-zero-padded-string-integer-string-length'
  - it should have a `cl:parse-integer' representation of type `control-id-indexed-number-for-zero-padded-string-integer-range'~%")
 
 (method-doc #'control-id-indexed-number-zero-padded-string nil '(null)
@@ -1267,11 +1267,11 @@ Following fail successfully:~%
 
 (method-doc #'control-id-indexed-number-zero-padded-string nil '(parsed-inventory-record)
 "~%:EXAMPLE~%
- \(control-id-indexed-number-zero-padded-string 
+ \(control-id-indexed-number-zero-padded-string
   \(make-instance 'parsed-inventory-record :inventory-number 42\)\)~%
- \(control-id-indexed-number-zero-padded-string 
+ \(control-id-indexed-number-zero-padded-string
   \(make-instance 'parsed-inventory-record :inventory-number \"42\"\)\)~%
- \(control-id-indexed-number-zero-padded-string 
+ \(control-id-indexed-number-zero-padded-string
   \(parsed-class-parse-table-lookup 'parsed-inventory-record \"3566\"\)\)~%~@
 Following errors successfully:~%
  \(control-id-indexed-number-zero-padded-string
@@ -1297,7 +1297,7 @@ the `def-set-parsed-class-record-slot-value' macro, e.g. with:~%
  \(def-set-parsed-class-record-slot-value set-parsed-inventory-record-slot-value parsed-inventory-record\)~%~@
 :EXAMPLE~%
  \(defparameter *tt--parse-table* \(make-hash-table :test 'equal\)\)~%
- \(let \(\(parsed-sax-file \(merge-pathnames 
+ \(let \(\(parsed-sax-file \(merge-pathnames
                         \(make-pathname :directory `\(:relative ,\(sub-name *xml-output-dir*\)\)
                                        :name \(concatenate 'string \"sax-refs-test-\" \(mon:time-string-yyyy-mm-dd\)\)
                                        :type \"lisp\"\)
@@ -1306,7 +1306,7 @@ the `def-set-parsed-class-record-slot-value' macro, e.g. with:~%
    :input-file  \(merge-pathnames \(make-pathname :name \"dump-refs-DUMPING\"\)
                                  \(sub-path *xml-input-dir*\)\)
    :output-file parsed-sax-file\)
-  \(load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-inventory-record  
+  \(load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-inventory-record
                                                  :input-file parsed-sax-file
                                                  :hash-table  *tt--parse-table*
                                                  :key-accessor  #'item-number
@@ -1366,13 +1366,31 @@ Keyword arg PRE-PADDED-FORMAT-CONTROL, if supplied, is used in lieu of return
 value of `print-sax-parsed-slots-padding-format-control' with OBJECT as argument.~%~@
 When keyword PRINT-UNBOUND is non-nil unbound slots of OBJECT are printed with
 their slot-value as #<UNBOUND>.~%~@
+Keyword IF-EXISTS-RENAME indicates whether to rename an existing file default is T.
+When null the file is as if :if-exists :supersede. When T the existing file is
+renamed with a super suffix such as follows:
+ <PREFIX-FOR-FILE-NAME><SLOT-FOR-FILE-NAME-value><SUFFIX-FOR-FILENAME>_BAK-2013-01-12T19-51-25.<PATHNAME-TYPE>~%
 :EXAMPLE~%
- \(write-sax-parsed-slots-to-file 
+ \(write-sax-parsed-slots-to-file
   <OBJECT>
-  :slot-for-file-name 'inventory-number 
+  :slot-for-file-name 'inventory-number
   :prefix-for-file-name \"bubba-\"
   :suffix-for-file-name \"-FOO\"
+  :slot-for-file-name-zero-padded t
+  :if-exists-rename t
   :output-directory \(merge-pathnames #P\"individual-parse-refs-2011-10-01/\" \(sub-path *xml-output-dir*\)\)\)~%~@
+
+ Following example is a one off version `write-sax-parsed-inventory-record-hash-to-zero-padded-directory'
+ The example writes slot values of one inventory record in the
+ `parsed-class-parse-table' for class `parsed-inventory-record'.
+ \(write-sax-parsed-slots-to-file \(current-object \(%get-inventory-record \"12413\"\)\)
+                                 :slot-for-file-name 'inventory-number
+                                 :prefix-for-file-name \"\"
+                                 :suffix-for-file-name \"\"
+                                 :slot-for-file-name-zero-padded t
+                                 :output-directory full-directory-pathname
+                                 :if-exists-rename t
+                                 :directory-exists-check nil\)~%
 :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash', `print-sax-parsed-slots',
 `write-sax-parsed-slots-to-file', `write-sax-parsed-class-hash-to-files',
 `write-sax-parsed-inventory-record-hash-to-zero-padded-directory'.~%▶▶▶")
@@ -1416,7 +1434,7 @@ the parsed-class' sql XML file.~%~@
         "Return a function for writing contents of a `parsed-class-parse-table' to file as
 if by `write-parsed-class-parse-table-to-file'.~%~@
 DEFAULT-OUTPUT-PATHNAME-SUB-DIRECTORY is a string or list of strings identifying any relative
-pathname directory components beneath DEFAULT-OUTPUT-PATHNAME-BASE-DIRECTORY. 
+pathname directory components beneath DEFAULT-OUTPUT-PATHNAME-BASE-DIRECTORY.
 It is used as the default value for the OUTPUT-SUB-DIRECTORY parameter of the
 returned function.~%~@
 DEFAULT-OUTPUT-PATHNAME-BASE-DIRECTORY is a pathname identifying any relative
@@ -1433,7 +1451,7 @@ Return function has a `cl:symbol-name' with the format:~%
 For example, if argument for PARSED-CLASS is parsed-inventory-record the
 returned function is `write-parsed-inventory-record-parse-table-to-file'.~%~@
 :EXAMPLE~%
- \(macroexpand-1 
+ \(macroexpand-1
   '\(def-parsed-class-write-parse-table-to-file
     :parsed-class parsed-inventory-record
     :default-output-pathname-sub-directory \"parsed-inventory-record\"
@@ -1463,7 +1481,7 @@ have the symbol name:~%
  load-parsed-inventory-record-default-file-to-parse-table~%~@
 :EXAMPLE~%
   \(macroexpand-1
-   '\(def-parsed-class-load-default-parsed-file-to-hash 
+   '\(def-parsed-class-load-default-parsed-file-to-hash
      :parsed-class parsed-inventory-record
      :default-key-accessor inventory-number
      :default-input-pathname-sub-directory \"parsed-inventory-record\"
@@ -1701,7 +1719,7 @@ invoked from outside the package DBC.~%
 
 (method-doc #'%parsed-class-slot-exists-for-parsed-class-check nil '(parsed-class-field-slot-accessor-mapping symbol)
 "~%:EXAMPLE~%
- \(%parsed-class-slot-exists-for-parsed-class-check \(parsed-class-mapped 'parsed-inventory-record\) 
+ \(%parsed-class-slot-exists-for-parsed-class-check \(parsed-class-mapped 'parsed-inventory-record\)
                                                    'category-entity-0-coref\)~%
  \(%parsed-class-slot-exists-for-parsed-class-check \(parsed-class-mapped 'parsed-inventory-record\)
                                                    'dbc::category-entity-0-coref\)~%
@@ -1713,22 +1731,22 @@ Following fail successfully:~%
 
 (method-doc #'%parsed-class-slot-exists-for-parsed-class-check nil '(parsed-class symbol)
 "~%:EXAMPLE~%
-\(%parsed-class-slot-exists-for-parsed-class-check \(make-instance 'parsed-inventory-record\) 
+\(%parsed-class-slot-exists-for-parsed-class-check \(make-instance 'parsed-inventory-record\)
                                                   'category-entity-0-coref\)~%
-\(%parsed-class-slot-exists-for-parsed-class-check \(make-instance 'parsed-inventory-record\) 
+\(%parsed-class-slot-exists-for-parsed-class-check \(make-instance 'parsed-inventory-record\)
                                                   'dbc::category-entity-0-coref\)~%
 Following fails successfully:~%
- \(%parsed-class-slot-exists-for-parsed-class-check \(make-instance 'parsed-inventory-record\) 
+ \(%parsed-class-slot-exists-for-parsed-class-check \(make-instance 'parsed-inventory-record\)
                                                    'foo\)~%")
 
 (method-doc #'%parsed-class-slot-exists-for-parsed-class-check nil '(symbol symbol)
 "~%:EXAMPLE~%
-\(%parsed-class-slot-exists-for-parsed-class-check 'parsed-inventory-record 
+\(%parsed-class-slot-exists-for-parsed-class-check 'parsed-inventory-record
                                                   'category-entity-0-coref\)~%
-\(%parsed-class-slot-exists-for-parsed-class-check 'parsed-inventory-record 
+\(%parsed-class-slot-exists-for-parsed-class-check 'parsed-inventory-record
                                                   'dbc::category-entity-0-coref\)~%
 Following fails successfully:~%
- \(%parsed-class-slot-exists-for-parsed-class-check 'parsed-inventory-record 
+ \(%parsed-class-slot-exists-for-parsed-class-check 'parsed-inventory-record
                                                    'foo\)~%")
 
 (generic-doc #'parsed-class-parse-table-lookup
@@ -1756,10 +1774,10 @@ HASH-KEY is a key into OJBECT's `parsed-class-parse-table'.~%~
 
 (method-doc #'parsed-class-parse-table-lookup nil '(parsed-class-field-slot-accessor-mapping t)
 "~%:EXAMPLE~%
- \(parsed-class-parse-table-lookup \(parsed-class-mapped 'parsed-inventory-record\) \"3566\"\)~% 
+ \(parsed-class-parse-table-lookup \(parsed-class-mapped 'parsed-inventory-record\) \"3566\"\)~%
  \(parsed-class-parse-table-lookup \(parsed-class-mapped 'parsed-inventory-record\) \"not-there\"\)~%")
 
-(generic-doc #'parsed-class-parse-table-lookup-slot-value 
+(generic-doc #'parsed-class-parse-table-lookup-slot-value
 "Lookup the SLOT-NAME slot-value of OBJECT with HASH-KEY.~%~@
 Return as if by cl:values the slot-value for OBJECT with HASH-KEY.~%
  - nth-value 0 is the slot-value or nil~%
@@ -1769,7 +1787,7 @@ Return as if by cl:values the slot-value for OBJECT with HASH-KEY.~%
    HASH-KEY (maybe after coercion)~%~@
 OBJECT is either a symbol, a subclass of the class `parsed-class', or an
 instance of the class `parsed-class-field-slot-accessor-mapping'.~%
-SLOT-NAME is a symbol. 
+SLOT-NAME is a symbol.
 An error is signaled if SLOT-NAME does not satisfy
 `%parsed-class-slot-exists-for-parsed-class-check'.~%
 HASH-KEY is a key into OJBECT's `parsed-class-parse-table'.~%~
@@ -1789,7 +1807,7 @@ when invoked from outside the package DBC.~%
 `make-parsed-class-field-slot-accessor-mapping',
 `def-set-parsed-class-record-slot-value'.~%")
 
-(method-doc #'parsed-class-parse-table-lookup-slot-value nil '(parsed-class-field-slot-accessor-mapping symbol t) 
+(method-doc #'parsed-class-parse-table-lookup-slot-value nil '(parsed-class-field-slot-accessor-mapping symbol t)
 "~%:EXAMPLE~%
  \(parsed-class-parse-table-lookup-slot-value \(parsed-class-mapped 'parsed-inventory-record\)
                                              'naf-entity-publication-coref
@@ -1799,7 +1817,7 @@ Following errors successfully:~%
                                              'foo
                                              \"blarg\"\)~%")
 
-(method-doc #'parsed-class-parse-table-lookup-slot-value nil '(symbol symbol t) 
+(method-doc #'parsed-class-parse-table-lookup-slot-value nil '(symbol symbol t)
             "~%:EXAMPLE~%
  \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'naf-entity-publication-coref \"2766\"\)~%
 Following errors successfully:~%
@@ -1807,7 +1825,7 @@ Following errors successfully:~%
                                              'foo
                                              \"blarg\"\)~%")
 
-(method-doc #'parsed-class-parse-table-lookup-slot-value nil '(parsed-class symbol t) 
+(method-doc #'parsed-class-parse-table-lookup-slot-value nil '(parsed-class symbol t)
 "~%:EXAMPLE~%
  \(parsed-class-parse-table-lookup-slot-value \(closer-mop:class-prototype \(find-class 'parsed-inventory-record\)\)
                                              'naf-entity-publication-coref
@@ -1824,7 +1842,7 @@ error is signaled if not.~%~@
  \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record
                                              'description-inventory-title
                                              3999\)~%
- \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 
+ \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record
                                               'description-inventory-title
                                               3999
                                               :with-string-integer-coercion t\)~%
@@ -1834,7 +1852,7 @@ Following error succesfully:~%
                                              100000
                                              :with-string-integer-coercion t\)~%
  \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record
-                                             'description-inventory-title 
+                                             'description-inventory-title
                                              0
                                              :with-string-integer-coercion t\)~%")
 
@@ -1847,7 +1865,7 @@ error is signaled if not.~%~@
                                              3999\)~%
  \(parsed-class-parse-table-lookup-slot-value \(make-instance 'parsed-inventory-record\)
                                              'description-inventory-title
-                                             3999 
+                                             3999
                                              :with-string-integer-coercion t\)~%
 Following error succesfully:~%
  \(parsed-class-parse-table-lookup-slot-value \(make-instance 'parsed-inventory-record\)
@@ -1877,11 +1895,11 @@ Following error succesfully:~%
                                              \"100000\"
                                              :with-string-integer-coercion t\)~%
  \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record
-                                             'description-inventory-title 
+                                             'description-inventory-title
                                              \"0\"
                                              :with-string-integer-coercion t\)~%
  \(parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record
-                                             'description-inventory-title 
+                                             'description-inventory-title
                                              \"99m\"
                                              :with-string-integer-coercion t\)~%")
 
@@ -1903,11 +1921,11 @@ Following error succesfully:~%
                                              \"100000\"
                                              :with-string-integer-coercion t\)~%
  \(parsed-class-parse-table-lookup-slot-value \(make-instance 'parsed-inventory-record\)
-                                             'description-inventory-title 
+                                             'description-inventory-title
                                              \"0\"
                                              :with-string-integer-coercion t\)~%
  \(parsed-class-parse-table-lookup-slot-value \(make-instance 'parsed-inventory-record\)
-                                             'description-inventory-title 
+                                             'description-inventory-title
                                              \"99m\"
                                              :with-string-integer-coercion t\)~%")
 
@@ -2081,7 +2099,7 @@ PARSED-CLASS is a symbol designating the sublcass of parsed-class.~%~@
 GENERATED-NAME is a symbold designating a function as per the return value of
 macro `def-set-parsed-class-record-slot-value'.~%~@
 :EXAMPLE~%~@
- (%parsed-class-documenting-set-parsed-class-record-slot-value-function 
+ (%parsed-class-documenting-set-parsed-class-record-slot-value-function
   'parsed-inventory-record  'set-parsed-inventory-record-slot-value)~%~@
 :SEE-ALSO `<XREF>'.~%▶▶▶")
 
@@ -2097,7 +2115,7 @@ Its return value is as if by `cl:values':~%
 Its arg FIELD-STRING is a string from the original SQL data and should have a
 direct association with a slot-accessor for OBJECT.~%~@
 OJBECT is an instance of a class which subclasses `parsed-class'.~%~@
-Original FIELD-STRING is the car of the the consed key/value pairs in one of the alists 
+Original FIELD-STRING is the car of the the consed key/value pairs in one of the alists
 written to an output file by `write-sax-parsed-xml-refs-file'
 FIELD VALUE is the corresponding cdr of the consed key/value pair.~%~@
 :EXAMPLE~%
@@ -2178,7 +2196,7 @@ Do not call methods directly use the interface functions:~%
 `system-identity-uuid-bit-vector', `system-identity-uuid-integer',
 `system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶")
 
-(generic-doc #'system-identity-uuid-byte-array 
+(generic-doc #'system-identity-uuid-byte-array
  "Set SYS-OBJECT's system-identity-uuid-byte-array slot-value.")
 
 (generic-doc #'(setf system-identity-uuid-byte-array)
@@ -2235,14 +2253,14 @@ else print only the system-identity and system-identity-uuid slot-values.~%~@
 The :VERBOSE t form is used with `cl:describe' method, the nil form is used with
 `cl:print-object' method specialized on class system-identity-uuid.~%~@
 :EXAMPLE~%
- \(system-object-uuid-description *control-id-artist-namespace* 
-                                 :stream s 
+ \(system-object-uuid-description *control-id-artist-namespace*
+                                 :stream s
                                  :verbose t\)~%
- \(let \(\(q \(with-output-to-string \(s\) 
-            \(system-object-uuid-description *control-id-artist-namespace* 
-                                            :stream s 
+ \(let \(\(q \(with-output-to-string \(s\)
+            \(system-object-uuid-description *control-id-artist-namespace*
+                                            :stream s
                                             :verbose t\)\)\)
-       \(y '\(\)\)\) 
+       \(y '\(\)\)\)
    \(declare \(ignore q\)\)
    y\)~%~@
 :SEE-ALSO `make-system-object-uuid', `update-system-object-uuid',
@@ -2281,10 +2299,10 @@ corresponds to an item number e.g.:
 `*dbc-base-httpd-synced-item-number-image-pathname*'.~%▶▶▶")
 
 (fundoc '%ensure-dbc-base-http-synced-item-number-image-pathname-exists
-        "Verify BASE-HTTPD-SYNCED-DIRECTORY exists with cl:probe-file. 
+        "Verify BASE-HTTPD-SYNCED-DIRECTORY exists with cl:probe-file.
 An error is signaled if not.~%~@
 :EXAMPLE~%
- (%ensure-dbc-base-http-synced-item-number-image-pathname-exists 
+ (%ensure-dbc-base-http-synced-item-number-image-pathname-exists
   *dbc-base-httpd-synced-item-number-image-pathname*)
 :SEE-ALSO `%make-httpd-synced-item-number-image-wild-pathname-list'.~%▶▶▶")
 
@@ -2342,9 +2360,9 @@ ITEM-NUMBER is found unless IMAGE-SUFFIX is :all in which case return value is a
 list.
 PATHNAME-RETURN-STYLE indicates how pathnames should be returned if a match is found.
 :absolute returns an absolute pathname.
-:relative returns a pathname with the format: 
+:relative returns a pathname with the format:
  #P\"<PARENT-DIR>/<FILENAME>.jpg\"~%~@
-:file-pathname returns a pathanme with the format: 
+:file-pathname returns a pathanme with the format:
  #P\"<FILENAME>.jpg\"~%~@
 :SEE-ALSO `inventory-record-image-directory-probe'.~%▶▶▶")
 
@@ -2366,7 +2384,7 @@ PATHNAME-RETURN-STYLE indicates how pathnames should be returned if a match is f
 "~%:EXAMPLE~%
  \(let \(\(obj \(make-instance 'parsed-inventory-record\)\)\)
    \(setf \(inventory-number obj\) \"2849\"\)
-   \(list 
+   \(list
     \(inventory-record-image-jpg-probe obj\)
     \(inventory-record-image-jpg-probe obj :image-suffix \"-z\"\)
     \(inventory-record-image-jpg-probe obj :image-suffix \"-f\"\)
@@ -2411,7 +2429,7 @@ the directory containg the images of <IMAGE-LIST>.~%
 :EXAMPLE~%
  Here the base pathname-name at nth-value 2 matches the subdir name \"001894\"
  at nth-value 1:~%
- \(%inventory-record-image-jpg-probe-all 001894 
+ \(%inventory-record-image-jpg-probe-all 001894
                                         :pathname-return-style :absolute\)
  |=> \(#P\"/<BASE-IMAGE-DIRECTORY-PATHNAME>/001894/001894.jpg\"
  |    #P\"/<BASE-IMAGE-DIRECTORY-PATHNAME>/001894/001894-m.jpg\"
@@ -2437,7 +2455,7 @@ the directory containg the images of <IMAGE-LIST>.~%
  \"001893_SOLD\" at nth-value 1:~%
  \(%inventory-record-image-jpg-probe-all 001893 :pathname-return-style :file-pathname\)
  |=> \(#P\"001893.jpg\" #P\"001893-m.jpg\" #P\"001893-s.jpg\"\)
- |    #P\"/<BASE-IMAGE-DIRECTORY-PATHNAME>/001893_SOLD/\" 
+ |    #P\"/<BASE-IMAGE-DIRECTORY-PATHNAME>/001893_SOLD/\"
  |   \"001893\"~%
  Here ITEM-NUMBER 56666 does not have an existent directory:~%
  \(%inventory-record-image-jpg-probe-all 56666\)
@@ -2496,14 +2514,14 @@ whereas this does not:~%
 (fundoc 'write-parsed-class-parse-table-to-csv-file
         "Write the slot values of PARSED-CLASS to a csv file.
 Return the file written if the parsed-class-parse-table for class is populated else nil.
-prefix-for-file-name is a name to prepend to a pathname-name. 
+prefix-for-file-name is a name to prepend to a pathname-name.
 It is trimmed of whitespace and #\\_ #\\-.~%~@
 The written file will have the format: <PREFIX-FOR-FILENAME>-CSV-<TIMESTAMP>.csv
 OUTPUT-SUB-DIRECTORY is a string or list of strings which when merged with
 BASE-OUTPUT-DIRECTORY create a path to write the filename beneath. If the
 merged pathname contains subdirectories which do not exist they will be
 created as if by `cl:ensure-directories-exist'.~%~@
-BASE-OUTPUT-DIRECTORY is a base pathname beneath which to write the file. 
+BASE-OUTPUT-DIRECTORY is a base pathname beneath which to write the file.
 If BASE-OUTPUT-DIRECTORY does not exist an error is signalled.
 FILTERING-SLOT-LIST is a list of slots of PARSED-CLASS for which the
 slot-values should not be written.~%~@
@@ -2517,7 +2535,7 @@ case for the initargs written to the CSV header.~%~@
 :SEE-ALSO `<XREF>'.~%▶▶▶")
 
 (fundoc 'def-parsed-class-write-csv-file
-"Wrapper macro for `write-parsed-class-parse-table-to-csv-file'. 
+"Wrapper macro for `write-parsed-class-parse-table-to-csv-file'.
 Return a function with defaults specific to PARSED-CLASS.
 Returned function has a symbol-name with the format:~%
  write-<PARSED-CLASS>-parse-table-to-csv-file~%~@
@@ -2565,7 +2583,7 @@ macro `def-parsed-inventory-record-parse-table-lookup-slot-value'.~%~@
 SLOT-NAME is a symbol corresponding to an existing slot of class `parsed-inventory-record'.
 HASH-KEY is a string for `parsed-class-parse-table' possibly mapping to an instance of `parsed-inventory-record'.
 :EXAMPLE~%
- \(loop 
+ \(loop
    for fun in \(accessors-of-parsed-class 'parsed-inventory-record\)
    collect \(find-method #'parsed-inventory-record-parse-table-lookup-slot-value nil `\(\(eql ,fun\) string\)\)\)~%~@
 :SEE-ALSO `parsed-inventory-record-parse-table-lookup',
@@ -2596,7 +2614,7 @@ Defined method has a signature of the form:~%
  \(\(eql <SLOT-NAME>\) \(string hash-key\)\)~%~@
 :EXAMPLE~%~@
  \(macroexpand '\(def-parsed-inventory-record-parse-table-lookup-slot-value description-inventory-english\)\)~%
- \(loop 
+ \(loop
    for fun in \(accessors-of-parsed-class 'parsed-inventory-record\)
    collect \(find-method #'parsed-inventory-record-parse-table-lookup-slot-value nil `\(\(eql ,fun\) string\)\)\)~%~@
 :NOTE `%parsed-inventory-record-parse-table-lookup-slot-value-maybe-remove'
@@ -2633,14 +2651,17 @@ PRINT-UNBOUND are as per `dbc::write-sax-parsed-slots-to-file'.~%~@
 
 (fundoc 'write-sax-parsed-inventory-record-hash-to-zero-padded-directory
         "Write all parsed-inventory-records in HASH-TABLE to a relative sub-directory
-pathname of the form 0NNNNN beneath BASE-OUTPUT-DIRECTORY. If sub-directory does
-not exist it will be created as if by `cl:ensure-directories-exist'.~%~@
+pathname of the form 0NNNNN beneath BASE-OUTPUT-DIRECTORY default is value of `*dbc-base-item-number-image-pathname*'.
+If sub-directory does not exist it will be created as if by `cl:ensure-directories-exist'.~%~@
+When keyword CHECKING-SOLD is non-nil \(the default\) also check for presence of
+directory pathnames having the form #\"0NNNNN_SOLD/\" and if one is found write
+to that directory instead.~%~@
 :EXAMPLE~%
- \(write-sax-parsed-inventory-record-hash-to-per-image-directory 
+ \(write-sax-parsed-inventory-record-hash-to-per-image-directory
   *tt--parse-table*
-  :base-output-directory \(merge-pathnames 
-                          \(make-pathname 
-                           :directory `\(:relative ,\(concatenate 'string 
+  :base-output-directory \(merge-pathnames
+                          \(make-pathname
+                           :directory `\(:relative ,\(concatenate 'string
                                                                 \"individual-parse-refs-zero-padded-\"
                                                                 \(mon:time-string-yyyy-mm-dd\)\)\)\)
                           \(sub-path *xml-output-dir*\)\)\)~%~@
@@ -2719,7 +2740,7 @@ keyword OUTPUT-PATHNAME-SUB-DIRECTORY of `make-parsed-class-output-file-ensuring
 
 :EXAMPLE~%~@
  \(macroexpand-1
-  '\(def-parsed-class-record-xml-dump-file-and-hash 
+  '\(def-parsed-class-record-xml-dump-file-and-hash
       :parsed-class parsed-inventory-sales-order-record
       :default-key-accessor order-number
       :default-input-pathname-name \"orders-xml\"
@@ -2749,12 +2770,12 @@ keyword OUTPUT-PATHNAME-SUB-DIRECTORY of `make-parsed-class-output-file-ensuring
 "Write each parsed-class object of HASH-TABLE to a dedicated file beneath OUTPUT-DIRECTORY.~%~@
 Return value is a list of the `cl:file-namestring's of each file written.~%~@
 :EXAMPLE~%
- \(write-sax-parsed-class-hash-to-files 
-  <HASH-TABLE> 
+ \(write-sax-parsed-class-hash-to-files
+  <HASH-TABLE>
   :parse-class 'parsed-inventory-record
-  :slot-for-file-name 'inventory-number 
+  :slot-for-file-name 'inventory-number
   :prefix-for-file-name \"inventory-number\"
-  :output-directory \(merge-pathnames #P\"individual-parse-refs-2011-10-01/\" 
+  :output-directory \(merge-pathnames #P\"individual-parse-refs-2011-10-01/\"
                                      \(sub-path *xml-output-dir*\)\)\)~%~@
 :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash',
 `print-sax-parsed-slots', `write-sax-parsed-slots-to-file',
