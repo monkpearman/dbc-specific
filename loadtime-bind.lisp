@@ -160,41 +160,6 @@
 ;; *xml-input-refs-name-temp*
 ;;; ==============================
 
-
-;; :TEST `set-parsed-inventory-record-slot-value'
-;; (let ((obj (make-instance 'parsed-inventory-record)))
-;;   (set-parsed-inventory-record-slot-value "edit_history" "88" obj)
-;;   (values obj (edit-history obj)))
-;;
-;; (let ((obj (make-instance 'parsed-inventory-record)))
-;;   (accessor-to-field-table obj))
-;;
-;;; *parsed-class-field-slot-accessor-mapping-table*
-
-;;; ==============================
-;;; `parsed-inventory-sales-order-record'
-;;; `parsed-inventory-sales-sold-in-store-record'
-;;; ==============================
-
-;; (parsed-inventory-record-xml-dump-file-and-hash)
-;; (parsed-inventory-sales-order-record-xml-dump-file-and-hash)
-;; (parsed-inventory-sales-sold-in-store-record-xml-dump-file-and-hash)
-
-;; `set-parsed-inventory-sales-order-record-slot-value'
-(def-set-parsed-class-record-slot-value
-    parsed-inventory-sales-order-record)
-
-;; `set-parsed-inventory-sales-sold-record-slot-value'
-;; (def-set-parsed-class-record-slot-value
-;;     parsed-inventory-sales-sold-record)
-
-;; `set-parsed-inventory-sales-sold-in-store-record-slot-value'
-(def-set-parsed-class-record-slot-value
-    parsed-inventory-sales-sold-in-store-record)
-
-;;; ==============================
-
-
 ;; *parsed-class-parse-table*
 
 
@@ -238,8 +203,9 @@
   :default-pathname-type "pctd")
 
 ;; (load-parsed-inventory-record-default-file-to-parse-table)
+;; (parsed-class-parse-table 'parsed-inventory-record)
 ;; `load-parsed-inventory-record-default-file-to-parse-table'
-(def-parsed-class-load-default-parsed-file-to-hash 
+(def-parsed-class-load-default-parsed-file-to-hash
     :parsed-class parsed-inventory-record
   :default-key-accessor inventory-number
   :default-input-pathname-sub-directory "parsed-inventory-record"
@@ -256,6 +222,126 @@
   :default-output-pathname-base-directory (merge-pathnames
                                            (make-pathname :directory '(:relative "parsed-csv-records"))
                                            (sub-path *xml-output-dir*)))
+
+
+;; :TEST `set-parsed-inventory-record-slot-value'
+;; (let ((obj (make-instance 'parsed-inventory-record)))
+;;   (set-parsed-inventory-record-slot-value "edit_history" "88" obj)
+;;   (values obj (edit-history obj)))
+;;
+;; (let ((obj (make-instance 'parsed-inventory-record)))
+;;   (accessor-to-field-table obj))
+;;
+;;; *parsed-class-field-slot-accessor-mapping-table*
+
+;;; ==============================
+;;; `parsed-inventory-sales-order-record'
+;;; ==============================
+
+;; `set-parsed-inventory-sales-order-record-slot-value'
+(def-set-parsed-class-record-slot-value
+    parsed-inventory-sales-order-record)
+
+;; (parsed-inventory-sales-order-record-xml-dump-file-and-hash)
+;; `parsed-inventory-sales-order-record-xml-dump-file-and-hash'
+(def-parsed-class-record-xml-dump-file-and-hash 
+  :parsed-class parsed-inventory-sales-order-record
+  :default-key-accessor order-number
+  :default-input-pathname-name "dump-orders-xml" ;"orders-xml"
+  :default-output-pathname-base-directory (sub-path *xml-output-dir*)
+  :default-output-pathname-sub-directory (list "parsed-xml-records" "parsed-xml-inventory-sales-order-records")
+  :default-output-pathname-name "order-records")
+
+;; (write-parsed-inventory-record-parse-table-to-file)
+;; `write-parsed-inventory-sales-order-record-parse-table-to-file'
+(def-parsed-class-write-parse-table-to-file
+    :parsed-class parsed-inventory-sales-order-record
+  :default-output-pathname-sub-directory "parsed-inventory-sales-order-record"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                           (sub-path *xml-output-dir*))
+  :default-pathname-type "pctd")
+
+;; (load-parsed-inventory-sales-order-record-default-file-to-parse-table)
+;; `load-parsed-inventory-sales-order-record-default-file-to-parse-table'
+(def-parsed-class-load-default-parsed-file-to-hash 
+    :parsed-class parsed-inventory-sales-order-record
+  :default-key-accessor order-number
+  :default-input-pathname-sub-directory "parsed-inventory-sales-order-record"
+  :default-input-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                           (sub-path *xml-output-dir*))
+  :default-pathname-type "pctd")
+
+;; (write-parsed-inventory-sales-order-record-parse-table-to-csv-file)
+;; `write-parsed-inventory-sales-order-record-parse-table-to-csv-file'
+(def-parsed-class-write-csv-file
+    :parsed-class parsed-inventory-sales-order-record
+  :default-prefix-for-file-name "inventory-sales-order-record"
+  :default-output-pathname-sub-directory "parsed-csv-inventory-sales-order-records"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-csv-records"))
+                                           (sub-path *xml-output-dir*)))
+
+;;; ==============================
+
+;; `set-parsed-inventory-sales-sold-record-slot-value'
+;; (def-set-parsed-class-record-slot-value
+;;     parsed-inventory-sales-sold-record)
+
+;;; ==============================
+
+
+
+;;; ==============================
+;;; `parsed-inventory-sales-sold-in-store-record'
+;;; ==============================
+
+;; `set-parsed-inventory-sales-sold-in-store-record-slot-value'
+(def-set-parsed-class-record-slot-value
+    parsed-inventory-sales-sold-in-store-record)
+
+;; (parsed-inventory-sales-sold-in-store-record-xml-dump-file-and-hash)
+;; `parsed-inventory-sales-sold-in-store-record-xml-dump-file-and-hash'
+(def-parsed-class-record-xml-dump-file-and-hash 
+  :parsed-class parsed-inventory-sales-sold-in-store-record
+  :default-key-accessor inventory-number
+  :default-input-pathname-name "dump-orders-xml" ;"orders-xml"
+  :default-output-pathname-base-directory (sub-path *xml-output-dir*)
+  :default-output-pathname-sub-directory (list "parsed-xml-records" "parsed-xml-inventory-sales-order-records")
+  :default-output-pathname-name "order-records")
+
+;; (write-parsed-inventory-record-parse-table-to-file)
+;; `write-parsed-inventory-sales-sold-in-store-record-parse-table-to-file'
+(def-parsed-class-write-parse-table-to-file
+    :parsed-class parsed-inventory-sales-sold-in-store-record
+  :default-output-pathname-sub-directory "parsed-inventory-sales-sold-in-store-record"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                           (sub-path *xml-output-dir*))
+  :default-pathname-type "pctd")
+
+;; (load-parsed-inventory-sales-sold-in-store-record-default-file-to-parse-table)
+;; `load-parsed-inventory-sales-sold-in-store-record-default-file-to-parse-table'
+(def-parsed-class-load-default-parsed-file-to-hash 
+    :parsed-class parsed-inventory-sales-sold-in-store-record
+  :default-key-accessor inventory-number
+  :default-input-pathname-sub-directory "parsed-inventory-sales-sold-in-store-record"
+  :default-input-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                           (sub-path *xml-output-dir*))
+  :default-pathname-type "pctd")
+
+
+;; `write-parsed-inventory-sales-sold-in-store-record-parse-table-to-csv-file'
+(def-parsed-class-write-csv-file
+    :parsed-class parsed-inventory-sales-sold-in-store-record
+  :default-prefix-for-file-name "inventory-sales-sold-in-store-record"
+  :default-output-pathname-sub-directory "parsed-csv-parsed-inventory-sales-sold-in-store-records"
+  :default-output-pathname-base-directory (merge-pathnames
+                                           (make-pathname :directory '(:relative "parsed-csv-records"))
+                                           (sub-path *xml-output-dir*)))
+
 
 ;;; ==============================
 ;;; `parsed-artist-record'
