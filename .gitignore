@@ -4,7 +4,17 @@
 TAGS
 .bzrignore
 .bzr/*
+.DS_Store
 docs/*
 notes-versioned/*
 xml-class-dump-dir/*
 dbc-tests/tests/*
+dbc-rucksack-base
+dbc-specific-transfer.tgz
+dbc-parse/dbc-sax-notes-2011-09-26.lisp
+dbc-parse/dbc-xml-refs-parse-work-scratch-*
+dbc-parse/start-elt-notes-2011-05-20
+dbc-parse/psa-parse-table.lisp
+dbc-classes/dbc-class-parsed-query-notes-2012-03-01.lisp
+dbc-parse/dbc-xml-refs-parse-work-scratch.lisp
+dbc-tests/dbc-uuid-timing-2011-03-22
