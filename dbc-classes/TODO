@@ -1,0 +1,14 @@
+;;; :FILE-CREATED <Timestamp: #{2011-10-12T18:20:45-04:00Z}#{11413} - by MON>
+;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/dbc-classes/TODO
+;;; ==============================
+
+* We have classes with slots named:
+  `naf-entity-role-appearance-coref'
+  We need to model this as a class b/c
+  - roles can coref across naf-entities
+  - roles can coref with themes (and possibley categories)
+  - roles can potentially embody their own namespace
+
+
+;;; ==============================
+;;; EOF
