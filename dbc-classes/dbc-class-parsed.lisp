@@ -8,7 +8,7 @@
 ;;  `parsed-brand-record' `parsed-publication-record'
 ;;
 ;;  GENERIC                        ->    CLASS-SLOT
-;;  ---------------------------------------------------------------------------- 
+;;  ----------------------------------------------------------------------------
 ;;
 ;; `naf-entity-gender-type'        -> `naf-entity-gender-type'
 ;; `lifespan-date'                 -> `lifespan-date'
@@ -184,8 +184,8 @@
 (defclass parsed-class (base-dbc)
   ;; :NOTE Which other slots accessors and generics should this class establish?
   ()
-  (:documentation "Base dbc parsed class. 
-:NOTE variable *parsed-class-parse-table* holds hashes keyed to subclasses."))
+  (:documentation "Base dbc parsed class.
+:NOTE variable `*parsed-class-parse-table*' holds hashes keyed to subclasses of parsed-class."))
 
 (defclass parsed-naf-entity (parsed-class)
   ()
@@ -251,8 +251,8 @@
 ;; Following fail successfully:
 ;; (parsed-class-mapped (make-instance 'parsed-foo-record))
 ;; (parsed-class-mapped (make-instance 'parsed-class))
-;; 
-;; :NOTE function `%parsed-class-mapped-with-known-key-helper' defined in 
+;;
+;; :NOTE function `%parsed-class-mapped-with-known-key-helper' defined in
 ;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-field-slot-mapping.lisp b/c
 ;; compiler complains about an undefined class `parsed-class-field-slot-accessor-mapping' otherwise.
 ;;
@@ -456,21 +456,24 @@
 ;; (parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record 'description-inventory-title "0003999" :with-string-integer-coercion t)
 
 ;; (%parsed-class-parse-table-make-table)
+;; :NOTE as of 03-15-2024 we now default hash-table synchronization to T
 (defun %parsed-class-parse-table-make-table (&key 
                                              ;; test should always be #'equal
-                                             (size #+sbcl sb-impl::+min-hash-table-size+ #-sbcl 16)
+                                             ;; :WAS (size #+sbcl sb-impl::+min-hash-table-size+ #-sbcl 16)
+                                             (size 16)
                                              (rehash-size 1.5)
                                              (rehash-threshold 1.0)
                                              weakness
-                                             synchronized)
-  (make-hash-table :test #'equal 
-                   :size size
-                   :rehash-size rehash-size
-                   :rehash-threshold rehash-threshold
-                   :weakness weakness
-                   :synchronized synchronized))
+                                             (synchronized t))
+  ;; (make-hash-table-sync :text #'equal :size size :rehash-size 1.5 :rehash-threshold 1 :weakness weakness :synchronized synchronized))
+  (make-hash-table :test #'equal
+                    :size size
+                    :rehash-size rehash-size
+                    :rehash-threshold rehash-threshold
+                    :weakness weakness
+                    :synchronized synchronized))
 
-;; (setf (parsed-class-parse-table (make-instance 'parsed-artist-record)) 
+;; (setf (parsed-class-parse-table (make-instance 'parsed-artist-record))
 ;;       (%parsed-class-parse-table-make-table))
 (defmethod (setf parsed-class-parse-table) (hash-table (object parsed-class))
   (setf (parsed-class-parse-table (parsed-class-mapped object)) hash-table))
@@ -487,7 +490,7 @@
 
 ;; Local Variables:
 ;; indent-tabs-mode: nil
-;; show-trailing-whitespace: t
+;; show-trailing-whitespace: nil
 ;; mode: lisp-interaction
 ;; package: dbc
 ;; End:
