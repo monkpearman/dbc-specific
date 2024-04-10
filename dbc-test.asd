@@ -1,4 +1,5 @@
 
+;; DEPRECATED now that we have ASDF3
 (defpackage #:dbc-test-system (:use :common-lisp :asdf))
 
 (in-package #:dbc-test-system)
@@ -7,12 +8,12 @@
   ;; :name ""
   ;; :author  "MON KEY"
   ;; :maintainer "MON KEY"
-  ;; :license 
+  ;; :license
   :description "DBC tests."
   :version "1.0.0"
   :pathname  "dbc-tests/"
   ;;  (make-pathname :name nil :type nil :defaults *load-truename*))
-  :components 
+  :components
   ((:file "package")
    (:file "tests")
    (:file "dbc-uuid-profile"))
@@ -28,7 +29,7 @@
 
 ;; Local Variables:
 ;; indent-tabs-mode: nil
-;; show-trailing-whitespace: t
+;; show-trailing-whitespace: nil
 ;; mode: lisp-interaction
 ;; End:
 
