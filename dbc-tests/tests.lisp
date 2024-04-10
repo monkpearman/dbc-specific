@@ -19,12 +19,12 @@
 ;; dbc-test path heirarchy:
 ;;
 ;; (let* ((dbc-test-base (asdf:system-source-directory (asdf:find-system :dbc-test)))
-;;        (test-dir (and dbc-test-base 
-;;                       (fad:directory-exists-p
+;;        (test-dir (and dbc-test-base
+;;                       (uiop:directory-exists-p
 ;;                        (merge-pathnames (make-pathname :directory '(:relative "dbc-tests"))
 ;;                                         dbc-test-base))))
-;;        (test-temp-dir (and test-dir 
-;;                            (fad:directory-exists-p
+;;        (test-temp-dir (and test-dir
+;;                            (uiop:directory-exists-p
 ;;                             (merge-pathnames (make-pathname :directory '(:relative "tests"))
 ;;                                              test-dir)))))
 ;;   (list dbc-test-base test-dir test-temp-dir))
@@ -37,8 +37,14 @@
 (defun system-test-temp-dir-exists-p ()
   (declare (special dbc:*system-tests-temp-dir*))
   (and (typep dbc:*system-tests-temp-dir* 'dbc:system-subdir)
-       (fad:directory-exists-p (dbc:sub-path dbc:*system-tests-temp-dir*))))
+       (uiop:directory-exists-p (dbc:sub-path dbc:*system-tests-temp-dir*))))
 
+
+(defun run-tests (&key ((:compiled *compile-tests*)))
+  (dbc:make-v5-uuid-test 5 dbc:*uuid-namespace-dns*)
+  (sb-rt:do-tests))
+
+;;
 
 ;;; ==============================
 ;; :TEST `dbc:field-convert-1-0-x'
@@ -69,7 +75,7 @@
 (sb-rt:deftest field-convert-1-0-x-empty-TEST.0
     (values-list
      (mapcar #'eval
-             (mapcar #'(lambda (form) 
+             (mapcar #'(lambda (form)
                          `(multiple-value-bind ,(car form) (,(caadr form) ,(cadadr form))
                             (list ,@(car form))))
                      '(((a b c d)
@@ -94,7 +100,7 @@
                         (dbc:field-convert-1-0-x-empty "    "))))))
 
   (T BOOLEAN T BOOLEAN) (NIL NULL NIL NULL) (NIL NULL "x")
-  (T BOOLEAN "1") (NIL NULL "0") (8) 
+  (T BOOLEAN "1") (NIL NULL "0") (8)
   (NIL MON:STRING-EMPTY "") (NIL MON:STRING-ALL-WHITESPACE "    "))
 ;;
 ;; (sb-rt:do-test 'field-convert-1-0-x-empty-TEST.0)
@@ -105,7 +111,7 @@
 ;; (sb-rt:deftest field-convert-1-0-x-empty-TEST.1
 ;;     (values-list
 ;;      (mapcar #'eval
-;;              (mapcar #'(lambda (form) 
+;;              (mapcar #'(lambda (form)
 ;;                          `(multiple-value-bind ,(car form) ,(cadr form)
 ;;                             (list ,@(car form))))
 ;;                      '(((a b c)
@@ -150,7 +156,7 @@
 (sb-rt:deftest split-field-on-char-if-TEST.0
     (values-list
      (mapcar #'eval
-             (mapcar #'(lambda (form) 
+             (mapcar #'(lambda (form)
                       `(multiple-value-bind ,(car form) ,@(cdr form)
                          (list ,@(car form))))
   '(
@@ -199,35 +205,34 @@
 
 
 ;;; ==============================
-;; :TESTING `dbc:split-field-on-char-if' with keyword KEEP-FIRST 
+;; :TESTING `dbc:split-field-on-char-if' with keyword KEEP-FIRST
 (sb-rt:deftest split-field-on-char-if-TEST.1
     (values-list
      (mapcar #'eval
-             (mapcar #'(lambda (form) 
+             (mapcar #'(lambda (form)
                          `(multiple-value-bind ,(car form) ,(cadr form)
                             (list ,@(car form))))
       '(((a b c)
          (dbc:split-field-on-char-if " , " #\COMMA :keep-first nil))
-        ((a) 
+        ((a)
          (dbc:split-field-on-char-if " , " #\COMMA :keep-first t))
 
         ((a b c)
          (dbc:split-field-on-char-if ", " #\COMMA  :keep-first nil))
         ((a)
          (dbc:split-field-on-char-if ", " #\COMMA  :keep-first t))
-     
         ((a b c)
          (dbc:split-field-on-char-if " ," #\COMMA  :keep-first nil))
         ((a)
          (dbc:split-field-on-char-if " ," #\COMMA  :keep-first t))
-        ;; ((a b c) 
+        ;; ((a b c)
         ;;   (dbc:split-field-on-char-if `(,@(coerce '(#\  #\, #\  #\RETURN #\  #\NEWLINE  #\  #\TAB  #\ ) 'string))
         ;;    #\COMMA :keep-first nil))
         ;; ((a)
         ;;  (dbc:split-field-on-char-if `(,@(coerce '(#\  #\, #\  #\RETURN #\  #\NEWLINE  #\  #\TAB  #\ ) 'string))
         ;;   #\COMMA :keep-first t))
         ((a b c)
-         (dbc:split-field-on-char-if " ,      " #\COMMA :keep-first nil))         
+         (dbc:split-field-on-char-if " ,      " #\COMMA :keep-first nil))
         ((a)
          (dbc:split-field-on-char-if " ,      " #\COMMA :keep-first t))
         ;; :NOTE Corner case where `field-convert-1-0-x-empty' wins:
@@ -250,10 +255,10 @@
 ;; (sb-rt:do-test 'split-field-on-char-if-TEST.1)
 
 ;; :TESTING `dbc:split-field-on-char-if' with keyword KEEP-DUPLICATES
-(sb-rt:deftest split-field-on-char-if-TEST.2
+(sb-rt:deftest9 split-field-on-char-if-TEST.2
     (values-list
      (mapcar #'eval
-             (mapcar #'(lambda (form) 
+             (mapcar #'(lambda (form)
                          `(multiple-value-bind ,(car form) ,(cadr form)
                             (list ,@(car form))))
      '(((a b c)
@@ -280,7 +285,7 @@
 ;; (sb-rt:deftest split-field-on-char-if-TEST.3
 ;;     (values-list
 ;;      (mapcar #'eval
-;;              (mapcar #'(lambda (form) 
+;;              (mapcar #'(lambda (form)
 ;;                          `(multiple-value-bind ,(car form) ,(cadr form)
 ;;                             (list ,@(car form))))
 ;;      '(((a b c)
