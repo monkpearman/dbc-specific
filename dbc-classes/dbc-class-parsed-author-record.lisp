@@ -161,6 +161,21 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
        (parsed-class-slot-value-collect-non-null 'parsed-author-record 'control-id-display-author)
        #'string>))
 
+(defmethod print-object ((object parsed-author-record) stream)
+  (let* ((control-num (and (slot-boundp object 'control-id-entity-num-author)
+                           (slot-value object  'control-id-entity-num-author)))
+         (control-id-display (and (slot-boundp object 'control-id-display-author)
+                                  (slot-value object  'control-id-display-author)))
+         ;; (control-num-if (and (stringp control-num)
+         ;;                  (control-id-indexed-number-zero-padded-string control-num)))
+         )
+    ;; (declare (mon:string-or-null control-num-if))
+    ;; (print-unreadable-object (object stream :type t :identity (not control-num-if))
+    ;;   (format stream "~S" control-num-if))))
+    (declare (mon:string-or-null control-num control-id-display))
+    (print-unreadable-object (object stream :type t :identity (not control-num))
+      (format stream ":CONTROL-ID-ENTITY-NUM ~S :CONTROL-ID-DISPLAY-NAME ~S" control-num control-id-display))))
+
 ;; :NOTE `set-parsed-inventory-record-slot-value' is defined in loadtime-bind.lisp
 ;; (def-set-parsed-class-record-slot-value 
 ;;      set-parsed-author-record-slot-value
