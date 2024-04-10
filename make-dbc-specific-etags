@@ -16,6 +16,7 @@
 # ./dbc-time/date-calc.lisp \
 #
 ###  ==============================
+
 etags ./specials.lisp \
 ./package.lisp \
 ./conditions.lisp \
@@ -72,9 +73,9 @@ etags ./specials.lisp \
 ./dbc-parse/dbc-xml-sql-parse.lisp \
 ./dbc-parse/dbc-xml-refs-parse.lisp \
 ./dbc-parse/dbc-xml-parse-sax.lisp
+./dbc-time/date-localtime-utils.lisp \
 ./dbc-translate/dbc-french-dates.lisp \
 ./dbc-translate/dbc-french-numbers.lisp \
-./dbc-time/date-localtime-utils.lisp \
 --language=lisp
 
 ###  ==============================

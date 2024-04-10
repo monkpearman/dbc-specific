@@ -4,7 +4,6 @@
 
 
 (in-package #:dbc)
-;; *package*
 
 (defvar *french-weekday-names*
   #("Lundi" "Mardi" "Mercredi" "Jeudi" "Vendredi" "Samedi" "Dimanche"))
