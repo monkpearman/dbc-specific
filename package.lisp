@@ -6,16 +6,16 @@
 	    ;;
 	    ;; Import relevant stuff from :mon
 	    (:import-from #:mon #:method-doc #:generic-doc #:fundoc #:vardoc #:typedoc #:classdoc #:make-documented-class #:defconst*)
-	    ;; 
+	    ;;
 	    (:export
 	     ;;
 	     ;; specials.lisp
 	     ;; :VARIABLES
-             #:*system-path*	     
+             #:*system-path*
              #:*system-notes-dir*
              #:*system-tests-dir*
              #:*system-tests-temp-dir*
-	     #:*xml-output-dir* 
+	     #:*xml-output-dir*
              #:*xml-output-refs-name*          ;; ---> OUTPUT
              #:*xml-output-refs-ext*           ;; ---> OUTPUT
              #:*xml-input-dir*                 ;; <--- INPUT
@@ -41,16 +41,16 @@
 	     ;; dbc-classes/dbc-class.lisp
 	     ;;
              #:base-dbc                     ;; <CLASS>
-             ;; 
+             ;;
            ;; dbc-classes/dbc-class-paths.lisp
-             ;; 
+             ;;
              ;; :GENERIC-FUNCTIONS
 	     #:system-base-path              ;; system-base-path
 	     #:system-path-var-binding
 	     #:system-described
              #:system-path-if
              #:system-parent-path-ensure
-             ;; 
+             ;;
 	     ;; :CLASSES
 	     #:system-base
 	     #:system-path
@@ -104,7 +104,7 @@
              ;; #:uuid-namespace-version-for-control-id-class     GENERIC/SLOT
              ;; #:uuid-namespace-for-control-id-class-description
              ;; #:make-uuid-namespace-control-id
-             ;; 
+             ;;
            ;; dbc-specific/dbc-classes/dbc-class-control-id.lisp
              ;;
              #:base-control-id
@@ -125,7 +125,7 @@
            ;; dbc-classes/dbc-specific/dbc-class-techniques-convert.lisp
              #:media-technique-entity
              ;;
-             ;; 
+             ;;
            ;; dbc-classes/dbc-class-entity-location.lisp
              ;; #:location-entity              ;; :SLOTS appellations-modern appellations-historic
              ;; #:location-entity-verified
@@ -149,7 +149,7 @@
              #:entity-regexp
              #:theme-entity-regexp
              #:category-entity-regexp
-             #:media-entity-regexp   
+             #:media-entity-regexp
              #:location-entity-regexp
              #:naf-entity-type-regexp
              #:naf-entity-control-name-regexp
@@ -169,7 +169,7 @@
              ;; :VARIABLES
              #:*category-entity-regexp-db*
              #:*theme-entity-regexp-db*
-             #:*media-entity-regexp-db*   
+             #:*media-entity-regexp-db*
              #:*location-entity-regexp-db*
              #:*parsed-field-name-regexp-db*
              #:*naf-entity-artist-regexp-db*
@@ -202,10 +202,10 @@
              #:field-name-convert-field-name
 	     ;;
 	     ;; mon:string-split-on-chars
-	     #:split-used-fors   
+	     #:split-used-fors
 	     ;;
 	     ;; mon:string-split-on-chars, mon:string-trim-whitespace
-	     #:split-appeared-in 
+	     #:split-appeared-in
 	     ;;
 	     ;; mon:string-split-on-chars
 	     #:split-roles
@@ -237,7 +237,7 @@
 	     ;;
 	     ;; klacks:get-attribute klacks:current-lname
 	     ;; klacks:current-characters klacks:consume
-	     ;; cxml:make-source klacks:with-open-source 
+	     ;; cxml:make-source klacks:with-open-source
 	     ;; klacks:map-attributes klacks:get-attribute
 	     ;; klacks:current-lname klacks:current-characters
 	     ;; klacks:consume klacks:peek
@@ -245,7 +245,7 @@
              ;;
              #:with-namespaces ;; <MACRO>
              ;; #:with-soap-envelope ;; <MACRO>
-             ;; 
+             ;;
              #:peek-skipping-comments
              #:xml-whitespace-p
              #:consume-whitespace
@@ -255,11 +255,11 @@
              #:start-element-and-attribute-present-p
              #:end-document-find-and-close
              ;;
-	     #:field-table-parse-out 
+	     #:field-table-parse-out
 	     ;;
 	     ;; cxml::cxml-source klacks:peek klacks:map-attributes
-	     #:field-parse-attribs	     
-             #:field-attribs-consume-if             
+	     #:field-parse-attribs
+             #:field-attribs-consume-if
              #:field-attribs-find
              #:field-attribs-find-normalize-names
              ;;
@@ -290,7 +290,7 @@
              #:*number-to-french-big-prefix*
              #:*number-to-french-bof*
              #:*number-to-french-denominators*
-             ;; 
+             ;;
              #:number-to-french
              #:number-to-french-ordinal
              #:number-to-french-ten
@@ -319,7 +319,7 @@
               ;; #:make-parsed-name-preprocess
               ;; #:preprocess-slot-transform
               ;; #:make-parsed-class-slot-init-accessor-name
-              ;; #:make-ref-maker-sym-name 
+              ;; #:make-ref-maker-sym-name
               ;; #:make-ref-maker-symbol
               ;; #:make-ref-lookup-table
               ;;
@@ -334,7 +334,7 @@
 ;; End:
 
 ;;; ==============================
-;;; EOF			
+;;; EOF
 
 
 
