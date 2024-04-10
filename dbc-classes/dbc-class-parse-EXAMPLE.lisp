@@ -22,7 +22,8 @@
 
 (in-package #:dbc)
 ;; *package*
-(defparameter *tt--parse-table* (make-hash-table :test 'equal))
+;; :WAS (defparameter *tt--parse-table* (make-hash-table :test 'equal))
+(defparameter *tt--parse-table* (make-hash-table-sync :test 'equal))
 
 ;; :NOTE following is roughly equivalent to evaluating
 ;; `parsed-inventory-record-xml-dump-file-and-hash' which is prefered because it
@@ -37,12 +38,13 @@
    :input-file  (merge-pathnames (make-pathname :name "dump-refs-DUMPING")
                                  (sub-path *xml-input-dir*))
    :output-file parsed-sax-file)
-  (load-sax-parsed-xml-file-to-parsed-class-hash
+  (with-locked-hash-table *tt--parse-table*
+    (load-sax-parsed-xml-file-to-parsed-class-hash
    :parsed-class 'parsed-inventory-record  
    :input-file parsed-sax-file
    :hash-table  *tt--parse-table*
    :key-accessor  #'inventory-number
-   :slot-dispatch-function #'set-parsed-inventory-record-slot-value))
+   :slot-dispatch-function #'set-parsed-inventory-record-slot-value)))
 
 ;; (gethash *tt--parse-table*
 ;; (10019
