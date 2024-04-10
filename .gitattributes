@@ -1,2 +1,2 @@
 *.lisp linguist-detectable=true
-*.* linguist-language=CommonLisp
+*.* linguist-language=Common-Lisp
