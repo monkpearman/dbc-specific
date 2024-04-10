@@ -1,4 +1,6 @@
 ;;; :FILE /home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/loadtime-bind.lisp
+;;; ==============================
+
 
 (in-package #:dbc)
 ;; *package*
@@ -19,7 +21,7 @@
   (setf *system-path* (make-instance 'system-path))
   (setf (system-base-path *system-path*) (find-system-path))
   (prog1 t (terpri))
-  (system-described *system-path* t))
+  (system-described  *system-path* t))
 
 ;; so what is the asdf magic for simple locating the 
 ;; basically i have a top-level loadtime form that _was_ doing this:
@@ -31,15 +33,15 @@
 ;; (asdf:system-relative-pathname 'dbc-test "dbc-tests/tests")
 ;; (asdf:find-component 
 ;; (asdf:component-name-to-pathname-components
-(let* ((dbc-test-base (asdf:system-relative-pathname :dbc-test ""))
+(let* ((dbc-test-base 
+         ;; :WAS (asdf:system-relative-pathname :dbc-test "") => #P"/Users/monkpearman/Documents/HG-Repos/CL-MON-CODE/dbc-specific/")
+         (make-pathname :directory (pathname-directory (asdf/system-registry:sysdef-central-registry-search :DBC))))
        (test-dir (and dbc-test-base 
-                      (fad:directory-exists-p
-                       (merge-pathnames (make-pathname :directory '(:relative "dbc-tests"))
-                                        dbc-test-base))))
+                      (uiop:directory-exists-p  ;; :WAS fad:directory-exists-p
+                       (merge-pathnames (make-pathname :directory '(:relative "dbc-tests")) dbc-test-base)))) 
        (test-temp-dir (and test-dir 
-                           (fad:directory-exists-p
-                            (merge-pathnames (make-pathname :directory '(:relative "tests"))
-                                             test-dir))))
+                           (uiop:directory-exists-p  ;; :WAS fad:directory-exists-p
+                            (merge-pathnames (make-pathname :directory '(:relative "tests")) test-dir))))
        (path-tree (list dbc-test-base test-dir test-temp-dir)))
   (or 
    (and (loop 
@@ -83,8 +85,8 @@
 
 ;; (let ((dbc-build-system::*dbc-build-system-reloading-system* t))
 (when
-      ;; `*system-notes-dir*'
-      (system-subdir-init-w-var '*system-notes-dir* 
+    ;; `*system-notes-dir*'
+    (system-subdir-init-w-var '*system-notes-dir* 
                                 :parent-path (system-base-path *system-path*))
     (when (sub-path *system-notes-dir*)
       ;; :NOTE `system-subdir-init-w-var' should take care of describing to *standard-output*
@@ -178,6 +180,142 @@
                (loop for form in def-forms collect (eval form))
                (closer-mop:generic-function-methods #'parsed-inventory-record-parse-table-lookup-slot-value)))))
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (let* ((slot-syms (accessors-of-parsed-class 'parsed-inventory-record))
+        (pkg (find-package "DBC"))
+        (slot-sym-to-function  
+          (loop
+            for sym in slot-syms
+            for quoted-slot = (find-symbol (string (alexandria:format-symbol NIL "PARSED-INVENTORY-RECORD-~A-LOOKUP" sym)) pkg)
+            collect quoted-slot)))
+    (loop 
+      for slot-sym in slot-syms
+      for def-slot in slot-sym-to-function
+      do (setf (documentation def-slot 'function)
+               (format nil 
+                      "Find slot value for :~S for instance of class `parsed-inventory-record' with HAShH-KEY in the associated hash-table for the class..~%~@
+ HASH-KEY is a string unless keyword WITH-STRING-INTEGER-COERCION is non-nil~%~@
+ :EXAMPLE~%~@
+   \(~S  \"666\"\)~%~@
+   \(~S  \"666\" :with-string-integer-coercion t\)~%~@
+ :SEE-ALSO `parsed-inventory-record-parse-table-lookup',`parsed-inventory-record-parse-table-lookup-slot-value', `parsed-class-parse-table-lookup-slot-value',
+ ~{~<~%~1,100:; `~(~S~)'~>~^,~}.~%▶▶▶" slot-sym def-slot def-slot slot-sym-to-function )))))
+
+
+;;; ==============================
+;; :NOTE following defined with macrology. Docstrings added at bottom of file.
+;; `def-parsed-class-write-csv-file'  ;; MACRO
+;; `write-parsed-inventory-record-parse-table-to-csv-file'
+;; `write-parsed-inventory-sales-order-record-parse-table-to-csv-file'
+;; `write-parsed-inventory-sales-sold-in-store-record-parse-table-to-csv-file'
+;; `write-parsed-artist-record-parse-table-to-csv-file'
+;; `write-parsed-author-record-parse-table-to-csv-file'
+;; `write-parsed-brand-record-parse-table-to-csv-file'
+;; `write-parsed-person-record-parse-table-to-csv-file'
+;; `write-parsed-publication-record-parse-table-to-csv-file'
+;; `write-parsed-technique-record-parse-table-to-csv-file'
+;; `write-parsed-documentation-record-parse-table-to-csv-file'
+;; `write-parsed-theme-record-parse-table-to-csv-file'
+;; `write-parsed-translation-for-inventory-record-parse-table-to-csv-file'
+;;
+;; `def-parsed-class-load-default-parsed-file-to-hash' ;; MACRO
+;; `load-parsed-inventory-record-default-file-to-parse-table'
+;; `load-parsed-inventory-sales-order-record-default-file-to-parse-table''
+;; `load-parsed-inventory-sales-sold-in-store-record-default-file-to-parse-table'
+;; `load-parsed-artist-record-default-file-to-parse-table'
+;; `load-parsed-author-record-default-file-to-parse-table'
+;; `load-parsed-brand-record-default-file-to-parse-table'
+;; `load-parsed-person-record-default-file-to-parse-table'
+;; `load-parsed-publication-record-default-file-to-parse-table'
+;; `load-parsed-technique-record-default-file-to-parse-table'
+;; `load-parsed-documentation-record-default-file-to-parse-table'
+;; `load-parsed-theme-record-default-file-to-parse-table'
+;; `load-parsed-translation-for-inventory-record-default-file-to-parse-table'
+;;
+;; `def-parsed-class-write-parse-table-to-file' ;; MACRO
+;; `write-parsed-inventory-record-parse-table-to-file''
+;; `write-parsed-inventory-sales-order-record-parse-table-to-file'
+;; `write-parsed-inventory-sales-sold-in-store-record-parse-table-to-file'
+;; `write-parsed-artist-record-parse-table-to-file'
+;; `write-parsed-author-record-parse-table-to-file'
+;; `write-parsed-brand-record-parse-table-to-file'
+;; `write-parsed-person-record-parse-table-to-file'
+;; `write-parsed-publication-record-parse-table-to-file'
+;; `write-parsed-technique-record-parse-table-to-file'
+;; `write-parsed-documentation-record-parse-table-to-file'
+;; `write-parsed-theme-record-parse-table-to-file'
+;; `write-parsed-translation-for-inventory-record-parse-table-to-file'
+;;
+;; `def-parsed-class-record-xml-dump-file-and-hash' ;; MACRO
+;; `parsed-inventory-record-xml-dump-file-and-hash'
+;; `parsed-inventory-sales-order-record-xml-dump-file-and-hash'
+;; `parsed-inventory-sales-sold-in-store-record-xml-dump-file-and-hash'
+;; `parsed-artist-record-xml-dump-file-and-hash'
+;; `parsed-author-record-xml-dump-file-and-hash'
+;; `parsed-brand-record-xml-dump-file-and-hash'
+;; `parsed-person-record-xml-dump-file-and-hash'
+;; `parsed-publication-record-xml-dump-file-and-hash'
+;; `parsed-technique-record-xml-dump-file-and-hash'
+;; `parsed-documentation-record-xml-dump-file-and-hash'
+;; `parsed-theme-record-xml-dump-file-and-hash'
+;; `parsed-translation-for-inventory-record-xml-dump-file-and-hash'
+;;
+;;
+;; `def-set-parsed-class-record-slot-value'    ;; MACRO
+;; `set-parsed-inventory-record-slot-value'
+;; `set-parsed-inventory-sales-order-record-slot-value'
+;; `set-parsed-inventory-sales-sold-in-store-record-slot-value'
+;; `set-parsed-artist-record-slot-value'
+;; `set-parsed-author-record-slot-value'
+;; `set-parsed-brand-record-slot-value'
+;; `set-parsed-person-record-slot-value'
+;; `set-parsed-publication-record-slot-value'
+;; `set-parsed-technique-record-slot-value'
+;; `set-parsed-documentation-record-slot-value'
+;; `set-parsed-theme-record-slot-value'
+;; `set-parsed-translation-for-inventory-record-slot-value'
+;;
+
+;; loaders
+;; (load-parsed-inventory-record-default-file-to-parse-table)
+;; (load-parsed-artist-record-default-file-to-parse-table)
+;; (load-parsed-author-record-default-file-to-parse-table)
+;; (load-parsed-brand-record-default-file-to-parse-table)
+;; (load-parsed-person-record-default-file-to-parse-table)
+;; (load-parsed-publication-record-default-file-to-parse-table)
+;; (load-parsed-theme-record-default-file-to-parse-table)
+;; (load-parsed-technique-record-default-file-to-parse-table)
+;; (load-parsed-documentation-record-default-file-to-parse-table)
+;; (load-parsed-translation-for-inventory-record-default-file-to-parse-table)
+
+;; writers
+;; (write-parsed-inventory-record-parse-table-to-file)
+;; (write-parsed-artist-record-parse-table-to-file)
+;; (write-parsed-author-record-parse-table-to-file)
+;; (write-parsed-brand-record-parse-table-to-file)
+;; (write-parsed-person-record-parse-table-to-file)
+;; (write-parsed-publication-record-parse-table-to-file)
+;; (write-parsed-theme-record-parse-table-to-file)
+;; (write-parsed-technique-record-parse-table-to-file)
+;; (write-parsed-documentation-record-parse-table-to-file)
+;; (write-parsed-translation-for-inventory-record-parse-table-to-file)
+;;
+;; 
+;;
+;;  Follwoing writes all values of parsed-class-parse-table for class instances
+;;  of `parsed-inventory-record' to directories beneath
+;;  `*dbc-base-item-number-image-pathname*':
+;; 
+;; (when (>= (hash-table-count (parsed-class-parse-table 'parsed-inventory-record)) 8969)
+;;   (write-sax-parsed-inventory-record-hash-to-zero-padded-directory 
+;;    (parsed-class-parse-table 'parsed-inventory-record)))
+;; 
+;;  :NOTE inspect `*parsed-class-parse-table*' to understand schema and dispatch mechanisms around it.   (documentation '*parsed-class-parse-table* 'variable)
+;;   (gethash 'parsed-inventory-record *parsed-class-parse-table*)
+;;
+;;; ==============================
+
+
 ;; `set-parsed-inventory-record-slot-value'
 (def-set-parsed-class-record-slot-value
     parsed-inventory-record)
@@ -202,7 +340,9 @@
                                            (sub-path *xml-output-dir*))
   :default-pathname-type "pctd")
 
+;; (clrhash (parsed-class-parse-table 'parsed-inventory-record))
 ;; (load-parsed-inventory-record-default-file-to-parse-table)
+;; (load-parsed-inventory-record-default-file-to-parse-table :load-verbose t)
 ;; (parsed-class-parse-table 'parsed-inventory-record)
 ;; `load-parsed-inventory-record-default-file-to-parse-table'
 (def-parsed-class-load-default-parsed-file-to-hash
@@ -233,6 +373,7 @@
 ;;   (accessor-to-field-table obj))
 ;;
 ;;; *parsed-class-field-slot-accessor-mapping-table*
+
 
 ;;; ==============================
 ;;; `parsed-inventory-sales-order-record'
@@ -311,7 +452,7 @@
   :default-output-pathname-sub-directory (list "parsed-xml-records" "parsed-xml-inventory-sales-order-records")
   :default-output-pathname-name "order-records")
 
-;; (write-parsed-inventory-record-parse-table-to-file)
+;; (write-parsed-inventory-sales-sold-in-store-record-parse-table-to-file)
 ;; `write-parsed-inventory-sales-sold-in-store-record-parse-table-to-file'
 (def-parsed-class-write-parse-table-to-file
     :parsed-class parsed-inventory-sales-sold-in-store-record
@@ -371,10 +512,12 @@
                                            (sub-path *xml-output-dir*))
   :default-pathname-type "pctd")
 
+;; (clrhash (parsed-class-parse-table 'parsed-author-record))
 ;; (load-parsed-artist-record-default-file-to-parse-table)
+;; (load-parsed-artist-record-default-file-to-parse-table :load-verbose t)
 ;; `load-parsed-artist-record-default-file-to-parse-table'
 (def-parsed-class-load-default-parsed-file-to-hash 
-    :parsed-class parsed-artist-record
+  :parsed-class parsed-artist-record
   :default-key-accessor control-id-entity-num-artist
   :default-input-pathname-sub-directory "parsed-artist-record"
   :default-input-pathname-base-directory (merge-pathnames
@@ -384,7 +527,7 @@
 
 ;; `write-parsed-artist-record-parse-table-to-csv-file'
 (def-parsed-class-write-csv-file
-    :parsed-class parsed-artist-record
+  :parsed-class parsed-artist-record
   :default-prefix-for-file-name "artist-records"
   :default-output-pathname-sub-directory "parsed-csv-artist-records"
   :default-output-pathname-base-directory (merge-pathnames
@@ -404,7 +547,7 @@
 ;; (parsed-author-record-xml-dump-file-and-hash) => 471
 ;;; `parsed-author-record-xml-dump-file-and-hash'
 (def-parsed-class-record-xml-dump-file-and-hash
-    :parsed-class parsed-author-record
+  :parsed-class parsed-author-record
   :default-key-accessor control-id-entity-num-author
   :default-input-pathname-name "dump-author-infos-xml"
   :default-output-pathname-base-directory (sub-path *xml-output-dir*)
@@ -414,7 +557,7 @@
 ;; (write-parsed-author-record-parse-table-to-file)
 ;; `write-parsed-author-record-parse-table-to-file'
 (def-parsed-class-write-parse-table-to-file
-    :parsed-class parsed-author-record
+  :parsed-class parsed-author-record
   :default-output-pathname-sub-directory "parsed-author-record"
   :default-output-pathname-base-directory (merge-pathnames
                                            (make-pathname :directory '(:relative "parsed-class-table-dumps"))
@@ -423,10 +566,12 @@
 
 ;; (naf-entity-author-display-name-coref (parsed-class-parse-table-lookup 'parsed-author-record "298"))
 ;; (naf-entity-author-display-name-coref (parsed-class-parse-table-lookup 'parsed-author-record "39"))
+;; (clrhash (parsed-class-parse-table 'parsed-author-record))
 ;; (load-parsed-author-record-default-file-to-parse-table)
+;; (load-parsed-author-record-default-file-to-parse-table :load-verbose t)
 ;; `load-parsed-author-record-default-file-to-parse-table'
 (def-parsed-class-load-default-parsed-file-to-hash 
-    :parsed-class parsed-author-record
+  :parsed-class parsed-author-record
   :default-key-accessor control-id-entity-num-author
   :default-input-pathname-sub-directory "parsed-author-record"
   :default-input-pathname-base-directory (merge-pathnames
@@ -436,7 +581,7 @@
 
 ;; `write-parsed-author-record-parse-table-to-csv-file'
 (def-parsed-class-write-csv-file
-    :parsed-class parsed-author-record
+  :parsed-class parsed-author-record
   :default-prefix-for-file-name "author-records"
   :default-output-pathname-sub-directory "parsed-csv-author-records"
   :default-output-pathname-base-directory (merge-pathnames
@@ -471,7 +616,10 @@
                                            (sub-path *xml-output-dir*))
   :default-pathname-type "pctd")
 
-;; (load-parsed-brand-record-default-file-to-parse-table)
+;; (maphash #'(lambda (k v) (print v)) (parsed-class-parse-table 'parsed-brand-record))
+;; (clrhash (parsed-class-parse-table 'parsed-brand-record))
+;; (load-parsed-person-record-default-file-to-parse-table)
+;; (load-parsed-brand-record-default-file-to-parse-table :load-verbose t)
 ;; `load-parsed-brand-record-default-file-to-parse-table'
 (def-parsed-class-load-default-parsed-file-to-hash 
     :parsed-class parsed-brand-record
@@ -521,7 +669,9 @@
                                            (sub-path *xml-output-dir*))
   :default-pathname-type "pctd")
 
+;; (clrhash (parsed-class-parse-table 'parsed-person-record))
 ;; (load-parsed-person-record-default-file-to-parse-table)
+;; (load-parsed-person-record-default-file-to-parse-table :load-verbose t)
 ;; `load-parsed-person-record-default-file-to-parse-table'
 (def-parsed-class-load-default-parsed-file-to-hash 
     :parsed-class parsed-person-record
@@ -571,7 +721,10 @@
                                            (sub-path *xml-output-dir*))
   :default-pathname-type "pctd")
 
+;; (control-id-display-publication-full (parsed-class-parse-table-lookup 'parsed-publication-record "39"))
+;; (clrhash (parsed-class-parse-table 'parsed-publication-record))
 ;; (load-parsed-publication-record-default-file-to-parse-table)
+;; (load-parsed-publication-record-default-file-to-parse-table :load-verbose t)
 ;; `load-parsed-publication-record-default-file-to-parse-table'
 (def-parsed-class-load-default-parsed-file-to-hash 
     :parsed-class parsed-publication-record
@@ -669,7 +822,9 @@
                                            (sub-path *xml-output-dir*))
   :default-pathname-type "pctd")
 
+;; (clrhash (parsed-class-parse-table 'parsed-documentation-record))
 ;; (load-parsed-documentation-record-default-file-to-parse-table)
+;; (load-parsed-documentation-record-default-file-to-parse-table :load-verbose t)
 ;; `load-parsed-documentation-record-default-file-to-parse-table'
 (def-parsed-class-load-default-parsed-file-to-hash 
     :parsed-class parsed-documentation-record
@@ -742,9 +897,6 @@
 ;;; ==============================
 ;;; `parsed-translation-for-inventory-record'
 ;;; ==============================
-;; 
-;; inventory-number
-;; dbc-class-parsed-inventory-translation-record.lisp
 
 ;; `set-parsed-translation-for-inventory-record-slot-value'
 (def-set-parsed-class-record-slot-value
@@ -793,42 +945,175 @@
                                            (make-pathname :directory '(:relative "parsed-csv-records"))
                                            (sub-path *xml-output-dir*)))
 
-
+
+;;; ==============================
+;;; docstrings for loadtime-bind.lisp 
 ;;; ==============================
 
-;; *parsed-class-parse-table*
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (let* ((slot-syms '(parsed-inventory-record-xml-dump-file-and-hash
+                      parsed-inventory-sales-order-record-xml-dump-file-and-hash
+                      parsed-inventory-sales-sold-in-store-record-xml-dump-file-and-hash
+                      parsed-artist-record-xml-dump-file-and-hash
+                      parsed-author-record-xml-dump-file-and-hash
+                      parsed-brand-record-xml-dump-file-and-hash
+                      parsed-person-record-xml-dump-file-and-hash
+                      parsed-publication-record-xml-dump-file-and-hash
+                      parsed-technique-record-xml-dump-file-and-hash
+                      parsed-documentation-record-xml-dump-file-and-hash
+                      parsed-theme-record-xml-dump-file-and-hash
+                      parsed-translation-for-inventory-record-xml-dump-file-and-hash))
+         (pkg (find-package "DBC"))
+        (slot-sym-to-function  (loop
+                                 for sym in slot-syms
+                                 for quoted-slot = (find-symbol (string sym) pkg)
+                                 collect quoted-slot)))
+    (loop 
+      ;; for slot-sym in slot-syms
+      for def-slot in slot-sym-to-function
+      do (setf (documentation def-slot 'function)
+            (format nil 
+     "Function returned as per macro `def-parsed-class-record-xml-dump-file-and-hash' as defined with the following format:~%
+ \(def-parsed-class-record-xml-dump-file-and-hash
+    :parsed-class <PARSED-CLASS>
+    :default-key-accessor <ACCESSOR>
+    :default-input-pathname-name <PATHNAME-NAME>
+    :default-output-pathname-base-directory \(sub-path *xml-output-dir*\)
+    :default-output-pathname-sub-directory 
+                                    \(list \"parsed-xml-records\" \"<SUB-PATHNAME-FOR-PARSED-CLASS>\"\)
+    :default-output-pathname-name \"<PARSED-CLASS>\"\)~%
+:SEE-ALSO ~{~<~%~1,100:; `~(~S~)'~>~^,~},`*xml-output-dir*' `def-parsed-class-record-xml-dump-file-and-hash',
+`def-parsed-class-write-parse-table-to-file',`def-parsed-class-load-default-parsed-file-to-hash',
+`def-parsed-class-write-csv-file'.~%▶▶▶" slot-syms )))))
 
-;; write all values of parsed-class-parse-table to directories beneath *dbc-base-item-number-image-pathname*
-;; (when (>= (hash-table-count (parsed-class-parse-table 'parsed-inventory-record)) 8969)
-;;   (write-sax-parsed-inventory-record-hash-to-zero-padded-directory  (parsed-class-parse-table 'parsed-inventory-record)))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (let* ((slot-syms '(write-parsed-inventory-record-parse-table-to-file
+                      write-parsed-inventory-sales-order-record-parse-table-to-file
+                      write-parsed-inventory-sales-sold-in-store-record-parse-table-to-file
+                      write-parsed-artist-record-parse-table-to-file
+                      write-parsed-author-record-parse-table-to-file
+                      write-parsed-brand-record-parse-table-to-file
+                      write-parsed-person-record-parse-table-to-file
+                      write-parsed-publication-record-parse-table-to-file
+                      write-parsed-technique-record-parse-table-to-file
+                      write-parsed-documentation-record-parse-table-to-file
+                      write-parsed-theme-record-parse-table-to-file
+                      write-parsed-translation-for-inventory-record-parse-table-to-file))
+         (pkg (find-package "DBC"))
+        (slot-sym-to-function  (loop
+                                 for sym in slot-syms
+                                 for quoted-slot = (find-symbol (string sym) pkg)
+                                 collect quoted-slot)))
+    (loop 
+      ;; for slot-sym in slot-syms
+      for def-slot in slot-sym-to-function
+      do (setf (documentation def-slot 'function)
+            (format nil 
+     "Function returned as per macro `def-parsed-class-write-parse-table-to-file' as defined with the following format:~%
+  \(def-parsed-class-write-parse-table-to-file
+                :parsed-class <PARSED-CLASS>
+                :default-output-pathname-sub-directory \"<SUB-DIR-FOR-PARSED-CLASS>\"
+                :default-output-pathname-base-directory 
+                \(merge-pathnames \(make-pathname :directory '\(:relative \"parsed-class-table-dumps\"\)\)
+                                                           \(sub-path *xml-output-dir*\)\)
+               :default-pathname-type \"pctd\"\)\)\)~%
+:SEE-ALSO ~{~<~%~1,100:; `~(~S~)'~>~^,~},`*xml-output-dir*', `def-parsed-class-record-xml-dump-file-and-hash',~@
+`def-parsed-class-write-parse-table-to-file',`def-parsed-class-load-default-parsed-file-to-hash',~@
+ `def-parsed-class-write-csv-file'.~%▶▶▶" slot-syms )))))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (let* ((slot-syms '(load-parsed-inventory-record-default-file-to-parse-table
+                      load-parsed-inventory-sales-order-record-default-file-to-parse-table
+                      load-parsed-inventory-sales-sold-in-store-record-default-file-to-parse-table
+                      load-parsed-artist-record-default-file-to-parse-table
+                      load-parsed-author-record-default-file-to-parse-table
+                      load-parsed-brand-record-default-file-to-parse-table
+                      load-parsed-person-record-default-file-to-parse-table
+                      load-parsed-publication-record-default-file-to-parse-table
+                      load-parsed-technique-record-default-file-to-parse-table
+                      load-parsed-documentation-record-default-file-to-parse-table
+                      load-parsed-theme-record-default-file-to-parse-table
+                      load-parsed-translation-for-inventory-record-default-file-to-parse-table))
+         (pkg (find-package "DBC"))
+        (slot-sym-to-function  (loop
+                                 for sym in slot-syms
+                                 for quoted-slot = (find-symbol (string sym) pkg)
+                                 collect quoted-slot)))
+    (loop 
+      ;; for slot-sym in slot-syms
+      for def-slot in slot-sym-to-function
+      do (setf (documentation def-slot 'function)
+            (format nil 
+     "Function returned as per macro `def-parsed-class-load-default-parsed-file-to-hash' as defined with the following format:~%
+\(def-parsed-class-load-default-parsed-file-to-hash
+         :parsed-class <PARSED-CLASS>
+         :default-key-accessor <DEFAULT-KEY-ACCESSOR>
+         :default-input-pathname-sub-directory \"<PARSED-CLASS>\"
+         :default-input-pathname-base-directory \(default-input-pathname-base-directory
+                                                 \(merge-pathnames
+                                                  \(make-pathname :directory '\(:relative \"parsed-class-table-dumps\"\)\)
+                                                  \(dbc::sub-path dbc::*xml-output-dir*\)\)\)
+         :default-pathname-type \"pctd\"\)~%
+:SEE-ALSO ~{~<~%~1,80:; `~(~S~)'~>~^,~},`*xml-output-dir*' `def-parsed-class-record-xml-dump-file-and-hash',
+`def-parsed-class-write-parse-table-to-file',`def-parsed-class-load-default-parsed-file-to-hash',
+`def-parsed-class-write-csv-file'.~%▶▶▶" slot-syms )))))
 
 
-;; loaders
-;; (load-parsed-inventory-record-default-file-to-parse-table)
-;; (load-parsed-artist-record-default-file-to-parse-table)
-;; (load-parsed-author-record-default-file-to-parse-table)
-;; (load-parsed-brand-record-default-file-to-parse-table)
-;; (load-parsed-person-record-default-file-to-parse-table)
-;; (load-parsed-publication-record-default-file-to-parse-table)
-;; (load-parsed-theme-record-default-file-to-parse-table)
-;; (load-parsed-technique-record-default-file-to-parse-table)
-;; (load-parsed-documentation-record-default-file-to-parse-table)
-;; (load-parsed-translation-for-inventory-record-default-file-to-parse-table)
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (let* ((slot-syms '(write-parsed-inventory-record-parse-table-to-csv-file
+                      write-parsed-inventory-sales-order-record-parse-table-to-csv-file
+                      write-parsed-inventory-sales-sold-in-store-record-parse-table-to-csv-file
+                      write-parsed-artist-record-parse-table-to-csv-file
+                      write-parsed-author-record-parse-table-to-csv-file
+                      write-parsed-brand-record-parse-table-to-csv-file
+                      write-parsed-person-record-parse-table-to-csv-file
+                      write-parsed-publication-record-parse-table-to-csv-file
+                      write-parsed-technique-record-parse-table-to-csv-file
+                      write-parsed-documentation-record-parse-table-to-csv-file
+                      write-parsed-theme-record-parse-table-to-csv-file
+                      write-parsed-translation-for-inventory-record-parse-table-to-csv-file))
+         (pkg (find-package "DBC"))
+        (slot-sym-to-function  (loop
+                                 for sym in slot-syms
+                                 for quoted-slot = (find-symbol (string sym) pkg)
+                                 collect quoted-slot)))
+    (loop 
+      ;; for slot-sym in slot-syms
+      for def-slot in slot-sym-to-function
+      do (setf (documentation def-slot 'function)
+            (format nil 
+     "Function returned as per macro `def-parsed-class-write-csv-file' as defined with the following format:~%
+ \(def-parsed-class-write-csv-file
+         :parsed-class <PARSED-CLASS>
+         :default-prefix-for-file-name \"<PARSED-CLASS-PREFIX>\"
+         :default-output-pathname-sub-directory \"<PARSED-CLASS-SUBDIR>\"
+         :default-output-pathname-base-directory 
+                \(merge-pathnames 
+                      \(make-pathname :directory '\(:relative \"<PARSED-CLASS-SUBDIR>\"\)\)
+                      \(dbc::sub-path dbc::*xml-output-dir*\)\)\)~%
+:SEE-ALSO ~{~<~%~1,80:; `~(~S~)'~>~^,~},~@
+`*xml-output-dir*' `def-parsed-class-record-xml-dump-file-and-hash',`def-parsed-class-write-parse-table-to-file',~@
+`def-parsed-class-load-default-parsed-file-to-hash',`def-parsed-class-write-csv-file'.~%▶▶▶" slot-syms )))))
 
-;; writers
-;; (write-parsed-inventory-record-parse-table-to-file)
-;; (write-parsed-artist-record-parse-table-to-file)
-;; (write-parsed-author-record-parse-table-to-file)
-;; (write-parsed-brand-record-parse-table-to-file)
-;; (write-parsed-person-record-parse-table-to-file)
-;; (write-parsed-publication-record-parse-table-to-file)
-;; (write-parsed-theme-record-parse-table-to-file)
-;; (write-parsed-technique-record-parse-table-to-file)
-;; (write-parsed-documentation-record-parse-table-to-file)
-;; (write-parsed-translation-for-inventory-record-parse-table-to-file)
 
 
 
 ;;; ==============================
+;;; convenience functions likely temporary.
+;;; ==============================
+(defun %parsed-inventory-record-get-all-goulds ()
+  "Convenience function. Returns a list of all instance of class `parsed-inventory-record' with slot-value CATEGORY-ENTITY-3-COREF matching one of the following:
+ \"Century Himalayas\"  \"Birds of New Guinea\" \"Birds of Europe\"
+ \"Birds of Great Britain\" \"Birds of Australia\"~%"
+  (let ((results (alexandria:mappend #'(lambda (coref)
+                          (parsed-class-slot-value-collect-string= 
+                           'parsed-inventory-record 
+                           'category-entity-3-coref coref))
+                      (list "Century Himalayas" "Birds of New Guinea" "Birds of Europe"
+                            "Birds of Great Britain" "Birds of Australia"))))
+    (values results (length results))))
+
+
+;;; ==============================
 ;;; :EOF
- 
