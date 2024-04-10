@@ -67,13 +67,14 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 
 ;; `parsed-inventory-sales-sold-in-store-record-xml-dump-file-and-hash'
 ;; (parsed-inventory-sales-sold-in-store-record-xml-dump-file-and-hash)
-(def-parsed-class-record-xml-dump-file-and-hash
-    :parsed-class parsed-inventory-sales-sold-in-store-record
-  :default-key-accessor inventory-number
-  :default-input-pathname-name "sold-in-store-xml"
-  :default-output-pathname-sub-directory (list "parsed-xml-inventory-sales-sold-in-store-record")
-  :default-output-pathname-base-directory (sub-path *xml-output-dir*)
-  :default-output-pathname-name "sold-in-store-records")
+;; loadtime-bind
+;; (def-parsed-class-record-xml-dump-file-and-hash
+;;     :parsed-class parsed-inventory-sales-sold-in-store-record
+;;   :default-key-accessor inventory-number
+;;   :default-input-pathname-name "sold-in-store-xml"
+;;   :default-output-pathname-sub-directory (list "parsed-xml-inventory-sales-sold-in-store-record")
+;;   :default-output-pathname-base-directory (sub-path *xml-output-dir*)
+;;   :default-output-pathname-name "sold-in-store-records")
 
 ;;; ==============================
 ;; :FIELD "id" :TRANSFORM ignorable-sold-in-store-id-number
