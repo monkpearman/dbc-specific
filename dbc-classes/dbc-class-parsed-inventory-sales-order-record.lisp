@@ -41,8 +41,6 @@ These contents of these XML files correspond to the following derbycityprints SQ
 (in-package #:dbc)
 
 
-
-
 (defclass parsed-inventory-sales-order-record (parsed-class)
   (;; control-id-indexed-inventory-sales-order-record
    (order-number 
@@ -461,13 +459,14 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%")))
 ;;    #P"../dbc-specific/xml-class-dump-dir/parsed-xml-inventory-sales-order-records/order-records-2012-02-16.lisp"
 ;;
 ;; `parsed-inventory-sales-order-record-xml-dump-file-and-hash'
-(def-parsed-class-record-xml-dump-file-and-hash 
-    :parsed-class parsed-inventory-sales-order-record
-  :default-key-accessor order-number
-  :default-input-pathname-name "orders-xml"
-  :default-output-pathname-sub-directory (list "parsed-xml-inventory-sales-order-records")
-  :default-output-pathname-base-directory (sub-path *xml-output-dir*)
-  :default-output-pathname-name "order-records")
+;; loadtime-bind
+;; (def-parsed-class-record-xml-dump-file-and-hash 
+;;     :parsed-class parsed-inventory-sales-order-record
+;;   :default-key-accessor order-number
+;;   :default-input-pathname-name "orders-xml"
+;;   :default-output-pathname-sub-directory (list "parsed-xml-inventory-sales-order-records")
+;;   :default-output-pathname-base-directory (sub-path *xml-output-dir*)
+;;   :default-output-pathname-name "order-records")
 
 ;; (write-sax-parsed-xml-to-file :input-file (make-pathname :directory (pathname-directory (sub-path *xml-input-dir*))
 ;;                                                          :name "orders-xml")
