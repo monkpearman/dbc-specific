@@ -1,18 +1,17 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-01-06T13:37:33-05:00Z}#{11014} - by MON>
 ;;; :FILE dbc-classes/dbc-class-parsed-inventory-record.lisp
 ;;; ==============================
-;; keywords-sequence keyword-sequenced-entity-coref
-;; keywords-seo      keyword-seo-sequenced-entity-coref
-
+;;
+;;
 ;; :NOTE `set-parsed-inventory-record-slot-value'
 ;; `parsed-inventory-record-xml-dump-file-and-hash'.
 ;; `write-parsed-inventory-record-parse-table-to-file'
 ;; `load-parsed-inventory-record-default-file-to-parse-table' are defined via
 ;; macrology from in loadtime-bind.lisp
-
-;; NOTE Our largest item-ref from the xml/sql parse is 12416 our largest picture
+;;
+;; :NOTE Our largest item-ref from the xml/sql parse is 12416 our largest picture
 ;; in httpd/photos/big is 12415
-
+;;
 ;; :TODO
 ;; - slots to add
 ;;
@@ -41,17 +40,16 @@
 ;; :IMAGE-FILE-SOURCE-PATHNAME
 ;; for each object find the source bmp/nef images beneath /mnt/LV-NEF-DRV-B/ and
 ;; populate the path for it as well.
+;;
+;;; ==============================
 
 
 
 (in-package #:dbc)
-;; *package*
-;; parsed-class-parse-table-lookup-slot-value
-;; (fmakunbound #'parsed-inventory-record-parse-table-lookup-slot-value)
-(defgeneric parsed-inventory-record-parse-table-lookup-slot-value (slot-name hash-key &key with-string-integer-coercion))
 
-;; (remove-method #'parsed-inventory-record-parse-table-lookup-slot-value
-;;                (find-method #'parsed-inventory-record-parse-table-lookup-slot-value nil '((eql image-base-pathname) t)))
+
+
+(defgeneric parsed-inventory-record-parse-table-lookup-slot-value (slot-name hash-key &key with-string-integer-coercion))
 
 
 
@@ -96,7 +94,7 @@
     :initarg :description-inventory-translation-french
     :accessor description-inventory-translation-french
     :documentation ":ORIGINAL-FIELD \"histo_fr\"")
-   
+
    ;; :WAS ignorable-history-english
    (description-inventory-translation-english
     :initarg  :description-inventory-translation-english
@@ -107,7 +105,7 @@
     :initarg :description-inventory-quote
     :accessor description-inventory-quote
     :documentation ":ORIGINAL-FIELD \"text_quote\"")
-   
+
    (description-inventory-translation
     :initarg  :description-inventory-translation
     :accessor description-inventory-translation
@@ -166,7 +164,7 @@
     :accessor publication-location
     :documentation ":ORIGINAL-FIELD \"publish_location\"")
 
-   (publication-volumes ;; for congruence with class `parsed-publication-record' 
+   (publication-volumes ;; for congruence with class `parsed-publication-record'
     :initarg :publication-volumes
     :accessor publication-volumes
     :documentation ":ORIGINAL-FIELD \"volume\"")
@@ -187,7 +185,7 @@
     :accessor publication-plates
     :documentation    ":ORIGINAL-FIELD \"Plate_number\"")
 
-   ;; :NOTE There really ought t be a distinction made between an issue and an edition
+   ;; :NOTE There really ought to be a distinction made between an issue and an edition
    (publication-issue
     :initarg :publication-issue
     :accessor publication-issue
@@ -195,15 +193,15 @@
 
    ;; It isn't totally clear yet if this is neccesarrily a publication related field
    ;; NIL | (:YEAR INTEGER :MONTH INTEGER | NIL :DAY INTEGER | NIL)
-   (publication-date ;; For congruence with birth-date death-date 
+   (publication-date ;; For congruence with birth-date death-date
     :initarg :publication-date
-    :accessor publication-date  
+    :accessor publication-date
     :documentation ":ORIGINAL-FIELD \"year\"")
    ;; It isn't totally clear yet if this is neccesarrily a publication related field
    (publication-date-range
     :initarg :publication-date-range
     :accessor publication-date-range
-    :documentation ":ORIGINAL-FIELD \"year_year\"") 
+    :documentation ":ORIGINAL-FIELD \"year_year\"")
 
    (category-entity-0-coref
     :initarg :category-entity-0-coref
@@ -284,12 +282,12 @@
     :initarg :theme-entity-2-coref
     :accessor theme-entity-2-coref
     :documentation ":ORIGINAL-FIELD \"theme3\"")
- 
+
    ;; :NOTE Need price-sold and price-paid. However price-paid should really be
    ;; prefixed as purchase-price-paid b/c there are also purchase-from,
    ;; purchase-date-time, etc.
-   ;; :TODO This should really be named `price-ask-default'. Elsewhere we have price-ask-ebay, price-ask-trade-show, price-ask-client, etc.
-   (price-ask ;; The "-ask" suffix is for congruence with "price-ebay" 
+   ;; :TODO This should really be named `price-ask-default' as elsewhere we have price-ask-ebay, price-ask-trade-show, price-ask-client, etc.
+   (price-ask ;; The "-ask" suffix is for congruence with "price-ebay"
     :initarg :price-ask
     :accessor price-ask
     :documentation ":ORIGINAL-FIELD \"price\"")
@@ -344,7 +342,7 @@
     :accessor unit-height
     :documentation ":ORIGINAL-FIELD \"h\"")
 
-   (ignorable-number ;; probably empty  
+   (ignorable-number ;; probably empty
     :initarg :ignorable-number
     :accessor ignorable-number
     :documentation ":ORIGINAL-FIELD \"nbre\"")
@@ -361,8 +359,7 @@
     :documentation ":ORIGINAL-FIELD \"bar_code\"")
 
    ;; :NOTE See ignorable-shipping-weight-combined, ignorable-shipping-weight-combined-pounds,
-   ;; ignorable-shipping-weight-combined-ounces slot in class
-   ;; `parsed-inventory-record'
+   ;; ignorable-shipping-weight-combined-ounces slot in class `parsed-inventory-record'
    ;; unit-of-measure-weight
    (unit-weight
     :initarg :unit-weight
@@ -385,16 +382,18 @@
     :accessor job-id
     :documentation ":ORIGINAL-FIELD \"job_name\"")
 
-   (job-locked ;; IGNORABLE  
+   (job-locked ;; IGNORABLE
     :initarg :job-locked
     :accessor job-locked
-    :documentation ":ORIGINAL-FIELD \"locked\"")
-
-   ;;  status "0" => 518  ; not-online? but why? maybe pending? :INACTIVE-PENDING
-   ;;  status "1" => 7466 ; set these to :ACTIVE
-   ;;  status "2" => 318  ; sold? looks like it. set these to :SOLD
-   ;;  status "3" => 667  ; duplicate?? pretty sure this is duplicate and/or editing :INACTIVE-DUPLICATE
-   ;; :Note However, That Nouvelle Geographie Universelle have status 3 and were never place online.
+    :documentation ":ORIGINAL-FIELD \"locked\"
+Orignially these had one of the four following status values with the following counts for existing items:
+- status \"0\" => 518  ; not-online? but why? maybe pending? :INACTIVE-PENDING
+- status \"1\" => 7466 ; set these to :ACTIVE
+- status \"2\" => 318  ; sold? looks like it. set these to :SOLD
+- status \"3\" => 667  ; duplicate?? pretty sure this is duplicate and/or editing :INACTIVE-DUPLICATE
+:NOTE In future we may convert these status values according to following plist:
+  \(\(0 . :INACTIVE-PENDING\)  \(1 . :ACTIVE\) \(2  . :SOLD\) \(3 . :INACTIVE-DUPLICATE\)\)
+:NOTE However, that Nouvelle Geographie Universelle have status 3 and were never placed online.")
 
    (record-status-active
     :initarg :record-status-active
@@ -416,7 +415,7 @@
     :accessor ignorable-keywords-type
     :documentation ":ORIGINAL-FIELD \"keywords_type\"")
 
-   (inventory-can-repro ;; IGNORABLE  
+   (inventory-can-repro ;; IGNORABLE
     :initarg :inventory-can-repro
     :accessor inventory-can-repro
     :documentation ":ORIGINAL-FIELD \"av_repro\"")
@@ -461,7 +460,7 @@
     :accessor keyword-seo-sequenced-entity-coref
     :documentation ":ORIGINAL-FIELD \"keywords_seo\"")
 
-   ;; shares-generic   
+   ;; shares-generic
    ;; :TODO this should be edit-timestamp-origin
    (edit-timestamp-origin ;; IGNORABLE assuming date_edit is present and corresponds.
     :initarg :edit-timestamp-origin
@@ -491,7 +490,7 @@
     :documentation "A list of pathname formatted as file-namestrings each element is an image associated with this record.")
    )
 
-  (:documentation 
+  (:documentation
    #.(format nil
              "Class for parsed dbc xml `refs` table.~%~@
 :EXAMPLE ~%
@@ -520,9 +519,147 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
          (inv-num-if (and (stringp inv-num)
                           (control-id-indexed-number-zero-padded-string inv-num))))
     (declare (mon:string-or-null inv-num-if))
-    (print-unreadable-object (object stream :type t :identity (not inv-num-if)) 
+    (print-unreadable-object (object stream :type t :identity (not inv-num-if))
       (format stream "~S" inv-num-if))))
 
+
+
+;; (parsed-class-slot-value-format-price (%get-inventory-record "12415") 'price-ask :prefix nil)
+;; (parsed-class-slot-value-format-price (%get-inventory-record "12415") 'price-ask)
+;; (parsed-class-slot-value-format-price (%get-inventory-record "12415") 'price-ask :prefix #\₠)
+;; (parsed-class-slot-value-format-price (%get-inventory-record "12415") 'price-ask :prefix #\€)
+;; (parsed-class-slot-value-format-price (%get-inventory-record "12415") 'price-ask :prefix #\£)
+(defmethod parsed-class-slot-value-format-price ((object parsed-inventory-record) (slot-name (eql 'price-ask))
+                                                 &key stream
+                                                      (prefix #\$))
+  (declare ((or null character) prefix))
+  (let ((maybe-price (price-ask object)))
+    (when maybe-price
+      (if prefix
+          (format stream "~C~$" prefix maybe-price)
+          (format stream "~$" maybe-price)))))
+
+
+;; (parsed-class-slot-value-format-date-plist (make-instance 'parsed-inventory-record 
+;;                                                           :publication-date '(:year nil))
+;;                                            'publication-date
+;;                                            :date-style :alpha-month)
+
+
+;; (parsed-class-slot-value-format-date-plist (make-instance 'parsed-inventory-record 
+;;                                                           :publication-date '(:year 1865 :month 3))
+;;                                            'publication-date
+;;                                            :date-style :alpha-month)
+
+;; (parsed-class-slot-value-format-date-plist (make-instance 'parsed-inventory-record 
+;;                                                           :publication-date '(:year 1865 :month 3))
+;;                                            'publication-date
+;;                                            :date-style :numeric-delimited)
+
+;; (parsed-class-slot-value-format-date-plist (make-instance 'parsed-inventory-record 
+;;                                                           :publication-date '(:year 1865))
+;;                                            'publication-date
+;;                                            :date-style :numeric-delimited
+;;                                            :allow-empty-month-day t)
+;; errors successfully
+;; (parsed-class-slot-value-format-date-plist (make-instance 'parsed-inventory-record 
+;;                                                           :publication-date '(:year 1865))
+;;                                            'publication-date
+;;                                            :date-style :alpha-month
+;;                                            :allow-empty-month-day nil)
+
+;; (parsed-class-slot-value-format-date-plist (make-instance 'parsed-inventory-record 
+;;                                                           :publication-date '(:year 1865))
+;;                                            'publication-date
+;;                                            :date-style :numeric-delimited
+;;                                            :allow-empty-month-day nil)
+
+;; (parsed-class-slot-value-format-date-plist (make-instance 'parsed-inventory-record 
+;;                                                           :publication-date '(:year 1865 :month 3))
+;;                                            'publication-date
+;;                                            :date-style :numeric-delimited
+;;                                            :allow-empty-month-day nil)
+
+;; (parsed-class-slot-value-format-date-plist (%get-inventory-record "4729") 'publication-date)
+;; (parsed-class-slot-value-format-date-plist (%get-inventory-record "4729") 'publication-date :date-style :year-only)
+;; (parsed-class-slot-value-format-date-plist (%get-inventory-record "4729") 'publication-date :date-style :alpha-month)
+;; (parsed-class-slot-value-format-date-plist (%get-inventory-record "11834") 'publication-date :date-style :year-only)
+;; (parsed-class-slot-value-format-date-plist (%get-inventory-record "11834") 'publication-date)
+(defmethod parsed-class-slot-value-format-date-plist ((object parsed-inventory-record) (slot-name (eql 'publication-date))
+                                                      &key stream
+                                                           (date-style :numeric-delimited)
+                                                           (allow-empty-month-day t))
+  (declare (type (or (eql :numeric-delimited) (eql :alpha-month) (eql :year-only)) date-style)
+           (boolean allow-empty-day)
+           (optimize (speed 2)) (optimize (debug 3))
+           )
+  (let* ((maybe-date (publication-date object))
+         (maybe-year (and maybe-date
+                          (or (getf maybe-date :YEAR)
+                              (error 'invalid-timestamp-component :component maybe-date))))
+         (valid-year  (and maybe-year
+                           (valid-year-date-non-zero-unsigned-or-error maybe-year)
+                           maybe-year))
+         (maybe-month (and maybe-date
+                           (getf maybe-date :MONTH)))
+         (valid-month (and maybe-month
+                           (valid-month-date-or-error maybe-month)
+                           maybe-month))
+         (maybe-day   (and maybe-date
+                           (getf maybe-date :DAY)))
+         (valid-day   (and maybe-day
+                           (valid-day-date-or-error maybe-day)
+                           maybe-day)))
+    (when maybe-date
+      (ecase date-style
+        (:YEAR-ONLY
+         (princ-to-string valid-year))
+        (:NUMERIC-DELIMITED
+         (if (or (null valid-day)
+                 (null valid-month))
+             ;; If we did this we could prevent lossage of the month information
+             ;; by returning "YYYY/MM/00" at the risk of corruting something
+             ;; else further upstream:
+             ;; (if allow-empty-month-day
+             ;;     (if (null valid-month)
+             ;;         (parsed-class-slot-value-format-date-plist object 'publication-date :date-style :year-only)
+             ;;         (format stream "~D/~2,'0D/00" valid-year valid-month))
+             ;;     (error 'invalid-timestamp-component :component maybe-date))
+             (if allow-empty-month-day
+                 (parsed-class-slot-value-format-date-plist object 'publication-date :date-style :year-only)
+                 (error 'invalid-timestamp-component :component maybe-date))
+             (format stream "~D/~2,'0D/~2,'0D" valid-year valid-month valid-day)))
+        (:ALPHA-MONTH
+         (cond ((and valid-month valid-day)
+                (format stream "~A ~2,'0D, ~D" (aref local-time:+month-names+ valid-month) valid-day valid-year))
+               (valid-month
+                (format stream "~A ~D" (aref local-time:+month-names+ valid-month)  valid-year))
+               ((null valid-month)
+                (if allow-empty-month-day
+                    (parsed-class-slot-value-format-date-plist object 'publication-date :date-style :year-only)
+                    (error 'invalid-timestamp-component :component maybe-date)))))))))
+
+;; (parsed-class-slot-value-format-delimited-string-list (%get-inventory-record "4729") 'category-entity-precedence-list)
+;; (parsed-class-slot-value-format-delimited-string-list (%get-inventory-record "4729") 'category-entity-precedence-list :delimiter #\^)
+;; (parsed-class-slot-value-format-delimited-string-list (make-instance 'parsed-inventory-record :category-entity-precedence-list nil)
+;;                                                       'category-entity-precedence-list
+;;                                                       :delimiter #\^)
+(defmethod parsed-class-slot-value-format-delimited-string-list ((object parsed-inventory-record)
+                                                                 (slot-name (eql 'category-entity-precedence-list))
+                                                                 &key stream (delimiter #\|))
+  (declare (character delimiter))
+  ;; alternative version using mapconcat
+  ;; (let ((maybe-cepl (category-entity-precedence-list object)))
+  ;;   (when maybe-cepl
+  ;;     (mon:mapconcat #'identity (reverse maybe-cepl) delimiter)))
+  (let* ((maybe-cepl (category-entity-precedence-list object))
+         (format-for-cepl (and maybe-cepl
+                               (concatenate 'string "~{~A~^" (vector delimiter) "~}"))))
+    (when maybe-cepl
+      (format stream format-for-cepl (reverse maybe-cepl) delimiter))))
+
+
+;;; ==============================
 (make-parsed-class-field-slot-accessor-mapping
  'parsed-inventory-record
  '(("ref"               . inventory-number)
@@ -551,7 +688,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("issue"             . publication-issue)
    ("year"              . publication-date)
    ("year_year"         . publication-date-range)
-   ("categ"             . category-entity-0-coref) 
+   ("categ"             . category-entity-0-coref)
    ("c1"                . category-entity-1-coref)
    ("c2"                . category-entity-2-coref)
    ("c3"                . category-entity-3-coref)
@@ -599,17 +736,23 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("date"              . edit-timestamp-origin)
    ("date_edit"         . edit-timestamp)
    ("edit_history"      . edit-history)
+   ;; following slots don't exist in the original schema so we use dummy placeholders.
    ("__IGNORED-1"       . image-directory-pathname)
    ("__IGNORED-2"       . image-file-pathnames)
-   )
- )
+   ;; ("__IGNORED-3"       . price-sold)
+   ;; ("__IGNORED-4"       . price-paid)
+   ;; ("__IGNORED-5"       . price-paid)
+   ))
 
+
+
+;;; ==============================
 (defun parsed-inventory-record-parse-table-lookup (hash-key)
   (declare (string hash-key))
   ;; (declare ((or string integer) hash-key))
   (parsed-class-parse-table-lookup (parsed-class-mapped 'parsed-inventory-record) hash-key))
 
-;; convenience function
+;; convenience function for code development don't call directly
 (defun %get-inventory-record (hash-key)
   (parsed-inventory-record-parse-table-lookup hash-key))
 
@@ -627,7 +770,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
   (declare (symbol slot-name)
            ((or string integer) hash-key)
            (optimize (speed 3)))
-  (multiple-value-bind (maybe-find-object found-p) 
+  (multiple-value-bind (maybe-find-object found-p)
       ;; (parsed-class-parse-table-lookup-slot-value 'parsed-inventory-record  slot-name hash-key :with-string-integer-coercion with-string-integer-coercion)
       (parsed-class-parse-table-lookup 'parsed-inventory-record hash-key)
     (if (and maybe-find-object found-p)
@@ -645,6 +788,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
                      maybe-find-object))
         (values maybe-find-object found-p))))
 
+
 (defmacro def-parsed-inventory-record-parse-table-lookup-slot-value (slot-name)
   (let ((generated-name (alexandria:format-symbol (find-package "DBC")
                                                   "~:@(PARSED-INVENTORY-RECORD-~A-LOOKUP~)"
@@ -660,21 +804,22 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
                                                      ',slot-name
                                                      hash-key
                                                      :with-string-integer-coercion with-string-integer-coercion))
-       ;; (%parsed-inventory-record-parse-table-lookup-slot-value ',slot-name hash-key))
+              ;; GENERATED-NAME `PARSED-INVENTORY-RECORD-<FOO>-LOOKUP'
        (defun ,generated-name (hash-key &key (with-string-integer-coercion nil))
          (declare ((or string integer) hash-key))
          (parsed-inventory-record-parse-table-lookup-slot-value ',slot-name hash-key :with-string-integer-coercion with-string-integer-coercion)))))
+
 
 (defun %parsed-inventory-record-parse-table-lookup-slot-value-maybe-remove ()
   (loop
     with current-accessors = (accessors-of-parsed-class 'parsed-inventory-record)
     for gf-method in (closer-mop:generic-function-methods #'parsed-inventory-record-parse-table-lookup-slot-value)
     for specializers = (closer-mop:method-specializers gf-method)
-    do (and specializers 
-            (typep (car specializers) 'closer-mop:eql-specializer) 
+    do (and specializers
+            (typep (car specializers) 'closer-mop:eql-specializer)
             (eql (class-name (cadr specializers)) 'string)
             (unless (member (closer-mop:eql-specializer-object (car specializers)) current-accessors)
-              
+
               (let ((maybe-remove-function (alexandria:format-symbol (find-package "DBC")
                                                                      "~:@(PARSED-INVENTORY-RECORD-~A-LOOKUP~)"
                                                                      (closer-mop:eql-specializer-object (car specializers)))))
@@ -686,6 +831,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
                   (unintern maybe-remove-function)))
               (remove-method #'parsed-inventory-record-parse-table-lookup-slot-value gf-method)))))
 
+;; (parsed-inventory-record-image-file-pathnames-update)
 (defun parsed-inventory-record-image-file-pathnames-update ()
   (let ((ht (parsed-class-parse-table 'parsed-inventory-record)))
     (unless (zerop (hash-table-count ht))
@@ -697,19 +843,123 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
                (multiple-value-bind (files dir name) (inventory-record-image-jpg-probe-all obj :pathname-return-style :file-pathname)
                  (declare (ignore name))
                  (and files (setf ifp files))
-                 (and dir (setf idp
-                                (pathname (enough-namestring dir
-                                                             *dbc-base-item-number-image-pathname*))))))
+                 (and dir
+                      (setf idp (pathname (enough-namestring dir *dbc-base-item-number-image-pathname*))))))
         count it))))
 
+
+(defun inventory-record-image-jpg-probe-all-updating-hash-value (object-string-or-integer
+                                                                 &key (hash-table (parsed-class-parse-table 'parsed-inventory-record))
+                                                                      (base-image-directory-pathname *dbc-base-item-number-image-pathname*))
+  (declare ;; (mon:pathname-or-namestring base-image-directory-pathname))
+   (type hash-table hash-table)
+   (type (or string integer parsed-inventory-record) object-string-or-integer))
+  (let ((object (etypecase object-string-or-integer
+                  (string (and (every #'digit-char-p object-string-or-integer)
+                               (gethash (string-left-trim (list #\0) object-string-or-integer)
+                                        hash-table)))
+                  (integer
+                   (gethash (format nil "~D" object-string-or-integer) hash-table))
+                  (parsed-inventory-record object-string-or-integer))))
+    (if object
+        (values
+         (multiple-value-bind (maybe-image-list maybe-path-or-full-path inventory-string)
+             (inventory-record-image-jpg-probe-all object
+                                                   :base-image-directory-pathname  base-image-directory-pathname
+                                                   :pathname-return-style :file-pathname)
+           (declare (ignore inventory-string))
+           (when (or maybe-image-list maybe-path-or-full-path)
+             (if (null maybe-image-list)
+                 (when (pathnamep maybe-path-or-full-path)
+                   (setf (image-directory-pathname object)
+                         ;; (pathname (enough-namestring full-path base-image-directory-pathname))
+                         (make-pathname :directory `(:relative ,(car (last (pathname-directory maybe-path-or-full-path)))))))
+                 (setf (image-file-pathnames object) maybe-image-list
+                       (image-directory-pathname object) (make-pathname :directory `(:relative ,(car (last (pathname-directory maybe-path-or-full-path)))))))))
+         ;; (image-directory-pathname object) (pathname (enough-namestring full-path base-image-directory-pathname))))))
+         object)
+        (values nil object-string-or-integer))))
+
+
+(defun %parsed-inventory-record-image-file-pathname-valid-p-or-error (pathname)
+  (if  (and (pathnamep pathname)
+            ;; :NOTE equalp satisfies for both "JPG" and "jpg" (equalp "JPG"  "jpg")
+            (equalp (pathname-type pathname) "jpg") 
+            (>= (length (pathname-name pathname)) 6)
+            (<= (length (pathname-name pathname)) 9)
+            (every #'digit-char-p (subseq (pathname-name pathname) 0 6))
+            (cond ((= (length (pathname-name pathname)) 6)
+                   t)
+                  ((= (length (pathname-name pathname)) 8)
+                   (alpha-char-p (aref (subseq (pathname-name pathname) 7 8) 0)))
+                  ((= (length (pathname-name pathname)) 9)
+                   (every #'alpha-char-p  (subseq (pathname-name pathname) 7 9)))))
+      pathname
+    (error (format nil ":FUNCTION `DBC::%PARSED-INVENTORY-RECORD-IMAGE-FILE-PATHNAME-MATCH'~%
+ - Argument PATHNAME does not satisfy `cl:pathnamep' or it's `pathname-name' has length less-than 6.~%
+:GOT ~S~%" pathname))))
+
+
+(defun %parsed-inventory-record-image-file-pathname-match (pathname)
+  (let ((pname (pathname-name (%parsed-inventory-record-image-file-pathname-valid-p-or-error pathname))))
+    (cl-ppcre:register-groups-bind (n1 n2 n3 n4 n5)
+                                   (*parsed-inventory-record-image-pathname-regex* pname)
+                                   (list n1 n2 n3 n4 n5)
+                                   (cond ((null n1)
+                                          (error (format nil
+                                                         ":FUNCTION `DBC::%parsed-inventory-record-image-file-pathname-match~%~@
+                                                           - Argument PATHNAME not viable.~%~@
+                                                          :GOT ~S~%" pathname)))
+                                         ((and n1 (null n3)) (cons :full pathname))
+                                         ((and n1  n3)
+                                          (cond ((equal "s" n3) (cons :small pathname))
+                                                ((equal "m" n3) (cons :medium pathname))
+                                                ((equal "z" n3) (cons :zoom pathname))
+                                                ((equal "f" n3) (cons :flash pathname))
+                                                ((equal "fc" n3) (cons :flash-c pathname))
+                                                ((equal "fs" n3) (cons :flash-s pathname))
+                                                ((equal "h" n3) (cons :header pathname))
+                                                (t
+                                                 (error (format nil
+                                                         ":FUNCTION `DBC::%parsed-inventory-record-image-file-pathname-match~%~@
+                                                           - Argument PATHNAME not viable.~%~@
+                                                          :GOT ~S~%" pathname)))))))))
+
+
+(defun parsed-inventory-record-image-file-pathname-get (hash-key &key (image-type :all) 
+                                                                    (with-string-integer-coercion nil))
+
+
+  (unless (member image-type (list :all :full :small :medium :zoom :flash :flash-c :flash-s :header) :test #'equal) 
+  (error (format nil
+                 ":FUNCTION `DBC::parsed-inventory-record-image-file-pathname-get  - Keyward IMAGE-TYPE does not name a valid type .~%~@
+                  :EXPECTED one of follwoing IMAGE-TYPES:~%~% :all :full :small :medium :zoom :flash :flash-c :flash-s :header~%~@
+                  :GOT ~S~%"
+                 image-type)))
+  (multiple-value-bind (imgs found item-number obj)
+      (parsed-inventory-record-image-file-pathnames-lookup hash-key :with-string-integer-coercion with-string-integer-coercion)
+    (if (null imgs)
+        (values imgs found item-number obj)
+      (if (equal image-type :all)
+          (values
+           (loop for elt in imgs
+                 for props = (%parsed-inventory-record-image-file-pathname-match  elt)
+                 for head = (car props)
+                 for tail = (cdr props)
+                 append (list head tail))
+           imgs item-number obj)
+        (values 
+         (loop for elt in imgs
+              for props = (%parsed-inventory-record-image-file-pathname-match  elt)
+              for prop = (car props)
+              when (equal prop image-type)
+              return (cdr props))
+         imgs item-number obj)))))
+
+;; :WARNING This function should only be used for instantiating instances created _outside_ a sax parse!"
 (defun parsed-inventory-record-null-prototype ()
-  "Return an instance of parsed-inventory-record with all slot-values null.
-We do this rather than using :initform or :default-initargs for class
-`parsed-inventory-record' and because we don't want to specialize on
-`initialize-instance'.
-This function should only be used for instantiating instances created _outside_ a sax parse!"
   (let ((prototype (make-instance 'dbc::parsed-inventory-record)))
-    (loop 
+    (loop
        for slot-is-accessor in (mon:class-slot-list 'dbc::parsed-inventory-record)
        do (setf (slot-value  prototype slot-is-accessor) nil))
     prototype))
@@ -721,7 +971,7 @@ This function should only be used for instantiating instances created _outside_ 
                                                        (suffix-for-file-name (concatenate 'string "_NEW-" (mon:time-string-yyyy-mm-dd)))
                                                        (pathname-type "lisp")
                                                        (print-unbound nil))
-  
+
   (let* ((inventory-number-check (dbc::inventory-number object))
          (record-id (or (and inventory-number-check
                              (stringp inventory-number-check)
@@ -733,7 +983,7 @@ This function should only be used for instantiating instances created _outside_ 
                               (probe-file base-output-directory))
                           (ensure-directories-exist (merge-pathnames (make-pathname :directory `(:relative ,record-id))
                                                                      base-output-directory)))))
-    (when output-dir 
+    (when output-dir
       (write-sax-parsed-slots-to-file
        object
        :output-directory output-dir
@@ -745,8 +995,42 @@ This function should only be used for instantiating instances created _outside_ 
        :slot-for-file-name-zero-padded t
        :pathname-type pathname-type))))
 
+(defun parsed-inventory-record-publication-date-lookup-get-year (hash-key &key (with-string-integer-coercion t))
+  (multiple-value-bind (date found lookup obj)
+    (parsed-inventory-record-publication-date-lookup hash-key :with-string-integer-coercion with-string-integer-coercion)
+  (values (and date (getf date :year )) date lookup obj)))
+
+
+(defun parsed-inventory-record-publication-date-lookup-get-month (hash-key &key (with-string-integer-coercion t))
+
+  (multiple-value-bind (date found lookup obj)
+      (parsed-inventory-record-publication-date-lookup hash-key :with-string-integer-coercion with-string-integer-coercion)
+    (values (and date (getf date :month )) date lookup obj)))
+
+
+(defun parsed-inventory-record-publication-date-lookup-get-day (hash-key &key (with-string-integer-coercion t))
+  (multiple-value-bind (date found lookup obj)
+      (parsed-inventory-record-publication-date-lookup hash-key :with-string-integer-coercion with-string-integer-coercion)
+    (values (and date (getf date :day )) date lookup obj)))
+
+
+(defun parsed-inventory-record-description-inventory-condition-lookup-get-rating (hash-key &key (with-string-integer-coercion t))
+  (multiple-value-bind (condition found lookup obj)
+      (parsed-inventory-record-description-inventory-condition-lookup hash-key :with-string-integer-coercion with-string-integer-coercion)
+    (values (and condition (getf condition :rating )) condition lookup obj)))
+
+
+(defun parsed-inventory-record-description-inventory-condition-lookup-get-description (hash-key &key (with-string-integer-coercion t))
+  (multiple-value-bind (condition found lookup obj)
+      (parsed-inventory-record-description-inventory-condition-lookup hash-key :with-string-integer-coercion with-string-integer-coercion)
+    (values (and condition (getf condition :description)) condition lookup obj)))
+
+
 ;; (parsed-class-parse-table 'parsed-inventory-record)
-;; (load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-inventory-record #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/xml-class-dump-dir/parsed-xml-inventory-records/inventory-records-2012-02-16.lisp")
+;; 
+;; (load-sax-parsed-xml-file-to-parsed-class-hash :parsed-class 'parsed-inventory-record
+;;   #P"/Users/monkpearman/DocumentsHG-Repos/CL-MON-CODE/dbc-specific/xml-class-dump-dir/parsed-xml-inventory-records/inventory-records-2012-02-16.lisp")
+;;
 ;; (parsed-inventory-record-xml-dump-file-and-hash)
 ;; (gethash 'parsed-inventory-record *parsed-class-parse-table*)
 ;; (gethash "12000" (gethash 'parsed-inventory-record *parsed-class-parse-table*))
@@ -755,29 +1039,30 @@ This function should only be used for instantiating instances created _outside_ 
 
 ;;; :NOTE now using the macrodefined version now `load-parsed-inventory-record-default-file-to-parse-table'
 
-;; 
+;;
 ;; (clrhash (parsed-class-parse-table 'dbc::parsed-inventory-record))
 ;; (parsed-inventory-record-load-default-parsed-file-to-hash)
 ;; (parsed-inventory-record-load-default-parsed-file-to-hash :clear-existing-table t)
 ;; :TODO maybe rename this `load-parsed-inventory-record-default-file-to-parse-table' for congruence with
 ;; `write-parsed-inventory-record-parse-table-to-file'
+;;
 ;; (defun parsed-inventory-record-load-default-parsed-file-to-hash (&key (clear-existing-table nil))
 ;;   (declare (boolean clear-existing-table))
-;;   (let* ((maybe-wild-pathname 
-;;            (merge-pathnames (make-pathname :name :wild 
+;;   (let* ((maybe-wild-pathname
+;;            (merge-pathnames (make-pathname :name :wild
 ;;                                            :type "pctd")
-;;                             (or (probe-file (merge-pathnames 
+;;                             (or (probe-file (merge-pathnames
 ;;                                              (make-pathname :directory '(:relative "parsed-class-table-dumps" "parsed-inventory-record"))
 ;;                                              (sub-path *xml-output-dir*)))
 ;;                                 (error ":FUNCTION `parsed-inventory-record-load-default-parsed-file-to-hash'~% ~
 ;;                                       did find suitable directory containing parsed-table-dump-file"))))
 ;;          (maybe-find-wilds (directory maybe-wild-pathname))
 ;;          ;; regex matching pathname-names with the format "<parsed-class>-YYYY-MM-DDTHHSSMM"
-;;          (wild-pathname-pattern 
+;;          (wild-pathname-pattern
 ;;            (format nil "^~(~A~)-2[0-9]{3}?-[0-9]{2}?-[0-9]{2}?T[0-9]{6}?$" 'parsed-inventory-record))
 ;;          (most-recent-parse-file
 ;;            (or (and maybe-find-wilds
-;;                     (car (sort 
+;;                     (car (sort
 ;;                           (delete-if-not #'(lambda (x) (cl-ppcre:scan wild-pathname-pattern x))
 ;;                                          maybe-find-wilds
 ;;                                          :key #'pathname-name)
@@ -797,7 +1082,7 @@ This function should only be used for instantiating instances created _outside_ 
 
 #|
 (defun %%copy-hash (source-hash)
-  (loop 
+  (loop
     with dest-hash = (make-hash-table :test (hash-table-test source-hash))
     for keys being the hash-keys in source-hash using (hash-value vals)
     do (setf (gethash keys dest-hash)
@@ -814,13 +1099,13 @@ This function should only be used for instantiating instances created _outside_ 
 ;; (write-parsed-inventory-record-parse-table-to-file)
 ;; (parsed-class-parse-table 'parsed-inventory-record)
 
-(loop 
+(loop
   with change-count = 0
   with null-count = 0
   for obj being the hash-values in *tt-hash*
   for date = (edit-timestamp obj)
   for date-convert = (field-convert-timestamp date)
-  if date-convert 
+  if date-convert
     do (incf change-count)
        (setf (edit-timestamp obj) date-convert)
   else
@@ -837,7 +1122,7 @@ This function should only be used for instantiating instances created _outside_ 
 
 
 ;;; ==============================
-;; :NOTE Depreated use the macro'd version generated with `def-set-parsed-class-record-slot-value' instead. 
+;; :NOTE Depreated use the macro'd version generated with `def-set-parsed-class-record-slot-value' instead.
 ;; (fundoc 'set-parsed-inventory-record-slot-value
 ;; "Map orginal sql tables FIELD-STRING name to OBJECT's CLOS slot equivalent setting its slot-value to FIELD-VALUE.~%~@
 ;; Return as if by `cl:values':~%
@@ -855,29 +1140,29 @@ This function should only be used for instantiating instances created _outside_ 
 ;;  (set-parsed-inventory-record-slot-value "ref" "13000" (make-instance 'parsed-inventory-record))
 ;;
 ;; :SEE-ALSO `<XREF>'.~%▶▶▶")
-;; 
+;;
 ;; :NOTE The setf of the accessor ensures we always populate the slot-value with nil
 ;; so as to avoid errors when slot is not `slot-boundp'.
-;; 
+;;
 ;; :TODO Currently these accessor methods are defined automagically at class creation.
-;; We need to unify common routines and symbol-names to appropriate generic
+;;  We need to unify common routines and symbol-names to appropriate generic
 ;; functions and where the behavior is generalized across all class specialize
 ;; them on the class `parsed-class'.
 ;;
 ;; (defun set-parsed-inventory-record-slot-value (field-string field-value object)
-;;   (values 
+;;   (values
 ;;    (string-case:string-case (field-string)
-;;      ("ref" 
+;;      ("ref"
 ;;       (setf (inventory-number object) field-value))
-;;      ("title" 
+;;      ("title"
 ;;       (setf (description-inventory-title object) field-value))
-;;      ("desc_fr" 
+;;      ("desc_fr"
 ;;       (setf (description-inventory-french object) field-value))
-;;      ("desc_en" 
+;;      ("desc_en"
 ;;       (setf (description-inventory-english object) field-value))
-;;      ("histo_fr" 
+;;      ("histo_fr"
 ;;       (setf (ignorable-history-french object) field-value))
-;;      ("histo_en" 
+;;      ("histo_en"
 ;;       (setf (ignorable-history-english object) field-value))
 ;;      ("text_quote"
 ;;       (setf (description-inventory-quote object) field-value))
@@ -889,7 +1174,7 @@ This function should only be used for instantiating instances created _outside_ 
 ;;       (setf (naf-entity-brand-coref object) field-value))
 ;;      ("composer"
 ;;       (setf (naf-entity-composer-coref object) field-value))
-;;      ("artist" 
+;;      ("artist"
 ;;       (setf (naf-entity-artist-coref object) field-value))
 ;;      ("author"
 ;;       (setf (naf-entity-author-coref object) field-value))
@@ -897,15 +1182,15 @@ This function should only be used for instantiating instances created _outside_ 
 ;;       (setf (taxon-entity-coref object) field-value))
 ;;      ("book"
 ;;       (setf (naf-entity-publication-coref object) field-value))
-;;      ("publisher" 
+;;      ("publisher"
 ;;       (setf (publication-publisher object) field-value))
-;;      ("publish_location" 
+;;      ("publish_location"
 ;;       (setf (publication-location object) field-value))
-;;      ("volume" 
+;;      ("volume"
 ;;       (setf (publication-volumes object) field-value))
-;;      ("edition" 
+;;      ("edition"
 ;;       (setf (publication-edition object) field-value))
-;;      ("page" 
+;;      ("page"
 ;;       (setf (publication-pages object) field-value))
 ;;      ("Plate_number"
 ;;       (setf (publication-plates object) field-value))
@@ -916,7 +1201,7 @@ This function should only be used for instantiating instances created _outside_ 
 ;;      ("year_year"
 ;;       (setf (publication-date-range object) field-value))
 ;;      ("categ"
-;;       (setf (category-entity-0-coref object) field-value)) 
+;;       (setf (category-entity-0-coref object) field-value))
 ;;      ("c1"
 ;;       (setf (category-entity-1-coref object) field-value))
 ;;      ("c2"
@@ -1176,22 +1461,22 @@ This function should only be used for instantiating instances created _outside_ 
 ;;; ==============================
 ;;; :TODO methods  
 
-;; `field-convert-1-0-x' 
+;; `field-convert-1-0-x'
 ;; brand, people, latin_name,
 ;; date, year
-;; Plate_number, issue, 
+;; Plate_number, issue,
 ;; title
-;; 
+;;
 ;; desc_en, desc_fr, histo_en, histo_en,
-;; related_doc, 
-;; categ, c1, c2, c3, c4, c5, c6      ;; These may contain "1" to indicate depth. 
-;; categ_doc, c1_doc, c2_doc, c3_doc 
+;; related_doc,
+;; categ, c1, c2, c3, c4, c5, c6      ;; These may contain "1" to indicate depth.
+;; categ_doc, c1_doc, c2_doc, c3_doc
 ;; ebay_id, ebay_price, ebay_final, ;; (maybe the latter are floats)
-;; 
+;;
 ;; done, color, job_name
-;; 
+;;
 ;; :ARTIST-NAF-FIELDS
-;; also_people, also_author 
+;; also_people, also_author
 
 ;;; ==============================
 ;; 
@@ -2918,7 +3203,6 @@ This function should only be used for instantiating instances created _outside_ 
 
 ;; Local Variables:
 ;; indent-tabs-mode: nil
-;; show-trailing-whitespace: t
 ;; mode: lisp-interaction
 ;; package: dbc
 ;; End:
