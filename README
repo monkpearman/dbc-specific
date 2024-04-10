@@ -1,5 +1,4 @@
-
-Functions for transitioning an SQLdb to an ORM
+Common Lisp functions and classes for transitioning an SQLdb to an ORM
 
 Directory ./dbc-classes contains functions/classes for our new ORM
 Directory ./dbc-parse contains functions for SAX parsing an XML db schema
