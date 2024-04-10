@@ -149,6 +149,28 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("online"            . record-status-active)
    ("date_edt"          . edit-timestamp)))
 
+
+(defun parsed-person-record-collect-control-id-display ()
+  (map 'list #'cdr 
+       (parsed-class-slot-value-collect-non-null 'parsed-person-record 'control-id-display-person)
+       #'string>))
+
+(defmethod print-object ((object parsed-person-record) stream)
+  (let* ((control-num (and (slot-boundp object 'control-id-entity-num-person)
+                           (slot-value object  'control-id-entity-num-person)))
+         (control-id-display (and (slot-boundp object 'control-id-display-person)
+                                  (slot-value object  'control-id-display-person)))
+         ;; (control-num-if (and (stringp control-num)
+         ;;                  (control-id-indexed-number-zero-padded-string control-num)))
+         )
+    ;; (declare (mon:string-or-null control-num-if))
+    ;; (print-unreadable-object (object stream :type t :identity (not control-num-if))
+    ;;   (format stream "~S" control-num-if))))
+    (declare (mon:string-or-null control-num control-id-display))
+    (print-unreadable-object (object stream :type t :identity (not control-num))
+      (format stream ":CONTROL-ID-ENTITY-NUM ~S :CONTROL-ID-DISPLAY-NAME ~S" control-num control-id-display))))
+
+
 ;; :NOTE fields appearing in class `parsed-artist-record' but not in class `parsed-person-record'
 ;; ("date_born"         . birth-date)
 ;; ("date_died"         . death-date)
