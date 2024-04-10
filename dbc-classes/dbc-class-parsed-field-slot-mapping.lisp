@@ -13,7 +13,7 @@
 
 ;; (defclass parsed-class-parse-table (base-dbc)
 ;; (;; a symbol designating a sublcass of parsed-class
-;;  (parsed-class) 
+;;  (parsed-class)
 ;;  ;; a hash-table keyed to parsed-class-parsed in `*parsed-class-parse-table*'.
 ;;  (parse-table)
 ;;  )
@@ -22,11 +22,11 @@
   ((parsed-class-mapped)                ; :reader parsed-class-mapped)
    (field-to-accessor-table)            ; :reader field-to-accessor-table)
    (accessor-to-field-table)            ; :reader accessor-to-field-table)
-   ;; a function for use with load-sax-parsed-xml-file-to-parsed-class-hash 
+   ;; a function for use with load-sax-parsed-xml-file-to-parsed-class-hash
    ;; genearted with def-set-parsed-class-record-slot-value
    (parsed-class-slot-dispatch-function
     :reader parsed-class-slot-dispatch-function))
-  (:documentation 
+  (:documentation
    #.(format nil
              "Object for holding a mappings of field-names with slot-accessors.~%~@
 slot parsed-class-mapped is symbol designating the parse-class whose slots are
@@ -51,7 +51,8 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
   (when (eql parsed-class-symbol 'parsed-class)
     (error "Arg PARSED-CLASS-SYMBOL is cl:eql the symbol PARSED-CLASS.~% ~
           Arg must be a symbol designating a subclass of `parsed-class'~%"))
-  (multiple-value-bind (key-val key-present) (gethash parsed-class-symbol *parsed-class-field-slot-accessor-mapping-table*)
+  (multiple-value-bind (key-val key-present)
+      (gethash parsed-class-symbol *parsed-class-field-slot-accessor-mapping-table*)
     (if key-present
         (if (typep key-val 'parsed-class-field-slot-accessor-mapping)
             key-val
@@ -61,7 +62,7 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
                     hash-table-value: ~S~%"
                    '*parsed-class-field-slot-accessor-mapping-table*
                    parsed-class-symbol key-val))
-        (error ":FUNCTION `%parsed-class-mapped-with-known-key-helper'~% ~
+      (error ":FUNCTION `%parsed-class-mapped-with-known-key-helper'~% ~
                  Arg PARSED-CLASS-SYMBOL not a present hash-table-key in hash-table `~A'~% ~
                  hash-table-key: ~S~%"
                '*parsed-class-field-slot-accessor-mapping-table*
@@ -122,14 +123,14 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
 
 ;; (initargs-of-parsed-class (parsed-class-mapped 'parsed-inventory-record))
 (defmethod initargs-of-parsed-class ((object parsed-class-field-slot-accessor-mapping))
-  (loop 
+  (loop
     with key-package = (find-package "KEYWORD")
     for slot in (accessors-of-parsed-class object)
     for name = (symbol-name slot)
     collect (find-symbol name key-package)))
 
 (defmethod %parsed-class-slot-exists-for-parsed-class-check ((object parsed-class-field-slot-accessor-mapping) (slot-name symbol))
-  (values 
+  (values
    (or (and (member slot-name (accessors-of-parsed-class object))
             slot-name)
        (error ":METHOD `%parsed-class-slot-exists-for-parsed-class-check' -- ~
@@ -192,7 +193,7 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
 ;;
 (defmethod print-object ((object parsed-class-field-slot-accessor-mapping) stream)
   ;;(remove-method  #'print-object (find-method #'print-object nil '(parsed-class-field-slot-accessor-mapping t)))
-  (print-unreadable-object (object stream) ; :type t) 
+  (print-unreadable-object (object stream) ; :type t)
     (format stream "HASH-MAPPED-CLASS ~S" 
             ;; (class-name (slot-value object 'parsed-class-mapped))
             (slot-value object 'parsed-class-mapped))))
@@ -206,16 +207,16 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
                       It should be a symbol designating a subclass of `parsed-class'~% got: ~S~%" parsed-class-subclass))))
     (unless (and (not (typep parsed-class-subclass 'boolean))
                  (subtypep the-class-parsed-class-subclass (find-class 'parsed-class)))
-      (error "Arg PARSED-CLASS-MAPPED not a valid subtype of class `parsed-class'~% got: ~S~%" 
+      (error "Arg PARSED-CLASS-MAPPED not a valid subtype of class `parsed-class'~% got: ~S~%"
              parsed-class-subclass))
     (let* ((mapping            (make-instance 'parsed-class-field-slot-accessor-mapping))
            (table-length-maybe (mon:prime-or-next-greatest  (length field-to-accessor-alist)))
-           (table-size         (if (> table-length-maybe sb-impl::+min-hash-table-size+)
+           (table-size         (if (> table-length-maybe 7)
                                    table-length-maybe
-                                   sb-impl::+min-hash-table-size+))
+                                   7))
            (f2a-table  (setf (field-to-accessor-table mapping) (make-hash-table :test #'equal :size table-size)))
            (a2f-table  (setf (accessor-to-field-table mapping) (make-hash-table :size table-size)))
-           (slot-dispatch-function (%parsed-class-set-slot-value-format-and-intern-symbol 
+           (slot-dispatch-function (%parsed-class-set-slot-value-format-and-intern-symbol
                                     parsed-class-subclass)))
       (setf (slot-value mapping 'parsed-class-slot-dispatch-function) slot-dispatch-function)
       (dolist (pair field-to-accessor-alist (mon:hash-invert-key-val f2a-table a2f-table))
@@ -226,12 +227,12 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
       ;; it may no longer be current.
       (setf (slot-value mapping 'parsed-class-mapped) the-class-parsed-class-subclass)
       (remhash parsed-class-subclass *parsed-class-field-slot-accessor-mapping-table*)
-      (prog1 
+      (prog1
           (setf (gethash parsed-class-subclass *parsed-class-field-slot-accessor-mapping-table*) mapping)
         (unless (parsed-class-parse-table parsed-class-subclass)
           (setf (parsed-class-parse-table parsed-class-subclass)
                 (%parsed-class-parse-table-make-table)))))))
-        
+
 ;; :EXAMPLE
 ;;  (%parsed-class-record-setf-slot-value-forms 'parsed-inventory-record)
 ;; :NOTE Arg HASH-TABLE will always be `*parsed-class-field-slot-accessor-mapping-table*'
@@ -245,7 +246,6 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
   (let ((setf-forms ()))
     (maphash #'(lambda (k v)
                  (push (list k (list (quote setf) (list v (quote object)) (quote field-value))) setf-forms))
-             ;; (field-to-accessor-table (gethash parsed-class-lookup *parsed-class-field-slot-accessor-mapping-table*))) ; hash-table)))
              (field-to-accessor-table parsed-class-lookup))
     (setf setf-forms (nreverse setf-forms))))
 
@@ -254,7 +254,7 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
 
 (defun %parsed-class-set-slot-value-format-and-intern-symbol (parsed-class)
   (alexandria:format-symbol (find-package "DBC") "~:@(SET-~A-SLOT-VALUE~)" parsed-class))
- 
+
 (defun %parsed-class-documenting-set-parsed-class-record-slot-value-function (parsed-class generated-name)
   (let* ((example-accessor (mon:last-elt (accessors-of-parsed-class parsed-class)))
          (example-field-string (accessor-to-field-mapping example-accessor parsed-class)))
@@ -283,7 +283,7 @@ OBJECT to FIELD-VALUE as if by the following expression:~%~% ~
             example-accessor
             example-accessor
             example-accessor
-            generated-name    
+            generated-name
             example-field-string
             parsed-class)))
 ) ;; close eval when
@@ -307,14 +307,14 @@ OBJECT to FIELD-VALUE as if by the following expression:~%~% ~
 ;; (defmacro def-set-parsed-class-record-slot-value (fun-name for-parsed-class) ; global-hash-table-var)
 (defmacro def-set-parsed-class-record-slot-value (for-parsed-class) ; global-hash-table-var)
   ;; (let ((body-forms (%expand-parsed-class-record-setf-slot-value-forms parsed-class global-hash-table-var)))
-  ;; (%expand-parsed-class-record-setf-slot-value-forms parsed-class global-hash-table-var)  
+  ;; (%expand-parsed-class-record-setf-slot-value-forms parsed-class global-hash-table-var)
   (let* ((generated-name (%parsed-class-set-slot-value-format-and-intern-symbol for-parsed-class))
          (docstring      (%parsed-class-documenting-set-parsed-class-record-slot-value-function for-parsed-class generated-name))
          (body-forms     (%parsed-class-record-setf-slot-value-forms for-parsed-class)))
     ;; :WAS `(defun ,fun-name (field-string field-value object)
     `(defun ,generated-name (field-string field-value object)
        ,docstring
-       (values 
+       (values
         (string-case:string-case (field-string)
           ,@body-forms)
           object))))
