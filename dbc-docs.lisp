@@ -9,10 +9,6 @@ i;;; :FILE-CREATED <Timestamp: #{2011-09-26T13:27:24-04:00Z}#{11391} - by MON>
 ;;; :SPECIALS-DOCUMENTATION
 ;;; ==============================
 
-;; (+ 12 34)
-
-
-
 (vardoc '*system-path*
 "The base dbc-sytsem path.~%~@
 An instance of the system-path class holds the class allocated slot system-path
