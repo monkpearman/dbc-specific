@@ -239,50 +239,6 @@
 ;; ))
 
 
-;; (let ((computed-cop (FIND-CPL OBJECT)))
-;;   (unless (member (node-name OBJECT) computed-cop)
-;;     (setf computed-cop 
-;;           (map 'list 
-;;                (lambda (x) 
-;;                  (... get display name of each class object in computed-cop ... ))))
-;;     (push (node-name object) computed-cop)))
-;; (let ((cnn (slot-value object 'child-node-name))
-;;       (nn  (slot-value object 'node-name)))
-;;   (if (null cnn)
-;;       ;; we need to make a cpl from node-name 
-;;       (let* ((class-of-object (class-of object))
-;;              (computed-cpl (sb-mop:compute-class-precedence-list (class-of object)))
-;;              (position-root (position (find-class 'category-entity-top-level) computed-cpl))
-;;              (relevant-cpl (subseq computed-cpl 0 position-root)))
-;;         (if (null relevant-cpl)
-;;             ;; its a top level category
-;;             (let ((object-metadata (control-id-display-category object))
-;;                   (nmspc (control-id-namespace object-metadata))
-;;                   (setf (gethash 
-;;                          (setf (slot-value object-metadata (control-id-uuid object-metadata))
-;;                                (unicly:make-v5-uuid nmspc
-;;                                                     (setf (slot-value object-metadata 'control-id-identifies)
-;;                                                           nn)))
-;;                          *category-entity-hash*)
-;;                     class-of-object)))
-;;             ;; do stuff here
-;;             ))))
-
-;; (progn (setf (
-;;                          ;; control-id-uuid
-;; ;; control-id-identifies
-;;            (push (slot-value object category-precedence-list)
-;;                  (list 
-                 
-                 
-;;        (uuid-cpl     (map 'list 
-;;        )             
-
-;;    (push 
-
-;; (make-instance 'category-entity-advertising-and-graphics)
-  
-
 ;; (defparameter *tt--cida* (make-instance 'category-id-display-advertising-and-graphics))
 
 ;; advert.xml
