@@ -13,9 +13,11 @@
 
 (defparameter *system-notes-dir*    "notes-versioned")
 
-(defparameter *system-tests-dir*      "dbc-tests") ;; the dir for dbc-tests package
+;; The directory for dbc-tests package
+(defparameter *system-tests-dir*      "dbc-tests") 
 
-(defparameter *system-tests-temp-dir* "tests") ;; dir to write results of dbc-test:<TEST-FNCN> to
+;; The directory to write results of dbc-test:<TEST-FNCN> to.
+(defparameter *system-tests-temp-dir* "tests") 
 
 
 ;;; ==============================
@@ -27,7 +29,7 @@
 ;; `*xml-input-dir*'               <--- INPUT
 ;; `*xml-input-refs-name*'         <--- INPUT
 ;; `*xml-input-refs-name-temp*'    <--- INPUT
-;; 
+;;
 
 ;;; ---> PARSED OUTPUT
 (defparameter *xml-output-dir* "xml-class-dump-dir")
@@ -41,8 +43,10 @@
 
 
 ;;; ==============================
-
-(defvar *dbc-base-httpd-synced-item-number-image-pathname* #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/")
+;; :FIXME DARWIN we no longer have access to the items located here as the drive is missing.
+;; Also. who dereferences this path because we really probably don't want to hose it???
+(defvar *dbc-base-httpd-synced-item-number-image-pathname*
+  #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/")
 
 (defvar *dbc-wild-httpd-synced-item-number-image-pathname-list* '( ;; :NOTE Order is important here!!!
                                                                   "big"
@@ -57,22 +61,36 @@
 
 (defvar *dbc-item-number-path-source-destination-vector* nil)
 
+
+;; Also, this is a big directory so we should probably probe if it exists before frobbing it.
+;; which functions dereference this variable?
+;;
 ;; :NOTE we currently hardwire this as the default base-pathname for all dbc images.
 ;; This should maybe be some variant instance of class `system-path' but it
 ;; currently exists outside the dbc-specific source directory and is likely to remain so.
-(defvar *dbc-base-item-number-image-pathname*  #P"/mnt/NEF-DRV-A/DBC-ITEM-IMAGES/"
-        "Default base pathname under which dbc images are located.")
+;;
+;; :WAS (defvar *dbc-base-item-number-image-pathname*  #P"/mnt/NEF-DRV-A/DBC-ITEM-IMAGES/"
+;;   "Default base pathname under which dbc images are located.")
+;; 
+;; contents of directory #P"/Volumes/MONK_4TB/NEF-DRV-A/DBC-ITEM-IMAGES/" 3.13 GB
+;; 
+;; :WAS #P"/Volumes/MONK_4TB/NEF-DRV-A/DBC-ITEM-IMAGES/"
+(defvar *dbc-base-item-number-image-pathname* #P"/Users/monkpearman/Documents/HG-Repos/LOCAL-NEF-DRV-A/DBC-ITEM-IMAGES/"
+  "Default base pathname under which dbc images are located.")
 
-(defvar *parsed-class-parse-table* (make-hash-table))
+(defvar *parsed-class-parse-table* (make-hash-table :synchronized t))
 
-(defvar *parsed-class-field-slot-accessor-mapping-table* (make-hash-table))
+(defvar *parsed-class-field-slot-accessor-mapping-table* (make-hash-table :synchronized t))
+
+(defvar *parsed-inventory-record-image-pathname-regex* 
+  (cl-ppcre:create-scanner "^([0-9]{6}?)(-??)(([smzh]{1}?)??|(f[sc]??)??)??$"))
 
 ;;; ==============================
 
 
 ;; Local Variables:
 ;; indent-tabs-mode: nil
-;; show-trailing-whitespace: t
+;; show-trailing-whitespace: nil
 ;; mode: lisp-interaction
 ;; package: dbc
 ;; End:
