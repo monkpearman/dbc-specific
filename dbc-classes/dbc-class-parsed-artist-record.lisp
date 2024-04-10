@@ -242,11 +242,27 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("cancel_num"        . ignorable-cancel-num)
    ("special_note"      . ignorable-special-note)))
 
+
 (defun parsed-artist-record-collect-control-id-display ()
   (sort
    (map 'list #'cdr 
         (parsed-class-slot-value-collect-non-null 'parsed-artist-record 'control-id-display-artist))
    #'string<))
+
+(defmethod print-object ((object parsed-artist-record) stream)
+  (let* ((control-num (and (slot-boundp object 'control-id-entity-num-artist)
+                           (slot-value object  'control-id-entity-num-artist)))
+         (control-id-display (and (slot-boundp object 'control-id-display-artist)
+                                  (slot-value object  'control-id-display-artist)))
+         ;; (control-num-if (and (stringp control-num)
+         ;;                  (control-id-indexed-number-zero-padded-string control-num)))
+         )
+    ;; (declare (mon:string-or-null control-num-if))
+    ;; (print-unreadable-object (object stream :type t :identity (not control-num-if))
+    ;;   (format stream "~S" control-num-if))))
+    (declare (mon:string-or-null control-num control-id-display))
+    (print-unreadable-object (object stream :type t :identity (not control-num))
+      (format stream ":CONTROL-ID-ENTITY-NUM ~S :CONTROL-ID-DISPLAY-NAME ~S" control-num control-id-display))))
 
 ;; :NOTE `set-parsed-inventory-record-slot-value' is defined in loadtime-bind.lisp
 ;; (def-set-parsed-class-record-slot-value 
