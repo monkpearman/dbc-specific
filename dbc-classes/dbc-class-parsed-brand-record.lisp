@@ -162,6 +162,25 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("date_edt"           . edit-timestamp)
    ))
 
+(defun parsed-brand-record-collect-control-id-display ()
+  (map 'list #'cdr 
+       (parsed-class-slot-value-collect-non-null 'parsed-brand-record 'control-id-display-brand)
+       #'string>))
+
+(defmethod print-object ((object parsed-brand-record) stream)
+  (let* ((control-num (and (slot-boundp object 'control-id-entity-num-brand)
+                           (slot-value object  'control-id-entity-num-brand)))
+         (control-id-display (and (slot-boundp object 'control-id-display-brand)
+                                  (slot-value object  'control-id-display-brand)))
+         ;; (control-num-if (and (stringp control-num)
+         ;;                  (control-id-indexed-number-zero-padded-string control-num)))
+         )
+    ;; (declare (mon:string-or-null control-num-if))
+    ;; (print-unreadable-object (object stream :type t :identity (not control-num-if))
+    ;;   (format stream "~S" control-num-if))))
+    (declare (mon:string-or-null control-num control-id-display))
+    (print-unreadable-object (object stream :type t :identity (not control-num))
+      (format stream ":CONTROL-ID-ENTITY-NUM ~S :CONTROL-ID-DISPLAY-NAME ~S" control-num control-id-display))))
 
 ;;; ==============================
 ;;
