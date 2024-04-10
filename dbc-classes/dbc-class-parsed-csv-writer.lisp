@@ -11,7 +11,7 @@
 
 (defun parsed-class-csv-clean-prefix-for-file-name (prefix-for-file-name)
   (declare (mon:string-not-null-empty-or-all-whitespace prefix-for-file-name))
-  (let ((cln-prefix-for-file-name 
+  (let ((cln-prefix-for-file-name
           (string-trim `(#\_ #\- ,@mon:*whitespace-chars*)
                        (mon:string-replace-all prefix-for-file-name "CSV" "" :test #'char-equal))))
     (if (zerop (mon:string-length cln-prefix-for-file-name))
@@ -21,9 +21,9 @@
 
 ;; in its final form this should be `write-parsed-class-parse-table-to-csv-file';;
 (defun write-parsed-class-parse-table-to-csv-file (&key parsed-class
-                                                        prefix-for-file-name 
+                                                        prefix-for-file-name
                                                         output-sub-directory
-                                                        (base-output-directory 
+                                                        (base-output-directory
                                                          (merge-pathnames
                                                           (make-pathname :directory '(:relative "parsed-csv-records"))
                                                           (dbc::sub-path dbc::*xml-output-dir*)))
@@ -37,9 +37,9 @@
   ;; (osicat:directory-exists-p base-output-directory)
   ;; (osicat:directory-exists-p (merge-pathnames (make-pathname :directory `(:relative ,output-sub-directory)) base-output-directory))
   (let* ((parse-table (dbc::parsed-class-parse-table parsed-class)) ;;'dbc::parsed-inventory-record)
-         (output-file 
+         (output-file
            (unless (zerop (hash-table-count parse-table))
-             (make-parsed-class-output-file-ensuring-pathname 
+             (make-parsed-class-output-file-ensuring-pathname
               :pathname-base-directory base-output-directory
               :pathname-sub-directory `(,@(alexandria::ensure-list output-sub-directory))
               :pathname-name (parsed-class-csv-clean-prefix-for-file-name prefix-for-file-name)
@@ -52,13 +52,13 @@
         (when key-slot-list
           (flet ((match-and-remove (x)
                    (let ((slot-and-init-lookup (assoc x key-slot-list)))
-                     (and slot-and-init-lookup 
+                     (and slot-and-init-lookup
                           (member (car slot-and-init-lookup) slots-matching-header)
                           (setf slots-matching-header (delete (car slot-and-init-lookup) slots-matching-header))
                           (setf slot-header-initargs (delete (cdr slot-and-init-lookup) slot-header-initargs))))))
             (map nil #'match-and-remove filtering-slot-list)))
-        (and 
-         slots-matching-header 
+        (and
+         slots-matching-header
          slot-header-initargs
          (with-open-file (c output-file
                             :direction :output
@@ -66,13 +66,13 @@
                             :if-does-not-exist :create
                             :element-type 'character
                             :external-format :utf-8)
-           (loop 
+           (loop
              initially (format c (if (eql slot-header-case :upcase)
                                      "~{~:@(~S~)~^,~}~%"
                                      "~{~(~S~)~^,~}~%")
                                (reverse slot-header-initargs))
              for object being the hash-values in parse-table
-             do (loop 
+             do (loop
                   for slot-chk in slots-matching-header
                   for x = (and (slot-boundp object slot-chk) (slot-value object slot-chk))
                   collect x into rtn
@@ -103,7 +103,7 @@
                                   filtering-slot-list
                                   (slot-header-case ,default-slot-header-case))
        (write-parsed-class-parse-table-to-csv-file :parsed-class ',parsed-class
-                                                   :prefix-for-file-name  prefix-for-file-name 
+                                                   :prefix-for-file-name  prefix-for-file-name
                                                    :output-sub-directory  output-sub-directory
                                                    :base-output-directory base-output-directory
                                                    :filtering-slot-list   filtering-slot-list
