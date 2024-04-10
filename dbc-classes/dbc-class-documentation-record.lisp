@@ -7,7 +7,7 @@
 ;;;  documents objects should have:
 ;;;  - uuids
 ;;;  - indexed terms
-;;;  - 
+;;;  -
 ;;; :NOTE The class `parse-ref' has the following slots:
 ;;;  documentation-category-entity-0-coref
 ;;;  documentation-category-entity-1-coref
@@ -16,11 +16,11 @@
 
 ;; :NOTE :FILE dbc-specific/notes-versioned/dbc-xml-categs-as-lisp/xml-files/sitedoc.xml
 ;; contains extensive potentially CLOS-ifiable instances
-;; <c5 document_number="1259" 
+;; <c5 document_number="1259"
 ;;     document_title="Using the Compare Groupings Feature of MyPrints"
-;;     help_icon_title="Using the Compare Groupings Feature of MyPrints"    
-;;     link_title="Using the Compare Groupings Feature of MyPrints" 
-;;     document_uploaded="9-19-06" 
+;;     help_icon_title="Using the Compare Groupings Feature of MyPrints"
+;;     link_title="Using the Compare Groupings Feature of MyPrints"
+;;     document_uploaded="9-19-06"
 ;;     name="Compare Groupings">
 ;;
 ;; much of the documentation in sitedoc.xml corrsponds with the categories defined in:
@@ -28,7 +28,7 @@
 ;;
 ;; :SEE :FILE dbc-specific/notes-versioned/dbc-xml-categs-as-lisp/xml-files/sitedoc-sxml.lisp
 ;;
-;; (with-open-file 
+;; (with-open-file
 ;;     (str #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/notes-versioned/dbc-xml-categs-as-lisp/xml-files/sitedoc.xml")
 ;;   (s-xml:parse-xml str ))
 
@@ -52,7 +52,7 @@
 ;; `parsed-doc-record'
 (defclass base-documentation-record (base-record)
   ()
-  (:documentation 
+  (:documentation
    #.(format nil "Base class for referencing documents in the dbc-system.
 :NOTE The inverse corollary to the class `base-record' is the class `base-entity'.~%")))
 
@@ -68,14 +68,14 @@
   ;; :NOTE Much of the documentation in sitedoc.xml corrsponds with the categories defined in:
   ;;        advert.xml, archi.xml, books.xml, geo.xml, historical.xml, natural.xml
   ()
-  (:documentation 
+  (:documentation
    #.(format nil "Base class for referencing documents from the file sitedoc.xml~%")))
 
 #|
 
 (defclass doc-dbc (base-dbc)
-  (doc-uuid 
-   ;; :initform (generate-dbc-uuid) 
+  (doc-uuid
+   ;; :initform (generate-dbc-uuid)
    :accessor doc-uuid)
   (doc-title
    :initform nil
@@ -85,7 +85,7 @@
    :initform nil
    :initarg :doc-title
    :accessor doc-title)
-  (doc-xrefs 
+  (doc-xrefs
    :initform nil
    :initarg :doc-xrefs
    :accessor doc-xrefs))
