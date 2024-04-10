@@ -16,7 +16,7 @@
 ;;
 ;; Following directories are current through March 2009. 
 ;; We may want to xref these with anything that may have been recovered.
-;; 
+;;
 ;; :ITEM-IMAGES
 ;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/photos/
 ;; ./big
@@ -52,7 +52,7 @@
 ;; #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/flash_home/gallery/*/large/"
 ;; 100 x 100
 ;; #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/flash_home/gallery/*/tn/"
-;; 
+;;
 ;; ./advert
 ;; ./archi
 ;; ./books
@@ -61,11 +61,11 @@
 ;; ./historical
 ;; ./natural
 ;;  nothing below these is dated after 2006 and likely these dirs aren't useful:
-;; ./categ1 ; 
+;; ./categ1
 ;; ./categ2
 ;; ./categ3
 ;; ./categ4
-;; 
+;;
 ;; :NAF-ENTITY-IMAGES
 ;;
 ;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/photos/nafs/
@@ -80,7 +80,7 @@
 ;; #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/photos/nafs/"
 
 ;;; ==============================
-;; :TODO 
+;; :TODO
 ;; The contents of the readme below which indicates that the
 ;; files contained therein are to be considered canonical!
 ;;  #P"/mnt/NEF-DRV-A/Periodicals-Headers-Flash-Zoom/README-2011-08-29"
@@ -105,11 +105,11 @@
 ;;                    :direction :output
 ;;                    :if-exists :supersede
 ;;                    :if-does-not-exist :create)
-;;   (loop 
+;;   (loop
 ;;      for dir in (directory #P"/mnt/NEF-DRV-A/EBAY/BIG-cropped-jpg/0*/")
 ;;        ;; not mv is picky about traling slashes in source dir
 ;;      do (format f "~A~C" (namestring dir) #\NUL)))
-;;     
+;;
 ;;; ==============================
 ;;
 ;; :NOTE some of the functionality here may be duplicated by stuff under 
@@ -130,10 +130,10 @@
 
 (in-package #:dbc)
 
-;; (macroexpand-1 
-;;  '(def-dbc-item-match-pathname-pattern 
+;; (macroexpand-1
+;;  '(def-dbc-item-match-pathname-pattern
 ;;      tt--dbc-item-match-big-path
-;;      #P"/**/httpd/photos/big/*.jpg" 
+;;      #P"/**/httpd/photos/big/*.jpg"
 ;;      :default-name-suffix "-b"
 ;;      :default-destination-pathname #P"/mnt/NEF-DRV-A/DBC-ITEM-IMAGES/"))
 (defmacro def-dbc-item-match-pathname-pattern (fun-name match-with-pattern &key (default-name-suffix nil)
@@ -167,12 +167,11 @@
 (defun %make-httpd-synced-item-number-image-wild-pathname-list (&optional 
                                                                 (base-httpd-synced-directory *dbc-base-httpd-synced-item-number-image-pathname*)
                                                                 (subdirs-for-wild-pathname   *dbc-wild-httpd-synced-item-number-image-pathname-list*))
-  
   (declare (mon:pathname-or-namestring base-httpd-synced-directory)
            (type (and list (not null)) subdirs-for-wild-pathname))
   (%ensure-dbc-base-http-synced-item-number-image-pathname-exists base-httpd-synced-directory)
   (map 'list #'(lambda (subdir-or-subdir-list)
-                 (merge-pathnames 
+                 (merge-pathnames
                   (make-pathname :directory `(:relative ,@(alexandria::ensure-list subdir-or-subdir-list))
                                  :name :wild
                                  :type "jpg")
@@ -213,7 +212,7 @@
   (declare (sequence directory-sequence))
   (when (zerop (length directory-sequence))
     (return-from %filter-item-image-directory-sequence directory-sequence))
-  (delete-if-not #'%pathname-name-all-digit-char-p 
+  (delete-if-not #'%pathname-name-all-digit-char-p
                  (remove-if #'%pathname-name-empty-jpeg-p directory-sequence)))
 
 ;; (defparameter *tt--vector* (make-array 18 :fill-pointer 0))
@@ -229,8 +228,8 @@
            (vector-push-extend path destination-vector)))
     (map nil #'pusher filtered-sequence)))
 
-;; (defparameter *tt--vector* 
-;;   (%make-big-filtered-item-image-directory-vector 
+;; (defparameter *tt--vector*
+;;   (%make-big-filtered-item-image-directory-vector
 ;;    (%make-httpd-synced-item-number-image-wild-pathname-list)))
 (defun %make-big-filtered-item-image-directory-vector (wild-pathname-list)
   (let ((big-directory-array (make-array 86919 :fill-pointer 0)))
@@ -245,16 +244,18 @@
 ;; (defparameter *dbc-item-number-string-mapping-old-image-path-table* (%make-item-number-string-hash-table))
 (defun %make-item-number-string-hash-table (&key (max-item-number 12417))
   (declare ((unsigned-byte 29) max-item-number))
-  (loop 
+  (loop
     with item-max-prime = (mon:prime-or-next-greatest max-item-number)
-    with hash-table = (make-hash-table :test #'equal
-                                       ;; :size (mon:prime-or-next-greatest max-item-number))
-                                       :size item-max-prime)
+    ;; :WAS with hash-table = (make-hash-table :test #'equal
+    with hash-table = (make-hash-table-sync :test #'equal
+                                            ;; :size (mon:prime-or-next-greatest max-item-number))
+                                            :size item-max-prime)
     for num from 1 below max-item-number
     ;; :WAS for numstring = (write-to-string num) ;;
     for numstring = (format nil "~V,'0d" 6 num)
     for vec = (make-array 7 :fill-pointer 0) ; for `vector-push-extend'
-    do (setf (gethash numstring hash-table) vec)
+    ;; :WAS do (setf (gethash numstring hash-table) vec)
+    do (with-locked-hash-table hash-table (setf (gethash numstring hash-table) vec))
     finally (return hash-table)))
 
 ;; (%ensure-directory-item-number-exists *dbc-item-number-string-mapping-old-image-path-table*)
@@ -271,7 +272,7 @@
                             (merge-pathnames (make-pathname :directory `(:relative ,item-key))
                                              destination-pathname))
                          (when created created))
-    ;; for log-created = (probe-file 
+    ;; for log-created = (probe-file
     ;; (merge-pathnames (make-pathname :directory `(:relative ,item-key))
     ;;                  destination-pathname))
     ;; unless log-created collect item-key))
@@ -281,12 +282,12 @@
 
 ;; (%make-item-number-string-hash-table-values *dbc-item-number-path-source-destination-vector* *dbc-item-number-string-mapping-old-image-path-table*)
 (defun %make-item-number-string-hash-table-values (big-path-vector big-item-string-hash-table)
-  (loop 
+  (loop
     for image-path across big-path-vector
-    ;; WAS for lookup-key = (pathname-name image-path) ;; 
+    ;; WAS for lookup-key = (pathname-name image-path) ;;
     for lookup-key = (format nil "~V,,,'0@A" 6 (pathname-name image-path))
     for hash-val = (gethash lookup-key big-item-string-hash-table)
-    do (when hash-val  
+    do (when hash-val
          (vector-push-extend image-path hash-val))
     finally (return big-item-string-hash-table)))
 
@@ -302,7 +303,7 @@
   (let ((wild-paths (%make-httpd-synced-item-number-image-wild-pathname-list base-httpd-synced-directory 
                                                                              subdirs-for-wild-pathname))) 
     (setf *dbc-item-number-string-mapping-old-image-path-table* nil)
-    (setf *dbc-item-number-string-mapping-old-image-path-table*  
+    (setf *dbc-item-number-string-mapping-old-image-path-table*
           (%make-item-number-string-hash-table-values
            (%make-big-filtered-item-image-directory-vector wild-paths)
            (%make-item-number-string-hash-table)))))
@@ -313,22 +314,22 @@
 ;; (aref *dbc-item-number-path-source-destination-vector* 12395)
 ;;
 ;; (length (setf *dbc-item-number-path-source-destination-vector*
-;;               (map-item-image-source-destination-paths *dbc-item-number-string-mapping-old-image-path-table* 
+;;               (map-item-image-source-destination-paths *dbc-item-number-string-mapping-old-image-path-table*
 ;;                                                        :zero-padded-item-number t)))
 ;;
 ;; (aref *dbc-item-number-path-source-destination-vector* 12395)
 ;;
 ;; (length (setf *dbc-item-number-path-source-destination-vector*
-;;               (map-item-image-source-destination-paths *dbc-item-number-string-mapping-old-image-path-table* 
+;;               (map-item-image-source-destination-paths *dbc-item-number-string-mapping-old-image-path-table*
 ;;                                                        :zero-padded-enumber t)))
 ;;
 ;; (aref *dbc-item-number-path-source-destination-vector* 12395)
-(defun map-item-image-source-destination-paths (big-item-string-hash-table &key zero-padded-enumber 
+(defun map-item-image-source-destination-paths (big-item-string-hash-table &key zero-padded-enumber
                                                                                 zero-padded-item-number)
   (loop
     with big-vec = (make-array (hash-table-count big-item-string-hash-table))
     with fun-list = '(dbc-item-match-big-path dbc-item-match-small-path dbc-item-match-zoom-path
-                      dbc-item-match-flash-path dbc-item-match-header-path dbc-item-match-frame-path)  
+                      dbc-item-match-flash-path dbc-item-match-header-path dbc-item-match-frame-path)
     ;; from 1 b/c we want the item-number aren't 0 indexed
     for big-vec-ref from 1 below (hash-table-count big-item-string-hash-table)
     for item-key string being the hash-keys of big-item-string-hash-table using (hash-value vec)
@@ -339,8 +340,8 @@
     for gathered-transforms = (list item-string
                                     (loop
                                       for fun in fun-list
-                                      nconcing (loop 
-                                                 for path across vec 
+                                      nconcing (loop
+                                                 for path across vec
                                                  for maybe-transform = (multiple-value-bind (dest src)
                                                                            (cond (zero-padded-enumber
                                                                                   (apply fun path (list :enumber item-key
@@ -361,11 +362,11 @@
   (loop
     for num from 0 below (length big-source-destination-path-vector)
     for item = (aref big-source-destination-path-vector num )
-    for paths = (etypecase item 
+    for paths = (etypecase item
                   (unsigned-byte nil)
                   (t (cadr item)))
-    when (null paths) 
-      do (setf (aref big-source-destination-path-vector num) nil) 
+    when (null paths)
+      do (setf (aref big-source-destination-path-vector num) nil)
       and collect num))
 
 ;; :NOTE functions which accept a DESTINATION-PATHNAME keyword argument should default to something sensible
@@ -373,14 +374,14 @@
 ;; ideally one specialized on a class specific to what we are
 ;; doing here. Below we are hardwiring pathnames is always a bad idea!
 ;;
-;; (%write-big-item-number-image-directory-hash-to-file  
+;; (%write-big-item-number-image-directory-hash-to-file
 ;;  *dbc-item-number-string-mapping-old-image-path-table*
-;;  :destination-pathname (merge-pathnames 
-;;                         (make-pathname :name (concatenate 'string 
-;;                                                           "dbc-item-image-pathnames" 
+;;  :destination-pathname (merge-pathnames
+;;                         (make-pathname :name (concatenate 'string
+;;                                                           "dbc-item-image-pathnames"
 ;;                                                           "-"
 ;;                                                           (mon:time-string-yyyy-mm-dd)))
-;;                         *dbc-base-item-number-image-pathname*)) 
+;;                         *dbc-base-item-number-image-pathname*))
 (defun %write-big-item-number-image-directory-hash-to-file (big-item-string-hash-table &key destination-pathname)
   (declare (mon:pathname-or-namestring destination-pathname)
            (hash-table big-item-string-hash-table))
@@ -388,17 +389,17 @@
                       :direction :output
                       :if-exists :supersede
                       :if-does-not-exist :create)
-    (loop 
+    (loop
       for item-key string being the hash-keys of big-item-string-hash-table using (hash-value vec)
       do (pprint (list item-key vec) tr)
       finally (return destination-pathname))))
 
-;; (%write-big-item-number-image-source-destination-vector-to-file 
+;; (%write-big-item-number-image-source-destination-vector-to-file
 ;;  *dbc-item-number-path-source-destination-vector*
-;;  :destination-pathname (merge-pathnames 
-;;                         (make-pathname :name (concatenate 'string 
-;;                                                           "dbc-item-image-src-dest-pathnames" 
-;;                                                           ;; "dbc-item-image-src-dest-pathnames-zero-padded" 
+;;  :destination-pathname (merge-pathnames
+;;                         (make-pathname :name (concatenate 'string
+;;                                                           "dbc-item-image-src-dest-pathnames"
+;;                                                           ;; "dbc-item-image-src-dest-pathnames-zero-padded"
 ;;                                                           "-"
 ;;                                                           (mon:time-string-yyyy-mm-dd)))
 ;;                         *dbc-base-item-number-image-pathname*))
@@ -409,10 +410,10 @@
                       :direction :output
                       :if-exists :supersede
                       :if-does-not-exist :create)
-    (loop 
+    (loop
       for item-key across item-number-path-source-destination-vector
-      if (listp item-key)  
-        do (pprint item-key tr)
+      if (listp item-key)
+      do (pprint item-key tr)
       finally (return destination-pathname))))
 
 ;; (%string-trim-maybe-prepend-enumber nil)
@@ -433,7 +434,7 @@
 (defun %string-trim-maybe-prepend-enumber (enumber &key (enumber-digit-char-p nil)
                                                         (enumber-prepending-e nil))
   (declare ((or string null) enumber))
-  (if (null enumber) 
+  (if (null enumber)
       nil
       (let* ((trim-pretest
                (when (zerop
@@ -456,7 +457,7 @@
                                       (error ":FUNCTION `%string-trim-maybe-prepend-enumber'~% ~
                                               arg ENUMBER is empty-string after cl:string-left-trim~% ~
                                               got: ~S" enumber)
-                                      (if enumber-digit-char-p 
+                                      (if enumber-digit-char-p
                                           (if (every-digit-char-p trim)
                                               (if enumber-prepending-e
                                                   (concatenate 'string #(#\e) trim)
@@ -475,7 +476,7 @@
 ;; (%string-trim-maybe-prepend-with-name-suffix "--")
 (defun %string-trim-maybe-prepend-with-name-suffix (name-suffix)
   (declare ((or string null) name-suffix))
-  (if (null name-suffix) 
+  (if (null name-suffix)
       nil
       (let* ((trim (string-trim '(#\-) name-suffix))
              (trim-length-ensured (if (zerop (length trim))
@@ -485,12 +486,12 @@
                                       (concatenate 'string #(#\-) trim))))
         trim-length-ensured)))
 
-;; (dbc-item-match-image-pathname-pattern 
+;; (dbc-item-match-image-pathname-pattern
 ;;  #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/photos/big/73.jpg"
 ;;  #P"/**/photos/big/*.jpg"
 ;;  :enumber "e1334")
 ;;
-;; (dbc-item-match-image-pathname-pattern 
+;; (dbc-item-match-image-pathname-pattern
 ;;   #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/photos/big/73.jpg"
 ;;  ;; #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/photosm/big/73.jpg" ; non-matching fails
 ;;  ;; #P"/mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/flash_home/gallery/natural/tn/5606.jpg" ; non-matching fails
@@ -510,16 +511,16 @@
                                                    (destination-pathname *dbc-base-item-number-image-pathname*))
   (declare ((or null string) enumber name-suffix)
            (mon:pathname-or-namestring match-pattern destination-pathname))
-  (let* ((match-check 
-           (if (pathname-match-p target match-pattern) 
+  (let* ((match-check
+           (if (pathname-match-p target match-pattern)
                (or (if name-suffix-supplied-p
                        (%string-trim-maybe-prepend-with-name-suffix name-suffix)
                        name-suffix)
                    T)
                (return-from dbc-item-match-image-pathname-pattern (values nil target))))
-         (name-if 
-           (if enumber 
-               (%string-trim-maybe-prepend-enumber enumber  
+         (name-if
+           (if enumber
+               (%string-trim-maybe-prepend-enumber enumber
                                                    :enumber-digit-char-p enumber-digit-char-p
                                                    :enumber-prepending-e enumber-prepending-e)
                (pathname-name target)))
@@ -698,7 +699,12 @@
   (and
    (probe-file dest-byte-file)
    (and set-dest-byte-file-write-date
-        (or (mon::set-file-write-date-using-file (namestring source-byte-file) (namestring dest-byte-file)) 
+        (or 
+         ;; This appears to have semantics of the target and source files backwards and/or they changed upstream!
+         (mon::set-file-write-date-using-file  (namestring source-byte-file) (namestring dest-byte-file)) 
+         ;; Following appears to work as intended but we need to verify in case
+         ;; there was some specific reason for the above.
+         ;; (mon::set-file-write-date-using-file  (namestring dest-byte-file) (namestring source-byte-file))
             t))
    dest-byte-file))
 
@@ -922,7 +928,6 @@
 
 ;; Local Variables:
 ;; indent-tabs-mode: nil
-;; show-trailing-whitespace: t
 ;; mode: lisp-interaction
 ;; package: dbc
 ;; End:
