@@ -15,11 +15,11 @@
 
 (defgeneric inventory-record-image-directory-probe (object &key base-image-directory-pathname))
 
-(defgeneric inventory-record-image-jpg-probe (object &key image-suffix 
+(defgeneric inventory-record-image-jpg-probe (object &key image-suffix
                                                           base-image-directory-pathname
                                                           pathname-return-style))
 
-(defgeneric inventory-record-image-jpg-probe-all  (object &key base-image-directory-pathname 
+(defgeneric inventory-record-image-jpg-probe-all  (object &key base-image-directory-pathname
                                                                pathname-return-style))
 
 
@@ -27,18 +27,18 @@
 ;;; inventory-record-image-directory-probe
 ;;; ==============================
 
-(defmethod inventory-record-image-directory-probe ((object integer) 
+(defmethod inventory-record-image-directory-probe ((object integer)
                                                    &key (base-image-directory-pathname *dbc-base-item-number-image-pathname*))
   (%inventory-record-image-directory-probe object
                                            :base-image-directory-pathname base-image-directory-pathname))
 
-(defmethod inventory-record-image-directory-probe ((object string) 
+(defmethod inventory-record-image-directory-probe ((object string)
                                                    &key (base-image-directory-pathname *dbc-base-item-number-image-pathname*))
   (%inventory-record-image-directory-probe object
                                            :base-image-directory-pathname base-image-directory-pathname))
 
 
-(defmethod inventory-record-image-directory-probe ((object parsed-inventory-record) 
+(defmethod inventory-record-image-directory-probe ((object parsed-inventory-record)
                                                    &key (base-image-directory-pathname *dbc-base-item-number-image-pathname*))
   (%inventory-record-image-directory-probe object
                                            :base-image-directory-pathname base-image-directory-pathname))
@@ -48,30 +48,30 @@
 ;; inventory-record-image-jpg-probe
 ;;; ==============================
 
-(defmethod inventory-record-image-jpg-probe ((object integer) 
+(defmethod inventory-record-image-jpg-probe ((object integer)
                                              &key (image-suffix "")
                                                   (base-image-directory-pathname *dbc-base-item-number-image-pathname*)
                                                   (pathname-return-style :absolute))
-  (%inventory-record-image-jpg-probe object 
-                                     :image-suffix image-suffix 
+  (%inventory-record-image-jpg-probe object
+                                     :image-suffix image-suffix
                                      :base-image-directory-pathname base-image-directory-pathname
                                      :pathname-return-style pathname-return-style))
 
-(defmethod inventory-record-image-jpg-probe ((object string) 
+(defmethod inventory-record-image-jpg-probe ((object string)
                                              &key (image-suffix "")
                                                   (base-image-directory-pathname *dbc-base-item-number-image-pathname*)
                                                   (pathname-return-style :absolute))
-  (%inventory-record-image-jpg-probe object 
-                                     :image-suffix image-suffix 
+  (%inventory-record-image-jpg-probe object
+                                     :image-suffix image-suffix
                                      :base-image-directory-pathname base-image-directory-pathname
                                      :pathname-return-style pathname-return-style))
 
-(defmethod inventory-record-image-jpg-probe ((object parsed-inventory-record) 
+(defmethod inventory-record-image-jpg-probe ((object parsed-inventory-record)
                                              &key (image-suffix "")
                                                   (base-image-directory-pathname *dbc-base-item-number-image-pathname*)
                                                   (pathname-return-style :absolute))
-  (%inventory-record-image-jpg-probe object 
-                                      :image-suffix image-suffix 
+  (%inventory-record-image-jpg-probe object
+                                      :image-suffix image-suffix
                                       :base-image-directory-pathname base-image-directory-pathname
                                       :pathname-return-style pathname-return-style))
 
@@ -82,21 +82,21 @@
 (defmethod inventory-record-image-jpg-probe-all ((object integer)
                                                  &key (base-image-directory-pathname *dbc-base-item-number-image-pathname*)
                                                       (pathname-return-style :absolute))
-  (%inventory-record-image-jpg-probe-all object 
+  (%inventory-record-image-jpg-probe-all object
                                          :base-image-directory-pathname base-image-directory-pathname
                                          :pathname-return-style pathname-return-style))
 
 (defmethod inventory-record-image-jpg-probe-all ((object string)
                                              &key (base-image-directory-pathname *dbc-base-item-number-image-pathname*)
                                                   (pathname-return-style :absolute))
-  (%inventory-record-image-jpg-probe-all object 
+  (%inventory-record-image-jpg-probe-all object
                                          :base-image-directory-pathname base-image-directory-pathname
                                          :pathname-return-style pathname-return-style))
 
-(defmethod inventory-record-image-jpg-probe-all ((object parsed-inventory-record) 
+(defmethod inventory-record-image-jpg-probe-all ((object parsed-inventory-record)
                                              &key (base-image-directory-pathname *dbc-base-item-number-image-pathname*)
                                                   (pathname-return-style :absolute))
-  (%inventory-record-image-jpg-probe-all object 
+  (%inventory-record-image-jpg-probe-all object
                                          :base-image-directory-pathname base-image-directory-pathname
                                          :pathname-return-style pathname-return-style))
 
@@ -105,7 +105,7 @@
 ;;; %inventory-record-image-<FOO> interface functions
 ;;; ==============================
 
-(defun %inventory-record-image-directory-probe (item-number 
+(defun %inventory-record-image-directory-probe (item-number
                                                 &key (base-image-directory-pathname *dbc-base-item-number-image-pathname*))
   ;; may be better to declare parsed-class instead of parsed-inventory-record??
   (declare (type (or integer string parsed-inventory-record) item-number)
@@ -113,13 +113,13 @@
            (optimize (speed 3)))
   (let* ((0-string      (control-id-indexed-number-zero-padded-string item-number))
          (0-sold-string (concatenate 'string 0-string "_SOLD"))
-         (0-string-dir  (probe-file (merge-pathnames 
+         (0-string-dir  (probe-file (merge-pathnames
                                      (make-pathname :directory `(:relative ,0-string))
                                      base-image-directory-pathname)))
-         (0-string-sold-dir  
+         (0-string-sold-dir
            (and (null 0-string-dir)
                 ;; osicat:directory-exists-p
-                (probe-file (merge-pathnames 
+                (probe-file (merge-pathnames
                              (make-pathname :directory `(:relative ,0-sold-string))
                              base-image-directory-pathname)))))
     (declare (string 0-string 0-sold-string)
@@ -128,27 +128,26 @@
            (values 0-string-dir 0-string))
           (0-string-sold-dir
            (values 0-string-sold-dir 0-string 0-sold-string))
-          (t 
+          (t
            (values nil 0-string))))) ;item-number
 
 (defun %inventory-record-image-jpg-probe (item-number &key (image-suffix "")
                                                            (base-image-directory-pathname *dbc-base-item-number-image-pathname*)
                                                            (pathname-return-style :absolute))
   ;; may be better to declare parsed-class instead of parsed-inventory-record??
-  (declare 
-   (type (or integer string parsed-inventory-record) item-number)
-   (type (or string (eql :all)) image-suffix)
-   (type (member :absolute :relative :file-pathname) pathname-return-style)
-   (mon:pathname-or-namestring base-image-directory-pathname))
+  (declare (type (or integer string parsed-inventory-record) item-number)
+           (type (or string (eql :all)) image-suffix)
+           (type (member :absolute :relative :file-pathname) pathname-return-style)
+           (mon:pathname-or-namestring base-image-directory-pathname))
   (let ((suffixe (list "" "-m" "-s" "-f" "-fs" "-fc" "-z" :all)))
     (unless (member image-suffix suffixe :test #'string=)
       (error ":FUNCTION `%inventory-record-image-jpg-probe' -- keyword arg IMAGE-SUFFIX not a valid suffix~% ~
             must be one of one of~% ~A~% got: ~S" suffixe image-suffix))
     (if (eql image-suffix :all)
-        (inventory-record-image-jpg-probe-all item-number 
+        (inventory-record-image-jpg-probe-all item-number
                                               :base-image-directory-pathname base-image-directory-pathname
                                               :pathname-return-style pathname-return-style)
-        (multiple-value-bind (got-dir 0-number-string maybe-sold-dir) 
+        (multiple-value-bind (got-dir 0-number-string maybe-sold-dir)
             (%inventory-record-image-directory-probe item-number :base-image-directory-pathname base-image-directory-pathname)
           (declare (type (or null pathname) got-dir)
                    (string 0-number-string)
@@ -156,17 +155,17 @@
           (if (null got-dir)
               (values nil nil 0-number-string)
               (let ((maybe-find-jpg
-                      (probe-file (merge-pathnames 
+                      (probe-file (merge-pathnames
                                    (make-pathname :name (concatenate 'string 0-number-string image-suffix)
                                                   :type "jpg")
                                    got-dir))))
                 (declare ((or null pathname) maybe-find-jpg))
-                (if (null maybe-find-jpg) 
+                (if (null maybe-find-jpg)
                     (values maybe-find-jpg got-dir 0-number-string)
-                    (locally 
+                    (locally
                         (declare (pathname got-dir))
                       (ecase pathname-return-style
-                        (:absolute 
+                        (:absolute
                          (values maybe-find-jpg got-dir 0-number-string))
                         (:relative
                          (values (make-pathname :directory (list :relative (or maybe-sold-dir 0-number-string))
@@ -189,6 +188,8 @@
 ;; (cl-ppcre:scan-to-strings *tt--regex* "003566-fs")
 ;; (cl-ppcre:scan-to-strings *tt--regex* "003566-fc")
 ;; (cl-ppcre:scan-to-strings *tt--regex* "")
+;; (cl-ppcre:scan-to-strings *tt--regex* "a003566")
+;; (cl-ppcre:scan-to-strings *tt--regex* "0003566")
 ;; (cl-ppcre:scan-to-strings *tt--regex* "003566-")
 ;; (cl-ppcre:scan-to-strings *tt--regex* "003566-ms")
 ;; (cl-ppcre:scan-to-strings *tt--regex* "003566-fm")
@@ -203,13 +204,13 @@
              (type (member :absolute :relative :file-pathname) pathname-return-style)
              (mon:pathname-or-namestring base-image-directory-pathname)
              (optimize (speed 3)))
-    (multiple-value-bind (got-dir 0-number-string maybe-sold-dir) (inventory-record-image-directory-probe 
-                                                                   item-number 
+    (multiple-value-bind (got-dir 0-number-string maybe-sold-dir) (inventory-record-image-directory-probe
+                                                                   item-number
                                                                    :base-image-directory-pathname base-image-directory-pathname)
       (declare (type (or null pathname) got-dir)
                (string 0-number-string)
                (type (or null string) maybe-sold-dir))
-      (if (null got-dir) 
+      (if (null got-dir)
           (values nil nil 0-number-string) ; directory wasn't found => NIL, NIL, <O-NUMBER-STRING>
           (let (;; (wild-regex (cl-ppcre:create-scanner (format nil "^~A((-[msz]{1}?)??|(-f[sc]??)??)??$" 0-number-string)))
                 (maybe-image-list (directory (merge-pathnames (make-pathname :name :wild
@@ -235,15 +236,15 @@
                            (cl-ppcre:scan wild-regex namestring-or-null))
 
                          (filter-matches ()
-                           (setf maybe-image-list 
+                           (setf maybe-image-list
                                  (delete-if-not #'match-sufffixe maybe-image-list :key #'pathname-name)))
-                     
+
                          (relative-pathname-enough (matched-pathname)
                            (declare (pathname matched-pathname))
                            (make-pathname :directory (list :relative (or maybe-sold-dir 0-number-string))
                                           :name (pathname-name matched-pathname)
                                           :type (pathname-type matched-pathname)))
-                   
+
                          (file-pathname-from-namestring (matched-pathname)
                            (declare (pathname matched-pathname))
                            ;; (pathname (file-namestring matched-pathname))
@@ -254,28 +255,28 @@
                          ;;   (declare (pathname first-pathname))
                          ;;   ;; (pathname (directory-namestring first-pathname))
                          ;;   (make-pathname :directory (pathname-directory first-pathname)))
-                       
+
                          (mapping-matched-pathnames (map-function)
-                           (declare (ftype (function (pathname) pathname) 
+                           (declare (ftype (function (pathname) pathname)
                                            file-pathname-from-namestring
                                            relative-pathname-enough))
                            (map 'list map-function maybe-image-list))
-                     
+
                          (sort-return-values (maybe-mapped-pathnames nth-1-pathname)
                            (declare (pathname nth-1-pathname)
                                     (cons maybe-mapped-pathnames))
                            (values (sort maybe-mapped-pathnames #'string< :key #'pathname-name)
                                    nth-1-pathname
                                    0-number-string))
-                       
+
                          (return-style-dispatch ()
                            (ecase pathname-return-style
                              (:absolute
-                              (sort-return-values 
-                               maybe-image-list 
+                              (sort-return-values
+                               maybe-image-list
                                ;; (%pathname-directory-namestring (car maybe-image-list))
                                got-dir))
-                             (:relative 
+                             (:relative
                               (sort-return-values
                                (mapping-matched-pathnames #'relative-pathname-enough)
                                base-image-directory-pathname))
@@ -288,13 +289,11 @@
                       (return-style-dispatch)
                       (values nil got-dir 0-number-string)))))))))
 
-
 ;;; ==============================
 
 
 ;; Local Variables:
 ;; indent-tabs-mode: nil
-;; show-trailing-whitespace: t
 ;; mode: lisp-interaction
 ;; package: dbc
 ;; End:
