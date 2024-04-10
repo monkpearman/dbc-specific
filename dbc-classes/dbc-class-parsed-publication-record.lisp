@@ -271,6 +271,25 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("naf_creator"        . edit-by-creator)))
 
 
+(defun parsed-publication-record-collect-control-id-display ()
+  (map 'list #'cdr 
+       (parsed-class-slot-value-collect-non-null 'parsed-publication-record 'control-id-display-publication)
+       #'string>))
+
+(defmethod print-object ((object parsed-publication-record) stream)
+  (let* ((control-num (and (slot-boundp object 'control-id-entity-num-publication)
+                           (slot-value object  'control-id-entity-num-publication)))
+         (control-id-display (and (slot-boundp object 'control-id-display-publication)
+                                  (slot-value object  'control-id-display-publication)))
+         ;; (control-num-if (and (stringp control-num)
+         ;;                  (control-id-indexed-number-zero-padded-string control-num)))
+         )
+    ;; (declare (mon:string-or-null control-num-if))
+    ;; (print-unreadable-object (object stream :type t :identity (not control-num-if))
+    ;;   (format stream "~S" control-num-if))))
+    (declare (mon:string-or-null control-num control-id-display))
+    (print-unreadable-object (object stream :type t :identity (not control-num))
+      (format stream ":CONTROL-ID-ENTITY-NUM ~S :CONTROL-ID-DISPLAY-NAME ~S" control-num control-id-display))))
 
 
 ;;; ==============================
