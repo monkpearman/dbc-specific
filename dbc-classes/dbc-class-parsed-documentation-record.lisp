@@ -2,6 +2,10 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-documentation-record.lisp
 ;;; ==============================
 
+#|
+
+|#
+
 ;; following defined in loadtime-bind.lisp
 ;; `set-parsed-documentation-record-slot-value'
 ;; `parsed-documentation-record-xml-dump-file-and-hash'
@@ -19,6 +23,7 @@
     :initarg :control-id-documentation-record-document-page-id
     :accessor control-id-documentation-record-document-page-id
     :documentation ":ORIGINAL-FIELD \"id\"")
+
 
    (;; reference to the id of the meta-doc -- multiple documents share this key
     ;; and are effectively aggregated beneath it as a single document.
@@ -89,6 +94,7 @@
     :documentation ":ORIGINAL-FIELD \"content_fr\"")
 
    (;; The title for the meta-document
+    ;; :DESCRIPTION-DOCUMENTATION-DOCUMENT-TITLE            "0" ; occurs 8 times
     description-documentation-document-title
     :initarg :description-documentation-document-title
     :accessor description-documentation-document-title
@@ -116,7 +122,10 @@
     :accessor documentation-language-type
     :documentation ":ORIGINAL-FIELD \"lang\"")
 
-   ( ;; pg N of N
+   ( 
+    ;; :DOCUMENTATION-PAGE-COUNT-INDEX "0" ; indicates a deleted document? happens 9 times
+    ;; now exists as an integer value
+    ;; pg N of N
     documentation-page-count-index
     :initarg :documentation-page-count-index
     :accessor documentation-page-count-index
@@ -167,8 +176,14 @@
     :initarg :category-entity-6-coref
     :accessor category-entity-6-coref
     :documentation ":ORIGINAL-FIELD \"c6\"")
+   
+   ;; "__IGNORED-1"
+   (category-entity-precedence-list
+   :initarg :category-entity-precedence-list
+   :accessor category-entity-precedence-list
+   :documentation "Not present in original table, but corresponds to what we have for the same slot with class `parsed-inventory-record'.")
 
-   (;; stan | constance 
+   (;; keyword either :stan | :constance
     edit-by-creator
     :initarg :edit-by-creator
     :accessor edit-by-creator
@@ -193,6 +208,7 @@
     :documentation ":ORIGINAL-FIELD \"date_edt\"")
    )
   )
+
 
 ;; base-documentation-record
 (make-parsed-class-field-slot-accessor-mapping 
@@ -229,11 +245,15 @@
    ("on_line"      . record-status-active)
    ("date_edit"    . edit-timestamp-origin)
    ("date_edt"     . edit-timestamp)
+   ("__IGNORED-1"  . category-entity-precedence-list)
    ))
 
-
-
-
+;; (make-instance 'parsed-documentation-record)
+;; (accessor-to-field-table 'parsed-documentation-record)
+;; (field-to-accessor-table 'parsed-documentation-record)
+;; (accessors-of-parsed-class 'parsed-documentation-record)
+;; (fields-of-parsed-class 'parsed-documentation-record)
+;; (initargs-of-parsed-class 'parsed-documentation-record)
 
 ;; :NOTE `set-parsed-documentation-record-slot-value' is defined in loadtime-bind.lisp
 ;; (def-set-parsed-class-record-slot-value 
