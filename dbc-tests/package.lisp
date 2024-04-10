@@ -7,7 +7,7 @@
 
 ;; *package*
 
-(defpackage #:dbc-test 
+(defpackage #:dbc-test
   (:use #:common-lisp );; #:dbc) ;; #:mon-test)
   (:export
    ;;
@@ -17,12 +17,13 @@
  ;; dbc-tests/dbc-uuid-profile.lisp
    #:make-v5-uuid-test
    ;;
+ #:run-tests
    ))
 
 
 ;; Local Variables:
 ;; indent-tabs-mode: nil
-;; show-trailing-whitespace: t
+;; show-trailing-whitespace: nil
 ;; mode: lisp-interaction
 ;; package: dbc-test
 ;; End:
