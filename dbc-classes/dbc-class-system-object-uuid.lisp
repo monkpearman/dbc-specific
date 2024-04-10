@@ -195,18 +195,17 @@
 ;; mon:symbol-not-null-or-string-not-empty
 ;; mon::%fast-string-all-whitespace-p
 (defun %verify-valid-string-or-symbol-for-identity (verify-identity)
-  (declare #-:mon (type (or string (and symbol (not null))) verify-identity)
-           #+:mon (type mon:symbol-not-null-or-string-not-empty verify-identity))
-  #+:mon (unless (mon:symbol-not-null-or-string-not-empty-p verify-identity)
+  (declare #+:IS-MON(type mon:symbol-not-null-or-string-not-empty verify-identity)
+           #-:IS-MON(type (or string (and symbol (not null))) verify-identity))
+  #+:IS-MON(unless (mon:symbol-not-null-or-string-not-empty-p verify-identity)
            (error "arg IDENTITY did not satisfy `mon:symbol-not-null-or-string-not-empty-p'"))
-  #-:mon (when (and (stringp verify-identity)
+  #-:IS-MON(when (and (stringp verify-identity)
                     (string= (make-string 0) verify-identity))
            (error "arg IDENTITY did not satisfy `mon:symbol-not-null-or-string-not-empty-p'"))
   (if (stringp verify-identity)
-      (if #+:mon (mon::%fast-string-all-whitespace-p verify-identity)
-          #-:mon (loop 
-                    for char across verify-identity
-                    always (member char (list #\SPACE #\NEWLINE #\TAB #\RETURN #\NO-BREAK_SPACE #\PAGE #\VT) :test 'char=))
+      (if #+:IS-MON(mon::%fast-string-all-whitespace-p verify-identity)
+          #-:IS-MON(loop for char across verify-identity
+                         always (member char (list #\SPACE #\NEWLINE #\TAB #\RETURN #\NO-BREAK_SPACE #\PAGE #\VT) :test 'char=))
           (error "arg IDENTITY must not be contained of all whitespace characters")
           verify-identity)
       verify-identity))
@@ -254,7 +253,7 @@
         uuid-bit-vector))
 
   (:method :after
-    ((uuid-bit-vector bit-vector) (sys-object system-object-uuid)) ; simple-bit-vector
+           ((uuid-bit-vector bit-vector) (sys-object system-object-uuid)) ; simple-bit-vector
     (declare (unicly::uuid-bit-vector-128 uuid-bit-vector))
     (let ((slot-value-if (system-identity-uuid-version sys-object))
           (version-if    (unicly::uuid-version-bit-vector uuid-bit-vector)))
@@ -306,7 +305,8 @@
 
 (defgeneric (setf system-identity-uuid-string-36) (uuid-hex-string-36 sys-object)
   (:method ((uuid-hex-string-36 string) (sys-object system-object-uuid))
-    (declare (unicly::uuid-hex-string-36 uuid-hex-string-36))
+           ;; DARWIN UNCOMMENT ONCE FIXED
+           ;; (declare (unicly::uuid-hex-string-36 uuid-hex-string-36))
     (if (slot-exists-p sys-object 'system-identity-uuid-string-36)
         (setf (slot-value sys-object 'system-identity-uuid-string-36)
               uuid-hex-string-36)
@@ -465,12 +465,12 @@
       (slot-value sys-object 'system-identity-uuid))))
 
 (defgeneric (setf system-identity-uuid) (coercable-uuid sys-object)
-
   ;; :NOTE `unicly:make-uuid-from-string' already coerces a uuid sys-object with
   ;; `unicly:uuid-copy-uuid' we keep the method dispatch b/c we can check string
   ;; validity earlier.
   (:method  ((uuid-string string) (sys-object system-object-uuid))
-    (declare (unicly::uuid-hex-string-36 uuid-string))
+
+            ;; :DARWWIN REENABL/e if we can get it to compile (declare (unicly::uuid-hex-string-36 uuid-string))
     (let ((uuid-from-string (unicly:make-uuid-from-string uuid-string)))
       (declare (unicly:unique-universal-identifier uuid-from-string))
       (if (slot-exists-p sys-object 'system-identity-uuid)
@@ -517,10 +517,8 @@
   ;; a slot containing a uuid representation gets touched. 
   ;; This was an early 
   ;; (find-method #'(setf system-identity-uuid) '(:after) '(t system-object-uuid))
-  (:method  :after 
-    ((uuid-arg t) (sys-object system-object-uuid))
-    (let* ((uuid-bv-prevent (unicly:uuid-to-bit-vector 
-                             (system-identity-uuid sys-object)))
+  (:method  :after  ((uuid-arg t) (sys-object system-object-uuid))
+    (let* ((uuid-bv-prevent (unicly:uuid-to-bit-vector (system-identity-uuid sys-object)))
            (uuid-bv    (if (unicly:uuid-bit-vector-128-p uuid-arg)
                            ;; if the uuid-arg is the same bv128 as the conversion don't re-trigger
                            (if (unicly:uuid-bit-vector-eql uuid-arg uuid-bv-prevent)
@@ -528,11 +526,8 @@
                                uuid-arg)
                            uuid-bv-prevent))
            (uuid-bytes (if (unicly:uuid-byte-array-16-p uuid-arg)
-                           (let* ((existing-slot    
-                                   (system-identity-uuid-byte-array sys-object))
-                                  (existing-slot-bv 
-                                   (when existing-slot 
-                                     (unicly:uuid-byte-array-to-bit-vector existing-slot)))
+                           (let* ((existing-slot    (system-identity-uuid-byte-array sys-object))
+                                  (existing-slot-bv (when existing-slot (unicly:uuid-byte-array-to-bit-vector existing-slot)))
                                   (ba-to-bv 
                                    (if existing-slot-bv
                                        nil
@@ -563,6 +558,7 @@
                                      nil
                                      uuid-arg)))
                            (unicly::uuid-bit-vector-to-integer uuid-bv-prevent)))
+           ;;; DARWIN when binding DBC::UUID-HEX-36 [Condition of type TYPE-ERROR]
            (uuid-hex-36   (if (and (stringp uuid-arg)
                                    (unicly::uuid-string-36-p (the string uuid-arg)))
                               (let* ((existing-slot
@@ -581,11 +577,15 @@
                                     (if (unicly:uuid-bit-vector-eql hex-to-bv uuid-bv-prevent)
                                         nil
                                         uuid-arg)))
-                              (unicly:uuid-princ-to-string (system-identity-uuid sys-object)))))
+                            (unicly:uuid-princ-to-string (system-identity-uuid sys-object))
+
+                            )))
       (declare (type (or unicly::uuid-byte-array-16 null)  uuid-bytes)
                (type (or unicly::uuid-bit-vector-128 null) uuid-bv)
                (type (or unicly::uuid-ub128 null)          uuid-int)
-               (type (or unicly::uuid-hex-string-36 null)  uuid-hex-36))
+               ;; DARWIN UNCOMMENT AFTER IT WORKS
+               ;; (type (or unicly::uuid-hex-string-36 null)  uuid-hex-36)
+               )
       (when (and uuid-bv (slot-exists-p sys-object 'system-identity-uuid-bit-vector)
                  (setf (system-identity-uuid-bit-vector sys-object) uuid-bv)))
       (when (and uuid-bytes (slot-exists-p sys-object 'system-identity-uuid-byte-array))
@@ -614,7 +614,7 @@
                   (slot-makunbound sys-object 'system-identity))
                 (when (slot-exists-p sys-object 'system-identity-parent-uuid)
                   (slot-makunbound sys-object 'system-identity-parent-uuid)))
-              
+
               (when (slot-exists-p sys-object 'system-identity)
                 (slot-makunbound sys-object 'system-identity)))
 
@@ -622,16 +622,15 @@
           ;; well it shouldn't be
           (when (system-identity-parent-uuid sys-object)
             (slot-makunbound sys-object 'system-identity-parent-uuid)))
-      
+
       uuid-arg)))
 
 ;; namespace-and-identity
 (defun update-system-object-uuid (sys-object &key base-namespace control-id)
   (declare (type system-object-uuid sys-object)
            (type unicly:unique-universal-identifier base-namespace)
-           #-:mon (type (or string (and symbol (not null))) control-id)
-           #+:mon ((or mon:string-not-null-empty-or-all-whitespace mon:symbol-not-null)
-                   control-id))
+           #+:IS-MON((or mon:string-not-null-empty-or-all-whitespace mon:symbol-not-null) control-id)
+           #-:IS-MON(type (or string (and symbol (not null))) control-id))
   ;; #-:mon (%verify-valid-string-or-symbol-for-identity identity)
   (let ((new-nmspc (unicly:make-v5-uuid base-namespace 
                                         (if (symbolp control-id) 
@@ -641,12 +640,14 @@
     (setf (system-identity-uuid sys-object) new-nmspc))
   sys-object)
 
+;;; ==============================
+;; DARWIN `make-system-object-uuid'  is having trouble using quoted symobl '*system-object-uuid-base-namespace* as value suppled fo keyword :control-id
+;; do we need to loosen the declaratiohs
 (defun make-system-object-uuid (&key base-namespace control-id)
-  (declare (unicly:unique-universal-identifier base-namespace)
-           #-:mon (type (or string (and symbol (not null))) control-id)
-           #+:mon ((or mon:string-not-null-empty-or-all-whitespace mon:symbol-not-null)
-                   control-id))
-  ;; #-:mon (%verify-valid-string-or-symbol-for-identity identity)
+  ;; (declare (unicly:unique-universal-identifier base-namespace)
+  ;;          #+:IS-MON((or mon:string-not-null-empty-or-all-whitespace mon:symbol-not-null) control-id)
+  ;;          #-:IS-MON(type (or string (and symbol (not null))) control-id))
+  ;; #-:IS-MON (%verify-valid-string-or-symbol-for-identity identity)
   (let ((new-obj   (make-instance 'system-object-uuid))
         (new-nmspc (unicly:make-v5-uuid base-namespace 
                                         (if (symbolp control-id) 
@@ -768,7 +769,7 @@
 
 ;; Local Variables:
 ;; indent-tabs-mode: nil
-;; show-trailing-whitespace: t
+;; show-trailing-whitespace: nil
 ;; mode: lisp-interaction
 ;; package: dbc
 ;; End:
