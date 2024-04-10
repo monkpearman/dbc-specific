@@ -74,7 +74,7 @@
             finally (return (or (and (eql seqtype 'list)
                                      (coerce maybe-coerced 'cons))
                                 maybe-coerced)))))))
-
+;; (parsed-class-slot-value-compare-count 'parsed-inventory-record 'title-ebay)
 (defun parsed-class-slot-value-compare-count (class slot)
   (declare (symbol class slot))
   (loop 
@@ -100,7 +100,7 @@
     for slot-v = (slot-value obj slot)
     when (null slot-v) 
     count it))
-;;
+;;(parsed-class-slot-value-count-null 'parsed-inventory-record 'title-ebay)
 (defun parsed-class-slot-value-count-non-null (class slot)
   (declare (symbol class slot))
   (loop 
@@ -120,6 +120,7 @@
               (string= slot-v match-string))
     count it))
 
+;; (parsed-class-slot-value-count-eql 'parsed-inventory-record 'unit-height 12) 
 (defun parsed-class-slot-value-count-eql (class slot match-value)
   (declare (symbol class slot))
   (loop 
@@ -127,6 +128,7 @@
     for slot-v = (slot-value obj slot)
     count (eql slot-v match-value)))
 
+;; (parsed-class-slot-value-count-equal 'parsed-inventory-record 'category-entity-3-coref  "Birds of New Guinea")
 (defun parsed-class-slot-value-count-equal (class slot match-value)
   (declare (symbol class slot))
   (loop 
@@ -134,6 +136,7 @@
     for slot-v = (slot-value obj slot)
     count (equal slot-v match-value)))
 
+;; (parsed-class-slot-value-count-equalp 'parsed-inventory-record 'category-entity-3-coref  "Birds of New Guinea")
 (defun parsed-class-slot-value-count-equalp (class slot match-value)
   (declare (symbol class slot))
   (loop 
@@ -142,6 +145,7 @@
     count (equalp slot-v match-value)))
 
 ;; (parsed-class-slot-value-count-string/= 'parsed-inventory-record 'price-sold-ebay "0")
+;; (parsed-class-slot-value-count-non-null 'parsed-inventory-record 'price-sold-ebay)
 (defun parsed-class-slot-value-count-string/= (class slot match-string)
   (declare (symbol class slot)
            (string match-string))
@@ -152,6 +156,8 @@
               (string/= slot-v match-string))
     count it))
 
+;; (parsed-class-slot-value-count-not-eql 'parsed-inventory-record 'inventory-seller :LAPP )
+;; (parsed-class-slot-value-count-not-eql 'parsed-inventory-record 'price-ask 150)
 (defun parsed-class-slot-value-count-not-eql (class slot match-value)
   (declare (symbol class slot))
   (loop 
@@ -159,6 +165,7 @@
     for slot-v = (slot-value obj slot)
     count (not (eql slot-v match-value))))
 
+;; (parsed-class-slot-value-count-not-equal 'parsed-inventory-record 'category-entity-0-coref    "Advertising and Graphics")
 (defun parsed-class-slot-value-count-not-equal (class slot match-value)
   (declare (symbol class slot))
   (loop 
@@ -166,6 +173,7 @@
     for slot-v = (slot-value obj slot)
     count (not (equal slot-v match-value))))
 
+;; (parsed-class-slot-value-count-not-equalp 'parsed-inventory-record 'description-inventory-condition '(:RATING 9 :DESCRIPTION NIL))
 (defun parsed-class-slot-value-count-not-equalp (class slot match-value)
   (declare (symbol class slot))
   (loop 
@@ -182,7 +190,7 @@
     for slot-v = (slot-value obj slot)
     always (and (stringp slot-v) 
                 (string= slot-v match-string))))
-
+;; (parsed-class-slot-value-always-null 'parsed-inventory-record 'job-complete)
 (defun parsed-class-slot-value-always-null (class slot)
   (declare (symbol class slot))
   (loop 
@@ -190,6 +198,7 @@
     for slot-v = (slot-value obj slot)
     always (null slot-v)))
 
+;; (parsed-class-slot-value-always-eql 'parsed-inventory-record 'inventory-seller  :LAPP)
 (defun parsed-class-slot-value-always-eql (class slot match-value)
   (declare (symbol class slot))
   (loop 
@@ -197,6 +206,7 @@
     for slot-v = (slot-value obj slot)
     always (eql slot-v match-value)))
 
+;; (parsed-class-slot-value-always-equal 'parsed-inventory-record 'inventory-seller  :LAPP)
 (defun parsed-class-slot-value-always-equal (class slot match-value)
   (declare (symbol class slot))
   (loop 
@@ -204,6 +214,7 @@
     for slot-v = (slot-value obj slot)
     always (equal slot-v match-value)))
 
+;; (parsed-class-slot-value-always-equalp 'parsed-inventory-record 'inventory-seller  :LAPP)
 (defun parsed-class-slot-value-always-equalp (class slot match-value)
   (declare (symbol class slot))
   (loop 
@@ -211,6 +222,7 @@
     for slot-v = (slot-value obj slot)
     always (equalp slot-v match-value)))
 
+;; (parsed-class-slot-value-never-null 'parsed-inventory-record 'inventory-number)
 (defun parsed-class-slot-value-never-null (class slot)
   (declare (symbol class slot))
   (loop 
@@ -218,6 +230,7 @@
     for slot-v = (slot-value obj slot)
     never (null slot-v)))
 
+;; (parsed-class-slot-value-never-string= 'parsed-inventory-record 'inventory-number "FOO")
 (defun parsed-class-slot-value-never-string= (class slot match-string)
   (declare (symbol class slot)
            (string match-string))
@@ -226,7 +239,7 @@
     for slot-v = (slot-value obj slot)
     never (and (stringp slot-v) 
                (string= slot-v match-string))))
-
+;; (parsed-class-slot-value-never-eql 'parsed-inventory-record 'unit-width  99)
 (defun parsed-class-slot-value-never-eql (class slot match-value)
   (declare (symbol class slot))
   (loop 
@@ -234,6 +247,7 @@
     for slot-v = (slot-value obj slot)
     never (eql slot-v match-value)))
 
+;; (parsed-class-slot-value-never-equal 'parsed-inventory-record 'media-entity-technique  "")
 (defun parsed-class-slot-value-never-equal (class slot match-value)
   (declare (symbol class slot))
   (loop 
@@ -241,12 +255,14 @@
     for slot-v = (slot-value obj slot)
     never (equal slot-v match-value)))
 
+;; (parsed-class-slot-value-never-equalp 'parsed-inventory-record 'unit-weight  "")
 (defun parsed-class-slot-value-never-equalp (class slot match-value)
   (loop 
     for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
     for slot-v = (slot-value obj slot)
     never (equalp slot-v match-value)))
 
+;; (parsed-class-slot-value-thereis-null 'parsed-inventory-record 'record-status-active)
 (defun parsed-class-slot-value-thereis-null (class slot)
   (declare (symbol class slot))
   (loop 
@@ -254,6 +270,7 @@
     for slot-v = (slot-value obj slot)
     thereis (null slot-v)))
 
+;; (parsed-class-slot-value-thereis-string= 'parsed-inventory-record 'record-status-active "0")
 (defun parsed-class-slot-value-thereis-string= (class slot match-string)
   (declare (symbol class slot)
            (string match-string))
@@ -263,6 +280,7 @@
     thereis (and (stringp slot-v) 
                  (string= slot-v match-string))))
 
+;; (parsed-class-slot-value-thereis-eql 'parsed-inventory-record 'price-ask          140)
 (defun parsed-class-slot-value-thereis-eql (class slot match-value)
   (declare (symbol class slot))
   (loop 
@@ -270,13 +288,14 @@
     for slot-v = (slot-value obj slot)
     thereis (eql slot-v match-value)))
 
+;; (parsed-class-slot-value-thereis-equal 'parsed-inventory-record 'publication-date  '(:YEAR 1932 :MONTH 12 :DAY NIL))
 (defun parsed-class-slot-value-thereis-equal (class slot match-value)
   (declare (symbol class slot))
   (loop 
     for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
     for slot-v = (slot-value obj slot)
     thereis (equal slot-v match-value)))
-
+;; (parsed-class-slot-value-thereis-equalp 'parsed-inventory-record 'publication-date  '(:YEAR 1932 :MONTH 12 :DAY NIL))
 (defun parsed-class-slot-value-thereis-equalp (class slot match-value)
   (declare (symbol class slot))
   (loop 
@@ -422,6 +441,25 @@
     collect (cons obj-id slot-v) into gthr 
     finally (return (values gthr cnt))))
 
+;; (parsed-class-slot-value-collect-slot-values-using-slot-list 'parsed-inventory-record '(keyword-sequenced-entity-coref
+;;                                                                       keyword-seo-sequenced-entity-coref
+;;                                                                       theme-entity-0-coref
+;;                                                                       theme-entity-1-coref
+;;                                                                       theme-entity-2-coref
+;;                                                                       category-entity-precedence-list))
+(defun parsed-class-slot-value-collect-slot-values-using-slot-list (class slot-list)
+  ;; (declare (symbol class))
+  (loop 
+    with slot-key-mapping = (loop
+                              for slot-sym in slot-list
+                              collect (cons slot-sym (find-symbol (string slot-sym) (find-package "KEYWORD"))))
+    for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
+    collect (loop 
+              for (slot . slot-key) in slot-key-mapping
+              for slot-val = (slot-value obj slot)
+              collecting (cons slot-key slot-val) into gthr 
+              finally (return (list obj-id gthr)))))
+
 (defun parsed-class-slot-value-set-when-null (class slot replacement-value 
                                               &key (return-object-id t)
                                                    (sort-object-ids nil))
@@ -535,7 +573,7 @@
                               (parsed-class-slot-value-sort-unique-numeric-string-sequence gthr :test sort-object-ids)
                               gthr))
                   cnt))))
-
+;; (parsed-class-slot-value-collect-string/= 'parsed-inventory-record 'category-entity-0-coref "Natural History")
 (defun parsed-class-slot-value-set-when-string/= (class slot match-string replacement-value
                                                   &key (return-object-id t)
                                                        (sort-object-ids nil))
