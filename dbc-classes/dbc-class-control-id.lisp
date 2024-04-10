@@ -1348,7 +1348,7 @@ Likewise, such co-references may occur in both the same class and/or an entirely
 
 ;; Local Variables:
 ;; indent-tabs-mode: nil
-;; show-trailing-whitespace: t
+;; show-trailing-whitespace: nil
 ;; mode: lisp-interaction
 ;; End:
 
