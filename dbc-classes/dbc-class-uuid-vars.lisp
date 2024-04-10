@@ -24,9 +24,31 @@
 ;; *control-id-person-namespace*
 ;; *control-id-publication-namespace*
 
+#|
+
+(defun make-system-object-uuid (&key base-namespace control-id)
+  (declare (unicly:unique-universal-identifier base-namespace)
+           #-:mon (type (or string (and symbol (not null))) control-id)
+           #+:mon ((or mon:string-not-null-empty-or-all-whitespace mon:symbol-not-null)
+                   control-id))
+  ;; #-:mon (%verify-valid-string-or-symbol-for-identity identity)
+  (let ((new-obj   (make-instance 'system-object-uuid))
+        (new-nmspc (unicly:make-v5-uuid base-namespace 
+                                        (if (symbolp control-id) 
+                                            (string control-id)
+                                            control-id))))
+    (setf (system-identity new-obj) (list base-namespace control-id))
+    (setf (system-identity-uuid new-obj) new-nmspc)
+    new-obj))
+
+uuid-hex-string-36-p
+|#
+
 
 (in-package #:dbc)
 ;; *package*
+;; (find-method #'(setf system-identity-uuid) '(:after) '(t system-object-uuid))
+;; (typep  (unicly:make-v5-uuid unicly:*uuid-namespace-oid* (string '*system-object-uuid-base-namespace*)) 'unicly:unique-universal-identifier)
 
 (defvar *system-object-uuid-base-namespace*
   (make-system-object-uuid  :base-namespace (unicly:make-v5-uuid unicly:*uuid-namespace-oid*
