@@ -55,6 +55,73 @@
 (deftype year-range ()
   '(integer -1000000 1000000))
 
+(deftype year-range-non-zero-unsigned ()
+  '(integer 1 1000000))
+
+(defun valid-nanosecond-date-p (putative-nanosecond-date)
+  (typep putative-nanosecond-date 'nanosecond-range))
+
+(defun valid-nanosecond-date-or-error (putative-nanosecond-date)
+  (or (valid-nanosecond-date-p putative-nanosecond-date)
+      (error 'invalid-timestamp-component
+             :component (list :nanosecond putative-nanosecond-date))))
+
+(defun valid-second-date-p (putative-second-date)
+  (typep putative-second-date 'second-minute-range))
+
+(defun valid-second-date-or-error (putative-second-date)
+  (or (valid-second-date-p putative-second-date)
+      (error 'invalid-timestamp-component
+             :component (list :second putative-second-date))))
+
+(defun valid-minute-date-p (putative-minute-date)
+  (typep putative-minute-date 'second-minute-range))
+
+(defun valid-minute-date-or-error (putative-minute-date)
+  (or (valid-minute-date-p putative-minute-date)
+      (error 'invalid-timestamp-component
+             :component (list :minute putative-minute-date))))
+
+(defun valid-hour-date-p (putative-hour-date)
+  (typep putative-hour-date 'hour-range))
+
+(defun valid-hour-date-or-error (putative-hour-date)
+  (or (valid-hour-date-p putative-hour-date)
+      (error 'invalid-timestamp-component
+             :component (list :hour putative-hour-date))))
+
+(defun valid-day-date-p (putative-day-date)
+  (typep putative-day-date 'day-range))
+
+(defun valid-day-date-or-error (putative-day-date)
+  (or (valid-day-date-p putative-day-date)
+      (error 'invalid-timestamp-component
+             :component (list :day putative-day-date))))
+
+(defun valid-month-date-p (putative-month-date)
+  (typep putative-month-date 'month-range))
+
+(defun valid-month-date-or-error (putative-month-date)
+  (or (valid-month-date-p putative-month-date)
+      (error 'invalid-timestamp-component
+             :component (list :month putative-month-date))))
+
+(defun valid-year-date-p (putative-year-date)
+  (typep putative-year-date 'year-range))
+
+(defun valid-year-date-or-error (putative-year-date)
+  (or (valid-year-date-p putative-year-date)
+      (error 'invalid-timestamp-component
+             :component (list :year putative-year-date))))
+
+(defun valid-year-date-non-zero-unsigned-p (putative-year-date)
+  (typep putative-year-date 'year-range-non-zero-unsigned))
+
+(defun valid-year-date-non-zero-unsigned-or-error (putative-year-date)
+  (or (valid-year-date-non-zero-unsigned-p putative-year-date)
+      (error 'invalid-timestamp-component
+             :component (list :year putative-year-date))))
+
 ;; Following function will error instead of returning nil. It is meant to
 ;; account for certain anomalous behaviour exhibitted by the current
 ;; implementation of local-time::valid-timestamp-p when YEAR is outside the
@@ -87,31 +154,41 @@
   "Returns T if the time values refer to a valid time, otherwise signals an
 `invalid-timestamp-component' condition."
   (declare (optimize (speed 3)))
-  (and (or (typep nsec 'nanosecond-range)
-           (error 'invalid-timestamp-component
-                  :component (list :nsec nsec)))
-       (or (typep sec 'second-minute-range)
-           (error 'invalid-timestamp-component
-                  :component (list :sec sec)))
-       (or (typep minute 'second-minute-range)
-           (error 'invalid-timestamp-component
-                  :component (list :min minute)))
-       (or (typep hour 'hour-range)
-           (error 'invalid-timestamp-component
-                  :component (list :hour hour)))
-       (or (typep month 'month-range)
-           (error 'invalid-timestamp-component
-                  :component (list :month month)))
-       (and (or (typep day 'day-range)
-                (error 'invalid-timestamp-component
-                       :component (list :day day)))
+  ;; (and (or (typep nsec 'nanosecond-range)
+  ;;          (error 'invalid-timestamp-component
+  ;;                 :component (list :nsec nsec)))
+  ;;      (or (typep sec 'second-minute-range)
+  ;;          (error 'invalid-timestamp-component
+  ;;                 :component (list :sec sec)))
+  ;;      (or (typep minute 'second-minute-range)
+  ;;          (error 'invalid-timestamp-component
+  ;;                 :component (list :min minute)))
+  ;;      (or (typep hour 'hour-range)
+  ;;          (error 'invalid-timestamp-component
+  ;;                 :component (list :hour hour)))
+  ;;      (or (typep month 'month-range)
+  ;;          (error 'invalid-timestamp-component
+  ;;                 :component (list :month month)))
+  ;;      (and (or (typep day 'day-range)
+  ;;               (error 'invalid-timestamp-component
+  ;;                      :component (list :day day)))
+  ;;           (or (<= 1 day (local-time:days-in-month month year))
+  ;;               (error 'invalid-timestamp-component-day
+  ;;                      :component (list :day day :month month :year year))))
+  ;;      (or (and (typep year 'year-range)
+  ;;               (not (zerop year)))
+  ;;          (error 'invalid-timestamp-component
+  ;;                 :component (list :year year)))))
+  (and (valid-nanosecond-date-or-error nsec)    
+       (valid-second-date-or-error     sec)
+       (valid-minute-date-or-error     minute)
+       (valid-hour-date-or-error       hour)
+       (valid-month-date-or-error      month)
+       (valid-year-date-or-error       year)
+       (and (valid-day-date-or-error day)
             (or (<= 1 day (local-time:days-in-month month year))
                 (error 'invalid-timestamp-component-day
-                       :component (list :day day :month month :year year))))
-       (or (and (typep year 'year-range)
-                (not (zerop year)))
-           (error 'invalid-timestamp-component
-                  :component (list :year year)))))
+                       :component (list :day day :month month :year year))))))
 
 ;; Returns the decoded time as multiple values: nsec, ss, mm, hh, day, month, year, day-of-week
 ;; (timestamp-year-only-p (make-timestamp-year-only 2012))
