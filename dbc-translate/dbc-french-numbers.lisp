@@ -40,9 +40,9 @@
 ;; :ADDED type declarations
 ;;
 ;; :WAS (in-package #:com.hexstreamsoft.bigname)
-;; 
+;;
 ;; `number-to-french' and `number-to-french-ordinal' in com.hexstreamsoft.bigname
-;; depend on`with-output-to-string-or-stream' from com.hexstreamsoft.lib  / lib.lisp 
+;; depend on`with-output-to-string-or-stream' from com.hexstreamsoft.lib  / lib.lisp
 ;;; ==============================
 
 
@@ -273,15 +273,15 @@
 ;;; ==============================
 
 (fundoc 'number-to-french
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
- \(number-to-french -132894362727827234/19837298127\)~%
+\(number-to-french -132894362727827234/19837298127\)~%
 :SEE-ALSO `number-to-french', `number-to-french-ten',
 `number-to-french-hundred', `number-to-french-thousand', `number-to-french-big',
 `number-to-french-big-designation', `number-to-french-ordinal'.~%▶▶▶")
 
 (fundoc 'number-to-french-ten
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `number-to-french', `number-to-french-ten',
@@ -290,7 +290,7 @@
 `*number-to-french-below-20*', `*number-to-french-tens*'.~%▶▶▶")
 
 (fundoc 'number-to-french-hundred
-" <DOCSTR> ~%~@
+"<DOCSTR>~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `number-to-french', `number-to-french-ten',
@@ -299,7 +299,7 @@
 `*number-to-french-denominators*'.~%▶▶▶")
 
 (fundoc 'number-to-french-thousand
-" <DOCSTR> ~%~@
+"<DOCSTR>~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `number-to-french', `number-to-french-ten',
@@ -308,7 +308,7 @@
 `*number-to-french-thousands*'.~%▶▶▶")
 
 (fundoc 'number-to-french-big
-" <DOCSTR> ~%~@
+"<DOCSTR>~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `number-to-french', `number-to-french-ten',
@@ -317,7 +317,7 @@
 `*number-to-french-big-prefix*'.~%▶▶▶")
 
 (fundoc 'number-to-french-big-designation
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `number-to-french', `number-to-french-ten',
@@ -326,7 +326,7 @@
 `*number-to-french-big-prefix*'.~%▶▶▶")
 
 (fundoc 'number-to-french-ordinal
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `number-to-french', `number-to-french-ten',
