@@ -14,8 +14,9 @@
 ;;   (replace-match (concat (upcase (match-string-no-properties 1)) " "))) 
 ;;; ==============================
 
+
 (in-package :dbc)
-;; *package*
+
 
 ;;; ==============================
 

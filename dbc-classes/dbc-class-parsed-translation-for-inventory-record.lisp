@@ -4,12 +4,14 @@
 
 ;; note fixed items 4845, 4843, and 4810 by hand
 ;; 4802 4793 4791 4785 4772 4771 4770 4769 4768 4766
-
-;; these are translation records for the gil blas stuff
+;;
+;; These are translation records for the Gil Blas stuff
 ;; field ref corresponds with inventory-number of class `parsed-inventory-record'
 ;; See the file dump-translations-xml for details. It contains 3807 records 2129
 ;; have their extra or translation-append-for-record field with a 1 value
+;;; ==============================
 
+
 (in-package #:dbc)
 
 ;; inventory-number

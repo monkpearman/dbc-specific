@@ -26,8 +26,8 @@
 ;;; :FILE dbc-specific/uuids-loadtime-bind.lisp
 ;;; ==============================
 
+
 (in-package :dbc)
-;; *package*
 
 (defclass base-image (base-dbc)
   ()
@@ -524,10 +524,8 @@ Typically, it will be a name by which the resource is formally known.")
 |#
 
 
-
-;;; ==============================
-
 
+;;; ==============================
 ;; Local Variables:
 ;; indent-tabs-mode: nil
 ;; mode: lisp-interaction

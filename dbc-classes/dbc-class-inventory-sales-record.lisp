@@ -15,7 +15,9 @@
 ;; `base-inventory-sales-order-record' `parsed-inventory-sales-sold-record' `*control-id-inventory-sales-order-namespace*'.
 ;; `base-inventory-sales-sold-record' `parsed-inventory-sales-sold-record' `*control-id-inventory-sales-order-namespace*'.
 ;; `base-inventory-sales-sold-in-store-record' `parsed-inventory-sales-sold-in-store-record' `*control-id-inventory-sales-sold-in-store-namespace*'.
+;;; ==============================
 
+
 (in-package #:dbc)
 
 (defclass base-inventory-sales-record (base-record)
@@ -39,6 +41,8 @@
 
 
 
+;;; ==============================
+
 ;; Local Variables:
 ;; indent-tabs-mode: nil
 ;; show-trailing-whitespace: t

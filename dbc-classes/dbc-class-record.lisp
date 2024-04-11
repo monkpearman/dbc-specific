@@ -4,14 +4,17 @@
 
 ;; The inverse corollary to Clarke's Third Law:
 ;; "Any technology distinguishable from magic is insufficiently advanced."
-
+;;
 ;;
 ;; base-record (base-dbc)
 ;; base-inventory-record        (base-record)
 ;; base-authority-record        (base-record)
 ;; base-documentation-record    (base-record)
 ;; documentation-record-sitedoc (base-documentation-record)
+;;
+;;; ==============================
 
+
 (in-package #:dbc)
 
 (defclass base-record (base-dbc)
@@ -30,10 +33,9 @@ The inverse corollary to the class `base-record' is the class `base-entity'.~%~@
  \(mon:class-subclasses \(find-class 'base-entity\)\)~%~@
 :SEE-ALSO `<XREF>'.~%▶▶▶")))
 
-
+
 ;;; ==============================
 
-
 ;; Local Variables:
 ;; indent-tabs-mode: nil
 ;; show-trailing-whitespace: t

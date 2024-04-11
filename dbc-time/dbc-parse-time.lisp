@@ -1,4 +1,3 @@
-
 ;;; ==============================
 ;;; :SOURCE from Quicklisp dist :
 ;;; bknr-datastore-20101006-git/src/utils/parse-time.lisp
@@ -346,7 +345,6 @@
 ;;; Predicates for symbols.  Each symbol has a corresponding function
 ;;; defined here which is applied to a part of the datum to see if
 ;;; it matches the qualifications.
-
 (defun am-pm (string)
   (and (simple-string-p string)
        (cond ((string= string "am") 'am)
@@ -412,7 +410,6 @@
 ;;; strings*, *zone-strings*, *special-strings*.  It returns a specific
 ;;; keyword and/or the object it finds in the hash table.  If no match
 ;;; is made then it immediately signals an error.
-
 (defun match-substring (substring)
   (let ((substring (nstring-downcase substring)))
     (or (let ((test-value (month substring)))
@@ -436,7 +433,6 @@
 ;;; list of alphabetic substrings, numbers, and special divider characters.
 ;;; It matches whatever strings it can and replaces them with a dotted pair
 ;;; containing a symbol and value.
-
 (defun decompose-string (string &key (start 0) (end (length string)) (radix 10))
   (do ((string-index start)
        (next-negative nil)
@@ -509,7 +505,6 @@
 ;;; Match-pattern-element tries to match a pattern element with a datum
 ;;; element and returns the symbol associated with the datum element if
 ;;; successful.  Otherwise nil is returned.
-
 (defun match-pattern-element (pattern-element datum-element)
   (cond ((listp datum-element)
 	 (let ((datum-type (if (eq (car datum-element) 'special)
@@ -522,7 +517,6 @@
 
 ;;; Match-pattern matches a pattern against a datum, returning the
 ;;; pattern if successful and nil otherwise.
-
 (defun match-pattern (pattern datum datum-length)
   (if (>= (length pattern) datum-length)
       (let ((form-list nil))
@@ -553,7 +547,6 @@
 ;;; Deal-with-noon-midn sets the decoded-time values to either noon
 ;;; or midnight depending on the argument form-value.  Form-value
 ;;; can be either 'noon or 'midn.
-
 (defun deal-with-noon-midn (form-value parsed-values)
   (cond ((eq form-value 'noon)
 	 (setf (decoded-time-hour parsed-values) 12))
@@ -566,7 +559,6 @@
 ;;; Deal-with-am-pm sets the decoded-time values to be in the am
 ;;; or pm depending on the argument form-value.  Form-value can
 ;;; be either 'am or 'pm.
-
 (defun deal-with-am-pm (form-value parsed-values)
   (let ((hour (decoded-time-hour parsed-values)))
     (cond ((eq form-value 'am)
@@ -589,7 +581,6 @@
 
 ;;; Set-time-values uses the association list of symbols and values
 ;;; to set the time in the decoded-time structure.
-
 (defun set-time-values (string-form parsed-values)
   (dolist (form-part string-form t)
     (let ((form-type (car form-part))
@@ -643,5 +634,9 @@
 	(if *error-on-mismatch*
 	  (error "\"~A\" is not a recognized time/date format." time-string)
 	  nil))))
+
+
+;;; ==============================
+;;; EOF
 
 

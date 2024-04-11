@@ -34,7 +34,7 @@
 ;; --- naf-entity-artist
 ;; --- naf-entity-author
 ;; --- naf-entity-brand
-;; --- naf-entity-publication 
+;; --- naf-entity-publication
 ;;
 ;; --- naf-entity-publisher ???
 ;;
@@ -73,13 +73,13 @@
 
 
 (in-package #:dbc)
-;; *package*
+
 
 (defclass base-entity (base-dbc)
   ;; :NOTE this is prob. the best place to provide a UUID for entities.
-  () 
-  (:documentation 
-   #.(format nil 
+  ()
+  (:documentation
+   #.(format nil
              "Base class for referencing DBC system entities.~%~@
 An entity is a \"non-abstract\" object capable of being represented by the DBC
  system.~%~@
@@ -95,8 +95,8 @@ The inverse corollary to the class `base-entity' is the class `base-record'.~%~@
 
 (defclass base-theme-entity (base-entity)
   ()
-  (:documentation 
-   #.(format nil 
+  (:documentation
+   #.(format nil
              "Base class for referencing DBC system theme entities.~%~@
              :EXAMPLE~% ~
              \(mon:class-subclasses \(find-class 'base-theme-entity\)\)~%~@
@@ -104,8 +104,8 @@ The inverse corollary to the class `base-entity' is the class `base-record'.~%~@
 
 (defclass base-category-entity (base-entity)
   ()
-  (:documentation 
-   #.(format nil 
+  (:documentation
+   #.(format nil
              "Base class for referencing DBC system category entities.~%~@
              :EXAMPLE~% ~
               \(mon:class-subclasses \(find-class 'base-category-entity\)\)
@@ -141,8 +141,8 @@ And more specifically we are concerned with the mapping from:~%~% ~
 
 (defclass base-naf-entity (base-entity)
   ()
-  (:documentation 
-   #.(format nil 
+  (:documentation
+   #.(format nil
              "Base class for referencing DBC system NAF entities.~%~@
               :EXAMPLE~% ~
                \(mon:class-subclasses \(find-class 'base-naf-entity\)\)
@@ -158,8 +158,8 @@ And more specifically we are concerned with the mapping from:~%~% ~
 ;; -- media-entity-color     (base-media-entity)
 (defclass base-media-entity (base-entity)
   ()
-  (:documentation 
-   #.(format nil 
+  (:documentation
+   #.(format nil
              "Base class for referencing DBC system media entities.~%~@
               Media entities include:~% ~
                - techniques~%   ~
@@ -185,8 +185,8 @@ And more specifically we are concerned with the mapping from:~%~% ~
 ;; --- location-entity-imagined   (location-entity)
 (defclass base-location-entity (base-entity)
    ()
-  (:documentation 
-   #.(format nil 
+  (:documentation
+   #.(format nil
              "Base class for referencing DBC system location entities.~%~@
               Location entities correspond with physical places.~%~@
 A physical place may be \"real\", \"imagined\", \"unverified\".~%~@

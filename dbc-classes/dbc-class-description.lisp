@@ -2,14 +2,9 @@
 ;;; :FILE dbc-classes/dbc-class-description.lisp
 ;;; ==============================
 
-;;; ==============================
-;;; :NOTE
-;;;
-;;; ==============================
 
 
 (in-package #:dbc)
-;; *package*
 
 ;; base-description                        (base-dbc)
 ;; base-description-external               (base-description)
@@ -50,7 +45,7 @@
 ;; `parsed-person-record'
 ;; description-person-note-general              ; <INTERNAL>
 ;;
-;; `parsed-publication-record' 
+;; `parsed-publication-record'
 ;; description-publication-note-content         ; <INTERNAL>
 ;; description-publication-note-general         ; <INTERNAL>
 ;; description-publication-note-special         ; <INTERNAL>
@@ -71,15 +66,16 @@
 ;; ignorable-history-french                     ; <INTERNAL>
 ;; ignorable-history-english                    ; <INTERNAL>
 ;; ignorable-keywords-type                      ; <INTERNAL>
-
+;;
 ;;; ==============================
 
+
 ;; ABSTRACT-CLASS
 (defclass base-description (base-dbc)
   ;; description-uuid ???
   ()
-  (:documentation 
-   #.(format nil 
+  (:documentation
+   #.(format nil
              "ABSTRACT-CLASS~%~
               Base class for referencing dbc descriptions.~%~@
               A description is like a document but smaller and with less attributes.~%~@
@@ -101,7 +97,7 @@ descriptions of some aspect of an object in the dbc system.~%~@
 ;; ABSTRACT-CLASS
 (defclass base-description-internal (base-description)
   ()
-  (:documentation 
+  (:documentation
    #.(format nil
              "ABSTRACT-CLASS~%~
 Instance of this class are used internally to annotate or describe some~%~
@@ -112,7 +108,7 @@ instance or slot and not their global domain or range.~%~@
 :SEE-ALSO `base-description-external'.~%")))
 
 ;; ABSTRACT-CLASS
-;; ;; `base-description-item' a bad name 
+;; ;; `base-description-item' a bad name
 ;; (defclass base-description-inventory-record (base-description)
 ;;   ()
 ;;   (:documentation
@@ -156,39 +152,39 @@ Used to annotate some particular internal aspect about a subclass of `base-locat
   (:documentation
    #.(format nil
              "ABSTRACT-CLASS~%~
-Used to annotate some particular internal aspect about a subclass of `base-taxon-entity'.~%")))  
+Used to annotate some particular internal aspect about a subclass of `base-taxon-entity'.~%")))
 
 ;; base-description-media-entity-note
 
 ;; ABSTRACT-CLASS
 (defclass base-description-media-entity-note (base-description-entity-internal)
   ()
-  (:documentation 
+  (:documentation
    #.(format nil
              "ABSTRACT-CLASS~%~
 Used to annotate some particular internal aspect about a subclass of `base-media-entity'.~%")))
 
 (defclass description-media-entity-technique-note (base-description-media-entity-note)
   ()
-  (:documentation 
+  (:documentation
    #.(format nil
              "Used to annotate some particular internal aspect about a `media-entity-technique'.~%")))
 
 (defclass description-media-entity-material-note (base-description-media-entity-note)
   ()
-  (:documentation 
+  (:documentation
    #.(format nil
              "Used to annotate some particular internal aspect about a `media-entity-material'.~%")))
 
 (defclass description-media-entity-mount-note (base-description-media-entity-note)
   ()
-  (:documentation 
+  (:documentation
    #.(format nil
              "Used to annotate some particular internal aspect about a `media-entity-mount'.~%")))
 
 (defclass description-media-entity-color-note (base-description-media-entity-note)
   ()
-  (:documentation 
+  (:documentation
    #.(format nil
              "Used to annotate some particular internal aspect about a `media-entity-color'.~%")))
 

@@ -22,18 +22,12 @@
 
 ;; for an early attempt at a theme index 
 ;; :SEE dbc-specific/dbc-classes/record-type-scratch-2011-12-08.lisp
+;;; ==============================
 
-
+
 (in-package #:dbc)
 
-;; (defpackage #:mon-tgm
-;;   (:use #:cl #:cl-ppcre))
-
-;; (in-package #:mon-tgm)
-
-;;; *package*
-
-;;; The db code was stolen from Seibels `Practical Common Lisp' chapter 23.
+;;; :NOTE The db code was stolen from Seibels `Practical Common Lisp' chapter 23.
 
 ;;; ==============================
 ;;; :CREATED <Timestamp: #{2010-02-06T22:53:05-05:00Z}#{10056} - by MON>

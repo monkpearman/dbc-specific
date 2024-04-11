@@ -3,7 +3,6 @@
 
 
 (in-package #:dbc)
-;; *package*
 
 ;; :SOURCE cl-ace-6_5/util.lis
 (defmacro with-namespaces (bindings &body body)
@@ -352,10 +351,9 @@
 	    (prog1 (setf ous-out (get-output-stream-string ous))
 		(close ous))))))
 
-
+
 ;;; ==============================
 
-
 ;; Local Variables:
 ;; indent-tabs-mode: nil
 ;; show-trailing-whitespace: t

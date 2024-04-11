@@ -3,18 +3,18 @@
 ;;; ==============================
 
 ;;; ==============================
-;; An event is a thing that represents parser state. 
+;; An event is a thing that represents parser state.
 ;; Most events are open/closing of elements and denote state changes.
 ;; An event is _not_ the element itself i.e. it doesn't identify the element.
-;; , e.g.: 
+;; , e.g.:
 ;; <field   ;; opens field  :START-ELEMENT
 ;; </field> ;; closes field :END-ELEMENT
-;; In both of the cases the element name/identity is "field". 
+;; In both of the cases the element name/identity is "field".
 ;; The events are the respecive opening and closing of the element
 ;; events include:
 ;; :start-element :end-element
 ;; :start-document :end-document
-;; :characters 
+;; :characters
 ;; :comment
 ;; :dtd
 ;; :processing-instruction ???
@@ -25,12 +25,10 @@
 ;; An attribute value is the property's value, e.gl:
 ;; <field name="some thing"
 ;;              ^^^^^^^^^^-- Attribute value
-
+;;
 ;;; ==============================
 
-(in-package #:dbc)
-; *package*
-
+
 ;;; ==============================
 ;; `*dbc-notes-dir*'
 ;; `*xml-output-dir*'           ---> OUTPUT
@@ -39,7 +37,7 @@
 ;; `*xml-input-dir*'            <--- INPUT
 ;; `*xml-input-refs-name*'      <--- INPUT
 ;; `*xml-input-refs-name-temp*' <--- INPUT
-;; 
+;;
 ;; ---> OUTPUT
 ;; *xml-output-refs-name*
 ;; "../dbc-specific/xml-class-dump-dir/parsed-inventory-records-xml"
@@ -83,6 +81,9 @@
 ;; *xml-input-refs-name*
 ;; *xml-input-refs-name-temp*
 ;;; ==============================
+
+
+(in-package #:dbc)
 
 (defun field-parse-refs (sql-xml-dmp)
   (declare (pathname  sql-xml-dmp))
@@ -131,12 +132,12 @@
 		     ;; formatting of the XML docs body, e.g. events occuring
 		     ;; outside of any :START-ELEMENT/:END-ELEMENT event blocks.
 		     ;; Don't need for parsing xml refs for show:
-                     ;; (:characters 
+                     ;; (:characters
 		     ;;  (let ((kcc (klacks:current-characters s)))
 		     ;;    (or (and (eql (mon:string-trim-whitespace kcc) 0)
 		     ;;    	 (format ous " "))
 		     ;;        (format ous "~A" kcc))))
-		     ;; (:comment <DO-SOMETHING-HERE???>) 
+		     ;; (:comment <DO-SOMETHING-HERE???>)
 		     (:end-document
 		      (format ous "~%~A~%;;; EOF"  (make-string 68 :initial-element #\;))))
 	       (KLACKS:CONSUME s))
@@ -145,15 +146,11 @@
 
 ;; (field-parse-refs *dbc-xml-dump-file-refs-temp-name*)
 
+
+
 
 ;;; ==============================
-;;; :DOCUMENTATION
-;;; ==============================
 
-
-;;; ==============================
-
-
 ;; Local Variables:
 ;; indent-tabs-mode: nil
 ;; show-trailing-whitespace: t

@@ -5,19 +5,21 @@
 ;; `base-inventory-sales-order-record' `parsed-inventory-sales-sold-record' `*control-id-inventory-sales-order-namespace*'.
 ;; `base-inventory-sales-sold-record' `parsed-inventory-sales-sold-record' `*control-id-inventory-sales-order-namespace*'.
 ;; `base-inventory-sales-sold-in-store-record' `parsed-inventory-sales-sold-in-store-record' `*control-id-inventory-sales-sold-in-store-namespace*'.
+;;
+;;
+;; These contents of these XML files correspond to the following derbycityprints SQL tables:
+;;
+;; "orders-xml"         ; `orders`
+;;  "sold-in-store-xml"  ; `sold_refs`
+;;  "sold-refs-xml")     ; `sold_in_store`
+;;  (loop 
+;;     with base-dir = (sub-path *xml-input-dir*)
+;;     for sold-xml-pathnames in (list "orders-xml" "sold-in-store-xml" "sold-refs-xml")
+;;     collect (merge-pathnames (make-pathname :name sold-xml-pathnames) base-dir))
+;;; ==============================
 
-#|
-These contents of these XML files correspond to the following derbycityprints SQL tables:
- "orders-xml"         ; `orders`
- "sold-in-store-xml"  ; `sold_refs`
- "sold-refs-xml")     ; `sold_in_store`
- (loop 
-    with base-dir = (sub-path *xml-input-dir*)
-    for sold-xml-pathnames in (list "orders-xml" "sold-in-store-xml" "sold-refs-xml")
-    collect (merge-pathnames (make-pathname :name sold-xml-pathnames) base-dir))
 
-|#
-
+
 (in-package #:dbc)
 
 ;; (<SLOT>

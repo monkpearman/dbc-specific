@@ -3,18 +3,18 @@
 ;;; ==============================
 
 ;; base-dbc
-;; - base-entity          (base-dbc) 
+;; - base-entity          (base-dbc)
 ;; -- base-taxon-entity   (base-entity)
-
-
+;;
+;;
 ;; *control-id-display-taxon-namespace*
 ;; -----  control-id-taxon-entity-display-name   (control-id-display-name-for-entity-type)
 ;; ------ control-id-display-taxon               (control-id-taxon-entity-display-name)
-
+;;
 ;;
 ;; :NOTE don't delete this file we _will_ need it.
 ;; So for example we have `taxon-entity-coref' in class `parsed-inventory-record'
-
+;;
 ;; The big challenge is to figure out how much of the taxonomy we want to
 ;; reproduce and of that how much we want to model as with class-precedence:
 ;; life
@@ -28,14 +28,14 @@
 ;; -------- species
 ;;
 ;;
-;; *control-id-display-taxon-namespace*  
+;; *control-id-display-taxon-namespace*
 ;; --- control-id-taxon-entity-type               (control-id-entity-type)
 ;; ---- control-id-taxon-entity                   (control-id-taxon-entity-type)
 ;; ----- control-id-taxon-entity-display-name     (control-id-taxon-entity control-id-display-name-for-entity-type)
 ;; ------ control-id-display-taxon                (control-id-taxon-entity-display-name)
+;;; ==============================
 
 
-;;; ==============================
 (in-package #:dbc)
 
 

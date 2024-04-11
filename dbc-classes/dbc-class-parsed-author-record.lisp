@@ -7,7 +7,6 @@
 
 
 (in-package #:dbc)
-;; *package*
 
 (defclass parsed-author-record (parsed-naf-entity)
   (
@@ -126,7 +125,7 @@
     :documentation ":ORIGINAL-FIELD \"date_edit\""))
   (:documentation
    #.(format nil
-             "
+             "Timestamp for when the record was created.~%
 :NOTE the accessor `control-id-entity-num-author' should be used as value for the
 KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 :SEE-ALSO `<XREF>'.~%▶▶▶")))

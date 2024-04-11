@@ -1,9 +1,7 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-10-04T14:37:50-04:00Z}#{11402} - by MON>
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-media-entity.lisp
 ;;; ==============================
-
-(in-package #:dbc)
-
+;;
 ;; base-entity               (base-dbc)
 ;; - base-media-entity       (base-entity)
 ;; -- media-entity-technique (base-media-entity)
@@ -26,11 +24,16 @@
 ;; *control-id-display-paper-namespace*
 ;; *control-id-display-mount-namespace*
 ;; *control-id-display-color-namespace*
+;;
+;;; ==============================
+
+
+(in-package #:dbc)
 
 (defclass media-entity-technique (base-media-entity)
   ()
-  (:documentation 
-   #.(format nil 
+  (:documentation
+   #.(format nil
              "Instances of this class used to describe techniques used in the production of a
 particular type of media.~%~@
 Possible (generalized) examples of a technique include:~% ~
@@ -42,7 +45,7 @@ Possible (generalized) examples of a technique include:~% ~
 (defclass media-entity-material (base-media-entity)
   ()
   (:documentation
-   #.(format nil 
+   #.(format nil
 "Instances of this class used to describe materials used in the production of a particular type of media.~%~@
 Slot values might be used to indicate the type of material \(i.e. paper, fabric,
 plastic, etc.\) as well as various aspects of its composition, e.g. whether it
@@ -53,7 +56,7 @@ is glazed, cold-rolled, 10mil, etc.~%~@
 
 (defclass media-entity-paper (media-entity-material)
   ()
-  (:documentation 
+  (:documentation
    #.(format nil
              "Instances of this class used to describe materials generally construed as being of the type \"paper\".
 :SEE-ALSO `description-media-entity-material-note', `base-media-entity',~%~
@@ -64,8 +67,8 @@ is glazed, cold-rolled, 10mil, etc.~%~@
 
 (defclass media-entity-mount (base-media-entity)
   ()
-  (:documentation 
-   #.(format nil 
+  (:documentation
+   #.(format nil
              "Instances of this class used to describe the mounting used in with a particular type of media.~%~@
               Slot values might be used to indicate the type of mount and its state,~%~
               i.e. whether the media is linen backed, dry mounted, framed, etc.~%~
@@ -75,8 +78,8 @@ is glazed, cold-rolled, 10mil, etc.~%~@
 
 (defclass media-entity-color (base-media-entity)
   ()
-  (:documentation 
-   #.(format nil 
+  (:documentation
+   #.(format nil
              "Instances of this class used to describe aspects of the color of a particular type of media.~%~@
               Example uses include:~%~% ~
               - slots indicating whether a color is represented by an HSV, RGB, or CMYK value;~% ~
@@ -88,6 +91,7 @@ is glazed, cold-rolled, 10mil, etc.~%~@
              `media-entity-color'.~%▶▶▶")))
 
 
+
 ;;; ==============================
 
 ;; (while (search-forward-regexp "^\\([[:blank:]]+<c[0-5]\\)" nil t)
@@ -292,9 +296,11 @@ specialty
 
 |#
 
-;;; ==============================
+
 
 
+;;; ==============================
+
 ;; Local Variables:
 ;; indent-tabs-mode: nil
 ;; show-trailing-whitespace: t

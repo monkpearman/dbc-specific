@@ -51,6 +51,7 @@
 
 ;;
 ;; base-theme-entity (base-entity)
+;;; ==============================
 
 
 (in-package #:dbc)
@@ -150,8 +151,7 @@ A uri. Use it to grab LOC skos/rdf-xml data.")
 `parsed-artist-record', `parsed-author-record', `parsed-person-record',
 `parsed-brand-record', `parsed-publication-record'.~%▶▶▶")))
 
-;; note everything above 13484 was added after the fact and isn't a TGM term
-
+;; :NOTE everything above 13484 was added after the fact and isn't a TGM term.
 (make-parsed-class-field-slot-accessor-mapping 
  'parsed-theme-record
  '(("id"                 . control-id-theme-entity-num)

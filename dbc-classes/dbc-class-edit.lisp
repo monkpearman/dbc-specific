@@ -2,14 +2,8 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-edit.lisp
 ;;; ==============================
 
-;;; ==============================
-;;; :NOTE
-;;;
-;;; ==============================
-
 
 (in-package #:dbc)
-;; *package*
 
 (defclass base-edit (base-dbc)
   ()
@@ -21,19 +15,19 @@
               important to record when/how the data of a slot/instance was made it should be~@
               done using the edit-class interface.")))
 
-#| 
+#|
 
-(edit-container-uuid 
+(edit-container-uuid
  :initarg edit-container-uuid
  :initform nil
- ;; :accessor 
- ;; :documentation 
- ;; #.(format nil 
+ ;; :accessor
+ ;; :documentation
+ ;; #.(format nil
  ;; "An object may have an instance of an edit class atached to it.~%~@
  ;;  The attached edit instance has a uuid which may be used to refer to it by."
  )
 
- (edit-by 
+ (edit-by
   :initarg edit-by
   :initform nil
   ;; :accessor
@@ -43,9 +37,10 @@
 |#
 
 
-;;; ==============================
 
 
+;;; ==============================
+
 ;; Local Variables:
 ;; indent-tabs-mode: nil
 ;; show-trailing-whitespace: t

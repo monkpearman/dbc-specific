@@ -17,6 +17,9 @@
 ;; :PASTE-URL (URL `http://paste.lisp.org/+2QQ2')
 
 ;; p_l: between "both" what? ruby & CL or PB and ASN.1
+
+;;; ==============================
+
 (in-package #:dbc)
 
 ;; Our original version of `%parsed-class-slot-value-equal-array-check'
@@ -67,7 +70,7 @@
 (defun %parsed-class-slot-value-equal-array-check (slot-value-a slot-value-b)
   (declare (array slot-value-a slot-value-b)
            (optimize speed))
-  (and 
+  (and
    ;; we do not consider displaced-arrays to be equal
    ;; even if it slot-value-a and slot-value-b are cl:eq
    (not (array-displacement slot-value-a))
@@ -75,7 +78,7 @@
    ;; We used to compare if they are the same object and be done
    ;; (or (eq slot-value-a slot-value-b)
    ;; else, check that the shape and properties of each array are congruent.
-   (and 
+   (and
     ;; are cl:array-total-size and cl:array-rank eql for both arrays
     (equal (array-dimensions slot-value-a)
            (array-dimensions slot-value-b))
@@ -84,11 +87,11 @@
          (adjustable-array-p slot-value-b))
     ;; When an array has a fill-pointer the other one must as well and they must
     ;; each have the same fill-pointer index.
-    (or 
+    (or
      ;; Neither array has a fill-pointer, we're done
      (and (not (array-has-fill-pointer-p slot-value-a))
           (not (array-has-fill-pointer-p slot-value-b)))
-     (and 
+     (and
       ;; each has a fill-pointer
       (array-has-fill-pointer-p slot-value-a)
       (array-has-fill-pointer-p slot-value-b)
@@ -185,20 +188,20 @@
 ;;                                #*000)
 (defmethod parsed-class-slot-value-equal ((slot-value-a bit-vector) (slot-value-b bit-vector))
   (or
-   ;; each array is a simple-bit-vector 
-   (and 
+   ;; each array is a simple-bit-vector
+   (and
     (eql (simple-bit-vector-p slot-value-a)
          (simple-bit-vector-p slot-value-b))
     (eql (array-total-size slot-value-a) (array-total-size slot-value-b))
     (equal slot-value-a slot-value-b))
-   (and 
+   (and
     ;; if either is a simple-bit-vector, were done.
     (not (or (simple-bit-vector-p slot-value-a) (simple-bit-vector-p slot-value-b)))
     ;; we have bit-vectors - check them.
     (%parsed-class-slot-value-equal-array-check slot-value-a slot-value-b)
     (equal slot-value-a slot-value-b))))
 
-;; 
+;;
 ;; (parsed-class-slot-value-equal
 ;;  (make-array 1 :element-type '(unsigned-byte 2) :initial-contents '(2) :fill-pointer 1)
 ;;  (make-array 1 :element-type '(unsigned-byte 2) :initial-contents '(2) :fill-pointer 1))
@@ -226,7 +229,7 @@
 
 ;; (parsed-class-slot-value-equal
 ;;  (make-array 1 :initial-contents '(2) :adjustable t)
-;;  (make-array 1 :element-type '(unsigned-byte 2) :initial-contents '(2))) 
+;;  (make-array 1 :element-type '(unsigned-byte 2) :initial-contents '(2)))
 ;; => NIL
 
 ;; (parsed-class-slot-value-equal
@@ -242,14 +245,13 @@
       (and (%parsed-class-slot-value-equal-array-check slot-value-a slot-value-b)
            ;; can't use cl:every on multi-diemensional arrays
            ;; (typep (make-array '(3 3 3)) 'sequence)
-           (loop 
+           (loop
               for i from 0 below (array-total-size slot-value-a)
               always (parsed-class-slot-value-equal (row-major-aref slot-value-a i)
                                                     (row-major-aref slot-value-b i))))))
 
-;;; ==============================
-
 
+;;; ==============================
 ;; Local Variables:
 ;; indent-tabs-mode: nil
 ;; show-trailing-whitespace: t

@@ -59,11 +59,10 @@
 ;; <c3 name="Pochoir"></c3>
 ;; </c2>
 ;; </c1>
-
 ;;; ==============================
 
+
 (in-package #:dbc)
-;; *package*
 
 ;; media-entity-technique
 (defclass parsed-technique-record (parsed-class)

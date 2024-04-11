@@ -37,9 +37,11 @@ These contents of these XML files correspond to the following derbycityprints SQ
 ;; (fdefinition (find-method #'inventory-number nil '(parsed-inventory-record)))
 
 |#
+;;; ==============================
 
+
+
 (in-package #:dbc)
-
 
 (defclass parsed-inventory-sales-order-record (parsed-class)
   (;; control-id-indexed-inventory-sales-order-record
@@ -442,7 +444,6 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%")))
    ("actual_shipcost"     . shipping-price-actual) ;; ignorable always 0
    ("archived"            . ignorable-payment-archived)
    ))
-
 
 ;; (def-parsed-class-record-xml-dump-file-and-hash 
 ;;     parsed-inventory-sales-order-record
@@ -1510,9 +1511,6 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%")))
 ;; <field Field="postal_service" Type="varchar(100)" Null="NO" Key="" Default="" Extra="" />
 ;; <field Field="actual_shipcost" Type="float" Null="NO" Key="" Default="0" Extra="" />
 ;; <field Field="archived" Type="tinyint(3) unsigned" Null="NO" Key="" Default="0" Extra="" />
-
-
-
 
 
 ;;; ==============================

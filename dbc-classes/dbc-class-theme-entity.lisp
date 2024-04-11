@@ -8,14 +8,14 @@
 ;; curl -i http://id.loc.gov/vocabulary/graphicMaterials/label/Action%20%26%20adventure%20dramas
 ;;
 ;; (drakma:http-request "http://id.loc.gov/vocabulary/graphicMaterials/Action%20%26%20adventure%20dramas" :user-agent :firefox )
-;; If i set drakma:*header-stream* to *standard-output* the get request 
+;; If i set drakma:*header-stream* to *standard-output* the get request
 ;;
 ;;  then just "sudo tcpdump -A -s8182 host id.loc.gov", run
 ;;         drakma request, then see whats wrong. Redirect tcpdump to a file, but
 ;;         you may have to run request several times, as tpcdump does not
 ;;         fflush() when writing to a file
 
-;;  :NOTE as of 2012-03-17 the LOC now publish their datasets in SKOS/RDF/MADS forms downloadable as  N-TRIPLES, TURTLE and JSON data for TGM themes _and_ 
+;;  :NOTE as of 2012-03-17 the LOC now publish their datasets in SKOS/RDF/MADS forms downloadable as  N-TRIPLES, TURTLE and JSON data for TGM themes _and_
 ;;  name authority files
 
 ;; We can now retrieve known themes with the following uri:
@@ -24,16 +24,13 @@
 ;; "Action & adventure dramas" as "Action%20%26%20adventure%20dramas"
 ;; http://id.loc.gov/vocabulary/graphicMaterials/label/Action%20%26%20adventure%20dramas
 ;; elisp (insert (concat "http://id.loc.gov/vocabulary/graphicMaterials/label/" (mon-encode-url "Action & adventure dramas")))
-;; 
 ;;
-;; (http-request "http://id.loc.gov/vocabulary/graphicMaterials/label/Barnyards" :method :head) 
+;;
+;; (http-request "http://id.loc.gov/vocabulary/graphicMaterials/label/Barnyards" :method :head)
 ;; (http-request "http://id.loc.gov/vocabulary/graphicMaterials/label/Action%20%26%20adventure%20dramas" :preserve-uri t)
 ;; (http-request "http://id.loc.gov/vocabulary/graphicMaterials/label/Action%20%26%20adventure%20dramas" :preserve-uri t)
 ;;
-;; 
-
-
-
+;;
 
 
 ;; (%theme-url-encode "A la poupée prints")
@@ -113,7 +110,7 @@
 ;; :SEE (URL `http://id.loc.gov/static/data/vocabularygraphicMaterials.ttl.zip')
 
 ;; This is every LOC name authority 2.7 GB
-;; 
+;;
 ;; (URL `http://id.loc.gov/static/data/authoritiesnames.rdfxml.madsrdf.gz')
 
 ;; (URL `http://id.loc.gov/static/data/authoritiesnames.nt.skos.gz')
@@ -129,14 +126,14 @@
 ;; /mnt/LV-DBC-DRV/DBC_3-13-08-SyncToHere/derbycityprints/httpd/xmldata/xslt/tgm_htm.xslt
 
 ;;
-;; Also, for a later Lisp parse see: 
+;; Also, for a later Lisp parse see:
 ;; :FILE dbc-specific/dbc-classes/dbc-tgm.lisp
 ;;
 ;; The newest TGM parse of the existing dbc related sql data is here:
 ;; dbc-specific/dbc-classes/dbc-class-parsed-theme-record.lisp
 
 
-;; for an early attempt at a theme index 
+;; for an early attempt at a theme index
 ;; :SEE dbc-specific/dbc-classes/record-type-scratch-2011-12-08.lisp
 
 ;;; ==============================
@@ -157,7 +154,7 @@
 
 ;; :NOTE Should we treat MT, RT, BT, NT, USE, USED-FOR as distinct instances of a theme?
 ;;  Also, what about translated theme display names?
-;; 
+;;
 (defclass theme-entity (base-theme-entity)
   ()
   )

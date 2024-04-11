@@ -7,7 +7,7 @@
 #|
 
 
-(defclass mitchell-and-church 
+(defclass mitchell-and-church
     ((display-name
       )
      (printed-annotation
@@ -30,13 +30,13 @@
 textile -- weave | print
            synthetic | natural
 
- - WOVEN, PRINT, SYNTHETIC, NATUURAL are _aspects_ of a textile 
+ - WOVEN, PRINT, SYNTHETIC, NATUURAL are _aspects_ of a textile
    (not necessarily mutually exclusive)
 
 ;; ==============================
 
 :TODO further classify these
-TEXTILE-TERMS 
+TEXTILE-TERMS
 
 ;; :FIBER-TYPE
 alpaca
@@ -82,12 +82,12 @@ voile
 worsted
 
 ;; :NOTE are these a M&C "brand"
-charmeuse 
+charmeuse
 cordray
 marquisette
 ormonde
 percale ;; english | wales
-soiesette 
+soiesette
 lindy  ;; loox | havana
 
 ;; :TREATMENT
@@ -133,7 +133,7 @@ kenwood
 kingston
 loox ;; "loox lindy"
 lorraine ;; gingham
-lubec ;; "lubec chambray" 
+lubec ;; "lubec chambray"
 lustra ;; "lustra check" - maybe a rayon/nylon substitute for alpaca?
 nantucket ;; "nantucket fabric"
 norfolk ;; "norfolk broadcloth"
@@ -166,7 +166,7 @@ victoria ;; "victoria challis" "victoria crepe"
 wiscasset ;; "wiscasset rayon"
 sylvasilk ;; "sylvasilk sateen" -- 4x
 
-;-- 
+;--
 argent ;; "argent crepe rayon" -- 2x
 belmont ;; "belmont crepe" -- 2x
 canton ;; "canton crepe" -- 2x
@@ -196,9 +196,11 @@ willamette ;; "willamette canton crepe" -- 7x
 
 |#
 
-;;; ==============================
+
 
 
+;;; ==============================
+
 ;; Local Variables:
 ;; indent-tabs-mode: nil
 ;; show-trailing-whitespace: t

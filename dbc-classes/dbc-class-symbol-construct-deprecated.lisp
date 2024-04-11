@@ -2,13 +2,14 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-symbol-construct-deprecated.lisp
 ;;; ==============================
 
+
 (in-package #:dbc)
 
 (defparameter *parsed-inventory-record-field-name-slot-transform* (make-hash-table :test 'equal))
 
 (defparameter *xml-refs-match-table* nil)
+
 (defparameter *xml-refs-match-list*
-  ;; before adding the hashtable pre NEW YORK.
   (list "ref" "price" "year" ;; "year_year"
         "artist" "condition"))
 
@@ -22,6 +23,16 @@
 ;; <--- XML parsing input file TEMP
 (defparameter *xml-input-refs-name-temp*  nil )
 
+(defvar *regexp-whitespace-chars*  #.(format nil "[~{~C~}]" mon:*whitespace-chars*))
+
+
+
+;; (deftype preprocess-simple-string (&optional size)
+;;   ;; (typep "string" '(preprocess-simple-string 6))
+;;   ;; (typep "string" 'preprocess-simple-string)
+;;   (let ((sz (list (or size '*))))
+;;     `(simple-array character ,sz)))
+
 ;; *xml-refs-match-table*
 
 
@@ -29,14 +40,7 @@
 ;;; :FUNCTIONS
 ;;; ==============================
 
-(defvar *regexp-whitespace-chars*
-  #.(format nil "[~{~C~}]" mon:*whitespace-chars*))
 
-;; (deftype preprocess-simple-string (&optional size)
-;;   ;; (typep "string" '(preprocess-simple-string 6))
-;;   ;; (typep "string" 'preprocess-simple-string)
-;;   (let ((sz (list (or size '*))))
-;;     `(simple-array character ,sz)))
 
 (defun preprocess-whitespace (field-name)
   (declare (type simple-string field-name))
@@ -49,14 +53,13 @@
   ;;(mon:string-replace-all  field-name  "_" "" )
   (string-trim "_- " field-name))
 
+;; (string= (preprocess-underscore-to-dash "Lots_of_underscores_") "Lots-of-underscores")
 (declaim (inline preprocess-underscore-to-dash))
 (defun preprocess-underscore-to-dash (field-name)
   (declare (type simple-string field-name)
            (optimize speed))
   (setf field-name (preprocess-leading-trailing-dashes field-name))
   (nsubstitute #\- #\_ field-name))
-
-;; (string= (preprocess-underscore-to-dash "Lots_of_underscores_") "Lots-of-underscores")
 
 (declaim (inline preprocess-string-case))
 (defun preprocess-string-case (field-name)
@@ -191,7 +194,6 @@
 ;;
 ;;  We aren't currently pre-defining generics for these accessors but _we should be_...
 ;;; ==============================
-
 
 
 ;; :UNUSED
@@ -419,7 +421,7 @@ Keywords PREFIX-W and SUFFIX-W are as per `make-parsed-name-preprocess'.~%~@
    \(remhash \"field-name2\" *parsed-inventory-record-field-name-slot-transform*\)\)~%~@
 :SEE-ALSO `<XREF>'.~%▶▶▶")
 
-;; this interface has changes pending 2011-09-26
+;; This interface has changes pending 2011-09-26
 (fundoc 'make-parsed-class-slot-init-accessor-name
  "Return 3 elt list strings suitable for interning as slot, initarg, and accessor.~%~@
 NAMED-CLASS is a string naming a class which will subclass `dbc:parsed-class'.~%~@

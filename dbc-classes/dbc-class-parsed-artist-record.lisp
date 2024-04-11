@@ -1,9 +1,8 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-01-04T16:36:51-05:00Z}#{11012} - by MON>
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-artist-record-record.lisp
 ;;; ==============================
-;; 
 
-;; following defined in loadtime-bind.lisp
+;; Following defined in loadtime-bind.lisp
 ;; `set-parsed-artist-record-slot-value'
 ;; `parsed-artist-record-xml-dump-file-and-hash'
 ;; `write-parsed-artist-record-parse-table-to-file'
@@ -20,8 +19,6 @@
 (in-package #:dbc)
 
 ;; (length (mon:class-slot-list 'parsed-artist-record))
-
-;; control-id-entity-num
 
 ;; To get at just the string of the original field:
 ;; (while (search-forward-regexp ":ORIGINAL-FIELD \\(\\\\\"\\)\\(.*\\)\\(\\\\\"\\)")
@@ -207,9 +204,6 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 :SEE-ALSO `load-sax-parsed-xml-file-to-parsed-class-hash',
 `write-sax-parsed-xml-refs-file', `set-parse-ref-slot-value', `parsed-inventory-record'.~%▶▶▶")))
 
-
-;; make-parsed-class-field-slot-accessor-mapping
-
 (make-parsed-class-field-slot-accessor-mapping 
  'parsed-artist-record
  '(("id"                . control-id-entity-num-artist)
@@ -241,7 +235,6 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("date_edt"          . edit-timestamp)
    ("cancel_num"        . ignorable-cancel-num)
    ("special_note"      . ignorable-special-note)))
-
 
 (defun parsed-artist-record-collect-control-id-display ()
   (sort

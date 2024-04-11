@@ -8,11 +8,8 @@
 ;;   - See comments for `sax:start-element' method specialized on the class `dbc-sax-handler'.
 ;;; ==============================
 
-;; (elt (cons 'a 'b) 0)
-
 
 (in-package #:dbc)
-
 
 ;; :NOTE The following parameters`*parsed-data-current-row*',
 ;; `*parsed-data-output-path*', `*parsed-data-output-stream*' were reduced to a
@@ -23,34 +20,41 @@
 
 (defgeneric %parsed-data-current-parent (object)
   (:documentation "The current row being parsed."))
+
 (defgeneric (setf %parsed-data-current-parent) (row object)
   (:documentation "Set the current row being parsed."))
 
 (defgeneric %parsed-data-output-path (object)
   (:documentation "The current path to write parsed data values to."))
+
 (defgeneric (setf %parsed-data-output-path) (path object)
   (:documentation "Set the current path to write parsed data values to."))
 
 (defgeneric %parsed-data-input-path (object)
   (:documentation "The current path being parsed."))
+
 (defgeneric (setf %parsed-data-input-path) (path object)
   (:documentation "Set the current path being parsed."))
 
 (defgeneric %parsed-data-output-stream (object)
   (:documentation "The current stream to write parsed data values to."))
+
 (defgeneric (setf %parsed-data-output-stream) (stream object)
   (:documentation "Set the current stream to write parsed data values to."))
 
 (defgeneric %parsed-data-match-parent-element (object)
-  (:documentation 
+  (:documentation
    #.(format nil "Return current XML parent element we are trying to match.~%~@
 Its children will contain attribute/value pairs which correspond to the slot-name/slot-values we want to parse.")))
+
 (defgeneric (setf %parsed-data-match-parent-element) (parent-element-name object))
 
 (defgeneric %parsed-data-match-attribute-pair (object))
+
 (defgeneric (setf %parsed-data-match-attribute-pair) (match-attribute-pair object))
 
 (defgeneric %parsed-data-parent-element-count (object))
+
 (defgeneric (setf %parsed-data-parent-element-count) (newcount object))
 
 (defclass %parsed-data-state ()
@@ -80,8 +84,8 @@ Its children will contain attribute/value pairs which correspond to the slot-nam
     :accessor %parsed-data-output-path
     :documentation #.(format nil "Output path to use while parsing the XML data of pathname designated by slot %parsed-data-input-path.~@
                                   A stream to this file is opened on entry to `write-sax-parsed-xml-to-file' and closed on exit."))
-   (%parsed-data-output-stream 
-    :initform '()    
+   (%parsed-data-output-stream
+    :initform '()
     :accessor %parsed-data-output-stream
     :documentation #.(format nil "Output stream current while parsing the XML data of pathname designated by slot %parsed-data-input-path.~@
                                   Opened on entry to `write-sax-parsed-xml-to-file' and closed on exit."))))
@@ -155,17 +159,17 @@ Its children will contain attribute/value pairs which correspond to the slot-nam
 
 (defun %parsed-state-current-row-check-type ()
   (and (typep *parsed-data-current-state* '%parsed-data-state)
-       (typep (%parsed-data-current-parent *parsed-data-current-state*) 
+       (typep (%parsed-data-current-parent *parsed-data-current-state*)
               'dbc-sax-parsing-class)))
 
 ;;; ==============================
 ;;; :NOTE we can't easily combine classes `dbc-sax-parsing-class' and  sax:start-element
 (defclass dbc-sax-parsing-class ()
   ((field-data
-    ;; :initform '() ;; 
+    ;; :initform '() ;;
     :initform (make-array 36 :fill-pointer 0)
     :accessor field-data)
-   (current-elt 
+   (current-elt
     :initform '()
     :accessor current-elt)
    (current-chars
@@ -214,11 +218,10 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
     (write-string data (slot-value self 'current-chars))
     data))
 
-
-;; Stub class to specialize sax methods on. 
+;; Stub class to specialize sax methods on.
 ;; We could probably use `dbc-sax-parsing-class' just as well.
 (defclass dbc-sax-handler (sax:default-handler)
-  ;; ((field-and-names 
+  ;; ((field-and-names
   ;;  :initform '()
   ;;  :accessor field-and-names))
   ())
@@ -238,7 +241,7 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
   ;; :TODO we _really_ need to be checking against a list of known field-names instead of against "row"
   (when (string-equal local-name "row")
     (setf (%parsed-data-current-parent *parsed-data-current-state*) (make-instance 'dbc-sax-parsing-class))
-    (setf (%parsed-data-parent-element-count *parsed-data-current-state*) 
+    (setf (%parsed-data-parent-element-count *parsed-data-current-state*)
           (1+ (%parsed-data-parent-element-count *parsed-data-current-state*)))
     (return-from sax:start-element))
   ;; (unless (typep *parsed-data-current-row* 'dbc-sax-parsing-class)
@@ -246,13 +249,12 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
   (flet ((collect (elt attrib)
            (when (string-equal elt local-name)
              (let ((attrib (find attrib attributes :key #'sax:attribute-local-name :test #'string-equal)))
-               (if attrib 
+               (if attrib
                    (setf (current-elt (%parsed-data-current-parent *parsed-data-current-state*))
                          (sax:attribute-value attrib))
                    (progn
                      (dbc-sax-current-chars-reset (%parsed-data-current-parent *parsed-data-current-state*))
                      (setf (current-elt (%parsed-data-current-parent *parsed-data-current-state*)) nil)))))))
-                     
     ;;       <ELT> <ATTRIB>
     ;; <a href= | img src=
     (collect  "field"   "name")))
@@ -350,14 +352,14 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
            (or (osicat:directory-exists-p pathname-base-directory)
                (error "Arg PATHNAME-BASE-DIRECTORY does not name an existing directory.~% got: ~A"
                       pathname-base-directory)))
-         (ensure-subname-maybe-dated 
+         (ensure-subname-maybe-dated
            (etypecase pathname-sub-directory
-             (null 
-              (if pathname-dated-p 
+             (null
+              (if pathname-dated-p
                   (list (mon:time-string-yyyy-mm-dd))
                   ;; (%make-dated-parse-output-prefix-for-pathname ""))
                   '()))
-             (string 
+             (string
               (if pathname-dated-p
                   (list (if (mon:string-empty-p pathname-sub-directory)
                             (mon:time-string-yyyy-mm-dd)
@@ -369,12 +371,12 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
               (unless (every #'mon:string-not-null-empty-or-all-whitespace-p pathname-sub-directory)
                 (error "Arg PATHNAME-SUB-DIRECTORY cannot be a list containing an empty string~% ~% got: ~S~%" pathname-sub-directory))
               (let ((list-copy (copy-list pathname-sub-directory)))
-                (when pathname-dated-p 
+                (when pathname-dated-p
                   (setf (car (last list-copy)) (%make-dated-parse-output-prefix-for-pathname (car (last list-copy)))))
                 list-copy))))
          (ensured '()))
     (setf ensure-subname-maybe-dated (nconc (list :relative) ensure-subname-maybe-dated))
-    (ensure-directories-exist (merge-pathnames 
+    (ensure-directories-exist (merge-pathnames
                                (make-pathname :directory ensure-subname-maybe-dated)
                                base-dir-if))))
 
@@ -390,12 +392,12 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
            (mon:pathname-or-namestring pathname-base-directory))
   (let ((sub-dir-ensured (make-parsed-class-output-directory-ensuring-pathname :pathname-sub-directory pathname-sub-directory
                                                                                :pathname-base-directory pathname-base-directory)))
-    (merge-pathnames (make-pathname :name (if pathname-name-dated-p 
+    (merge-pathnames (make-pathname :name (if pathname-name-dated-p
                                               (%make-dated-parse-output-prefix-for-pathname pathname-name)
                                               (%make-parsed-output-trimmed-pathname pathname-name))
                                     :type pathname-type)
                      sub-dir-ensured)))
-;; 
+;;
 ;; write-parsed-class-sax-parsed-xml-to-file
 (defun write-sax-parsed-xml-to-file (&key input-file output-file)
   (declare (mon:pathname-or-namestring input-file)
@@ -410,7 +412,7 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
               (apply #'make-parsed-class-output-file-ensuring-pathname output-file)))
         (current-handler-instance (make-dbc-sax-handler))
         (current-handler-stream '()))
-    (setf 
+    (setf
      (%parsed-data-input-path *parsed-data-current-state*) input-file
      (%parsed-data-output-path *parsed-data-current-state*) dump-file
      current-handler-stream (open (%parsed-data-output-path *parsed-data-current-state*)
@@ -421,8 +423,8 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
                                   :if-does-not-exist :create)
      (%parsed-data-output-stream *parsed-data-current-state*) current-handler-stream)
     (unwind-protect
-         (values 
-          (cxml:parse input-file current-handler-instance) 
+         (values
+          (cxml:parse input-file current-handler-instance)
           dump-file
           (%parsed-data-parent-element-count *parsed-data-current-state*)
           )
@@ -455,12 +457,12 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
  :pathname-sub-directory [<STRING> | <LIST OF STRINGS>]
  :pathname-base-directory [<PATHNAME> | <NAMESTRING>])
 
-(append 
+(append
  `(:pathname-name "name"
    :pathname-name-dated-p t
    :pathname-type "csv"
    :pathname-sub-directory '("more" "foo" "bar")
-   :pathname-base-directory ,(sub-path *xml-output-dir*)) 
+   :pathname-base-directory ,(sub-path *xml-output-dir*))
  (list :ensure-directories-exist t)
  )
 
@@ -471,11 +473,11 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
   :input-file (make-pathname :directory (pathname-directory (sub-path *xml-input-dir*)) :name "dump-artist-infos-xml")
   :output-file (list :pathname-name "artist-dump-test" :pathname-sub-directory (list (sub-name *xml-output-dir*) "new-sax-parser" )))
 
- (write-sax-parsed-xml-to-file 
-  :input-file (make-pathname :directory (pathname-directory (sub-path *xml-input-dir*)) :name "dump-refs-DUMPING") 
+ (write-sax-parsed-xml-to-file
+  :input-file (make-pathname :directory (pathname-directory (sub-path *xml-input-dir*)) :name "dump-refs-DUMPING")
   :output-file (list :pathname-name "inventory-dump-test" :pathname-sub-directory (list (sub-name *xml-output-dir*) "new-sax-parser" )))
 
-(make-parsed-class-output-directory-ensuring-pathname :pathname-sub-directory "new-sax-parser" 
+(make-parsed-class-output-directory-ensuring-pathname :pathname-sub-directory "new-sax-parser"
                                                        :pathname-base-directory (sub-path *xml-output-dir*))
 
 #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/xml-class-dump-dir/new-sax-parser/"

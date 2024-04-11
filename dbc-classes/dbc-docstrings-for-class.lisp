@@ -4,24 +4,17 @@
 
 
 (in-package #:dbc)
-;; *package*
 
 ;; (setf mon:*default-class-documentation-table* (make-hash-table))
 
 (eval-when (:compile-toplevel); :load-toplevel :execute)
 
-
-;;; ==============================
-;;; :FILE dbc-classes/dbc-class-paths.lisp
-
-;;; ==============================
 ;;; system-base
 (make-documented-class 'system-base
 :class-doc
 #.(format nil 
 "Toplevel class for dbc system and system path related objects.~%▶▶▶~%"))
 
-;;; ==============================
 ;;; system-path
 (make-documented-class 'system-path 
 :system-path 
@@ -34,7 +27,6 @@ User code should not attempt setf the value of this slot!~%")
 :class-doc
 #.(format nil "Base class for storing dbc system paths.~%▶▶▶~%"))
 
-;;; ==============================
 ;; system-subdir
 (make-documented-class 'system-subdir
 :sub-path
@@ -57,7 +49,6 @@ relative to the systems system-path.~%~@
 Instances of this class should be instantiated at loadtime enabling subsequent
 system introspection of the system at runtime.~%▶▶▶~%"))
 
-;;; ==============================
 ;; base-regexp
 (make-documented-class 'base-regexp
 :class-doc
@@ -65,7 +56,6 @@ system introspection of the system at runtime.~%▶▶▶~%"))
 "Base class for matching control names of DBC entity instances.~%~@
 :SEE-ALSO .~%▶▶▶~%"))
 
-;;; ==============================
 ;; entity-regexp-subclass-allocation
 (make-documented-class 'entity-regexp-subclass-allocation
 
@@ -104,8 +94,7 @@ The intent of this class is to obfuscate access and instantiation of the global~
 variables that ENTITY-REGEXP subclasses must instantatiate and access but should~%~
 not expose via direct :reader :write :accesor methods.~%"))
 
-;;; ==============================
-
+
 (make-documented-class 'entity-regexp
 :match-entity-class
 #.(format nil
@@ -217,7 +206,7 @@ Subclasses should access slot-value with a method specialized on.~%~
 Don't instantiate directly from this class.~%~@
 :SEE-ALSO ~%▶▶▶~%"))
 
-;;; ==============================
+
 ;; parsed-field-name-regexp
 (make-documented-class 'parsed-field-name-regexp
 :class-doc
@@ -225,7 +214,6 @@ Don't instantiate directly from this class.~%~@
 "An `entity-regexp' subclass for matching XML-refs parsed field-names.~%~
 :SEE-ALSO .~%▶▶▶~%"))
 
-;;; ==============================
 ;; theme-entity-regexp
 (make-documented-class 'theme-entity-regexp
 :class-doc
@@ -233,7 +221,6 @@ Don't instantiate directly from this class.~%~@
 "An `entity-regexp' sub-class for themes.~%~@
 :SEE-ALSO `base-theme-entity'.~%▶▶▶"))
 
-;;; ==============================
 ;; category-entity-regexp
 (make-documented-class 'category-entity-regexp
 :class-doc
@@ -241,7 +228,6 @@ Don't instantiate directly from this class.~%~@
 "An `entity-regexp' sub-class for DBC categories.~%~
 :SEE-ALSO `base-category-entity'.~%▶▶▶"))
 
-;;; ==============================
 ;; media-entity-regexp
 (make-documented-class 'media-entity-regexp
 :class-doc
@@ -249,7 +235,6 @@ Don't instantiate directly from this class.~%~@
 "An `entity-regexp' sub-class for DBC media types.~%~
 :SEE-ALSO `base-media-entity'.~%▶▶▶"))
 
-;;; ==============================
 ;; location-entity-regexp
 (make-documented-class 'location-entity-regexp
 :class-doc
@@ -257,7 +242,6 @@ Don't instantiate directly from this class.~%~@
 "An `entity-regexp' sub-class for DBC location entities.~%~
 :SEE-ALSO `base-location-entity'.~%▶▶▶"))
 
-;;; ==============================
 ;; naf-entity-type-regexp
 (make-documented-class 'naf-entity-type-regexp
 :class-doc
@@ -268,7 +252,6 @@ both `naf-entity-control-name-regexp', `naf-entity-alt-name-regexp' to enable~%~
 system wide xrefing/indexing of entity name-form occurences.~%~@
 :SEE-ALSO .~%▶▶▶"))
 
-;;; ==============================
 ;; naf-entity-control-name-regexp
 (make-documented-class 'naf-entity-control-name-regexp
 :class-doc
@@ -280,7 +263,6 @@ The MATCH-ENTITY-CONTAINER-TYPE slot of this class is defaulted to 'closure with
 the intent that the MATCH-ENTITY-MATCHER will be implemented as a CL-PPCRE closure.~%~@
 :SEE-ALSO `base-naf-entity', `naf-entity-alt-name-regexp'.~%▶▶▶"))
 
-;;; ==============================
 ;; naf-entity-alt-name-regexp
 (make-documented-class 'naf-entity-alt-name-regexp
 :class-doc
@@ -295,7 +277,6 @@ This constraint is intented to prevent corruption of control-names which should~
 always have precedence of an alternative name form.~%~@
 :SEE-ALSO `base-naf-entity', `naf-entity-control-name-regexp'.~%▶▶▶~%"))
 
-;;; ==============================
 ;; naf-entity-artist-control-regexp
 (make-documented-class 'naf-entity-artist-control-regexp
  :class-doc
@@ -303,7 +284,6 @@ always have precedence of an alternative name form.~%~@
 "A `naf-entity-control-name-regexp' subclass for DBC NAF artist entities.~%~@
 :SEE-ALSO .~%▶▶▶~%"))
 
-;;; ==============================
 ;; naf-entity-artist-alt-regexp
 (make-documented-class 'naf-entity-artist-alt-regexp
  :class-doc
@@ -311,7 +291,6 @@ always have precedence of an alternative name form.~%~@
 "A `naf-entity-alt-name-regexp' subclass for DBC NAF artist entities.~%~@
 :SEE-ALSO .~%▶▶▶~%"))
 
-;;; ==============================
 ;; naf-entity-person-control-regexp
 (make-documented-class 'naf-entity-person-control-regexp
 :class-doc
@@ -319,7 +298,6 @@ always have precedence of an alternative name form.~%~@
 "A `naf-entity-control-name-regexp' subclass for DBC NAF person entities.~%~@
 :SEE-ALSO .~%▶▶▶~%"))
 
-;;; ==============================
 ;; naf-entity-person-alt-regexp
 (make-documented-class 'naf-entity-person-alt-regexp
  :class-doc
@@ -327,7 +305,6 @@ always have precedence of an alternative name form.~%~@
 "A `naf-entity-control-name-regexp' subclass for DBC NAF person entities.~%~@
 :SEE-ALSO .~%▶▶▶~%"))
 
-;;; ==============================
 ;;naf-entity-author-control-regexp
 (make-documented-class 'naf-entity-author-control-regexp
  :class-doc
@@ -335,7 +312,6 @@ always have precedence of an alternative name form.~%~@
    "A `naf-entity-control-name-regexp' subclass for DBC NAF author entities.~%~@
 :SEE-ALSO .~%▶▶▶~%"))
 
-;;; ==============================
 ;; naf-entity-author-alt-regexp
 (make-documented-class 'naf-entity-author-alt-regexp
  :class-doc
@@ -343,8 +319,6 @@ always have precedence of an alternative name form.~%~@
            "A `naf-entity-alt-name-regexp' subclass for DBC NAF author entities.~%~@
 :SEE-ALSO .~%▶▶▶~%"))
 
-
-;;; ==============================
 ;; naf-entity-brand-control-regexp
 (make-documented-class 'naf-entity-brand-control-regexp
  :class-doc
@@ -352,7 +326,6 @@ always have precedence of an alternative name form.~%~@
 "A `naf-entity-control-name-regexp' subclass for DBC NAF brand entities.~%~@
 :SEE-ALSO .~%▶▶▶~%"))
 
-;;; ==============================
 ;;naf-entity-brand-alt-regexp
 (make-documented-class 'naf-entity-brand-alt-regexp
  :class-doc
@@ -360,7 +333,6 @@ always have precedence of an alternative name form.~%~@
 "A `naf-entity-alt-name-regexp' subclass for DBC NAF brand entities.~%~@
 :SEE-ALSO .~%▶▶▶~%"))
 
-;;; ==============================
 ;; naf-entity-publication-control-regexp
 (make-documented-class 'naf-entity-publication-control-regexp
  :class-doc
@@ -368,7 +340,6 @@ always have precedence of an alternative name form.~%~@
            "A `naf-entity-control-name-regexp' subclass for DBC NAF publication entities.~%~@
 :SEE-ALSO `naf-entity-publication'.~%▶▶▶~%"))
 
-;;; ==============================
 ;; naf-entity-publication-alt-regexp
 (make-documented-class 'naf-entity-publication-alt-regexp
  :class-doc
@@ -379,9 +350,6 @@ among like named or similiarly prefixed publication names.~%~@
 :SEE-ALSO `naf-entity-publication'.~%▶▶▶~%"))
 
 ) ;; :CLOSE EVAL-WHEN
-
-
-
 
 ;;; ==============================
 ;;; EOF

@@ -31,20 +31,14 @@
 ;; (with-open-file
 ;;     (str #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/notes-versioned/dbc-xml-categs-as-lisp/xml-files/sitedoc.xml")
 ;;   (s-xml:parse-xml str ))
-
-;;(s-xml:parse-xml-file #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/notes-versioned/dbc-xml-categs-as-lisp/xml-files/sitedoc.xml")
-;;(s-xml:parse-xml-file #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/notes-versioned/dbc-xml-categs-as-lisp/xml-files/sitedoc.xml" :output-type :xml-struct)
-
-
-
-
+;;
+;; (s-xml:parse-xml-file #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/notes-versioned/dbc-xml-categs-as-lisp/xml-files/sitedoc.xml")
+;; (s-xml:parse-xml-file #P"/home/sp/HG-Repos/CL-repo-HG/CL-MON-CODE/dbc-specific/notes-versioned/dbc-xml-categs-as-lisp/xml-files/sitedoc.xml" :output-type :xml-struct)
 ;;; ==============================
 
 
 
 (in-package #:dbc)
-
-;; *package*
 
 ;; base-documentation-record (base-record)
 ;; documentation-record-sitedoc (base-documentation-record)

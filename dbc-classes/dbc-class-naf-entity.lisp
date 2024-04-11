@@ -2,6 +2,7 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-naf-entity.lisp
 ;;; ==============================
 
+
 (in-package #:dbc)
 
 (defclass naf-entity-artist (base-naf-entity)
@@ -33,7 +34,6 @@
   ;; *control-id-display-publication-namespace*
   ()
   )
-
 
 ;;; ==============================
 ;;; EOF

@@ -3,13 +3,13 @@
 ;;; ==============================
 
 ;; :NOTE for testing CLOS stuff before moving into core files
+
 
 (in-package #:dbc)
-;; *package*
 
 (defvar *test-entity-regexp-matcher-db* (make-hash-table))
-(defvar *test-entity-regexp-entity-db*  (make-hash-table))
 
+(defvar *test-entity-regexp-entity-db*  (make-hash-table))
 
 (defclass base-testing-entity (base-entity)
   ()

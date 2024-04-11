@@ -3,19 +3,19 @@
 ;;; ==============================
 
 ;;; ==============================
-;; :NOTES
+;; :NOTE
 ;; cl-ppcre::case-sensitive
 ;; (let ((scanner (cl-ppcre:create-scanner "abc")))
 ;;    (type-of scanner))
 ;; (cl-ppcre:create-scanner "abc")
 ;;; ==============================
-;; :NOTE Consider use of `fare-matcher' for matching name-forms??? 
+;; :NOTE Consider use of `fare-matcher' for matching name-forms???
 ;; from fare-matcher
 ;; letm pattern form lexical-scoped-body
-;; (letm 
+;; (letm
 ;;  ;; <PATTERN>
 ;;  (values (accessor* ((like-when msg (keywordp msg)) command))
-;;          err?) 
+;;          err?)
 ;;  ;; <FORM>
 ;;  (read-command)
 ;;  ;; <LEXICAL-SCOPED-BODY>
@@ -25,9 +25,7 @@
 ;;; ==============================
 
 
-;;; ==============================
 (in-package #:dbc)
-;; *package*
 
 
 ;;; ==============================
@@ -65,7 +63,7 @@
   (:documentation #.(classdoc 'base-regexp :class-doc)))
 
 ;;; ==============================
-;; :NOTE 
+;; :NOTE
 ;; `entity-regexp-subclass-allocation', `entity-regexp'
 ;; ,----
 ;; | The :default-initargs class option is followed by a list of
@@ -86,7 +84,7 @@
 ;; | error is signaled.
 ;; `----
 ;; However, we may need to be carefull with :default-initargs with metaclasses...
-;; :SEE C.L.L thread started by James Anderson (i.e. de.setf.resource) 
+;; :SEE C.L.L thread started by James Anderson (i.e. de.setf.resource)
 ;;  entitled: "why does the mop handle default-initargs as persistent,"
 ;; :SEE (URL `http://groups.google.com/group/comp.lang.lisp/browse_thread/thread/fef6511f1cbb3bbd/99b5ea0f7a5ce4b6?lnk=gst&q=%22%3Adefault-initargs%22#99b5ea0f7a5ce4b6')
 
@@ -100,7 +98,7 @@
     :initarg :subclass-match-entity-class
     ;; :initform nil ;;
     :documentation #.(classdoc 'entity-regexp-subclass-allocation :subclass-match-entity-class))
-   ( ;; entity-regexp slot match-entity-db 
+   ( ;; entity-regexp slot match-entity-db
     subclass-match-entity-db
     :initarg :subclass-match-entity-db
     ;; :initform nil
@@ -118,17 +116,17 @@
 (defclass entity-regexp (base-regexp)
   ((;; global-per-subclass access with regexp-match-entity-class
     ;; entity-regexp-subclass-allocation subclass-match-entity-class
-    match-entity-class 
-    :initform nil 
+    match-entity-class
+    :initform nil
     :documentation #.(classdoc 'entity-regexp :match-entity-class))
    ( ;; global-per-subclass access with regexp-match-entity-db
     ;; entity-regexp-subclass-allocation subclasses-match-entity-db
-    match-entity-db 
+    match-entity-db
     :initform nil
     :documentation #.(classdoc 'entity-regexp :match-entity-db))
    ( ;; global-per-subclass, access with regexp-match-matcher-db
     ;; entity-regexp-subclass-allocation subclass-match-matcher-db
-    match-matcher-db 
+    match-matcher-db
     :initform nil
     :documentation #.(classdoc 'entity-regexp :match-matcher-db))
    ( ;; local-per-instance, access with regexp-match-container-type
@@ -138,12 +136,12 @@
     :documentation #.(classdoc 'entity-regexp :match-container-type))
    ( ;; local-per-instance, access with regexp-match-container-id
     match-container-uuid
-    :initarg :match-container-id 
+    :initarg :match-container-id
     ;; :initform nil
     :documentation #.(classdoc 'entity-regexp :match-container-uuid))
    ( ;; local-per-instance, access with regexp-matcher
-    match-entity-matcher 
-    :initarg :match-entity-matcher 
+    match-entity-matcher
+    :initarg :match-entity-matcher
     ;;:initform nil
     :documentation  #.(classdoc 'entity-regexp :match-entity-matcher)))
   (:default-initargs :match-container-type nil
@@ -151,10 +149,10 @@
                      :match-entity-matcher nil)
   (:documentation  #.(classdoc 'entity-regexp :class-doc)))
 
-;; (make-instance 'entity-regexp 
-;;                :match-entity-class 'liza-terry 
-;;                :match-entity-db *liza-terry-db* 
-;;                :match-matcher-db *liza-terry-matcher-db* 
+;; (make-instance 'entity-regexp
+;;                :match-entity-class 'liza-terry
+;;                :match-entity-db *liza-terry-db*
+;;                :match-matcher-db *liza-terry-matcher-db*
 ;;                :match-container-type 'closure
 ;;                :match-container-uuid <GENERATE>
 ;;                :match-entity-matcher (cl-ppcre:create-scanner "liza-terry 342"))
@@ -178,7 +176,7 @@
 (defclass theme-entity-regexp (entity-regexp)
   ;; match-entity-class
   ;; match-container-uuid
-  ;; match-container-type   
+  ;; match-container-type
   ;; match-entity-db
   ;; match-matcher-db
   ()
@@ -193,7 +191,7 @@
 (defclass category-entity-regexp (entity-regexp)
   ;; match-entity-class
   ;; match-container-uuid
-  ;; match-container-type   
+  ;; match-container-type
   ;; match-entity-db
   ;; match-matcher-db
   ()
@@ -208,7 +206,7 @@
 (defclass media-entity-regexp (entity-regexp)
   ;; match-entity-class
   ;; match-container-uuid
-  ;; match-container-type   
+  ;; match-container-type
   ;; match-entity-db
   ;; match-matcher-db
   ()
@@ -223,7 +221,7 @@
 (defclass location-entity-regexp (entity-regexp)
   ;; match-entity-class
   ;; match-container-uuid
-  ;; match-container-type   
+  ;; match-container-type
   ;; match-entity-db
   ;; match-matcher-db
   ()
@@ -239,7 +237,7 @@
   ;; match-entity-class
   ;; match-container-uuid
   ;; match-container-type
-  ;; match-entity-db    
+  ;; match-entity-db
   ;; match-matcher-db
   ;; match-entity-class-type
   ()
@@ -256,12 +254,10 @@
   ()
   (:documentation #.(classdoc 'naf-entity-alt-name-regexp :class-doc)))
 
-
-
-;; (make-instance 'entity-regexp 
-;;                :match-entity-class 'liza-terry 
-;;                :match-entity-db *liza-terry-db* 
-;;                :match-matcher-db *liza-terry-matcher-db* 
+;; (make-instance 'entity-regexp
+;;                :match-entity-class 'liza-terry
+;;                :match-entity-db *liza-terry-db*
+;;                :match-matcher-db *liza-terry-matcher-db*
 ;;                :match-container-type 'closure
 ;;                :match-container-uuid <GENERATE>
 ;;                :match-entity-matcher (cl-ppcre:create-scanner "liza-terry 342"))
@@ -274,8 +270,8 @@
 ;;     |-> naf-entity-artist-regexp
 
 
-;;; ==============================
 
+
 ;;; ==============================
 ;;; :NAF-ARTIST
 ;;; ==============================
@@ -295,8 +291,8 @@
   )
 
 ;; (let ((base-naf-entity-regexp
-;;        (make-entity-regexp-subclass-allocation 
-;;         :match-entity-class 'naf-entity-artist-regexp 
+;;        (make-entity-regexp-subclass-allocation
+;;         :match-entity-class 'naf-entity-artist-regexp
 ;;         :match-entity-db    entity-db
 ;;         :match-matcher-db   matcher-db)))
 ;;   (setf *naf-artist-entity-regexp-db* base-naf-entity-regexp))
@@ -307,6 +303,7 @@
 ;; (slot-value *naf-artist-entity-regexp-db* 'subclass-match-entity-db)
 ;; (defmethod initialize-instance :after ((entity naf-entity-artist-regexp)
 
+
 ;;; ==============================
 ;;; :NAF-PERSON
 ;;; ==============================
@@ -320,6 +317,7 @@
   ()
   (:documentation #.(classdoc 'naf-entity-person-alt-regexp :class-doc)))
 
+
 ;;; ==============================
 ;;; :NAF-AUTHOR
 ;;; ==============================
@@ -360,10 +358,9 @@
 
 ;; naf-entity-location
 ;; base-location-entity
-
+;;
 ;; base-media-entity
 ;; media-technique-entity
-
 
 
 
@@ -375,7 +372,7 @@
                                                   match-entity-db
                                                   match-matcher-db)
   ;; :NOTE We may have to declare these special if they aren't seen
-  ;;  outside the lexical enverionment 
+  ;;  outside the lexical enverionment
   ;;(declare (special match-entity-db match-matcher-db ))
   (and
    (or match-entity-class
@@ -399,7 +396,7 @@
    (or (hash-table-p match-matcher-db)
        (error "Arg MATCH-MATCHER-DB not `cl:hash-table-p'"))
    `(:subclass-match-entity-class ,match-entity-class
-     :subclass-match-entity-db    ,match-entity-db 
+     :subclass-match-entity-db    ,match-entity-db
      :subclass-match-matcher-db   ,match-matcher-db)))
 
 (defun make-entity-regexp-subclass-allocation (&key match-entity-class
@@ -411,7 +408,7 @@
     (apply #'make-instance 'entity-regexp-subclass-allocation
            chk-keys)))
 
-
+
 ;;; ==============================
 ;; :TODO Following three should signal an error if they don't find a value b/c
 ;; these are intended to run interception for the entity-regexp subclasses
@@ -452,13 +449,13 @@
                        (slot-value    object 'subclass-match-entity-db)))
         (then-get-hash '()))
     ;; (and (symbolp if-bound)
-    ;;      (setf then-get-hash 
+    ;;      (setf then-get-hash
     ;;            (symbol-value if-bound)))
-    ;; (and then-get-hash 
+    ;; (and then-get-hash
     ;;      (hash-table-p then-get-hash)
     ;;      (values then-get-hash if-bound))))
     ;; (and (symbolp if-bound)
-    ;;      (setf then-get-hash 
+    ;;      (setf then-get-hash
     ;;            (symbol-value if-bound)))
     (and (hash-table-p if-bound) if-bound)))
 
@@ -475,7 +472,7 @@
         (then-get-hash '()))
     (and (symbolp if-bound)
          (setf then-get-hash (symbol-value if-bound)))
-    (and then-get-hash 
+    (and then-get-hash
          (hash-table-p then-get-hash)
          (values then-get-hash if-bound))))
 
@@ -484,9 +481,9 @@
 
 ;;; ==============================
 ;; (make-instance 'entity-regexp
-;;                :match-entity-class 'liza-terry 
-;;                :match-entity-db *liza-terry-db* 
-;;                :match-matcher-db *liza-terry-matcher-db* 
+;;                :match-entity-class 'liza-terry
+;;                :match-entity-db *liza-terry-db*
+;;                :match-matcher-db *liza-terry-matcher-db*
 ;;                :match-container-type 'closure
 ;;                :match-container-uuid <GENERATE>
 ;;                :match-entity-matcher (cl-ppcre:create-scanner "liza-terry 342"))
@@ -501,8 +498,8 @@
 ;; match-entity-matcher  ;; a matcher object - it's type is identified by the slot-value of `match-container-type'    -- local per subclass instance
 ;;
 
-;; (defun make-instance-naf-entity-artist-control-regexp 
-;;     (&key 
+;; (defun make-instance-naf-entity-artist-control-regexp
+;;     (&key
 ;;      ;; match-entity-class ;; global-per-subclass
 ;;      ;; match-entity-db    ;; global-per-subclass
 ;;      ;; match-matcher-db   ;; global-per-subclass
@@ -520,7 +517,7 @@
 ;; match-container-type   [ closure | list | string | array | hash-table ]  -- local-per-subclass
 ;; match-entity-db       :allocation :class -- variable holding match-container-uuid/entity-instance-uuid pairs
 ;; match-matcher-db      :allocation :class -- variable holding lookup table of match-container-uuid/matcher pairs
-;; match-entity-class-type 
+;; match-entity-class-type
 
 
 
@@ -538,12 +535,12 @@
 ;;; :CLASS-REGEXPS-VARIABLES-DOCUMENTATION
 ;;; ==============================
 
- 
+
 ;;; ==============================
 ;;; :CLASS-REGEXPS-FUNCTION-DOCUMENTATION
 ;;; ==============================
 
-(fundoc 'make-entity-regexp-subclass-allocation-if 
+(fundoc 'make-entity-regexp-subclass-allocation-if
  "Verify the keyword arguments for `make-entity-regexp-subclass-allocation'.~%~@
 If any of the following constraints are not met signal an error.~%~@
 Args MATCH-ENTITY-CLASS, MATCH-ENTITY-DB, and MATCH-MATCHER-DB must each be
@@ -585,7 +582,7 @@ which is a table mapping  key/value pairs of the form:~%
 
 (generic-doc #'regexp-match-matcher-db
              "Return the matcher-db lookup table for OBJ.~%~
-:SEE-ALSO `entity-regexp-subclass-allocation', `entity-regexp', 
+:SEE-ALSO `entity-regexp-subclass-allocation', `entity-regexp',
 `regexp-match-entity-class', `regexp-match-entity-db',
 `regexp-match-matcher-db', `regexp-match-container-type',
 `regexp-match-container-uuid', `regexp-matcher'.~%▶▶▶~%")
@@ -639,9 +636,10 @@ specified container type.~%
 `regexp-match-container-type', `regexp-match-container-uuid',
 `regexp-matcher'.~%▶▶▶~%")
 
-;;; ==============================
 
 
+;;; ==============================
+
 ;; Local Variables:
 ;; indent-tabs-mode: nil
 ;; show-trailing-whitespace: t

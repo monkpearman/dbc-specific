@@ -2,8 +2,8 @@
 ;;; :FILE dbc-specific/dbc-parse/dbc-xml-parse-docs.lisp
 ;;; ==============================
 
+
 (in-package :dbc) 
-;; *package*
 
 #| 
 :NOTES regarding CXML/SAX/KLACKS parsing/serialization model.

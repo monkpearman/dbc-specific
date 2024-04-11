@@ -13,7 +13,6 @@
 
 
 (in-package #:dbc)
-;; *package*
 
 (define-condition dbc-error (mon:error-mon)
   ()
@@ -70,8 +69,7 @@
                (mon:slot-non-existent-error (cnd) (error cnd)))))
   (:documentation 
    #.(format nil
-   "~%~
-    Initarg :W-SYSTEM-PATH is the non-existent path value originating the error.~%~%~
+   "Initarg :W-SYSTEM-PATH is the non-existent path value originating the error.~%~%~
     Initarg :W-SYSTEM-OBJ is the object originating the path error.~%~%~
     Initarg :W-SYSTEM-SLOT is the slot originating the path error.~%~%~
     Initarg :W-SYSTEM-AUX-MSG is an auxiliarry string to augment condition's :report.~@
@@ -79,7 +77,6 @@
     When :W-SYM and/or :W-TYPE are provided they are as per `mon:error-mon'.~@
     If ommitted they are defaulted.~@
    :W-SYM defaults to system-path-error, :W-TYPE defaults to 'condition.~%~%~
-
    :EXAMPLE~%~%~
     \(let \(\(object *xml-output-dir*\)\)
       \(error 'system-path-error

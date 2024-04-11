@@ -6,7 +6,6 @@
 
 
 (in-package #:dbc)
-;; *package*
 
 (defclass parsed-person-record (parsed-naf-entity)
   ((control-id-doc-num-person
@@ -116,7 +115,7 @@
     :documentation ":ORIGINAL-FIELD \"date_edt\"")
    )
   (:documentation #.(format nil
-"
+"Timestamp for edits.~%
 :NOTE the accessor `control-id-entity-num-person' should be used as value for the
 KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 :SEE-ALSO `<XREF>'.~%▶▶▶")))
@@ -149,7 +148,6 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("online"            . record-status-active)
    ("date_edt"          . edit-timestamp)))
 
-
 (defun parsed-person-record-collect-control-id-display ()
   (map 'list #'cdr 
        (parsed-class-slot-value-collect-non-null 'parsed-person-record 'control-id-display-person)
@@ -169,7 +167,6 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
     (declare (mon:string-or-null control-num control-id-display))
     (print-unreadable-object (object stream :type t :identity (not control-num))
       (format stream ":CONTROL-ID-ENTITY-NUM ~S :CONTROL-ID-DISPLAY-NAME ~S" control-num control-id-display))))
-
 
 ;; :NOTE fields appearing in class `parsed-artist-record' but not in class `parsed-person-record'
 ;; ("date_born"         . birth-date)

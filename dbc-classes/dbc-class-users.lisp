@@ -2,19 +2,14 @@
 ;;; :FILE dbc-classes/dbc-class-users.lisp
 ;;; ==============================
 
-;;; ==============================
-;;; :NOTE
-;;;
-;;; ==============================
 
 
 (in-package #:dbc)
 
-;; *package*
 
 (defclass base-user (base-dbc)
   ()
-  (:documentation 
+  (:documentation
    #.(format nil "Base class for referencing users of the dbc-system.~%~@
                   Types of users might include:~%~% ~
                    user-name, user-seller-name, user-client-name, etc.")))
@@ -26,22 +21,18 @@
 ;; Slots to implement
 
  (user-uuid
-  :initarg user-uuid 
-  :initform nil ;; (make-
+  :initarg user-uuid
+  :initform nil 
   ;; :accessor
   ;; :documentation #.(format nil "")
   )
 
 |#
 
-;; #x6ba7b810
-;;=> 1806153744
-;;; ==============================
-
-
-;;; ==============================
 
 
+;;; ==============================
+
 ;; Local Variables:
 ;; indent-tabs-mode: nil
 ;; show-trailing-whitespace: t

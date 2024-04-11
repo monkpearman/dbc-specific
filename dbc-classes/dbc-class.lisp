@@ -2,18 +2,15 @@
 ;;; :FILE dbc-classes/dbc-class.lisp
 ;;; ==============================
 
-
 (in-package #:dbc)
-;; *package*
 
 (defclass base-dbc () ;; persistent, rucsack, component, etc.
   ()
   (:documentation "Base class for dbc objects."))
 
-
+
 ;;; ==============================
 
-
 ;; Local Variables:
 ;; indent-tabs-mode: nil
 ;; show-trailing-whitespace: t

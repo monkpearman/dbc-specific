@@ -97,12 +97,9 @@ scanned-date
 
 
 
-;;; ==============================
-
+
 ;;; ==============================
 (in-package #:dbc)
-;; *package*
-
 
 (defclass parsed-publication-record (parsed-naf-entity)
   ((control-id-doc-num-publication
@@ -269,7 +266,6 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
    ("date_edt"           . edit-timestamp)
    ("user_name"          . edit-by)
    ("naf_creator"        . edit-by-creator)))
-
 
 (defun parsed-publication-record-collect-control-id-display ()
   (map 'list #'cdr 

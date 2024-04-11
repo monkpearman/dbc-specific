@@ -22,8 +22,7 @@
 ;; (in-package #:psa-parse)
 
 
-;; (in-package #:mon-system)
-(in-package #:mon)
+(in-package #:dbc)
 
 (eval-when-all
 
@@ -37,8 +36,7 @@
 
 ) ;; :CLOSE eval-when-all
 
-
-;;; ==============================
+
 (defclass psa-handler (sax:default-handler)
   ((tr :accessor tr 
        :initform '() ;; nil
@@ -71,10 +69,9 @@
    (in-td-ttl :accessor in-td-ttl
 	      :initform '() ;;nil
 	      :documentation 
-	      "T when we're parsing a SAX element matching the form: <td class=\"Totals\" { ... }")
-   ))
+	      "T when we're parsing a SAX element matching the form: <td class=\"Totals\" { ... }")))
 
- (defmethod sax:start-element ((handler psa-handler)
+(defmethod sax:start-element ((handler psa-handler)
 			      uri local-name qname attributes)
   (let ((cur-elt local-name))
     
@@ -92,36 +89,27 @@
       (setf (in-th-elt handler) t))
 
     (when (string-equal "caption" cur-elt)
-      (setf (in-cptn handler) t))
-    
-    ))
-
+      (setf (in-cptn handler) t))))
 
 (defmethod sax:end-element  ((handler psa-handler) uri local-name qname)
-			     
   (let ((cur-lnm local-name))
     ;; toggle in-cptn slot
     (when (string-equal "caption" cur-lnm)
       (setf (in-cptn handler) nil))
-    
     ;; :NOTE does `*tr-gthr*' need to be declared special?
     (when (string-equal "tr" cur-lnm)
       (setf *tr-gthr* (nreverse *tr-gthr*))
       (push *tr-gthr* (gthr handler)))
-
     ;; toggle in-hdr-col slot
     (when (and (string-equal "tr" cur-lnm)
 	       (string-equal "class" sax:attribute-local-name)
 	       (string-equal "HeaderColumn" sax:attribute-value))
       (setf (in-hdr-col handler) nil))
-
     ;; toggle in-th-elt slot
     (when (and (string-equal "th" cur-lnm)
 	       (in-th-elt handler))
-      (setf (in-th-elt handler) nil))
+      (setf (in-th-elt handler) nil))))
     
-    ))
-
 (defmethod sax:characters   ((handler psa-handler) schars)
   (let ((cln-chars schars))
     (cond (;; (when (string-equal "caption" (sax:attribute-local-name ) ;klacks:current-lname current-lname
@@ -136,19 +124,13 @@
 		    (push cln-chars *tr-gthr*))) ;; (gthr handler)))
 	  (t (progn 
 	       (setf cln-chars (string-left-trim '(#\Space) cln-chars))
-	       (push (format nil "~a" cln-chars) *tr-gthr*))))
-	  ))
-  )
-
-
+	       (push (format nil "~a" cln-chars) *tr-gthr*)))))))
 (defmethod sax:end-document ((handler psa-handler))
   (setf *tr-gthr* nil)
   (nreverse (gthr handler))
   ;; (push (caption handler) (gthr handler))
   )
 
-
-;;; ==============================
 (defun html2xhtml (file &key (if-exists :error))
   (with-open-file (out (make-pathname :type "xml" :defaults file)
                      :element-type '(unsigned-byte 8)
@@ -163,39 +145,34 @@
 ;;   #.(format nil "
 ;; ")
 
-;;; ==============================
 (defun p/totals-strip-commas (maybe-str)
   (if (or (null maybe-str)
 	  (funcall (complement #'stringp) maybe-str))
       maybe-str
       (remove #\COMMA maybe-str :test #'char=)))
 
-;;; ==============================
 (defun p/sax-integer-string (str)
   ;;(parse-integer str :junk-allowed t))
   (string-to-number str))
 
-
 ;; (map 'list #'code-char '(#x9 #xa #xd #x20))
 
-;;; ==============================
 (defun p/sax-float-string (str)
   ;;(arnesi:parse-float str))
   (string-to-number str))
 
-;;; ==============================
 (defun p/sax-extract-tr (parse-src)
   ;;  (cxml:parse parse-src (make-instance 'psa-handler)))
   (declare (special *curr-src*))
   (let ((*curr-src* parse-src))
     (cxml:parse *curr-src* (make-instance 'psa-handler))))
 
-;;   (cxml:parse *curr-src* (make-instance 'psa-handler))
-;;   (klacks:close-source *curr-src*)))
-;; (chtml:parse parse-src (make-instance 'psa-handler))))
+;;  (cxml:parse *curr-src* (make-instance 'psa-handler))
+;;  (klacks:close-source *curr-src*)))
+;;  (chtml:parse parse-src (make-instance 'psa-handler))))
 
 
-;;(p/sax-extract-tr *psa-fl*)
+;; (p/sax-extract-tr *psa-fl*)
 ;; (cxml:parse-file  *psa-fl* (make-instance 'psa-handler))
 ;; :pars
 
@@ -298,6 +275,6 @@ Dynamically binds parse-src to special variable `*curr-src*'.~%
 :EXAMPLE~%~% { ... <EXAMPLE> ... } ~%
 :SEE-ALSO `<XREF>'.~%▶▶▶"))
 
-
+
 ;;; ==============================
 ;;; EOF

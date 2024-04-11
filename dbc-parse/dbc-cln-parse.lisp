@@ -30,8 +30,6 @@
 
 
 (in-package #:dbc)
-;; *package
-
        
 (defun field-string-cons (field-str)
   (typecase field-str  
@@ -51,7 +49,6 @@
                  (eq (caadr chk) 'simple-array)
                  (eq (aref (caddr chk) 0) (the character #\x)))
       field-string-cons)))
-
 
 (defun split-used-fors (used-for-string &key (split-on "|"))
   ;; Is there a reason why we shouldn't be using this instead:
@@ -76,7 +73,6 @@
           collect (mon:string-trim-whitespace y) into rtn
           finally (return (values rtn used-for-string))))))
 
-;;mon:string-
 ;; :NOTE This can be adapted if/when we ever split the found_in field to work on
 ;; the for "^Appeared-in:" fields there as well.
 (defun split-appeared-in (appeared-in-string &key (split-on "|"))
@@ -118,7 +114,11 @@
 
 
 ;; :NOTE Don't forget to use `cl:search', `cl:find', etc.!
-;;; ==============================
+
+;; (split-comma-field-if "air, plane, airplane, Biplane,, aircraft, expo, , dirigible,")
+;; (split-comma-field-if nil)
+;; (split-comma-field "air, plane, airplane, Biplane,, aircraft, expo, , dirigible,")
+;; (split-comma-field-if "0 , 0 ," :keep-duplicates t)
 (defun split-comma-field-if (comma-string &key (keep-duplicates nil)
                                                (keep-first nil))
   (declare (boolean keep-duplicates keep-first))
@@ -126,11 +126,6 @@
                           (the character #\,)
                           :keep-duplicates keep-duplicates
                           :keep-first keep-first))
-
-;; (split-comma-field-if "air, plane, airplane, Biplane,, aircraft, expo, , dirigible,")
-;; (split-comma-field-if nil)
-;; (split-comma-field "air, plane, airplane, Biplane,, aircraft, expo, , dirigible,")
-;; (split-comma-field-if "0 , 0 ," :keep-duplicates t)
 
 (defun split-comma-field (comma-string)
   ;;(split-comma-field-if comma-string)
@@ -161,6 +156,11 @@
         collect (string-capitalize y) into rtn
         finally (return (values rtn role-string)))))
 
+;; (split-piped-field-if "ref" :known-field-hashtable *xml-refs-match-table*)
+;; (split-piped-field-if "ref" :known-field-hashtable *xml-refs-match-table*)
+;; => NIL, NULL, "ref", (SIMPLE-ARRAY CHARACTER (3))
+;; (split-piped-field-if "ref")
+;; => "ref", (SIMPLE-ARRAY CHARACTER (3)), "ref", (SIMPLE-ARRAY CHARACTER (3))
 (defun split-piped-field-if (piped-string &key (keep-duplicates nil)
                                                known-field-hashtable)
   (declare (boolean keep-duplicates)
@@ -169,14 +169,6 @@
   (split-field-on-char-if piped-string (the character #\|)
                           :keep-duplicates keep-duplicates 
                           :known-field-hashtable known-field-hashtable))
-
-
-;; (split-piped-field-if "ref" :known-field-hashtable *xml-refs-match-table*)
-;; (split-piped-field-if "ref" :known-field-hashtable *xml-refs-match-table*)
-;; => NIL, NULL, "ref", (SIMPLE-ARRAY CHARACTER (3))
-;; (split-piped-field-if "ref")
-;; => "ref", (SIMPLE-ARRAY CHARACTER (3)), "ref", (SIMPLE-ARRAY CHARACTER (3))
-
 
 ;; :NOTE has regression test `field-convert-1-0-x-TEST'
 ;; :NOTE Prefer `field-convert-1-0-x-empty' over `field-convert-1-0-x' which is
@@ -279,7 +271,6 @@
                (values nil string-field-maybe)))))
     (values string-field-maybe (type-of string-field-maybe))))
 
-
 (let ((edit-timestamp-regex 
         (cl-ppcre:create-scanner "^([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2})$")))
   (defun field-convert-edit-timestamp (maybe-timestamp)
@@ -353,9 +344,7 @@
         (pi-all-subseqs))
       (values nil nil nil maybe-valid-time-string)))
 
-
-;;(defun %field-convert-timestamp-edit-timestamp-origin ()
-;; (gethash "5512" *tt-hash*)
+;; (defun %field-convert-timestamp-edit-timestamp-origin ()
 
 (declaim (inline field-convert-remove-duplicates))
 (defun field-convert-remove-duplicates (string-list-maybe)

@@ -2,11 +2,7 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-documentation-record.lisp
 ;;; ==============================
 
-#|
-
-|#
-
-;; following defined in loadtime-bind.lisp
+;; Following defined in loadtime-bind.lisp
 ;; `set-parsed-documentation-record-slot-value'
 ;; `parsed-documentation-record-xml-dump-file-and-hash'
 ;; `write-parsed-documentation-record-parse-table-to-file'

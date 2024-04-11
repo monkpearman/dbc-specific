@@ -6,14 +6,15 @@
 ;; base-inventory-publication-record (base-record)
 ;;
 ;; :NOTE The inverse corollary to the class `base-record' is the class `base-entity'.
-
+;;
 ;; *control-id-inventory-publication-namespace*
 ;; control-id-inventory-publication-record                (control-id-inventory-record-type)
 ;; control-id-inventory-publication-record-indexed-number (control-id-inventory-publication-record control-id-indexed-number)
 ;;
+;;; ==============================
 
+
 (in-package #:dbc)
-;; *package*
 
 (defclass base-inventory-publication-record (base-record)
   ()

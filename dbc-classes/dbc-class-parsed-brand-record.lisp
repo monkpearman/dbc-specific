@@ -2,7 +2,7 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-parsed-brand-record.lisp
 ;;; ==============================
 
-;; following defined from loadtime-bind.lisp
+;; Following defined from loadtime-bind.lisp
 ;; `set-parsed-brand-record-slot-value'
 ;; `parsed-brand-record-xml-dump-file-and-hash'
 ;; `write-parsed-brand-record-parse-table-to-csv-file'
@@ -133,7 +133,7 @@
 
   (:documentation
    #.(format nil
-             "
+             "Edit Timestamp.~%
 :NOTE the accessor `control-id-entity-num-brand' should be used as value for the
 KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 :SEE-ALSO `<XREF>'.~%▶▶▶")))

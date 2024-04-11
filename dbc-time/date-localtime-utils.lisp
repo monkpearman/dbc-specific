@@ -2,26 +2,28 @@
 ;;; :FILE dbc-specific/dbc-time/date-localtime-utils.lisp
 ;;; ==============================
 
-(in-package #:dbc)
+
 
 
 ;; (local-time::reread-timezone-repository)
 ;; local-time::*default-timezone-repository-path*
-
+;;
 ;; (defparameter local-time::+est5edt+
 ;;   ;; (local-time::define-timezone local-time::est5edt
 ;;   ;;     (merge-pathnames #p"EST5EDT" local-time::*default-timezone-repository-path*))
 ;;   (local-time:find-timezone-by-location-name "EST5EDT"))
-
+;;
 ;; (setf local-time::*default-timezone*
 ;;       local-time::+est5edt+)
-
+;;
 ;; (local-time::timestamp-subtimezone (local-time:now) local-time:*default-timezone*)
-; => -14400, T, "EDT"
-; (- (* 4 60 60)) => 14400
-
-
+;; => -14400, T, "EDT"
+;; (- (* 4 60 60)) => 14400
+;;
 ;;; ==============================
+
+
+(in-package #:dbc)
 
 (define-condition invalid-timestamp-component (error)
   ((component :accessor component-of :initarg :component))
