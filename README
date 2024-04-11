@@ -1,6 +1,6 @@
 Common Lisp functions and classes for transitioning an SQLdb to an ORM
 
-The bulk of the ORM defined heerin revolves around the class `parsed-inventory-record' in 
+The bulk of the ORM defined herein revolves around the class `parsed-inventory-record' in 
 :FILE ./dbc-classes/dbc-class-inventory-record.lisp
 
 
