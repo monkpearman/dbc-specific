@@ -2,8 +2,17 @@ i;;; :FILE-CREATED <Timestamp: #{2011-09-26T13:27:24-04:00Z}#{11391} - by MON>
 ;;; :FILE dbc-specific/dbc-docs.lisp
 ;;; ==============================
 
+
+;; (mon-docs:document-package :dbc
+;;                             (make-pathname
+;;                              :directory `,(pathname-directory (merge-pathnames "info-docs/" (sb-ext:parse-native-namestring (sb-unix:posix-getcwd/))))
+;;                              :name "dbc"
+;;                              :type "texinfo"))
+
+
 (in-package #:dbc)
 
+ 
 
 ;;; ==============================
 ;;; :SPECIALS-DOCUMENTATION
