@@ -155,7 +155,25 @@ Evaluated when system is loaded.~%~@
 :SEE-ALSO `*xml-output-dir*', `*xml-output-refs-name*', `*xml-output-refs-ext*',
 `*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*'.~%▶▶▶")
 
+
+
 ;;; ==============================
+;;; dbc-utils.lisp
+
+(fundoc 'notevery-digit-char-p
+"Return T if not every char in STRING satisfies `cl:digit-char-p'.~%~@
+:EXAMPLE~%~@
+ \(notevery-digit-char-p \"000000foo\"\)~%~@
+ \(notevery-digit-char-p \"000000\"\)~%~@
+:SEE-ALSO `every-digit-char-p'.~%▶▶▶")
+
+(fundoc 'every-digit-char-p
+"Return T if every char in STRING satisfies `cl:digit-char-p'.~%~@
+:EXAMPLE~%~@
+ \(every-digit-char-p \"000000\"\)~%~@
+ \(every-digit-char-p \"000000FOO\"\)~%~@
+:SEE-ALSO `notevery-digit-char-p'.~%▶▶▶")
+
 
 
 ;;; ==============================
