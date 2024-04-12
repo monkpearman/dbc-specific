@@ -1,8 +1,10 @@
-i;;; :FILE-CREATED <Timestamp: #{2011-09-26T13:27:24-04:00Z}#{11391} - by MON>
+;;; :FILE-CREATED <Timestamp: #{2011-09-26T13:27:24-04:00Z}#{11391} - by MON>
 ;;; :FILE dbc-specific/dbc-docs.lisp
 ;;; ==============================
 
 
+;; The partially functional texinfo tool we cobbled from the super top secret sb-texinfo circa 2011:
+;;
 ;; (mon-docs:document-package :dbc
 ;;                             (make-pathname
 ;;                              :directory `,(pathname-directory (merge-pathnames "info-docs/" (sb-ext:parse-native-namestring (sb-unix:posix-getcwd/))))
