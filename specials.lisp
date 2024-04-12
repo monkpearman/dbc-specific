@@ -73,19 +73,15 @@
 ;; 
 ;; contents of directory #P"/Volumes/MONK_4TB/NEF-DRV-A/DBC-ITEM-IMAGES/" 3.13 GB
 ;; 
-;; programatic way:
-;;
-;; (let* ((base (sb-posix:getenv "DEVHOME"))
-;;        (full (and base (pathname (concatenate 'string base "/LOCAL-NEF-DRV-A/DBC-ITEM-IMAGES/")))))
-;;   full)
-;; 
 ;; :WAS #P"/Volumes/MONK_4TB/NEF-DRV-A/DBC-ITEM-IMAGES/"
 (defvar *dbc-base-item-number-image-pathname*
-  #P"/Users/monkpearman/Documents/HG-Repos/LOCAL-NEF-DRV-A/DBC-ITEM-IMAGES/"
+  #.(let* ((base (or (sb-posix:getenv "DEVHOME")
+                   (concatenate 'string
+                                (namestring (user-homedir-pathname))
+                                "Documents/HG-Repos/")))
+         (full (pathname (concatenate 'string base "/LOCAL-NEF-DRV-A/DBC-ITEM-IMAGES/"))))
+          full)
   "Default base pathname under which dbc images are located.")
-
-
-
 
 (defvar *parsed-class-parse-table* (make-hash-table :synchronized t))
 
