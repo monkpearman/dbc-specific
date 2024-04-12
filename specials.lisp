@@ -2,11 +2,12 @@
 ;;; ==============================
 
 (in-package #:dbc)
-;; *package*
 
-;; :NOTE see class definition of `dbc-xml->clos-dump' in :FILE :SPECIALS
+
+
 ;;; :SPECIALS
 ;;; ==============================
+
 ;; (defvar *dbc-reloading-system* nil)
 
 (defparameter *system-path* nil)
@@ -18,7 +19,6 @@
 
 ;; The directory to write results of dbc-test:<TEST-FNCN> to.
 (defparameter *system-tests-temp-dir* "tests") 
-
 
 ;;; ==============================
 ;; XML Parsing INPUT/OUTUPT paths and paths names
@@ -61,7 +61,6 @@
 
 (defvar *dbc-item-number-path-source-destination-vector* nil)
 
-
 ;; Also, this is a big directory so we should probably probe if it exists before frobbing it.
 ;; which functions dereference this variable?
 ;;
@@ -74,9 +73,19 @@
 ;; 
 ;; contents of directory #P"/Volumes/MONK_4TB/NEF-DRV-A/DBC-ITEM-IMAGES/" 3.13 GB
 ;; 
+;; programatic way:
+;;
+;; (let* ((base (sb-posix:getenv "DEVHOME"))
+;;        (full (and base (pathname (concatenate 'string base "/LOCAL-NEF-DRV-A/DBC-ITEM-IMAGES/")))))
+;;   full)
+;; 
 ;; :WAS #P"/Volumes/MONK_4TB/NEF-DRV-A/DBC-ITEM-IMAGES/"
-(defvar *dbc-base-item-number-image-pathname* #P"/Users/monkpearman/Documents/HG-Repos/LOCAL-NEF-DRV-A/DBC-ITEM-IMAGES/"
+(defvar *dbc-base-item-number-image-pathname*
+  #P"/Users/monkpearman/Documents/HG-Repos/LOCAL-NEF-DRV-A/DBC-ITEM-IMAGES/"
   "Default base pathname under which dbc images are located.")
+
+
+
 
 (defvar *parsed-class-parse-table* (make-hash-table :synchronized t))
 
