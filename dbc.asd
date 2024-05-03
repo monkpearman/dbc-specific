@@ -166,7 +166,9 @@
              (:file "dbc-class-image-path-convert")
              (:file "dbc-class-image-path-inventory-record")
              (:file "dbc-class-parsed-csv-writer")
-             (:file "dbc-class-parsed-slot-value-cleaning")))
+             (:file "dbc-class-parsed-slot-value-cleaning")
+             (:file "dbc-class-parsed-tgm-theme-record")
+             ))
    (:module "dbc-parse"
 	    :components
 	    ((:file "dbc-cln-parse")
