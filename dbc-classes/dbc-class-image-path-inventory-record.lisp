@@ -138,7 +138,7 @@
   (declare (type (or integer string parsed-inventory-record) item-number)
            (type (or string (eql :all)) image-suffix)
            (type (member :absolute :relative :file-pathname) pathname-return-style)
-           (mon:pathname-or-namestring base-image-directory-pathname))
+           (MON:PATHNAME-OR-NAMESTRING base-image-directory-pathname))
   (let ((suffixe (list "" "-m" "-s" "-f" "-fs" "-fc" "-z" :all)))
     (unless (member image-suffix suffixe :test #'string=)
       (error ":FUNCTION `%inventory-record-image-jpg-probe' -- keyword arg IMAGE-SUFFIX not a valid suffix~% ~
@@ -197,12 +197,12 @@
 ;; (cl-ppcre:scan-to-strings *tt--regex* "003566-f0")
 ;; (cl-ppcre:scan-to-strings *tt--regex* "003566-mm")
 
-(let ((wild-regex (cl-ppcre:create-scanner "^[0-9]{6}?((-[msz]{1}?)??|(-f[sc]??)??)??$")))
+(let ((wild-regex (CL-PPCRE:CREATE-SCANNER "^[0-9]{6}?((-[msz]{1}?)??|(-f[sc]??)??)??$")))
   (defun %inventory-record-image-jpg-probe-all (item-number &key (base-image-directory-pathname *dbc-base-item-number-image-pathname*)
                                                                  (pathname-return-style :absolute))
     (declare (type (or integer string parsed-inventory-record) item-number)
              (type (member :absolute :relative :file-pathname) pathname-return-style)
-             (mon:pathname-or-namestring base-image-directory-pathname)
+             (MON:PATHNAME-OR-NAMESTRING base-image-directory-pathname)
              (optimize (speed 3)))
     (multiple-value-bind (got-dir 0-number-string maybe-sold-dir) (inventory-record-image-directory-probe
                                                                    item-number
