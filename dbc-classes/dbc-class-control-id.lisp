@@ -165,7 +165,7 @@ base-uuid                                     (base-dbc)
 ---- control-id-theme-entity                  (control-id-theme-entity-type)
 ----- control-id-theme-entity-display-name    (control-id-theme-entity control-id-display-name-for-entity-type)
 ------ control-id-display-theme               (control-id-theme-entity-display-name)
------ control-id-indexed-theme (control-id-theme control-id-theme-entity-indexed-number)
+----- control-id-indexed-theme                (control-id-theme control-id-theme-entity-indexed-number)
 
 --- control-id-media-entity-type              (control-id-entity-type)
 ---- control-id-media-entity                  (control-id-media-entity-type) 
@@ -216,7 +216,7 @@ base-uuid                                     (base-dbc)
 --- control-id-authority-loc            (control-id-authority-record) ;; nb2007017414 | n 98028882 | no 99021790
 --- control-id-authority-ulan           (control-id-authority-record) ;; 500013504
 --- control-id-authority-bnf            (control-id-authority-record) ;; FRBNF40421659
---- control-id-authority-oclc          (control-id-authority-record) ;; 
+--- control-id-authority-oclc           (control-id-authority-record) ;; 
 
 ;;; 
 
