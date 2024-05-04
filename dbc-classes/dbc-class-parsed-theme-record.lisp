@@ -2,12 +2,15 @@
 ;;; :FILE dbc-classes/dbc-class-themes-convert.lisp
 ;;; ==============================
 
-;; theme "9457" "Goldenrod" occurs twice - once officially and a second time internally as "13763" use "9457"
+;; :SEE (URL https://id.loc.gov/vocabulary/graphicMaterials.html)
+;; 
 ;;
-;; items using "seals" theme 12070 should use "Coats of arms" instead.
+;; Theme "9457" "Goldenrod" occurs twice - once officially and a second time internally as "13763" use "9457"
+;;
+;; Items using "seals" theme 12070 should use "Coats of arms" instead.
 ;;  ("10324" "9972" "10056" "10324")
 ;;
-;; themes with names comprised of three character words these are certainly unsafe:
+;; Themes with names comprised of three character words these are certainly unsafe:
 ;; ("Air") ("Art") ("Elk") ("War") ("Fur")("Hay") ("Ice") ("Men") ("Mud") ("Sex")("Sun") ("Tea")
 ;;
 ;; following is a list of currently active themes which coref a the string identity of another theme
@@ -51,6 +54,26 @@
 
 ;;
 ;; base-theme-entity (base-entity)
+
+;; most recent parsed theme-records are located here:
+;; /dbc-specific/xml-class-dump-dir/parsed-xml-records/parsed-xml-theme-records/theme-records-2012-03-20T202042.lisp
+
+
+;;; ==============================
+;;; <Timestamp: #{2024-05-01T16:39:09-04:00Z}#{24183} - by MON KEY>
+;;; :NOTE following rename pairs used to update the slot names for in this file
+;;; and in the .pctd file in directory:
+;;; /dbc-specific/xml-class-dump-dir/parsed-class-table-dumps/parsed-theme-record/*.pctd
+;;; to allow updating the class in lieu of our recent TGM xml parsing code.
+;;;
+;;; :RENAME-PAIRS
+;;; control-id-theme-entity-num control-id-theme-entity-dbc-num
+;;; ignorable-bt broader-theme
+;;; ignorable-rt related-theme
+;;; ignorable-nt narrower-theme
+;;; ignorable-us use-theme
+;;; ignorable-uf used-for
+
 ;;; ==============================
 
 
@@ -58,13 +81,13 @@
 
 (defclass parsed-theme-record (parsed-class)
   (;; control-id-entity-num primary-key
-   (control-id-theme-entity-num
-    :initarg :control-id-theme-entity-num
-    :accessor control-id-theme-entity-num
+   ;; control-id-theme-entity-dbc-num
+   (control-id-theme-entity-dbc-num
+    :initarg :control-id-theme-entity-dbc-num
+    :accessor control-id-theme-entity-dbc-num
     :documentation ":ORIGINAL-FIELD \"id\"")
-
-   (
-    control-id-display-theme
+   ;; congruent with slot in class `parsed-tgm-theme-record'
+   (control-id-display-theme
     :initarg :control-id-display-theme
     :accessor control-id-display-theme
     :documentation ":ORIGINAL-FIELD \"theme\"")
@@ -93,56 +116,73 @@
     :accessor edit-timestamp
     :documentation ":ORIGINAL-FIELD \"date_edit\"")
 
+   ;; what did this do?
    (ignorable-subdivision-number
     :initarg :ignorable-subdivision-number
     :accessor ignorable-subdivision-number
     :documentation ":ORIGINAL-FIELD \"subdivision_number\"")
 
-   (ignorable-range
+   ;; has teh form: "Age-Alg", 
+   (ignorable-range  
     :initarg :ignorable-range
     :accessor ignorable-range
     :documentation ":ORIGINAL-FIELD \"range\"")
 
-   ;; :NOTE the rt, bt, nt, us, uf are potentiall a type of `entity-display-name-coref'
-
-   (ignorable-rt ;; theme-entity-rt-coref
-    :initarg :ignorable-rt
-    :accessor ignorable-rt
-    :documentation ":ORIGINAL-FIELD \"RT\"")
-
-   (ignorable-bt ;; theme-entity-bt-coref
-    :initarg :ignorable-bt
-    :accessor ignorable-bt
-    :documentation ":ORIGINAL-FIELD \"BT\"")
-
-   (ignorable-us ;; theme-entity-us-coref
-    :initarg :ignorable-us
-    :accessor ignorable-us
+   ;; :NOTE the rt, bt, nt, us, uf are potential a type of `entity-display-name-coref'
+   
+   ;; use-theme
+   (use-theme ;; theme-entity-us-coref
+    :initarg :use-theme
+    :accessor use-theme
     :documentation ":ORIGINAL-FIELD \"US\"")
 
-   (ignorable-uf ;; theme-entity-uf-coref
-    :initarg :ignorable-uf
-    :accessor ignorable-uf
+   ;; used-for
+   (used-for ;; theme-entity-uf-coref
+    :initarg :used-for
+    :accessor used-for
     :documentation ":ORIGINAL-FIELD \"UF\"")
 
-   (ignorable-nt ;; theme-entity-nt-coref
-    :initarg :ignorable-nt
-    :accessor ignorable-nt
+   ;; broader-theme
+   (broader-theme ;; theme-entity-bt-coref
+    :initarg :broader-theme
+    :accessor broader-theme
+    :documentation ":ORIGINAL-FIELD \"BT\"")
+
+   ;; narrower-theme
+   (narrower-theme ;; theme-entity-nt-coref
+    :initarg :narrower-theme
+    :accessor narrower-theme
     :documentation ":ORIGINAL-FIELD \"NT\"")
+
+   (related-theme ;; theme-entity-rt-coref
+    :initarg :related-theme
+    :accessor related-theme
+    :documentation ":ORIGINAL-FIELD \"RT\"")
 
    (control-id-theme-entity-loc-num
     :initarg :control-id-theme-entity-loc-num
     :accessor control-id-theme-entity-loc-num
-    :documentation "This does not occur in our original table.. 
-An LOC id is a string having the format: 
+    :documentation "This does not occur in our original table.
+An LOC id is a string of the form: 
  \"tgmNNNNNN\"
 These correlate our theme-ids with the LOC's cannonical ids.")
 
+   ;; 
    (control-id-theme-entity-loc-uri
     :initarg :control-id-theme-entity-loc-uri
     :accessor control-id-theme-entity-loc-uri
     :documentation "This does not occur in our original table.
-A uri. Use it to grab LOC skos/rdf-xml data.")
+A URI of the form:
+
+  <RESOURCE-PATH>/<CONTROL-ID-THEME-ENTITY-LOC-NUM>
+ 
+ <RESOURCE-PATH> -> \"http://id.loc.gov/vocabulary/graphicMaterials/\";
+ 
+  <CONTROL-ID-THEME-ENTITY-LOC-NUM> -> \"tgmNNNNNN\"
+
+ http://id.loc.gov/vocabulary/graphicMaterials/tgm000173.html
+
+Use it to grab LOC skos/rdf-xml data.")
    )
   (:documentation
     #.(format nil
@@ -154,7 +194,7 @@ A uri. Use it to grab LOC skos/rdf-xml data.")
 ;; :NOTE everything above 13484 was added after the fact and isn't a TGM term.
 (make-parsed-class-field-slot-accessor-mapping 
  'parsed-theme-record
- '(("id"                 . control-id-theme-entity-num)
+ '(("id"                 . control-id-theme-entity-dbc-num) ;; should be renamed to :CONTROL-ID-THEME-ENTITY-DBC-NUM
    ("theme"              . control-id-display-theme)
    ("active"             . record-status-active)
    ("display_pic"        . image-default-xref)
@@ -162,14 +202,41 @@ A uri. Use it to grab LOC skos/rdf-xml data.")
    ("date_edit"          . edit-timestamp)
    ("subdivision_number" . ignorable-subdivision-number)
    ("range"              . ignorable-range)
-   ("RT"                 . ignorable-rt) ;; theme-entity-rt-coref
-   ("BT"                 . ignorable-bt) ;; theme-entity-bt-coref
-   ("US"                 . ignorable-us) ;; theme-entity-use-coref
-   ("UF"                 . ignorable-uf) ;; theme-entity-uf-coref
-   ("NT"                 . ignorable-nt) ;; theme-entity-nt-coref
+   ("RT"                 . related-theme) ;; theme-entity-rt-coref
+   ("BT"                 . broader-theme) ;; theme-entity-bt-coref
+   ("US"                 . use-theme) ;; theme-entity-use-coref
+   ("UF"                 . used-for) ;; theme-entity-uf-coref
+   ("NT"                 . narrower-theme) ;; theme-entity-nt-coref
    ("__IGNORED-1"        . control-id-theme-entity-loc-num)
    ("__IGNORED-2"        . control-id-theme-entity-loc-uri))
  )
+
+
+;; :TODO following updates the `parsed-theme-record' to match the slots of enable this once we've converted the existing parse file over to the new slot-names:
+;; :SEE :FILE #P..."/dbc-specific/xml-class-dump-dir/parsed-class-table-dumps/parsed-theme-record/parsed-theme-record-2012-03-21T000437.pctd"
+
+;; (make-parsed-class-field-slot-accessor-mapping 
+;;  'parsed-theme-record
+;;  '(("id"                 . control-id-theme-entity-dbc-num)
+;;    ("theme"              . control-id-display-theme)
+;;    ("active"             . record-status-active)
+;;    ("display_pic"        . image-default-xref)
+;;    ("related_pic_num"    . image-coref)
+;;    ("date_edit"          . edit-timestamp)
+;;    ("subdivision_number" . ignorable-subdivision-number)
+;;    ("range"              . ignorable-range)
+;;    ("RT"                 . related-theme)
+;;    ("BT"                 . broader-theme) 
+;;    ("US"                 . use-theme) 
+;;    ("UF"                 . used-for) 
+;;    ("NT"                 . narrower-theme)
+;;    ("__IGNORED-1"        . control-id-theme-entity-loc-num)
+;;    ("__IGNORED-2"        . control-id-theme-entity-loc-uri))
+;;  )
+
+
+
+
 
 ;; (dbc-theme-request-loc-x-uri "Marble")
 ;; (dbc-theme-request-loc-x-uri "Cartouches (Architecture)")
@@ -283,13 +350,13 @@ A uri. Use it to grab LOC skos/rdf-xml data.")
   do (with-slots (record-status-active
                   control-id-theme-entity-loc-num
                   control-id-display-theme
-                  control-id-theme-entity-num
+                  control-id-theme-entity-dbc-num
                   image-coref)
          obj
        (when (and record-status-active
                   (null control-id-theme-entity-loc-num))
          (incf  active-no-loc-themes-count)
-         (push (list control-id-theme-entity-num control-id-display-theme image-coref) active-no-loc-themes)))
+         (push (list control-id-theme-entity-dbc-num control-id-display-theme image-coref) active-no-loc-themes)))
   finally (return (values active-no-loc-themes active-no-loc-themes-count )))
 
  ; colors
@@ -326,7 +393,7 @@ A uri. Use it to grab LOC skos/rdf-xml data.")
   do (with-slots (;; record-status-active
                   ;; control-id-theme-entity-loc-num
                   ;; control-id-display-theme
-                  ;; control-id-theme-entity-num
+                  ;; control-id-theme-entity-dbc-num
                   (ic image-coref)
                   (idx image-default-xref)
                   )
@@ -362,11 +429,11 @@ A uri. Use it to grab LOC skos/rdf-xml data.")
 ;; "date_edit"          :TRANSFORM "edit-timestamp"
 ;; "subdivision_number" :TRANSFORM ignorable-subdivision-number
 ;; "range"              :TRANSFORM ignorable-range
-;; "RT"                 :TRANSFORM ignorable-rt  ;; theme-entity-rt-coref
-;; "BT"                 :TRANSFORM ignorable-bt  ;; theme-entity-bt-coref
-;; "US"                 :TRANSFORM ignorable-us  ;; theme-entity-use-coref
-;; "UF"                 :TRANSFORM ignorable-uf  ;; theme-entity-uf-coref
-;; "NT"                 :TRANSFORM ignorable-nt  ;; theme-entity-nt-coref
+;; "RT"                 :TRANSFORM related-theme  ;; theme-entity-rt-coref
+;; "BT"                 :TRANSFORM broader-theme  ;; theme-entity-bt-coref
+;; "US"                 :TRANSFORM use-theme  ;; theme-entity-use-coref
+;; "UF"                 :TRANSFORM used-for  ;; theme-entity-uf-coref
+;; "NT"                 :TRANSFORM narrower-theme  ;; theme-entity-nt-coref
 
 ;;; ==============================
 ;; :FIELD "id" :TRANSFORM control-id-entity-num-theme
