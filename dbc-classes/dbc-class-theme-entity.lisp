@@ -8,18 +8,20 @@
 ;; curl -i http://id.loc.gov/vocabulary/graphicMaterials/label/Action%20%26%20adventure%20dramas
 ;;
 ;; (drakma:http-request "http://id.loc.gov/vocabulary/graphicMaterials/Action%20%26%20adventure%20dramas" :user-agent :firefox )
-;; If i set drakma:*header-stream* to *standard-output* the get request
+;; If I set drakma:*header-stream* to *standard-output* the get request
 ;;
-;;  then just "sudo tcpdump -A -s8182 host id.loc.gov", run
-;;         drakma request, then see whats wrong. Redirect tcpdump to a file, but
-;;         you may have to run request several times, as tpcdump does not
-;;         fflush() when writing to a file
-
-;;  :NOTE as of 2012-03-17 the LOC now publish their datasets in SKOS/RDF/MADS forms downloadable as  N-TRIPLES, TURTLE and JSON data for TGM themes _and_
+;; Then just "sudo tcpdump -A -s8182 host id.loc.gov", run
+;; drakma request, then see whats wrong. Redirect tcpdump to a file, but
+;; you may have to run request several times, as tpcdump does not
+;; fflush() when writing to a file
+;;
+;;  :NOTE as of 2012-03-17 the LOC now publish their datasets in SKOS/RDF/MADS
+;;  forms downloadable as N-TRIPLES, TURTLE and JSON data for TGM themes _and_
 ;;  name authority files
-
+;;
 ;; We can now retrieve known themes with the following uri:
 ;; http://id.loc.gov/vocabulary/graphicMaterials/label/Barnyards
+;;
 ;; :NOTE  urls must be properly encoded e.g.:
 ;; "Action & adventure dramas" as "Action%20%26%20adventure%20dramas"
 ;; http://id.loc.gov/vocabulary/graphicMaterials/label/Action%20%26%20adventure%20dramas
@@ -30,33 +32,30 @@
 ;; (http-request "http://id.loc.gov/vocabulary/graphicMaterials/label/Action%20%26%20adventure%20dramas" :preserve-uri t)
 ;; (http-request "http://id.loc.gov/vocabulary/graphicMaterials/label/Action%20%26%20adventure%20dramas" :preserve-uri t)
 ;;
-;;
-
-
 ;; (%theme-url-encode "A la poupée prints")
 ;; curl -I http://id.loc.gov/vocabulary/graphicMaterials/label/A%20la%20poup%C3%A9e%20prints
-
+;;
 ;; (dbc-theme-request-loc-x-uri "A la poupée prints") => nil
 ;; (dbc-theme-request-loc-x-uri "A la poupee prints")
 ;; (dbc-theme-request-loc-x-uri "Action & adventure dramas")
 ;; (puri:merge-uris
 ;;  (mon::string-percent-encode "Action & adventure dramas")
 ;;  #u"http://id.loc.gov/vocabulary/graphicMaterials/label/")
-
+;;
 ;; (drakma:http-request #u"http://id.loc.gov/vocabulary/graphicMaterials/label/Action%20%26%20adventure%20dramas"
 ;;                      :preserve-uri t)
-
+;;
 ;; (puri:rend(puri:parse-uri "http://id.loc.gov/vocabulary/graphicMaterials/label/Action%20&%20adventure%20dramas")
 ;; => (:X-URI . "http://id.loc.gov/vocabulary/graphicMaterials/tgm000063")
 ;; (pathname-name "http://id.loc.gov/vocabulary/graphicMaterials/tgm000063")
-
-;; Then assuming we get back a valid http response we can make a follow up request
+;;
+;; Then, assuming we get back a valid http response we can make a follow up request
 ;; for the theme's associated xml/rdf file:
 ;; http://id.loc.gov/vocabulary/graphicMaterials/tgm000063.madsrdf.rdf
-;; for discussion on using curl/wget for doing so see (URL `http://id.loc.gov/techcenter/')
-
-;; Extracting labels from HTTP response headers
-
+;; For discussion on using curl/wget for doing so :SEE (URL `http://id.loc.gov/techcenter/')
+;;
+;; Extracting labels from HTTP response headers.
+;;
 ;; It is possible to determine the preferred label for a given concept or heading
 ;; of interest without necessarily needing to download the entire RDF
 ;; content. Requesting a concept URI with a HTTP HEAD method exposes a private
