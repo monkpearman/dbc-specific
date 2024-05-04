@@ -30,7 +30,7 @@
 
 
 (in-package #:dbc)
-       
+;; 
 (defun field-string-cons (field-str)
   (typecase field-str  
     ((or string array)
@@ -54,15 +54,15 @@
   ;; Is there a reason why we shouldn't be using this instead:
   ;; (declare (type (or null simple-string) used-for-string)) 
   ;; (declare (type string used-for-string))
-  (declare (type mon:string-or-null used-for-string))
-  (if (or (mon:string-null-or-empty-p used-for-string)
-          (mon:string-all-whitespace-p used-for-string))
+  (declare (type MON:STRING-OR-NULL used-for-string))
+  (if (or (MON:STRING-NULL-OR-EMPTY-P used-for-string)
+          (MON:STRING-ALL-WHITESPACE-P used-for-string))
       (values nil used-for-string)
       (flet ((%trimmer (x)
                (declare (string x))
                (string-trim (the (simple-vector 1) #(#\SPACE)) x)))
         (loop 
-          with split = (mon:string-split-on-chars used-for-string split-on)
+          with split = (MON:STRING-SPLIT-ON-CHARS used-for-string split-on)
           for x in split 
           for y = (%trimmer x)
           unless (or (null y)
@@ -70,22 +70,22 @@
           ;; Do we need to check for #\Newline #\Return? 
           ;; If so maybe use `mon:string-trim-whitespace' here as well.
           ;; :collect (mon:string-trim-whitespace y)
-          collect (mon:string-trim-whitespace y) into rtn
+          collect (MON:STRING-TRIM-WHITESPACE y) into rtn
           finally (return (values rtn used-for-string))))))
 
 ;; :NOTE This can be adapted if/when we ever split the found_in field to work on
 ;; the for "^Appeared-in:" fields there as well.
 (defun split-appeared-in (appeared-in-string &key (split-on "|"))
-  (declare (type mon:string-or-null appeared-in-string))
-  (if (or (mon:string-null-or-empty-p appeared-in-string)
-          (mon:string-all-whitespace-p appeared-in-string))
+  (declare (type MON:STRING-OR-NULL appeared-in-string))
+  (if (or (MON:STRING-NULL-OR-EMPTY-P appeared-in-string)
+          (MON:STRING-ALL-WHITESPACE-P appeared-in-string))
       (values nil appeared-in-string)
       (loop 
-        with split = (mon:string-split-on-chars appeared-in-string split-on)
+        with split = (MON:STRING-SPLIT-ON-CHARS appeared-in-string split-on)
         for x in split 
         for y = (string-trim (the (simple-vector 1) #(#\SPACE)) x)
         unless (or (null y) (eql (length y) 0)) 
-        collect (mon:string-trim-whitespace y) into rtn
+        collect (MON:STRING-TRIM-WHITESPACE y) into rtn
         finally (return (values rtn appeared-in-string)))))
 
 (defun format-entity-role (entity-roles
@@ -102,9 +102,9 @@
 
 ;; :NOTE This is actually a bad idea as the "n 95121069" is canonical...
 (defun split-loc-pre (loc-string)
-  (declare (mon:string-or-null loc-string))
-  (if (or (mon:string-null-or-empty-p loc-string)
-          (mon:string-all-whitespace-p loc-string))
+  (declare (MON:STRING-OR-NULL loc-string))
+  (if (or (MON:STRING-NULL-OR-EMPTY-P loc-string)
+          (MON:STRING-ALL-WHITESPACE-P loc-string))
       (values nil loc-string)
       (values 
        (string-left-trim (the (simple-vector 2) #(#\n #\SPACE)) 
@@ -129,25 +129,25 @@
 
 (defun split-comma-field (comma-string)
   ;;(split-comma-field-if comma-string)
-  (unless ;; (mon:simple-string-null-or-empty-p comma-string)
-      (mon:string-null-or-empty-p comma-string)
+  (unless ;; (MON:SIMPLE-STRING-NULL-OR-EMPTY-P comma-string)
+      (MON:STRING-NULL-OR-EMPTY-P comma-string)
     (loop 
-      with split-comma = (mon:string-split-on-chars (the string comma-string)
+      with split-comma = (MON:STRING-SPLIT-ON-CHARS (the string comma-string)
                                                     (the character #\,))
       for x in split-comma
-      for y = (mon:string-trim-whitespace (the string x))
+      for y = (MON:STRING-TRIM-WHITESPACE (the string x))
       unless (or 
               (eql (length y) 0) 
               (notany #'alpha-char-p y))
       collect y)))
 
 (defun split-roles (role-string)
-  (declare (type mon:string-or-null role-string))
-  (if (or (mon:string-null-or-empty-p role-string)
-          (mon:string-all-whitespace-p role-string))
+  (declare (type MON:STRING-OR-NULL role-string))
+  (if (or (MON:STRING-NULL-OR-EMPTY-P role-string)
+          (MON:STRING-ALL-WHITESPACE-P role-string))
       (values nil role-string)
       (loop 
-        with split = (mon:string-split-on-chars role-string (the character #\,))
+        with split = (MON:STRING-SPLIT-ON-CHARS role-string (the character #\,))
         for x in split 
         for y = (string-left-trim (the (simple-vector 1) #(#\SPACE)) 
                                   (string-right-trim (the (simple-vector 2) #(#\SPACE #\.))
@@ -164,7 +164,7 @@
 (defun split-piped-field-if (piped-string &key (keep-duplicates nil)
                                                known-field-hashtable)
   (declare (boolean keep-duplicates)
-           (mon:hash-table-or-symbol known-field-hashtable)
+           (MON:HASH-TABLE-OR-SYMBOL known-field-hashtable)
            (optimize (speed 3)))
   (split-field-on-char-if piped-string (the character #\|)
                           :keep-duplicates keep-duplicates 
@@ -182,10 +182,10 @@
             (bit t)
             (symbol t))
     (return-from field-convert-1-0-x convert-field))
-  (when (typep convert-field 'mon:string-null-empty-or-all-whitespace)
+  (when (typep convert-field 'MON:STRING-NULL-EMPTY-OR-ALL-WHITESPACE)
     (return-from field-convert-1-0-x nil))
   (let ((convert (if (and (stringp convert-field)
-                          (eql (the mon:array-length (length convert-field)) 1))
+                          (eql (the MON:ARRAY-LENGTH (length convert-field)) 1))
                      (case (char (the (array character (1)) convert-field) 0)
                        (#\1 t)
                        ((#\0  #\x #\X) nil)
@@ -230,11 +230,11 @@
 (declaim (inline field-convert-1-0-x-empty))
 (defun field-convert-1-0-x-empty (convert-field &key known-field-hashtable)
   (declare 
-   (mon:hash-table-or-symbol known-field-hashtable)
+   (MON:HASH-TABLE-OR-SYMBOL known-field-hashtable)
    (inline field-convert-1-0-x field-convert-1-0-x-empty-known)
    (optimize (speed 3)))
   (when known-field-hashtable
-    (let ((ht (mon:hash-or-symbol-p known-field-hashtable :w-no-error t)))
+    (let ((ht (MON:HASH-OR-SYMBOL-P known-field-hashtable :w-no-error t)))
       (and ht 
            (return-from field-convert-1-0-x-empty
              (field-convert-1-0-x-empty-known convert-field (the hash-table ht))))))
@@ -248,22 +248,22 @@
           (values rtn val2 convert-field val1)))))
 
 (defun field-convert-verify-string (string-field-maybe &optional known-field-hashtable)
-  (declare (mon:hash-table-or-symbol known-field-hashtable)
+  (declare (MON:HASH-TABLE-OR-SYMBOL known-field-hashtable)
            (optimize (speed 3)))
   (when (null string-field-maybe)
     (return-from field-convert-verify-string (values nil 'null)))
   (when (not (stringp string-field-maybe))
     (return-from field-convert-verify-string 
       (values string-field-maybe (type-of string-field-maybe))))
-  (locally (declare (mon:string-not-null string-field-maybe))
+  (locally (declare (MON:STRING-NOT-NULL string-field-maybe))
     (when (mon:string-empty-p string-field-maybe)
       (return-from field-convert-verify-string 
         (values nil 'mon:string-empty)))
-    (when (mon:string-all-whitespace-p string-field-maybe)
+    (when (MON:STRING-ALL-WHITESPACE-P string-field-maybe)
       (return-from field-convert-verify-string 
         (values nil 'mon:string-all-whitespace)))
     (when known-field-hashtable
-      (let ((ht (mon:hash-or-symbol-p known-field-hashtable :w-no-error t)))
+      (let ((ht (MON:HASH-OR-SYMBOL-P known-field-hashtable :w-no-error t)))
         (and ht (gethash string-field-maybe ht)
              ;; :NOTE It would be nice to indicate that nil was returned
              ;; b/c it was in the the hash-table known-field-hashtable
@@ -272,7 +272,7 @@
     (values string-field-maybe (type-of string-field-maybe))))
 
 (let ((edit-timestamp-regex 
-        (cl-ppcre:create-scanner "^([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2})$")))
+        (CL-PPCRE:CREATE-SCANNER "^([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2})$")))
   (defun field-convert-edit-timestamp (maybe-timestamp)
     (multiple-value-bind (maybe-string of-type) (field-convert-verify-string maybe-timestamp)
       (cond ((null maybe-string) 
@@ -280,7 +280,7 @@
             ((stringp maybe-string)
              (if (string= maybe-string "0000-00-00 00:00:00")
                  (values nil nil nil maybe-string)
-                 (multiple-value-bind (matched values) (cl-ppcre:scan-to-strings edit-timestamp-regex maybe-string)
+                 (multiple-value-bind (matched values) (CL-PPCRE:SCAN-TO-STRINGS edit-timestamp-regex maybe-string)
                    (unless matched (error "Can't parse ~s as a timestamp" maybe-string))
                    (let* ((encoded
                             (encode-universal-time  (parse-integer (aref values 5))
@@ -334,7 +334,7 @@
                                ;; (apply #'encode-universal-time `(,@pi-subseq-applied 4)))
                                (apply #'encode-universal-time pi-subseq-applied)))
                         (lt-timestamp (and maybe-encoded-pi
-                                           (local-time:universal-to-timestamp maybe-encoded-pi)))
+                                           (LOCAL-TIME:UNIVERSAL-TO-TIMESTAMP maybe-encoded-pi)))
                         (lt-timestamp-string (and lt-timestamp (princ-to-string lt-timestamp))))
                    (values 
                     lt-timestamp-string         ; local-time as string
@@ -355,15 +355,15 @@
   (unless (listp string-list-maybe)
     (return-from field-convert-remove-duplicates
       (values string-list-maybe (type-of string-list-maybe))))
-  (unless (mon:each-a-string-or-null-p string-list-maybe)
+  (unless (MON:EACH-A-STRING-OR-NULL-P string-list-maybe)
     (return-from field-convert-remove-duplicates
       (values string-list-maybe (type-of string-list-maybe))))
   (let ((str-lst-trans 
-          (remove-if #'mon:string-null-empty-or-all-whitespace-p string-list-maybe)))
+          (remove-if #'MON:STRING-NULL-EMPTY-OR-ALL-WHITESPACE-P string-list-maybe)))
     (when (null str-lst-trans)
       (return-from field-convert-remove-duplicates 
         (values nil string-list-maybe)))
-    (locally (declare (mon:each-a-string str-lst-trans))
+    (locally (declare (MON:EACH-A-STRING str-lst-trans))
       (values 
        (delete-duplicates str-lst-trans :test #'string= :from-end t) 
        ;; (remove-duplicates str-lst-trans :test #'string=) 
@@ -397,8 +397,8 @@
                                                       known-field-hashtable)
   (declare (character char)
            (boolean keep-duplicates keep-first)
-           (mon:hash-table-or-symbol known-field-hashtable)
-           (inline mon:whitespace-char-p 
+           (MON:HASH-TABLE-OR-SYMBOL known-field-hashtable)
+           (inline MON:WHITESPACE-CHAR-P 
                    field-convert-1-0-x-empty)
            (optimize (speed 3)))
   (multiple-value-bind (v1 t1 v2 t2) (field-convert-1-0-x-empty split-string 
@@ -409,7 +409,7 @@
          (notany #'(lambda (x) (char= char x)) (the string v1)))
         (return-from split-field-on-char-if (values v1 t1 v2 t2))
         ;; :NOTE The local var SIMPLE is only b/c its type can be declared simple-string
-        (let ((simple (copy-seq (the mon:string-not-null-or-empty v1))))
+        (let ((simple (copy-seq (the MON:STRING-NOT-NULL-OR-EMPTY v1))))
           (declare (simple-string simple))
           (if (position char simple)
               (if (string= simple (make-string 1 :initial-element char))
@@ -423,20 +423,20 @@
                   (if (and keep-first
                            (every #'(lambda (c) 
                                       (declare (character c))
-                                      (or (mon:whitespace-char-p  c)
+                                      (or (MON:WHITESPACE-CHAR-P  c)
                                           (char= c char)))
                                   simple))
                       (values 
-                       (setf simple (mon:string-trim-whitespace simple))
+                       (setf simple (MON:STRING-TRIM-WHITESPACE simple))
                        (type-of simple)
                        v2
                        t2)
                       (loop 
-                        with split = (mon:string-split-on-chars simple (make-string 1 :initial-element char))
+                        with split = (MON:STRING-SPLIT-ON-CHARS simple (make-string 1 :initial-element char))
                         for x simple-string in split ;; each elt of mon:string-split-on-chars is from a copy-seq.
-                        for y simple-string = (mon:string-trim-whitespace x)
+                        for y simple-string = (MON:STRING-TRIM-WHITESPACE x)
                         ;; unless (eql (the mon:array-length (length (the simple-string y))) 0)
-                        unless (zerop (the mon:array-length (length y)))
+                        unless (zerop (the MON:ARRAY-LENGTH (length y)))
                         collect y into rtn
                         ;; :WAS
                         ;; finally (if keep-duplicates
@@ -454,18 +454,18 @@
 (defun %field-name-underscore-to-dash-if (field-name)
   (declare ((or null string) field-name)
            (optimize (speed 3)))
-  (when (or (mon:string-null-empty-or-all-whitespace-p field-name)
+  (when (or (MON:STRING-NULL-EMPTY-OR-ALL-WHITESPACE-P field-name)
             (and (= (length field-name) 1)
                  (char= (char field-name 0) (the character #\_)))) 
     (return-from %field-name-underscore-to-dash-if (values nil field-name)))
-  (locally (declare (mon:string-not-null-or-empty field-name))
-    (let ((trim-field (the simple-string (mon:string-trim-whitespace (copy-seq field-name)))))
+  (locally (declare (MON:STRING-NOT-NULL-OR-EMPTY field-name))
+    (let ((trim-field (the simple-string (MON:STRING-TRIM-WHITESPACE (copy-seq field-name)))))
       (declare (simple-string trim-field))
       (when (and (= (length trim-field) 1)
                  (char= (schar trim-field 0) (the character #\_)))
         (return-from %field-name-underscore-to-dash-if (values nil field-name)))
       (locally 
-          (declare (mon:simple-string-not-empty trim-field))
+          (declare (MON:SIMPLE-STRING-NOT-EMPTY trim-field))
         (setf trim-field (string-trim 
                           (the (simple-vector 1)  #(#\-))
                           (the simple-string (nsubstitute #\- #\_ (string-upcase trim-field)))))
@@ -482,9 +482,9 @@
   (let ((no-under (%field-name-underscore-to-dash-if field-name)))
     (declare ((or null simple-string) no-under))
     (when (or (null no-under)
-              (mon:string-empty-p no-under))
+              (MON:STRING-EMPTY-P no-under))
       (return-from field-name-underscore-to-dash (values nil no-under field-name)))
-    (locally (declare (mon:simple-string-not-empty no-under))
+    (locally (declare (MON:SIMPLE-STRING-NOT-EMPTY no-under))
       (or (and w-colon 
                (concatenate 'string (make-string 1 :initial-element #\:) no-under))
           no-under))))
@@ -494,23 +494,23 @@
 
 (defun field-name-convert-field-name (field-name field-value)
   (declare (string field-name))
-  (when (mon:string-null-or-empty-p field-value) 
+  (when (MON:STRING-NULL-OR-EMPTY-P field-value) 
     (return-from field-name-convert-field-name))
   (when (not (stringp field-value)) 
     (return-from field-name-convert-field-name field-value))
-  (if (string-equal field-name (mon:string-trim-whitespace field-value))
+  (if (string-equal field-name (MON:STRING-TRIM-WHITESPACE field-value))
       nil
       field-value))
 
 ;; :NOTE use `field-convert-verify-string' instead.
 (defun field-convert-empty-string-nil (empty-field &key w-no-error)
-  (if (mon:string-null-or-empty-p empty-field)
+  (if (MON:STRING-NULL-OR-EMPTY-P empty-field)
       nil
       (if (stringp empty-field)
           empty-field
           (if w-no-error
               (values empty-field (type-of empty-field))
-              (mon:simple-error-mon :w-sym 'field-convert-empty-string-nil
+              (MON:SIMPLE-ERROR-MON :w-sym 'field-convert-empty-string-nil
                                     :w-type 'function
                                     :w-spec "Arg EMPTY-FIELD not `cl:stringp'"
                                     :w-got  empty-field
@@ -526,7 +526,7 @@
 ;; (split-date-range "-1840--")
 ;; => ("?" . "1840?")
 (defun split-date-range (lifespan-str)
-  (declare (type mon:string-or-null lifespan-str))
+  (declare (type MON:STRING-OR-NULL lifespan-str))
   (or (and (or (null lifespan-str)
 	       (eql (length lifespan-str) 0))
 	   (cons nil nil))
@@ -534,14 +534,14 @@
             (concat-char #\-)
             (question-char #\?))
         (declare (character concat-char question-char))
-	(setf frob (mon:string-trim-whitespace frob))
+	(setf frob (MON:STRING-TRIM-WHITESPACE frob))
 	(when (char= (char frob 0) concat-char)
-	  (setf frob (mon:concat question-char  frob)))
+	  (setf frob (MON:CONCAT question-char  frob)))
 	(when (char= (char frob (1- (length frob))) concat-char)
-	  (setf frob (mon:concat frob question-char)))
+	  (setf frob (MON:CONCAT frob question-char)))
 	(or (and (> (length frob) 0)
-		 (setf frob (mapcar #'mon:string-trim-whitespace
-				    (mon:string-split-on-chars frob concat-char))))
+		 (setf frob (mapcar #'MON:STRING-TRIM-WHITESPACE
+				    (MON:STRING-SPLIT-ON-CHARS frob concat-char))))
 	    (setf frob (cons nil nil)))
 	(if (and (null (car frob))
 		 (null (cdr frob)))
@@ -558,7 +558,7 @@
 		frob)))))
 
 (defun split-date-range-string-int-pairs (lifespan-str-pair)
-  (declare (type (cons mon:string-or-null mon:string-or-null)
+  (declare (type (cons MON:STRING-OR-NULL MON:STRING-OR-NULL)
 		 lifespan-str-pair)
 	   ;; (optimize (speed 3) (safety 1) (space 0) (compilation-speed 0))
 	   )
@@ -645,7 +645,7 @@
   (if (stringp string-field-maybe)
       (let ((match (copy-seq string-field-maybe)))
         (setf match
-              (string-case:string-case (match :default match)
+              (STRING-CASE:STRING-CASE (match :default match)
                 ("bubba"       (print "found bubba" *standard-output*))
                 ("match-field" (string-upcase match))))
         (values match string-field-maybe (type-of match)))
@@ -689,7 +689,7 @@ If STRING-FIELD-MAYBE is `cl:stringp' nth-value 0 is the p
 ;;    ("match-field" (string-upcase s)))
 
 ;; (defmacro tt--field-convert-preprocess-field (string-field-maybe var &rest cases)
-;;   (mon:with-gensyms (match extent-var)
+;;   (MON:WITH-GENSYMS (match extent-var)
 ;;     `(if (stringp ,string-field-maybe)
 ;;          (let ((,match (copy-seq ,string-field-maybe))
 ;;                (,extent-var ,var))
