@@ -84,22 +84,7 @@ eg with the `write-parsed-<FOO>-record-parse-table-to-csv-file' functions.
 `*parsed-class-table-output-dir*',`*parsed-class-table-csv-output-dir*',
 `*parsed-class-table-output-pathname-type*',`*parsed-tgm-theme-output-dir*.'~%▶▶▶")
 
-(vardoc '*parsed-tgm-theme-output-dir*
-"An instance of class `dbc-system-subdir' that dereferences a directory
-pathname where parsed TGM XML Concepts are written to.~%
-:EXAMPLE~%
- \(sub-path *parsed-tgm-theme-output-dir*\)~%
- \(class-of *parsed-tgm-theme-output-dir*\)~%
- \(system-described *parsed-tgm-theme-output-dir* nil\)~%
-:NOTE Rebound at loadtime with form:
-\(system-subdir-init-w-var '*parsed-tgm-theme-output-dir*
-                              :parent-path\(dbc::sub-path dbc::*parsed-class-table-output-dir*\)\)~%
-:SEE-ALSO `*parsed-tgm-theme-record-hash-table*', `*parsed-tgm-theme-field-to-accessor-table*'
-`system-described', `system-path', `sub-path', `sub-name', `parent-path',
-`var-name', `*system-path*',`*system-tests-dir*', `*system-tests-temp-dir*',
-`*xml-output-dir*', `*xml-input-dir*', `*dbc-base-item-number-image-pathname*'
-`*parsed-class-table-output-dir*',`*parsed-class-table-csv-output-dir*',
-`*parsed-class-table-output-pathname-type*',`*parsed-tgm-theme-output-dir*'.~%▶▶▶")
+
 
 (vardoc '*parsed-class-table-output-pathname-type*
 "Default pathname-type for use when writing the contents of DBC
@@ -119,8 +104,12 @@ subclass identified by the key.~%~@
 
 (vardoc '*dbc-base-item-number-image-pathname*
   "Default base pathname under which dbc images are located on the local system disk.~%
-Size of content of directory named by *dbc-base-item-number-image-pathname*  -> 3.13 GB~%
-:SEE-ALSO `*system-path*', `*system-tests-dir*', `*system-tests-temp-dir*', `*xml-output-dir*', `*xml-input-dir*', `*dbc-wild-httpd-synced-item-number-image-pathname-list*', `*dbc-base-httpd-synced-item-number-image-pathname*', `*dbc-wild-httpd-synced-item-number-image-pathname-list*'.~%▶▶▶")
+Size of content of directory named by *dbc-base-item-number-image-pathname* ->
+3.13 GB~% :SEE-ALSO `*system-path*', `*system-tests-dir*',
+`*system-tests-temp-dir*', `*xml-output-dir*', `*xml-input-dir*',
+`*dbc-wild-httpd-synced-item-number-image-pathname-list*',
+`*dbc-base-httpd-synced-item-number-image-pathname*',
+`*dbc-wild-httpd-synced-item-number-image-pathname-list*'.~%▶▶▶")
 
 (vardoc '*dbc-base-httpd-synced-item-number-image-pathname*
 "Pathname under which old dbc images are stored on remote server.~%~@
@@ -4775,6 +4764,279 @@ Return value is a list of the `cl:file-namestring's of each file written.~%~@
 `write-sax-parsed-class-hash-to-files',
 `write-parsed-class-parse-table-to-file',
 `write-sax-parsed-inventory-record-hash-to-zero-padded-directory',.~%▶▶▶")
+
+
+;;; ==============================
+;;; dbc-specific/dbc-classes/dbc-class-parsed-tgm-theme-record.lisp
+
+(vardoc '*parsed-tgm-theme-output-dir*
+"An instance of class `dbc-system-subdir' that dereferences a directory
+pathname where parsed TGM XML Concepts are written to.~%
+:EXAMPLE~%
+ \(sub-path *parsed-tgm-theme-output-dir*\)~%
+ \(class-of *parsed-tgm-theme-output-dir*\)~%
+ \(system-described *parsed-tgm-theme-output-dir* nil\)~%
+:NOTE Rebound at loadtime with form:
+\(system-subdir-init-w-var '*parsed-tgm-theme-output-dir*
+                              :parent-path\(dbc::sub-path dbc::*parsed-class-table-output-dir*\)\)~%
+:SEE-ALSO `*parsed-tgm-theme-record-hash-table*', `*parsed-tgm-theme-field-to-accessor-table*'
+`system-described', `system-path', `sub-path', `sub-name', `parent-path',
+`var-name', `*system-path*',`*system-tests-dir*', `*system-tests-temp-dir*',
+`*xml-output-dir*', `*xml-input-dir*', `*dbc-base-item-number-image-pathname*'
+`*parsed-class-table-output-dir*',`*parsed-class-table-csv-output-dir*',
+`*parsed-class-table-output-pathname-type*',`*parsed-tgm-theme-output-dir*'.~%▶▶▶")
+
+(vardoc '*parsed-tgm-theme-input-dir*
+"An instance of class `dbc-system-subdir' that dereferences a directory
+pathname where parsed TGM XML Concepts are sourced from.~%
+The file(s) currently stored in that directory are downloaded from:~%
+:FILE \(URL https://www.loc.gov/rr/print/tgm1/tgm1.xml\)~%
+:NOTE The file needs to be frobbed first before parsing,
+:SEE docstring of `tgm-parse-concepts-in-stream' for more details.~%
+:EXAMPLE~%
+ \(sub-path *parsed-tgm-theme-output-dir*\)~%
+ \(class-of *parsed-tgm-theme-output-dir*\)~%
+ \(system-described *parsed-tgm-theme-input-dir* nil\)~%
+:NOTE Rebound at loadtime with form:~%
+\(system-subdir-init-w-var '*parsed-tgm-theme-input-dir*
+                              :parent-path \(dbc::sub-path dbc::*parsed-tgm-theme-output-dir*\)\)~%
+:SEE-ALSO `tgm-parse-concepts-set-source-xml-file', `*parsed-tgm-theme-record-hash-table*',
+ `*parsed-tgm-theme-field-to-accessor-table*' `system-described', `system-path',
+`sub-path', `sub-name', `parent-path', `var-name', `*system-path*',`*system-tests-dir*',
+`*system-tests-temp-dir*', `*xml-output-dir*', `*xml-input-dir*',
+`*dbc-base-item-number-image-pathname*', `*parsed-class-table-output-dir*',
+`*parsed-class-table-csv-output-dir*', `*parsed-class-table-output-pathname-type*',
+`*parsed-tgm-theme-output-dir*'.~%▶▶▶")
+
+(vardoc '*parsed-tgm-theme-xml-source-pathname*
+        "A pathname naming an XML file containing one or more TGM concepts which is
+suitable for use with `cxml:make-source'. It will genearlly have a file name \"tgm1.xml\"
+as per the following form:~%
+ \(make-pathname :name \"tgm1\" :type \"xml\"\) ~%
+and is located in the directory with pathname dereferenced by `*parsed-tgm-theme-input-dir*', i.e.:~%
+ \(sub-path *parsed-tgm-theme-input-dir*\)~%
+It is bound at loadtime with `tgm-parse-concepts-set-source-xml-file'.~%
+:EXAMPLE~%
+\(tgm-parse-concepts-set-source-xml-file \(merge-pathnames
+                                         \(dbc::sub-path dbc::*parsed-tgm-theme-input-dir*\)
+                                         \(make-pathname :name \"tgm1\" :type \"xml\"\)\)\)~%
+:SEE-ALSO `*parsed-tgm-theme-input-dir*',`*parsed-tgm-theme-record-hash-table*',
+`*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶")
+
+
+(vardoc '*parsed-tgm-theme-xml-source*
+        "A variable for dereferencing to an object of type `cxml::cxml-source'.
+Used when parsing TGM concepts. It's value is set with `tgm-parse-concepts-make-source'.~%
+:EXAMPLE
+ \(typep *parsed-tgm-theme-xml-source* 'cxml::cxml-source\)~%
+:SEE-ALSO `*parsed-tgm-theme-xml-source-pathname*', `tgm-parse-concepts-set-source-xml-file',
+`tgm-parse-concepts-set-source-xml-file'.~%▶▶▶")
+
+(vardoc '*parsed-tgm-theme-field-to-accessor-table*
+  "List mappiing TGM xml element names to slot-accessor names.
+Elemnts of list have the form:~%
+ \(<XML-ELEMENT-NAME> <PARSED-TGM-THEME-RECORD-SLOT-INITARG>\)~%
+cl:car of list identifies XML element names as per KLACKS:PEEK.
+cl:cadr names slot initargs for instances of class `parsed-tgm-theme-record'
+associated with the XML element being parsed.
+:SEE-ALSO `*parsed-tgm-theme-record-hash-table*',
+`*parsed-class-field-slot-accessor-mapping-table*',
+`*parsed-tgm-theme-xml-source-pathname*'.~%▶▶▶")
+
+(vardoc '*parsed-tgm-theme-record-hash-table*
+              "A hash-table for holding parsed TGM themes.
+It's `hash-table-test'
+It's `hash-table-size' is defaulted to 13203 which corresponds roughly to the
+number of concepts defined by the TGM1 and TGM2 as of 05-01-2024.
+On SBCL it satisfies `sb-ext:hash-table-synchronized-p'.~%
+:EXAMPLE
+ \(hash-table-test *parsed-tgm-theme-record-hash-table*\)~%
+ \(hash-table-size *parsed-tgm-theme-record-hash-table*\)~%
+ \(sb-ext:hash-table-synchronized-p *parsed-tgm-theme-record-hash-table*\)~%
+:SEE-ALSO  `*parsed-tgm-theme-field-to-accessor-table*', `*parsed-tgm-theme-xml-source-pathname*'.~%▶▶▶")
+
+(fundoc 'tgm-parse-concepts-set-source-xml-file
+  "Set value of `*parsed-tgm-theme-xml-source-pathname*' to PATHNAME.
+PATHNAME names a pathname containing an LOC TGM XML file.~%
+:EXAMPLE~%
+\(tgm-parse-concepts-set-source-xml-file
+ \(merge-pathnames \(dbc::sub-path dbc::*parsed-tgm-theme-input-dir*\)
+                  \(make-pathname :name \"tgm1\" :type \"xml\"\)\)\)~%
+:SEE-ALSO `*parsed-tgm-theme-xml-source-pathname*',
+`*parsed-tgm-theme-input-dir*', `tgm-parse-concepts-make-source'.~%▶▶▶")
+
+(fundoc 'tgm-parse-concepts-make-source
+          "Make an object of type 'cxml::cxml-source as if by `cxml:make-source' and set
+it to value of `*parsed-tgm-theme-xml-source*' using pathname stored in  parameter
+`*parsed-tgm-theme-xml-source-pathname*' and return the an instance of `cxml::cxml-source'.~%
+When value of `*parsed-tgm-theme-xml-source*' satisfies the following form:
+ (typep *parsed-tgm-theme-xml-source* 'cxml::cxml-source)
+Close the existing source as if by `klacks:close-source' first before setting
+Signal an error if value of `*parsed-tgm-theme-xml-source-pathname*' is null or does not satisfy `cl:pathnamep'.
+:EXAMPLE
+ \(progn \(tgm-parse-concepts-make-source\)
+        \(typep  *parsed-tgm-theme-xml-source* 'cxml::cxml-source\)\)~%
+:SEE-ALSO `tgm-parse-concepts-set-source-xml-file'.~%▶▶▶")
+
+(fundoc 'tgm-assoc-elt
+          "Find ELT in MAPPING and return it.
+ELT should satisfy cl:stringp, signal an error if not.
+MAPPING designates an alist identifying xml :start-element qname/lames as per
+`klacks:peek'. MAPPING alist has the form:~%
+ (<STRING> :<KEYWORD>)
+<STRING> denotes an xml element name
+:<KEYWORD> names an associated keyword to use as an initarg for a
+parsed-tgm-theme-record slot accessor.
+:SEE-ALSO `tgm-assoc-elt',`tgm-peeking', `tgm-peeking-get-val',
+`tgm-consume', `tgm-characters-every-whitespace-p',
+`tgm-peek-start-element-and-maybe-add-to-slot',
+`tgm-parse-concept', `parsed-tgm-theme-record',
+`*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶")
+
+(fundoc 'tgm-peeking
+  "mvb'd wrapper for `klacks:peek'. STREAM names a Klacks source as per `cxml:make-source'.
+:EXAMPLE~%\(tgm-peeking :stream *parsed-tgm-theme-xml-source*\)~%
+:SEE-ALSO`tgm-assoc-elt',`tgm-peeking', `tgm-peeking-get-val',
+`tgm-consume', `tgm-characters-every-whitespace-p',
+`tgm-peek-start-element-and-maybe-add-to-slot',
+`tgm-parse-concept', `parsed-tgm-theme-record',
+`*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶")
+
+(fundoc 'tgm-peeking-get-val
+  "Return cl:nth value of mvb'd values list returned by `tgm-peeking'.~%
+:EXAMPLE~%\(tgm-peeking-get-val :stream *parsed-tgm-theme-xml-source*\)~%     
+:SEE-ALSO `tgm-assoc-elt',`tgm-peeking', `tgm-peeking-get-val',
+`tgm-consume', `tgm-characters-every-whitespace-p',
+`tgm-peek-start-element-and-maybe-add-to-slot',
+`tgm-parse-concept', `parsed-tgm-theme-record',
+`*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶")
+  
+(fundoc 'tgm-consume
+        "An mvb'd wrapper for `klacks:consume'. STREAM names a Klacks source as
+per `cxml:make-source'.~%
+:EXAMPLE~%\(tgm-consume :stream *parsed-tgm-theme-xml-source*\)~%
+:SEE-ALSO`tgm-assoc-elt',`tgm-peeking', `tgm-peeking-get-val',
+`tgm-consume', `tgm-characters-every-whitespace-p',
+`tgm-peek-start-element-and-maybe-add-to-slot',
+`tgm-parse-concept', `parsed-tgm-theme-record',
+`*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶")
+
+(fundoc 'tgm-characters-every-whitespace-p
+"Return T when length of current nth 1 elt of `tgm-peeking' return value is a
+with length <= 2 and every character satisfies `mon:whitespace-char-p'.
+:EXAMPLE~%\(tgm-characters-every-whitespace-p :stream *parsed-tgm-theme-xml-source*\)~%
+:SEE-ALSO `mon:*whitespace-chars*', `tgm-assoc-elt',`tgm-peeking',
+`tgm-peeking-get-val', `tgm-consume', `tgm-characters-every-whitespace-p',
+`tgm-peek-start-element-and-maybe-add-to-slot', `tgm-parse-concept',
+`parsed-tgm-theme-record',`*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶")
+
+(fundoc 'tgm-start-element-consume
+  "Parse and consume the current XML element being read from STREAM.
+OBJECT is an instance of class `parsed-tgm-theme-record' 
+ACCESSOR names a slot-value accessor for OBJECT. Used to update OBJECT according
+to XML element values encountered during parse.
+NTH-VALUE is an positive integer for referencing a list of parse-values as per `tgm-peeking' 
+when passed by calling functions. Default is 1, other indexes into and the list
+PEEK-VAL is an mvb'd list as per return value of `tgm-peeking'. 
+:SEE-ALSO `tgm-assoc-elt',`tgm-peeking', `tgm-peeking-get-val',
+`tgm-consume', `tgm-characters-every-whitespace-p',
+`tgm-peek-start-element-and-maybe-add-to-slot',
+`tgm-parse-concept', `parsed-tgm-theme-record'.~%▶▶▶")
+
+(fundoc '%tgm-sec-helper
+  "Helper macro wrapping around `tgm-start-element-consume' for use with `tgm-peek-start-element-and-maybe-add-to-slot'.~%
+:EXAMPLE~%~% \(macroexpand-1 '\(%tgm-sec-helper
+                 \(make-instance 'parsed-tgm-theme-record :control-id-display-theme-name \"FOO\"\)
+                 'control-id-display-theme-name 1 \(tgm-peeking :stream *tt--tgm*\) *tt--tgm*\)\)~%
+:SEE-ALSO ~%▶▶▶")
+
+(fundoc 'tgm-peek-start-element-and-maybe-add-to-slot
+  "A dispatching function for tgm XML parses. Pivot on start-element values
+according to the key/value pairs mapped by variable `*parsed-tgm-theme-field-to-accessor-table*'.
+:SEE-ALSO `tgm-assoc-elt',`tgm-peeking', `tgm-peeking-get-val',
+`tgm-consume', `tgm-characters-every-whitespace-p', `tgm-peek-start-element-and-maybe-add-to-slot',
+`tgm-parse-concept', `parsed-tgm-theme-record'.~%▶▶▶")
+
+(fundoc 'tgm-parse-concept
+          "Parse a single TGM XML concept event from the current STREAM.
+Keyword STREAM names a source as per `cxml:make-source'. 
+Return an instance of `parsed-tgm-theme-record' with slot-values populated by
+parsed XML values.~%
+:EXAMPLE~%~% \(tgm-parse-concept :stream *parsed-tgm-theme-xml-source*\)~%
+:SEE-ALSO `tgm-assoc-elt',`tgm-peeking', `tgm-peeking-get-val', `tgm-consume',
+`tgm-characters-every-whitespace-p',`tgm-peek-start-element-and-maybe-add-to-slot',
+`tgm-parse-concept',`parsed-tgm-theme-record',`*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶")
+
+
+(fundoc 'tgm-parse-concepts-in-stream
+   "Parse all TGM XML concepts in STREAM and close it as if by `klacks:close-source'.
+Return as if by values HASH-TABLE and the number of concpets parsed and the
+number of objects with unbound slots that were updated as if by
+`tgm-parse-concepts-update-unbound-slots'.
+STREAM is a source per return value of `cxml:make-source'. Default is return
+value of `tgm-parse-concepts-make-source' which when called resets the current
+value of `*parsed-tgm-theme-xml-source-pathname*' by closing any pre-existing
+stream object as if by `klacks:close-source'. When STREAM is supplied the stream
+is not reset and parsing will continue from current position in stream.
+HASH-TABLE is a table to store parsed concepts key/value parse to.
+Default is `*parsed-tgm-theme-record-hash-table*'.
+The keys of hash-table correspond to the `control-id-display-theme' slot-value
+of an instance of `parsed-tgm-theme-record'. The values are object instances of same.
+CLEAR-HASH-P when T (the default) indicates that HASH-TABLE should be cleared as
+if by `cl:clrhash' before parsing concepts.
+:EXAMPLE~% \(tgm-parse-concepts-in-stream  :stream  \(tgm-parse-concepts-make-source\)\)~%
+:NOTE Following elements if present in STREAM signal an error when parsing and
+need to be removed before calling either `tgm-parse-concept' or `tgm-parse-concepts-in-stream':
+  <!-- unknown line type [@@@] -->
+  <CONCEPT><DESCRIPTOR>Artists materials</DESCRIPTOR><NT>Crayons</NT></CONCEPT>
+  <BT>Artists materials</BT> ; <-- tgm013301 \"Crayons\"
+:SEE-ALSO `write-parsed-parsed-tgm-theme-record-parse-table-to-file', `tgm-assoc-elt',
+`tgm-peeking', `tgm-peeking-get-val', `tgm-consume', `tgm-characters-every-whitespace-p',
+`tgm-peek-start-element-and-maybe-add-to-slot',`tgm-parse-concept',`parsed-tgm-theme-record',
+`*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶")
+
+(fundoc 'write-parsed-parsed-tgm-theme-record-parse-table-to-file
+          "Write contents of HASH-TABLE to file.
+HASH-TABLE contains key/value pairs that dereference instances of class
+`parsed-tgm-theme-record' as per `*parsed-tgm-theme-record-hash-table*'.
+BASE-OUTPUT-DIRECTORY is a pathname designating the base directory beneath which
+to write the file. It is merged with OUTPUT-SUB-DIRECTORY to generate directory
+for the output file to be written. BASE-OUTPUT-DIRECTORY must satisfy
+`cl:probe-file', an error is signaled if not.%
+OUTPUT-SUB-DIRECTORY is a string or list of strings identifying any relative
+pathname directory components beneath BASE-OUTPUT-DIRECTORY.
+This is a convenience function wrapped  around `write-parsed-class-parse-table-to-file' \(which see\).~%
+:NOTE Evaluates `tgm-parse-concepts-update-unbound-slots' when finished successfully parsing all concepts in STREAM.~%
+:EXAMPLE~%~@
+\(progn \(tgm-parse-concepts-in-stream :stream *parsed-tgm-theme-xml-source*\)
+       \(write-parsed-parsed-tgm-theme-record-parse-table-to-file
+        :hash-table *parsed-tgm-theme-record-hash-table*
+        :base-output-directory \(merge-pathname \(make-pathname :directory '\(:relative \"parsed-class-table-dumps\"\)\)
+                                               \(dbc::sub-path dbc::*xml-output-dir*\)\)
+        :output-sub-directory \"parsed-tgm-theme-record\"\)\)
+:SEE-ALSO `tgm-assoc-elt',`tgm-peeking', `tgm-peeking-get-val', `tgm-consume',
+`tgm-characters-every-whitespace-p',`tgm-peek-start-element-and-maybe-add-to-slot',
+`tgm-parse-concept',`parsed-tgm-theme-record',`*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶")
+
+(fundoc 'tgm-parse-concepts-update-unbound-slots
+  "Set all unbound `slot-value's to nil for instances of class
+`parsed-tgm-theme-record' in HASH-TABLE.
+Return the number of objects with unbound slots that were frobbed.
+Evaluated after succesful calls to `write-parsed-parsed-tgm-theme-record-parse-table-to-file'.~%
+:SEE-ALSO .~%▶▶▶")
+
+(fundoc  'tgm-parse-concept-count-slot-value-list-length
+"Loop over key/val pairs of HASH-TABLE gathering slot-value's for
+object-instances of HASH-TABLE that are `cl:>' length 1.~%
+return value is a list of the form:~%
+ \(<LENGTH> <OBJECT-ID> <SLOT-VALUE-CONTENTS>\)~%
+<LENTH> is the length of <SLOT-VALUE-CONTENTS>
+<OBJECT-ID> the `control-id-display-theme' slot-value for object-instances of hash-table.
+<SLOT-VALUE-CONTENTS> is a list of strings.
+:EXAMPLE~%~@
+ \(tgm-parse-concept-count-slot-value-list-length 'broader-theme :hash-table *parsed-tgm-theme-record-hash-table*\)
+:SEE-ALSO `<XREF>'.~%▶▶▶")
+
 
 ;;; ==============================
 

@@ -102,6 +102,16 @@
                               :parent-path (dbc::sub-path dbc::*parsed-class-table-output-dir*))
    (terpri))
 
+;; `*parsed-tgm-theme-input-dir*'
+(prog1
+    (system-subdir-init-w-var '*parsed-tgm-theme-input-dir*
+                              :parent-path (dbc::sub-path dbc::*parsed-tgm-theme-output-dir*))
+   (terpri))
+
+(tgm-parse-concepts-set-source-xml-file (merge-pathnames
+                                        (dbc::sub-path dbc::*parsed-tgm-theme-input-dir*)
+                                        (make-pathname :name "tgm1" :type "xml")))
+
 ;; (system-described *system-notes-dir* t)
 ;; (let ((dbc-build-system::*dbc-build-system-reloading-system* t))
 (when
