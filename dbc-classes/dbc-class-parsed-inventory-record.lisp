@@ -813,14 +813,14 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 (defun %parsed-inventory-record-parse-table-lookup-slot-value-maybe-remove ()
   (loop
     with current-accessors = (accessors-of-parsed-class 'parsed-inventory-record)
-    for gf-method in (closer-mop:generic-function-methods #'parsed-inventory-record-parse-table-lookup-slot-value)
-    for specializers = (closer-mop:method-specializers gf-method)
+    for gf-method in (CLOSER-MOP:GENERIC-FUNCTION-METHODS #'parsed-inventory-record-parse-table-lookup-slot-value)
+    for specializers = (CLOSER-MOP:METHOD-SPECIALIZERS gf-method)
     do (and specializers
             (typep (car specializers) 'closer-mop:eql-specializer)
             (eql (class-name (cadr specializers)) 'string)
             (unless (member (closer-mop:eql-specializer-object (car specializers)) current-accessors)
 
-              (let ((maybe-remove-function (alexandria:format-symbol (find-package "DBC")
+              (let ((maybe-remove-function (ALEXANDRIA:FORMAT-SYMBOL (find-package "DBC")
                                                                      "~:@(PARSED-INVENTORY-RECORD-~A-LOOKUP~)"
                                                                      (closer-mop:eql-specializer-object (car specializers)))))
                 (and (fboundp maybe-remove-function)
@@ -902,7 +902,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 
 (defun %parsed-inventory-record-image-file-pathname-match (pathname)
   (let ((pname (pathname-name (%parsed-inventory-record-image-file-pathname-valid-p-or-error pathname))))
-    (cl-ppcre:register-groups-bind (n1 n2 n3 n4 n5)
+    (CL-PPCRE:REGISTER-GROUPS-BIND (n1 n2 n3 n4 n5)
                                    (*parsed-inventory-record-image-pathname-regex* pname)
                                    (list n1 n2 n3 n4 n5)
                                    (cond ((null n1)
@@ -960,7 +960,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 (defun parsed-inventory-record-null-prototype ()
   (let ((prototype (make-instance 'dbc::parsed-inventory-record)))
     (loop
-       for slot-is-accessor in (mon:class-slot-list 'dbc::parsed-inventory-record)
+       for slot-is-accessor in (MON:CLASS-SLOT-LIST 'dbc::parsed-inventory-record)
        do (setf (slot-value  prototype slot-is-accessor) nil))
     prototype))
 
@@ -968,7 +968,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
                                                        (base-output-directory dbc::*dbc-base-item-number-image-pathname*)
                                                        ;; (directory-exists-check t)
                                                        (prefix-for-file-name "")
-                                                       (suffix-for-file-name (concatenate 'string "_NEW-" (mon:time-string-yyyy-mm-dd)))
+                                                       (suffix-for-file-name (concatenate 'string "_NEW-" (MON:TIME-STRING-YYYY-MM-DD)))
                                                        (pathname-type "lisp")
                                                        (print-unbound nil))
 
@@ -1086,7 +1086,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
     with dest-hash = (make-hash-table :test (hash-table-test source-hash))
     for keys being the hash-keys in source-hash using (hash-value vals)
     do (setf (gethash keys dest-hash)
-             (mon:copy-instance-of-class-shallowly vals))
+             (MON:COPY-INSTANCE-OF-CLASS-SHALLOWLY vals))
     finally (return dest-hash)))
 
 (parsed-inventory-record-load-default-parsed-file-to-hash :clear-existing-table t)
