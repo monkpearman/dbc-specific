@@ -132,14 +132,14 @@
 	  (mapcan #'(lambda (x)
 		      (list x (and (slot-boundp  obj x)
 				   (slot-value obj x))))
-		  (sort (mon:class-slot-list (class-of obj)) #'string-lessp))))
+		  (sort (MON:CLASS-SLOT-LIST (class-of obj)) #'string-lessp))))
 
 (defmethod system-described ((obj system-subdir) stream)
   (format stream "~{:~14A~@S~^~%~}"
 	  (mapcan #'(lambda (x)
 		      (list x (and (slot-boundp  obj x)
 				   (slot-value obj x))))
-		  (sort (mon:class-slot-list 'system-subdir) #'string-lessp))))
+		  (sort (MON:CLASS-SLOT-LIST 'system-subdir) #'string-lessp))))
 
 (defmethod system-parent-path-ensure ((object system-subdir) &key)
   (with-accessors ((parent-path parent-path))
@@ -152,7 +152,8 @@
              :w-system-obj object
              :w-system-path parent-path
              :w-system-aux-msg "slot PARENT-PATH is null"))
-    (let ((parent (fad:directory-exists-p parent-path)))
+    ;; :WAS (let ((parent (FAD:DIRECTORY-EXISTS-P parent-path)))
+    (let ((parent (UIOP:DIRECTORY-EXISTS-P parent-path)))
       (if (null parent)
           (error 'system-path-error
                  :w-sym 'system-parent-path-ensure
@@ -176,16 +177,16 @@
              :w-system-obj object
              :w-system-path parent-path
              :w-system-aux-msg
-             "slot SUB-NAME is null, not checking PARENT-PATH with fad:directory-exists-p"))
+             "slot SUB-NAME is null, not checking PARENT-PATH with uiop:directory-exists-p"))
     (let ((chk-parent (system-parent-path-ensure object)))
       (setf chk-parent
             (merge-pathnames
              (etypecase sub-name
                 ;;(list (make-pathname :directory   `(:relative ,@sub-name)))
-               (mon:each-a-string (make-pathname :directory   `(:relative ,@sub-name)))
+               (MON:EACH-A-STRING (make-pathname :directory   `(:relative ,@sub-name)))
                (string (make-pathname :directory `(:relative ,sub-name))))
              chk-parent))
-      (mon::ref-bind chk-sub (fad:directory-exists-p chk-parent)
+      (MON::REF-BIND chk-sub (fad:directory-exists-p chk-parent)
         (setf sub-path chk-sub)
         (error 'system-path-error
                :w-sym 'system-parent-path-ensure
@@ -213,17 +214,17 @@
   (let* ((dbc-sys-chk
           (or ;; :NOTE what about `cl:*load-pathname*'?
            ;; :WAS (pathname-directory (mon:pathname-directory-system :dbc))
-           (pathname-directory (asdf/system-registry:sysdef-central-registry-search :DBC))
-           (mon:simple-error-mon  :w-sym  'find-system-path
+           (pathname-directory (ASDF/SYSTEM-REGISTRY:SYSDEF-CENTRAL-REGISTRY-SEARCH :DBC))
+           (MON:SIMPLE-ERROR-MON  :w-sym  'find-system-path
                                   :w-type 'function
                                   :w-spec "asdf/system-registry:sysdef-central-registry-search can not find system :DBC"
                                   :signal-or-only nil)))
 	 (dbc-if (or
                   ;;:WAS (fad:directory-exists-p (make-pathname :directory dbc-sys-chk)) ;; Paranoia
-                  (uiop:directory-exists-p (make-pathname :directory dbc-sys-chk)) ;; Paranoia
-		  (mon:simple-error-mon  :w-sym  'find-system-path
+                  (UIOP:DIRECTORY-EXISTS-P (make-pathname :directory dbc-sys-chk)) ;; Paranoia
+		  (MON:SIMPLE-ERROR-MON  :w-sym  'find-system-path
 					 :w-type 'function
-					 :w-spec "calling `fad:directory-exists-p' but did not find pathname:~%~S"
+					 :w-spec "calling `uiop:directory-exists-p' but did not find pathname:~%~S"
 					 :w-args `(,(make-pathname :directory dbc-sys-chk))
                                          :signal-or-only nil))))
     dbc-if))
@@ -242,7 +243,6 @@
 	       (setf *xml-output-dir* dbc-dump))
 	  (warn ":FUNCTION `system-path-xml-dump-dir-ensure' failed to initialize")))))
 
-;; :TODO Needs to be renamed system-subdir-init-w-var ->
 ;; This needs to have a restart that won't signal when we're simply reloading the system.
 (defun system-subdir-init-w-var (w-var &key sub-name parent-path)
   (unless dbc-build-system::*dbc-build-system-reloading-system*
@@ -252,7 +252,7 @@
              (and (symbolp w-var)
                   (eql (class-of (symbol-value w-var))
                        (find-class 'system-subdir))))
-         (mon:simple-error-mon :w-sym 'system-subdir-init-w-var
+         (MON:SIMPLE-ERROR-MON :w-sym 'system-subdir-init-w-var
                                :w-type 'function
                                :w-spec '("W-VAR already instance of class SYSTEM-SUBDIR~%"
                                          "got-object: ~S~%object-specs:~%~A")
