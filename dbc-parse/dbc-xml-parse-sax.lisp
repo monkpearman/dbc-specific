@@ -274,7 +274,7 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
              (current-elt (%parsed-data-current-parent *parsed-data-current-state*)))
     (let* ((current-parent-element (%parsed-data-current-parent *parsed-data-current-state*))
            (chk-chars (dbc-sax-current-chars current-parent-element)))
-      (if (mon:string-null-empty-or-all-whitespace-p chk-chars)
+      (if (MON:STRING-NULL-EMPTY-OR-ALL-WHITESPACE-P chk-chars)
           (vector-push-extend (list (current-elt current-parent-element))
                               (field-data current-parent-element))
           (vector-push-extend (cons (current-elt current-parent-element) chk-chars)
@@ -331,7 +331,7 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
   ;; :WAS
   ;; (concatenate 'string (%make-parsed-output-trimmed-pathname prefix :w-delim t)
   ;;              (mon:time-string-yyyy-mm-dd))
-  (mon:timestamp-for-file-with :prefix prefix :universal-time nil))
+  (MON:TIMESTAMP-FOR-FILE-WITH :prefix prefix :universal-time nil))
 
 ;; (make-parsed-class-output-directory-ensuring-pathname :pathname-sub-directory '("bubba" "more")
 ;;                                                        :pathname-base-directory (sub-path *xml-output-dir*)
@@ -344,7 +344,7 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
                                                                   ;; (ensure-directories-exist t)
                                                                   )
   (declare ((or string list) pathname-sub-directory)
-           (mon:pathname-or-namestring pathname-base-directory))
+           (MON:PATHNAME-OR-NAMESTRING pathname-base-directory))
   (when (and pathname-dated-p (or (null sub-supplied-p) (null base-supplied-p)))
     (error ":FUNCTION `make-parsed-class-output-directory-ensuring-pathname'~% ~
              when arg PATHNAME-DATED-P is non-nil both PATHNAME-SUB-DIRECTORY and PATHNAME-BASE-DIRECTORY must be supplied."))
@@ -356,19 +356,19 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
            (etypecase pathname-sub-directory
              (null
               (if pathname-dated-p
-                  (list (mon:time-string-yyyy-mm-dd))
+                  (list (MON:TIME-STRING-YYYY-MM-DD))
                   ;; (%make-dated-parse-output-prefix-for-pathname ""))
                   '()))
              (string
               (if pathname-dated-p
-                  (list (if (mon:string-empty-p pathname-sub-directory)
-                            (mon:time-string-yyyy-mm-dd)
+                  (list (if (MON:STRING-EMPTY-P pathname-sub-directory)
+                            (MON:TIME-STRING-YYYY-MM-DD)
                             (%make-dated-parse-output-prefix-for-pathname pathname-sub-directory)))
-                  (if (mon:string-empty-p pathname-sub-directory)
+                  (if (MON:STRING-EMPTY-P pathname-sub-directory)
                       '()
                       (list pathname-sub-directory))))
              (list
-              (unless (every #'mon:string-not-null-empty-or-all-whitespace-p pathname-sub-directory)
+              (unless (every #'MON:STRING-NOT-NULL-EMPTY-OR-ALL-WHITESPACE-P pathname-sub-directory)
                 (error "Arg PATHNAME-SUB-DIRECTORY cannot be a list containing an empty string~% ~% got: ~S~%" pathname-sub-directory))
               (let ((list-copy (copy-list pathname-sub-directory)))
                 (when pathname-dated-p
@@ -389,7 +389,7 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
                                                              (pathname-base-directory (system-base-path *system-path*)))
   (declare ((or string list) pathname-sub-directory)
            (string pathname-name)
-           (mon:pathname-or-namestring pathname-base-directory))
+           (MON:PATHNAME-OR-NAMESTRING pathname-base-directory))
   (let ((sub-dir-ensured (make-parsed-class-output-directory-ensuring-pathname :pathname-sub-directory pathname-sub-directory
                                                                                :pathname-base-directory pathname-base-directory)))
     (merge-pathnames (make-pathname :name (if pathname-name-dated-p
@@ -400,13 +400,13 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
 ;;
 ;; write-parsed-class-sax-parsed-xml-to-file
 (defun write-sax-parsed-xml-to-file (&key input-file output-file)
-  (declare (mon:pathname-or-namestring input-file)
-           ((or mon:pathname-or-namestring list) output-file))
+  (declare (MON:PATHNAME-OR-NAMESTRING input-file)
+           ((or MON:PATHNAME-OR-NAMESTRING list) output-file))
   (unless (probe-file input-file)
     (error "Arg INPUT-FILE does not exist.~% got: ~A" input-file))
   (let ((dump-file
-          (if (mon:pathname-or-namestring-p output-file)
-              (if (mon:pathname-or-namestring-not-empty-dotted-or-wild-p output-file)
+          (if (MON:PATHNAME-OR-NAMESTRING-P output-file)
+              (if (MON:PATHNAME-OR-NAMESTRING-NOT-EMPTY-DOTTED-OR-WILD-P output-file)
                   output-file
                   (error "Arg OUTPUT-FILE did not satisfy `mon:pathname-or-namestring-not-empty-dotted-or-wild-p'"))
               (apply #'make-parsed-class-output-file-ensuring-pathname output-file)))
@@ -443,8 +443,8 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
 #|
 
 ;;; ==============================
-(if (mon:pathname-or-namestring-p output-file)
-    (if (mon:pathname-or-namestring-not-empty-dotted-or-wild-p output-file)
+(if (MON:PATHNAME-OR-NAMESTRING-P output-file)
+    (if (MON:PATHNAME-OR-NAMESTRING-NOT-EMPTY-DOTTED-OR-WILD-P output-file)
         output-file
         (error "Arg OUTPUT-FILE did not satisfy `mon:pathname-or-namestring-not-empty-dotted-or-wild-p'"))
     (apply #'make-parsed-class-output-file-ensuring-pathname output-file))
