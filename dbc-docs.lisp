@@ -27,7 +27,87 @@ An instance of the system-path class holds the class allocated slot system-path
  \(and \(eql \(mon:class-name-of *system-path*\)
           \(class-name \(find-class 'system-path\)\)\)
      \(system-base-path *system-path*\)\)~%~@
-:SEE-ALSO `dbc:system-path'.~%▶▶▶")
+:SEE-ALSO `system-described', `system-path', `sub-path', `sub-name', `parent-path',
+`var-name', `*system-path*',`*system-tests-dir*', `*system-tests-temp-dir*',
+`*xml-output-dir*', `*xml-input-dir*', `*dbc-base-item-number-image-pathname*'
+`*parsed-class-table-output-dir*',`*parsed-class-table-csv-output-dir*',
+`*parsed-class-table-output-pathname-type*',`*parsed-tgm-theme-output-dir*.~%▶▶▶")
+
+(vardoc '*system-notes-dir*
+        "An instance of class `system-subdir' identifying a DBC system subdirectory
+where notes and static input files are located.~%
+Instantiated in :FILE dbc-specific/loadtime-bind.lisp when system is initialized
+with value of sub-path initially defined as the symbol-value via defparameter
+with following string:~%
+ \(sub-name *system-notes-dir*\)~%
+:EXAMPLE~%
+\(eq \(type-of *system-notes-dir*\) 'system-subdir\)~%
+\(sub-path *system-notes-dir*\)~%
+\(system-described *system-notes-dir* nil\)~%
+:SEE-ALSO :SEE-ALSO `dbc:system-path', `*system-tests-dir*',
+`*system-tests-temp-dir*', `*xml-output-dir*', `*xml-input-dir*',
+`*dbc-base-item-number-image-pathname*'.~%▶▶▶")
+
+(vardoc '*parsed-class-table-output-dir*
+"An instance of class `dbc-system-subdir' that dereferences a directory
+pathname where for use when writing the contents of DBC
+hash-tables identified in varialbe`*parsed-class-parse-table*'
+eg with the `write-parsed-<FOO>-record-parse-table-to-file' functions.
+:EXAMPLE~%
+ \(sub-path *parsed-class-table-output-dir*\)~%
+ \(class-of *parsed-class-table-output-dir*\)~%
+ \(system-described *parsed-class-table-output-dir* nil\)~%
+:NOTE Rebound in :FILE dbc-specific/loadtime-bind.lisp at loadtime with form:~%
+ \(system-subdir-init-w-var '*parsed-class-table-output-dir*
+                               :parent-path \(dbc::sub-path dbc::*xml-output-dir*\)\)~%
+:SEE-ALSO `system-described', `system-path', `sub-path', `sub-name', `parent-path',
+`var-name', `*system-path*',`*system-tests-dir*', `*system-tests-temp-dir*',
+`*xml-output-dir*', `*xml-input-dir*', `*dbc-base-item-number-image-pathname*'
+`*parsed-class-table-output-dir*',`*parsed-class-table-csv-output-dir*',
+`*parsed-class-table-output-pathname-type*',`*parsed-tgm-theme-output-dir*'~%▶▶▶")
+
+(vardoc '*parsed-class-table-csv-output-dir*
+"An instance of class `dbc-system-subdir' that dereferences a directory
+pathname where for use when writing the contents of DBC
+hash-tables identified in varialbe`*parsed-class-parse-table*'
+eg with the `write-parsed-<FOO>-record-parse-table-to-csv-file' functions.
+:EXAMPLE~%
+ \(sub-path *parsed-class-table-csv-output-dir*\)~%
+ \(class-of *parsed-class-table-csv-output-dir*\)~%
+ \(system-described *parsed-class-table-output-dir* nil\)~%
+:NOTE Rebound in :FILE dbc-specific/loadtime-bind.lisp at loadtime with form:~%
+\(system-subdir-init-w-var '*parsed-class-table-csv-output-dir*
+                              :parent-path \(dbc::sub-path dbc::*xml-output-dir*\)\)~%
+:SEE-ALSO `system-described', `system-path', `sub-path', `sub-name', `parent-path',
+`var-name', `*system-path*',`*system-tests-dir*', `*system-tests-temp-dir*',
+`*xml-output-dir*', `*xml-input-dir*', `*dbc-base-item-number-image-pathname*'
+`*parsed-class-table-output-dir*',`*parsed-class-table-csv-output-dir*',
+`*parsed-class-table-output-pathname-type*',`*parsed-tgm-theme-output-dir*.'~%▶▶▶")
+
+(vardoc '*parsed-tgm-theme-output-dir*
+"An instance of class `dbc-system-subdir' that dereferences a directory
+pathname where parsed TGM XML Concepts are written to.~%
+:EXAMPLE~%
+ \(sub-path *parsed-tgm-theme-output-dir*\)~%
+ \(class-of *parsed-tgm-theme-output-dir*\)~%
+ \(system-described *parsed-tgm-theme-output-dir* nil\)~%
+:NOTE Rebound at loadtime with form:
+\(system-subdir-init-w-var '*parsed-tgm-theme-output-dir*
+                              :parent-path\(dbc::sub-path dbc::*parsed-class-table-output-dir*\)\)~%
+:SEE-ALSO `*parsed-tgm-theme-record-hash-table*', `*parsed-tgm-theme-field-to-accessor-table*'
+`system-described', `system-path', `sub-path', `sub-name', `parent-path',
+`var-name', `*system-path*',`*system-tests-dir*', `*system-tests-temp-dir*',
+`*xml-output-dir*', `*xml-input-dir*', `*dbc-base-item-number-image-pathname*'
+`*parsed-class-table-output-dir*',`*parsed-class-table-csv-output-dir*',
+`*parsed-class-table-output-pathname-type*',`*parsed-tgm-theme-output-dir*'.~%▶▶▶")
+
+(vardoc '*parsed-class-table-output-pathname-type*
+"Default pathname-type for use when writing the contents of DBC
+hash-tables identified in varialbe`*parsed-class-parse-table*'
+eg with the `write-parsed-<FOO>-record-parse-table-to-file' functions.~%
+:EXAMPLE~%
+ \(pathname-type \(make-pathname :type *parsed-class-table-output-pathname-type*\)\)~%
+:SEE-ALSO `*parsed-class-table-output-dir*'~%▶▶▶")
 
 (vardoc '*parsed-class-parse-table*
 "A hash-table. It's keys are symbols naming subclasses of class `parsed-class'
@@ -35,7 +115,44 @@ its values are hash-tables of the parsed XML database files corresponding to the
 subclass identified by the key.~%~@
 :EXAMPLE~%
  \(gethash 'parsed-inventory-record *parsed-class-parse-table*\)~%~@
-:SEE-ALSO `<XREF>'.~%▶▶▶")
+:SEE-ALSO `*parsed-class-table-output-pathname-type*'.~%▶▶▶")
+
+(vardoc '*dbc-base-item-number-image-pathname*
+  "Default base pathname under which dbc images are located on the local system disk.~%
+Size of content of directory named by *dbc-base-item-number-image-pathname*  -> 3.13 GB~%
+:SEE-ALSO `*system-path*', `*system-tests-dir*', `*system-tests-temp-dir*', `*xml-output-dir*', `*xml-input-dir*', `*dbc-wild-httpd-synced-item-number-image-pathname-list*', `*dbc-base-httpd-synced-item-number-image-pathname*', `*dbc-wild-httpd-synced-item-number-image-pathname-list*'.~%▶▶▶")
+
+(vardoc '*dbc-base-httpd-synced-item-number-image-pathname*
+"Pathname under which old dbc images are stored on remote server.~%~@
+:NOTE may not be mounted!!!~%~@
+Callers will signal an error if cl:probe-file doesn't return true. ~%~@
+:SEE-ALSO `*dbc-wild-httpd-synced-item-number-image-pathname-list*',
+`*dbc-item-number-path-source-destination-vector*',
+`parsed-class-slot-value-format-image-pathnames',
+`parsed-inventory-record-image-file-pathname-get',
+`%parsed-inventory-record-image-file-pathname-match',
+`%parsed-inventory-record-image-file-pathname-valid-p-or-error',
+`*parsed-inventory-record-image-pathname-regex*',
+`inventory-record-image-jpg-probe-all',
+`inventory-record-image-jpg-probe',
+`inventory-record-image-directory-probe'.~%▶▶▶")
+
+(vardoc '*dbc-wild-httpd-synced-item-number-image-pathname-list*
+        "List of pathname-directory components to construct wild pathnames for matching
+jpg images beneath `*dbc-base-httpd-synced-item-number-image-pathname*'.~%~@
+Elements of list are either strings or a list of strings and/or wild pathname
+keywords e.g. :wild :wild-inferiors.~%~@
+:NOTE Order in wich the elements are specified is important!!!~%~@
+:SEE-ALSO `*dbc-item-number-path-source-destination-vector*',
+`parsed-class-slot-value-format-image-pathnames',
+`parsed-inventory-record-image-file-pathname-get',
+`%parsed-inventory-record-image-file-pathname-match',
+`%parsed-inventory-record-image-file-pathname-valid-p-or-error',
+`*parsed-inventory-record-image-pathname-regex*',
+`inventory-record-image-jpg-probe-all',
+`inventory-record-image-jpg-probe',
+`inventory-record-image-directory-probe',
+`parsed-inventory-record-image-file-pathnames-update'.~%▶▶▶")
 
 (vardoc '*parsed-inventory-record-image-pathname-regex*
 "Regular expressioin for mathing follwoing image pahtname-names:
@@ -71,7 +188,6 @@ Regular expression has the form:  \"^\([0-9]{6}?\)\(-??\)\(\([smzh]{1}?\)??|\(f[
 `inventory-record-image-jpg-probe',
 `inventory-record-image-directory-probe'.~%▶▶▶")
 
-
 ;;; ==============================
 ;;; :SPECIALS-DBC-TEST-PATHS-DOCUMENTATION
 ;;; ==============================
@@ -89,7 +205,7 @@ Its pathname is accessible with the `dbc:sub-path' accessor.~%~@
 :EXAMPLE~%
   \(dbc:sub-path dbc:*system-tests-dir*\)~%
   \(pathname-directory \(dbc:sub-path dbc:*system-tests-dir*\)\)~%~@
-:SEE-ALSO `<XREF>'.~%▶▶▶")
+:SEE-ALSO `*system-path*', `*system-tests-dir*', `*system-tests-temp-dir*', `*xml-output-dir*', `*xml-input-dir*', `*dbc-base-item-number-image-pathname*'.~%▶▶▶")
 
 (vardoc '*system-tests-temp-dir*
 "Initially set to the string \"tests\".
@@ -108,7 +224,7 @@ Its pathname is accessible with the `dbc:sub-path' accessor.~%~@
 :EXAMPLE~%
   \(dbc:sub-path dbc::*system-tests-temp-dir*\)~%
   \(pathname-directory \(dbc:sub-path dbc::*system-tests-temp-dir*\)\)~%~@
-:SEE-ALSO `<XREF>'.~%▶▶▶")
+:SEE-ALSO `*system-path*', `*system-tests-dir*', `*system-tests-temp-dir*', `*xml-output-dir*', `*xml-input-dir*'.~%▶▶▶")
 
 ;;; ==============================
 
@@ -124,8 +240,10 @@ Evaluated when system is loaded.~%
 :EXAMPLE~%
  \(sub-path *xml-output-dir*\)~%
  \(system-described *xml-output-dir* nil\)~%~@
-:SEE-ALSO `*xml-output-dir*', `*xml-output-refs-name*', `*xml-output-refs-ext*',
-`*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*'.~%▶▶▶")
+:SEE-ALSO `system-path-xml-dump-dir-ensure', `*xml-output-dir*',
+`*xml-output-refs-name*', `*xml-output-refs-ext*', `*xml-input-dir*',
+`*xml-input-refs-name*', `*xml-input-refs-name-temp*',
+`*dbc-base-item-number-image-pathname*'.~%▶▶▶")
 
 (vardoc '*xml-output-refs-name*
 "---> Output file name with directory components.~%~@
@@ -155,7 +273,8 @@ Evaluated when system is loaded.~%~@
  \(sub-path *xml-input-dir*\)
  \(system-described *xml-input-dir* nil\)~%~@
 :SEE-ALSO `*xml-output-dir*', `*xml-output-refs-name*', `*xml-output-refs-ext*',
-`*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*'.~%▶▶▶")
+`*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*',
+`*dbc-base-item-number-image-pathname*'.~%▶▶▶")
 
 
 
@@ -446,6 +565,7 @@ Signal an error if system can not be found or its directory does not exist.~%~@
 
 (fundoc 'system-subdir-init-w-var
  "Make W-VAR an instance of class SYSTEM-SUBDIR.~%~@
+WE-VAR is a quoted symbol namimg a variable.
 Return value is as per `system-described'.~%~@
 Keywords :SUB-NAME and :PARENT-PATH are as per SYSTEM-SUBDIR accessors.~%~@
 When SUB-NAME is ommitted default to value of symbol W-VAR.~%~@
@@ -1750,7 +1870,8 @@ When optional arg W-COLON is non-nil return prefixed with a colon.~%~@
 List has the form:~%
  \(<SEQ-LENGTH> \(<TYPE-SPEC>\) FIELD-STR\)~%
 :EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
+\(field-string-cons \" foo\"\)~%~@
+\(field-string-cons \" foo BAR\"\)~%~@
 :SEE-ALSO `field-table-parse-out', `field-string-cons', `field-cln-x'.~%▶▶▶")
 
 (fundoc 'field-cln-x
@@ -3920,37 +4041,7 @@ The :VERBOSE t form is used with `cl:describe' method, the nil form is used with
 ;;; ==============================
 ;;; dbc-specific/dbc-classes/dbc-class-image-path-convert.lisp
 ;;; ==============================
-(vardoc '*dbc-base-httpd-synced-item-number-image-pathname*
-"Pathname under which old dbc images are stored.~%~@
-:NOTE may not be mounted!!!~%~@
-Callers will signal an error if cl:probe-file doesn't return true. ~%~@
-:SEE-ALSO `*dbc-wild-httpd-synced-item-number-image-pathname-list*',
-`*dbc-item-number-path-source-destination-vector*',
-`parsed-class-slot-value-format-image-pathnames',
-`parsed-inventory-record-image-file-pathname-get',
-`%parsed-inventory-record-image-file-pathname-match',
-`%parsed-inventory-record-image-file-pathname-valid-p-or-error',
-`*parsed-inventory-record-image-pathname-regex*',
-`inventory-record-image-jpg-probe-all',
-`inventory-record-image-jpg-probe',
-`inventory-record-image-directory-probe'.~%▶▶▶")
 
-(vardoc '*dbc-wild-httpd-synced-item-number-image-pathname-list*
-        "List of pathname-directory components to construct wild pathnames for matching
-jpg images beneath `*dbc-base-httpd-synced-item-number-image-pathname*'.~%~@
-Elements of list are either strings or a list of strings and/or wild pathname
-keywords e.g. :wild :wild-inferiors.~%~@
-:NOTE Order in wich the elements are specified is important!!!~%~@
-:SEE-ALSO `*dbc-item-number-path-source-destination-vector*',
-`parsed-class-slot-value-format-image-pathnames',
-`parsed-inventory-record-image-file-pathname-get',
-`%parsed-inventory-record-image-file-pathname-match',
-`%parsed-inventory-record-image-file-pathname-valid-p-or-error',
-`*parsed-inventory-record-image-pathname-regex*',
-`inventory-record-image-jpg-probe-all',
-`inventory-record-image-jpg-probe',
-`inventory-record-image-directory-probe',
-`parsed-inventory-record-image-file-pathnames-update'.~%▶▶▶")
 
 (vardoc '*dbc-item-number-path-source-destination-vector*
         "Vector mapping item-numbers to to their original source paths and their
