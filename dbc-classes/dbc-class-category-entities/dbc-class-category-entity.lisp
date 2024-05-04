@@ -89,13 +89,11 @@
       (control-id-slot-value-null-error object 'control-id-display-category)))
 
 ;; :NOTE In following methods specialized on the class category-entity-top-level:
-;;  control-id-of-class-type, control-id-namespace
-;;  control-id-identifies, control-id-uuid
+;;  control-id-of-class-type, control-id-namespace, control-id-identifies, control-id-uuid
 ;; When a local slot is unbound in then taking its slot-value will signal a
 ;; cl:slot-unbound method specialized on class `control-id-display-category'. 
 ;; So, we know that when slot-value is  null we can signal `category-entity-<FOO>-null-error'. 
-;; If we get a legitimate value we hand control over to methods specialized on
-;;  class subbclasses of `control-id-type'.
+;; If we get a legitimate value we hand control over to methods specialized on class subbclasses of `control-id-type.'
 (defmethod control-id-of-class-type ((object category-entity-top-level))
   (control-id-of-class-type (control-id-display-category object)))
 ;;
@@ -169,8 +167,7 @@
 ;; We need to register the UUID of every class in uuid hash-table `*category-entity-hash*' at initialize-instance time.
 ;; For subclasses we need to check if object's NODE-NAME is already in the CPL and if not push it onto the CPL.
 ;; If child-node-name is non-null then we find the parent-classes CPL with
-;; `sb-mop:class-direct-superclasses', else we compute it with
-;; `sb-mop:compute-class-precedence-list'
+;; `sb-mop:class-direct-superclasses', else we compute it with `sb-mop:compute-class-precedence-list'
 (defmethod initialize-instance :after ((object category-entity-top-level) &key)
   (unless (eql (control-id-of-class-type object) 'category-entity-top-level)
     ;; (setf (slot-value object 'control-id-namespace)
