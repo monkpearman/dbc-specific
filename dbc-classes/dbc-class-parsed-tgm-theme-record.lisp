@@ -144,7 +144,23 @@ our `parsed-tgm-theme-record' instances.l
 ;;   (make-pathname :directory '(:relative "parsed-class-table-dumps"))
 ;;   (dbc::sub-path dbc::*xml-output-dir*)))
 ;; (make-pathname :name "tgm1_SCRATCH" :type "xml")
-                             
+
+ ;; (merge-pathnames
+ ;;  (make-pathname :directory '(:relative "parsed-tgm-theme-record"))
+ ;;  (sub-path *xml-output-dir*))
+
+
+;; (system-subdir-init-w-var 
+;;  '*parsed-tgm-theme-output-dir*
+;;  :parent-path  (merge-pathnames
+;;                (make-pathname :directory '(:relative "parsed-class-table-dumps"))
+;;                (dbc::sub-path dbc::*xml-output-dir*)))
+
+
+;; (sub-path *parsed-tgm-theme-output-dir*)
+;; (class-of *parsed-tgm-theme-output-dir*)
+;; (system-described *parsed-tgm-theme-output-dir* nil)
+(defparameter *parsed-tgm-theme-output-dir* "parsed-tgm-theme-record")
 
 (defparameter *parsed-tgm-theme-xml-source-pathname* nil
               "A pathname naming an XML file containing one or more TGM concepts which is suitable for use with `cxml:make-source'.
@@ -1067,14 +1083,15 @@ need to be removed before calling either `tgm-parse-concept' or `tgm-parse-conce
   <!-- unknown line type [@@@] -->
   <CONCEPT><DESCRIPTOR>Artists materials</DESCRIPTOR><NT>Crayons</NT></CONCEPT>
   <BT>Artists materials</BT> ; <-- tgm013301 \"Crayons\"
-:SEE-ALSO `tgm-assoc-elt',`tgm-peeking', `tgm-peeking-get-val', `tgm-consume',
-`tgm-characters-every-whitespace-p',`tgm-peek-start-element-and-maybe-add-to-slot',
-`tgm-parse-concept',`parsed-tgm-theme-record',`*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶"
+:SEE-ALSO `write-parsed-parsed-tgm-theme-record-parse-table-to-file', `tgm-assoc-elt',
+`tgm-peeking', `tgm-peeking-get-val', `tgm-consume', `tgm-characters-every-whitespace-p',
+`tgm-peek-start-element-and-maybe-add-to-slot',`tgm-parse-concept',`parsed-tgm-theme-record',
+`*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶"
   (when (and clear-hash-p (> (hash-table-count hash-table) 0))
     (clrhash hash-table))
   ;; (KLACKS:WITH-OPEN-SOURCE (s stream)
   (unwind-protect 
-      (loop for read-obj = (tgm-parse-concept :stream stream)
+       (loop for read-obj = (tgm-parse-concept :stream stream)
                                  for set-hash = (when read-obj
                                                   (setf (gethash (control-id-display-theme read-obj) hash-table)
                                                         read-obj))
@@ -1085,7 +1102,7 @@ need to be removed before calling either `tgm-parse-concept' or `tgm-parse-conce
                                            (hash-table-count hash-table)
                                            (tgm-parse-concepts-update-unbound-slots
                                             :hash-table hash-table))))
-    (klacks:close-source stream)))
+    (KLACKS:CLOSE-SOURCE stream)))
 
 ;; (write-parsed-parsed-tgm-theme-record-parse-table-to-file)
 (defun write-parsed-parsed-tgm-theme-record-parse-table-to-file (&key
@@ -1111,12 +1128,85 @@ This is a convenience function wrapped  around `write-parsed-class-parse-table-t
         :base-output-directory \(merge-pathname \(make-pathname :directory '\(:relative \"parsed-class-table-dumps\"\)\)
                                                \(dbc::sub-path dbc::*xml-output-dir*\)\)
         :output-sub-directory \"parsed-tgm-theme-record\"\)\)
-:SEE-ALSO `<XREF>'.~%▶▶▶"
+:SEE-ALSO `tgm-assoc-elt',`tgm-peeking', `tgm-peeking-get-val', `tgm-consume',
+`tgm-characters-every-whitespace-p',`tgm-peek-start-element-and-maybe-add-to-slot',
+`tgm-parse-concept',`parsed-tgm-theme-record',`*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶"
   (write-parsed-class-parse-table-to-file  :parsed-class 'parsed-tgm-theme-record
                                            :hash-table hash-table
                                            :base-output-directory base-output-directory
                                            :output-sub-directory output-sub-directory))
 
+;; (tgm-parse-concept-count-slot-value-list-length
+(defun tgm-parse-concept-count-slot-value-list-length (slot &key (hash-table *parsed-tgm-theme-record-hash-table*))
+  (let ((rslt
+
+
+
+          (loop 
+            for obj-id being the hash-keys in hash-table
+            for obj being the hash-values in hash-table
+            for sv = (slot-value obj slot)
+            for sv-len = (length sv)
+            unless (or (null sv)
+                       (= sv-len 1))
+            collect (list sv-len obj-id sv) into gthr
+            end
+            finally (return gthr))))
+    (if (null rslt)
+        rslt
+        (values 
+         (setf rslt (stable-sort rslt
+                     #'>
+                     :key #'car))
+         (length rslt))
+        )))
+
+
+
+  
+
+;;; ==============================
+
+#|
+
+
+;facet-note
+(tgm-parse-concept-count-slot-value-list-length 'facet-note :hash-table *parsed-tgm-theme-record-hash-table*) -> 0
+
+;history-note
+(tgm-parse-concept-count-slot-value-list-length 'history-note :hash-table *parsed-tgm-theme-record-hash-table*) -> nil
+
+;scope-note
+(tgm-parse-concept-count-slot-value-list-length 'scope-note :hash-table *parsed-tgm-theme-record-hash-table*) -> nil
+
+cataloger-note
+(tgm-parse-concept-count-slot-value-list-length 'cataloger-note :hash-table *parsed-tgm-theme-record-hash-table*) -> nil
+
+'term-type-category-reference
+(tgm-parse-concept-count-slot-value-list-length 'TERM-TYPE-CATEGORY-REFERENCE :hash-table *parsed-tgm-theme-record-hash-table*) -> hil
+
+; 'term-type-category-subdivision
+(tgm-parse-concept-count-slot-value-list-length 'term-type-category-subdivision :hash-table *parsed-tgm-theme-record-hash-table*)
+
+;term-type-category-subject
+(tgm-parse-concept-count-slot-value-list-length 'term-type-category-subject :hash-table *parsed-tgm-theme-record-hash-table*) -> nil
+
+;'term-type-category-genre
+(tgm-parse-concept-count-slot-value-list-length 'term-type-category-genre :hash-table *parsed-tgm-theme-record-hash-table*) -> nil
+
+(tgm-parse-concept-count-slot-value-list-length 'former-usage-note :hash-table *parsed-tgm-theme-record-hash-table*) -> nil
+
+
+(tgm-parse-concept-count-slot-value-list-length 'used-for :hash-table *parsed-tgm-theme-record-hash-table*) -> 1430, longest 11
+
+(tgm-parse-concept-count-slot-value-list-length 'broader-theme :hash-table *parsed-tgm-theme-record-hash-table*) -> 350, 3
+
+(tgm-parse-concept-count-slot-value-list-length 'narrower-theme :hash-table *parsed-tgm-theme-record-hash-table*) -> 883, 148 "Activities", 143 "People", 138 "Equipment", 94 "Objects", 88 "Communication", 78 "Events", 74 "Interiors", 70 "Concepts", 66 "Mental states", 63 "Photographs" ...
+
+(tgm-parse-concept-count-slot-value-list-length 'related-theme :hash-table *parsed-tgm-theme-record-hash-table*) ->  3236,  43 "Religion", 40 "Sports", 38 "War", 35 "Human body" ... 
+
+
+|#
 
 ;;; ==============================
 ;;; EOF
