@@ -9,18 +9,17 @@
 
 
 (in-package #:dbc)
-;; *package*
 
 ;; :NOTE for use with examples defined in
 ;; :FILE dbc-specific/dbc-classes/dbc-class-parse-EXAMPLE.lisp
 (defun %ensure-dated-parsed-directory (&key directory-prefix)
-  (declare (type mon:string-not-empty directory-prefix))
+  (declare (type MON:STRING-NOT-EMPTY directory-prefix))
   (ensure-directories-exist
    (merge-pathnames
     (make-pathname :directory `(:relative ,(sub-name *xml-output-dir*)
                                           ,(format nil "~A-~A"
                                                    (string-trim #(#\- #\space) directory-prefix)
-                                                   (mon:time-string-yyyy-mm-dd))))
+                                                   (MON:TIME-STRING-YYYY-MM-DD))))
     (system-path *system-path*))))
 
 (deftype control-id-indexed-number-for-zero-padded-string-integer-range ()
@@ -174,7 +173,7 @@
   (declare ;; (optimize speed)
    ((unsigned-byte 4) value-column-overage)
    ((or null cons) plist))
-  (let ((check-empty (or (mon:plist-keys plist)
+  (let ((check-empty (or (MON:PLIST-KEYS plist)
                          value-column-overage)))
     (etypecase check-empty
       ((unsigned-byte 4) check-empty)
@@ -191,7 +190,7 @@
                  (map 'list #'(lambda (x) (length (string x)))
                       ;; :NOTE could prob. use this as well:
                       ;; (accessors-of-parsed-class object)
-                      (mon:class-slot-list object)))
+                      (MON:CLASS-SLOT-LIST object)))
          value-column-overage))
 
 ;; (let ((object 'parsed-inventory-record))
@@ -213,16 +212,16 @@
 (defun print-sax-parsed-slots (object &key stream
                                            (print-unbound t)
                                            (pre-padded-format-control nil))
-  (declare (type parsed-class object)
-           (type (or string null) pre-padded-format-control)
-           (type boolean print-unbound))
+  (declare  (type (or parsed-class parsed-tgm-theme-record) object)
+            (type (or string null) pre-padded-format-control)
+            (type boolean print-unbound))
   (let ((calculate-padding (if pre-padded-format-control
                                pre-padded-format-control
                                (print-sax-parsed-slots-padding-format-control object))))
     (format stream calculate-padding
             (loop
               with unbound = (when print-unbound "#<UNBOUND>") ;(if print-unbound "#<UNBOUND>" "; #<UNBOUND>")
-              for slot-chk in (mon:class-slot-list object)
+              for slot-chk in (MON:CLASS-SLOT-LIST object)
               for x = (slot-boundp object slot-chk)
               if x
                 nconc (list (list slot-chk (slot-value object slot-chk))) into rtn
@@ -237,7 +236,7 @@
           (string-downcase (class-name (class-of object)))
           slot-for-file-name
           slot-for-file-name-value
-          (mon:timestamp-for-file)))
+          (MON:TIMESTAMP-FOR-FILE)))
 
 ;;
 ;;; :FILE-CREATED <Timestamp: #{2012-03-02T11:55:04-05:00Z}#{12095} - by MON>
@@ -277,32 +276,34 @@
 ;;                                     :directory-exists-check nil)))
 ;;
 (defun write-sax-parsed-slots-to-file (object &key slot-for-file-name
-                                                   prefix-for-file-name
-                                                   suffix-for-file-name
-                                                   (print-unbound nil)
-                                                   (slot-for-file-name-zero-padded nil)
-                                                   (pathname-type "lisp")
-                                                   output-directory
-                                                   (directory-exists-check t)
-                                                   (if-exists-rename t)
-                                                   (pre-padded-format-control nil))
-  (declare  (type parsed-class object) ;;(parsed-class object)
-            (type (and symbol (mon::not-null)) slot-for-file-name)
+                                              prefix-for-file-name
+                                              suffix-for-file-name
+                                              (print-unbound nil)
+                                              (slot-for-file-name-zero-padded nil)
+                                              (pathname-type "lisp")
+                                              output-directory
+                                              (directory-exists-check t)
+                                              (if-exists-rename t)
+                                              (pre-padded-format-control nil))
+  (declare  (type (or parsed-class parsed-tgm-theme-record) object) ;;(parsed-class object)
+            (type (or string (and symbol (MON::NOT-NULL))) slot-for-file-name)
             (type (or string null) prefix-for-file-name suffix-for-file-name)
-            (mon:pathname-or-namestring output-directory)
+            (MON:PATHNAME-OR-NAMESTRING output-directory)
             (boolean directory-exists-check print-unbound if-exists-rename))
   (when directory-exists-check
-    (unless
-        ;; (osicat:directory-exists-p output-directory)
-        (equal (pathname output-directory)
-               (make-pathname :directory (pathname-directory (probe-file output-directory))))
-      (error ":FUNCTION `write-sax-parsed-slots-to-file' -- arg OUTPUT-DIRECTORY does not designate a valid directory~% got: ~S~%"
+    ;; :WAS (unless (equal (pathname output-directory) (make-pathname :directory (pathname-directory (probe-file output-directory))))
+    (unless (UIOP::DIRECTORY-EXISTS-P output-directory)
+           (error ":FUNCTION `write-sax-parsed-slots-to-file' -- arg OUTPUT-DIRECTORY does not designate a valid directory~% got: ~S~%"
              output-directory)))
   (let* ((warning "Something wrong with arg OBJECT, declining to dump slot values to file")
          (slot-value-if
-           (or (and (slot-exists-p object slot-for-file-name) ;; 'inventory-number
+          (or
+           ;; :ADDED #{2024-05-02T18:48:46-04:00Z}#{24184} - by MON KEY>
+           ;; Now allow specifyihg 'slot-for-file-name as a string so we can tie in calls around `parsed-tgm-theme-record' file writing.
+           (or (and (stringp  slot-for-file-name) slot-for-file-name)
+               (and (slot-exists-p object slot-for-file-name) ;; 'inventory-number
                     (slot-boundp   object slot-for-file-name)
-                    (slot-value    object slot-for-file-name))
+                    (slot-value    object slot-for-file-name)))
                (progn
                  (warn                  ;error
                   "~%:FUNCTION `write-sax-parsed-slots-to-file'~% ~
@@ -367,7 +368,7 @@
                (probe-file slot-value-to-file-name))
       (rename-file slot-value-to-file-name
                    (concatenate 'string (pathname-name slot-value-to-file-name)
-                                (mon:file-write-date-timestring slot-value-to-file-name
+                                (MON:FILE-WRITE-DATE-TIMESTRING slot-value-to-file-name
                                                                 :timestring-format "_BAK-~4,'0d-~2,'0d-~2,'0dT~2,'0d-~2,'0d-~2,'0d"))))
     (if slot-value-to-file-name
         (with-open-file (fl slot-value-to-file-name
@@ -399,15 +400,15 @@
 (defun write-parsed-class-parse-table-to-file (&key parsed-class
                                                     hash-table
                                                     output-sub-directory
-                                                    (base-output-directory
-                                                     (merge-pathnames
-                                                      (make-pathname :directory '(:relative "parsed-class-table-dumps"))
-                                                      (dbc::sub-path dbc::*xml-output-dir*)))
-                                                    (pathname-type "pctd"))
+                                                    ;; (base-output-directory (merge-pathnames(make-pathname :directory '(:relative "parsed-class-table-dumps"))
+                                                    ;;                                        (dbc::sub-path dbc::*xml-output-dir*)))
+                                                    ;; (pathname-type "pctd"))
+                                                    (default-input-pathname-base-directory (sub-path *parsed-class-table-output-dir*))
+                                                    (default-pathname-type  *parsed-class-table-output-pathname-type*))
   (declare (symbol parsed-class)
            (type (or null hash-table) hash-table)
            (type (or string (and list (not null))) output-sub-directory)
-           (mon:pathname-or-namestring base-output-directory))
+           (MON:PATHNAME-OR-NAMESTRING base-output-directory))
   (let* ((frmt-cntl (print-sax-parsed-slots-padding-format-control (make-instance parsed-class)))
          (class-string-name (string-downcase (class-name (find-class parsed-class))))
          (parsed-hash
@@ -427,7 +428,7 @@
                (return-from write-parsed-class-parse-table-to-file (values nil hash-table))
                (make-parsed-class-output-file-ensuring-pathname
                 :pathname-base-directory base-output-directory
-                :pathname-sub-directory `(,@(alexandria::ensure-list output-sub-directory))
+                :pathname-sub-directory `(,@(ALEXANDRIA::ENSURE-LIST output-sub-directory))
                 :pathname-name class-string-name
                 :pathname-name-dated-p t
                 ;:pathname-type "lisp"))))
@@ -441,7 +442,7 @@
                           :external-format :UTF-8)
         (format fl ";;; :CLASS `~A'~%;;; :FILE-CREATED ~A~%~%"
                 class-string-name
-                (local-time:format-timestring nil (local-time:now)))
+                (LOCAL-TIME:FORMAT-TIMESTRING nil (local-time:now)))
         (loop
           for obj being the hash-values of parsed-hash ;(parsed-class-parse-table parsed-class)
           do
@@ -461,11 +462,11 @@
 ;;    :default-pathname-type "pctd"))
 (defmacro def-parsed-class-write-parse-table-to-file (&key parsed-class
                                                            default-output-pathname-sub-directory
-                                                           (default-output-pathname-base-directory
-                                                            (merge-pathnames
-                                                             (make-pathname :directory '(:relative "parsed-class-table-dumps"))
-                                                             (dbc::sub-path dbc::*xml-output-dir*)))
-                                                           (default-pathname-type "pctd"))
+                                                           ;; (default-output-pathname-base-directory
+                                                           ;;  (merge-pathnames(make-pathname :directory '(:relative "parsed-class-table-dumps"))(dbc::sub-path dbc::*xml-output-dir*)))
+                                                           ;; (default-pathname-type "pctd")
+                                                           (default-input-pathname-base-directory (sub-path *parsed-class-table-output-dir*))
+                                                           (default-pathname-type  *parsed-class-table-output-pathname-type*))
 
   (let ((generated-name (alexandria:format-symbol (find-package "DBC")
                                                   "~:@(WRITE-~A-PARSE-TABLE-TO-FILE~)"
@@ -476,7 +477,7 @@
                                   (pathname-type ,default-pathname-type))
        (declare (type (or null hash-table) hash-table)
                 (type (or string (and list (not null))) output-sub-directory)
-                (mon:pathname-or-namestring base-output-directory)
+                (MON:PATHNAME-OR-NAMESTRING base-output-directory)
                 (string pathname-type))
        (write-parsed-class-parse-table-to-file :parsed-class ',parsed-class
                                                :hash-table hash-table
@@ -547,18 +548,18 @@
                                                                   default-key-accessor
                                                                   ;; default-hash-table
                                                                   default-input-pathname-sub-directory
-                                                                  (default-input-pathname-base-directory
-                                                                   (merge-pathnames
-                                                                    (make-pathname :directory '(:relative "parsed-class-table-dumps"))
-                                                                    (dbc::sub-path dbc::*xml-output-dir*)))
-                                                                  (default-pathname-type "pctd"))
+                                                                  ;; (default-input-pathname-base-directory
+                                                                  ;;  (merge-pathnames(make-pathname :directory '(:relative "parsed-class-table-dumps"))(dbc::sub-path dbc::*xml-output-dir*)))
+                                                                  ;;(default-pathname-type "pctd")
+                                                                  (default-input-pathname-base-directory (sub-path *parsed-class-table-output-dir*))
+                                                                  (default-pathname-type  *parsed-class-table-output-pathname-type*)
 
-  (let ((generated-name (alexandria:format-symbol (find-package "DBC")
+  (let ((generated-name (ALEXANDRIA:FORMAT-SYMBOL (find-package "DBC")
                                                   "~:@(LOAD-~A-DEFAULT-FILE-TO-PARSE-TABLE~)"
                                                   parsed-class)))
     `(let ((parsed-class-wild-pathname-pattern
              ;; regex matching pathname-names with the format "<parsed-class>-YYYY-MM-DDTHHSSMM"
-             (cl-ppcre:create-scanner
+             (CL-PPCRE:CREATE-SCANNER
               (format nil "^~(~A~)-2[0-9]{3}?-[0-9]{2}?-[0-9]{2}?T[0-9]{6}?$" ',parsed-class))))
        (defun ,generated-name (&key (key-accessor ',default-key-accessor)
                                     (clear-existing-table nil)
@@ -571,7 +572,7 @@
                   (merge-pathnames (make-pathname :name :wild
                                                   :type input-pathname-type)
                                    (or (probe-file (merge-pathnames
-                                                    (make-pathname :directory `(:relative ,@(alexandria::ensure-list input-sub-directory)))
+                                                    (make-pathname :directory `(:relative ,@(ALEXANDRIA::ENSURE-LIST input-sub-directory)))
                                                     base-input-directory))
                                        (error ":FUNCTION `~S'~% -- did not find suitable directory containing parsed-table-dump-file"
                                               ',generated-name))))
@@ -583,7 +584,7 @@
                 (most-recent-parse-file
                   (or (and maybe-find-wilds
                            (car (sort
-                                 (delete-if-not #'(lambda (x) (cl-ppcre:scan parsed-class-wild-pathname-pattern x))
+                                 (delete-if-not #'(lambda (x) (CL-PPCRE:SCAN parsed-class-wild-pathname-pattern x))
                                                 maybe-find-wilds
                                                 :key #'pathname-name)
                                  #'string>
@@ -623,11 +624,11 @@
                                                              output-directory
                                                              (if-exists-rename t))
   (declare (type hash-table hash-table)
-           (type (and symbol (mon::not-null)) slot-for-file-name parsed-class)
+           (type (and symbol (MON::NOT-NULL)) slot-for-file-name parsed-class)
            (type (or string null) prefix-for-file-name)
            (type boolean if-exists-rename))
   (unless
-      ;; (osicat:directory-exists-p output-directory)
+      ;; (uiop:directory-exists-p output-directory)
       (equal (pathname output-directory)
              (make-pathname :directory (pathname-directory (probe-file output-directory))))
     (error "arg OUTPUT-DIRECTORY does not designate a valid directory~% got: ~S~%"
@@ -679,7 +680,7 @@
                                                                 (pathname-type "lisp")
                                                                 (if-exists-rename t))
   (declare (type hash-table hash-table)
-           (mon:pathname-or-namestring base-output-directory)
+           (MON:PATHNAME-OR-NAMESTRING base-output-directory)
            ((or null string) pathname-type)
            (type boolean if-exists-rename))
   (write-sax-parsed-inventory-record-hash-to-zero-padded-directory hash-table
@@ -695,7 +696,7 @@
                                                                              (pathname-type "lisp")
                                                                              (if-exists-rename t))
   (declare (type hash-table hash-table)
-           (mon:pathname-or-namestring base-output-directory)
+           (MON:PATHNAME-OR-NAMESTRING base-output-directory)
            ((or null string) pathname-type)
            (type boolean if-exists-rename))
   (unless
@@ -721,7 +722,7 @@
                         (merge-pathnames (make-pathname :directory `(:relative ,padded-sold-directory-name))
                                          base-output-directory))))
                (if (and padded-sold-directory
-                        ;; (osicat:directory-exists-p padded-sold-directory)
+                        ;; (UIOP:DIRECTORY-EXISTS-P padded-sold-directory)
                         (probe-file padded-sold-directory))
                    (setf padded-directory padded-sold-directory)
                    (ensure-directories-exist padded-directory))
@@ -742,7 +743,7 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
 
 (defun %parsed-class-dumper-format-and-intern-symbol (parsed-class)
-  (alexandria:format-symbol (find-package "DBC")
+  (ALEXANDRIA:FORMAT-SYMBOL (find-package "DBC")
                             "~:@(~A-XML-DUMP-FILE-AND-HASH~)"
                             parsed-class))
 ) ;; close eval-when
@@ -847,7 +848,7 @@
   ;; be evaluated at macroexpansion time.
   ;; (dispatch-fun   (parsed-class-slot-dispatch-function parsed-class)))
   ;;)
-  (let ((generated-name (alexandria:format-symbol (find-package "DBC")
+  (let ((generated-name (ALEXANDRIA:FORMAT-SYMBOL (find-package "DBC")
                                                   "~:@(~A-XML-DUMP-FILE-AND-HASH~)"
                                                   parsed-class))
         );; (dispatch-fun (parsed-class-slot-dispatch-function parsed-class)))
@@ -870,7 +871,7 @@
                                 :pathname-name output-pathname-name
                                 :pathname-name-dated-p output-pathname-dated-p
                                 :pathname-type output-pathname-type))))
-              (parsed-hash  (make-hash-table :test 'equal :size (mon:prime-or-next-greatest (caddr parsed-xml-file)))))
+              (parsed-hash  (make-hash-table :test 'equal :size (MON:PRIME-OR-NEXT-GREATEST (caddr parsed-xml-file)))))
          ;; (loaded-hash
          ;; (multiple-value-list
          (let ((dispatch-fun (parsed-class-slot-dispatch-function ',parsed-class)))
@@ -895,7 +896,7 @@
 
 ;; Local Variables:
 ;; indent-tabs-mode: nil
-;; show-trailing-whitespace: t
+;; show-trailing-whitespace: nil
 ;; mode: lisp-interaction
 ;; package: dbc
 ;; End:
