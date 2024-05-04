@@ -10,8 +10,8 @@
 ;; :NOTE stuff below mostly modelled after the EQUALS cdr
 ;; (URL `http://cdr.eurolisp.org/document/8/cleqcmp.html')
 ;;
-;; and implements an EQUALS except that we don't use the keywords 
-;;  recursive, result, keys, case-sensitive, 
+;; and implements an EQUALS except that we don't use the keywords
+;;  recursive, result, keys, case-sensitive,
 ;;  by-key, by-value, or check-properties
 ;; :PASTE-DATE 2012-02-23
 ;; :PASTE-URL (URL `http://paste.lisp.org/+2QQ2')
@@ -19,6 +19,7 @@
 ;; p_l: between "both" what? ruby & CL or PB and ASN.1
 
 ;;; ==============================
+
 
 (in-package #:dbc)
 
@@ -26,7 +27,7 @@
 ;; (defun %parsed-class-slot-value-equal-array-check (slot-value-a slot-value-b)
 ;;   (declare (array slot-value-a slot-value-b)
 ;;            (optimize speed))
-;;   (cond ((eq slot-value-a slot-value-b) 
+;;   (cond ((eq slot-value-a slot-value-b)
 ;;          t)
 ;;         ((eql (array-total-size slot-value-a) (array-total-size slot-value-b))
 ;;          (unless (eql (array-rank slot-value-a) (array-rank slot-value-b))
@@ -144,8 +145,8 @@
        (parsed-class-slot-value-equal (cdr slot-value-a) (cdr slot-value-b))))
 
 ;; The method specialized on hash-table cribbed from `hash-table-equalp' in
-;; sbcl/src/code/pred.lisp except that it checks for cl:eq with 
-;; (or (eq slot-value-a slot-value-b) 
+;; sbcl/src/code/pred.lisp except that it checks for cl:eq with
+;; (or (eq slot-value-a slot-value-b)
 ;;     ...
 ;;
 ;; Should we allow hash-table comparison of the same object under cl:eq?
