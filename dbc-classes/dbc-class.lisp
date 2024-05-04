@@ -6,7 +6,9 @@
 
 (defclass base-dbc () ;; persistent, rucsack, component, etc.
   ()
-  (:documentation "Base class for dbc objects."))
+  (:documentation #.(format nil "Base class for dbc-specific sub-class objects.~%
+:EXAMMPLE~%~@
+ \(mon:class-subclasses \(find-class 'base-dbc\)\)~%")))
 
 
 ;;; ==============================
