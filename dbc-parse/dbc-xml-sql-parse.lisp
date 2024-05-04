@@ -9,9 +9,9 @@
   (if (endp bindings) `(progn ,@body)
     (destructuring-bind ((prefix uri) &rest bindings) bindings
       (if (endp bindings)
-        `(cxml:with-namespace (,prefix ,uri)
+        `(CXML:WITH-NAMESPACE (,prefix ,uri)
            ,@body)
-        `(cxml:with-namespace (,prefix ,uri)
+        `(CXML:WITH-NAMESPACE (,prefix ,uri)
            (with-namespaces ,bindings
              ,@body))))))
 
@@ -21,11 +21,11 @@
 (defmacro with-soap-envelope ((prefix &rest bindings) &body body)
   (let ((pre (gensym (string '#:prefix-))))
     `(let ((,pre ,prefix))
-       (cxml:with-xml-output (cxml:make-rod-sink)
-         (cxml:with-namespace (,pre "http://schemas.xmlsoap.org/soap/envelope/")
-           (with-namespaces ,bindings 
-             (cxml:with-element* (,pre "Envelope")
-               (cxml:with-element* (,pre "Body")
+       (CXML:WITH-XML-OUTPUT (CXML:MAKE-ROD-SINK)
+         (CXML:WITH-NAMESPACE (,pre "http://schemas.xmlsoap.org/soap/envelope/")
+           (WITH-NAMESPACES ,bindings 
+             (CXML:WITH-ELEMENT* (,pre "Envelope")
+               (CXML:WITH-ELEMENT* (,pre "Body")
                  ,@body))))))))
 
 
@@ -33,13 +33,13 @@
 ;; with comment "thanks to Red Daly, reddaly@gmail.com"
 (defun peek-skipping-comments (source)
   (loop
-     while (eq :comment (klacks:peek source))
-     do (klacks:consume source)
-     finally (return (klacks:peek source))))
+     while (eq :comment (KLACKS:PEEK source))
+     do (KLACKS:CONSUME source)
+     finally (return (KLACKS:PEEK source))))
 
 (defun xml-whitespace-p (string)
   (and (stringp string)
-       (mon:string-all-whitespace-p  string)))
+       (MON:STRING-ALL-WHITESPACE-P  string)))
 
 ;; :NOTE In an ideal world we would also check for presence of xml:space
 ;; attribute and _not_ consume when it is PRESERVE.  However, as this attribute
@@ -90,11 +90,11 @@
            (boolean consume-dtd consume-start-document consume-comment))
   (let ((last-consumed '()))
     (labels ((register-consumed ()
-               (push (klacks:consume source) last-consumed))
+               (push (KLACKS:CONSUME source) last-consumed))
              (consume-if () 
-               (let ((event (klacks:peek source)))
+               (let ((event (KLACKS:PEEK source)))
                  (or (and (eq :characters event)
-                          (xml-whitespace-p (klacks:peek-value source))
+                          (xml-whitespace-p (KLACKS:PEEK-VALUE source))
                           (register-consumed))
                      (and consume-comment
                           (eq :comment event)
@@ -164,17 +164,17 @@
 ;; (defun (field-parse-attribs-if (source if-element-local if-attrib-local
 
 (defun start-element-p (source)
-  (let ((peek-key (klacks:peek source)))
+  (let ((peek-key (KLACKS:PEEK source)))
     (values (eql peek-key :start-element)  peek-key)))
 
 (defun end-element-p (source)
-  (let ((peek-key (klacks:peek source)))
+  (let ((peek-key (KLACKS:PEEK source)))
     (values (eql peek-key :end-element) peek-key)))
 
 (defun end-element-and-local-present-p (source &key (element-expect "row"))
   (declare (string element-expect))
   (when (end-element-p  source)
-    (let ((chk-local (klacks:current-lname source)))
+    (let ((chk-local (KLACKS:CURRENT-LNAME source)))
       (and chk-local ;; (stringp chk-local) ???
            (string= chk-local element-expect)
            chk-local))))
@@ -192,27 +192,27 @@
                                               attrib-expect)
   (declare (string element-local attrib-local attrib-expect))
   (when (start-element-p source)
-    (multiple-value-bind (key nm-space local qualified) (klacks:peek source)
+    (multiple-value-bind (key nm-space local qualified) (KLACKS:PEEK source)
       (declare (ignore nm-space qualified))
       (let ((attrib-if (and (and key (eql key :start-element))
                             (and local (string= element-local local))
-                            (klacks:get-attribute source attrib-local))))
+                            (KLACKS:GET-ATTRIBUTE source attrib-local))))
         (and attrib-if (string= attrib-if attrib-expect) attrib-expect)))))
 
 (declaim (inline field-attribs-find-normalize-names))
 (defun field-attribs-find-normalize-names (enumerated-attrib-names)
   (declare ((or list vector hash-table) enumerated-attrib-names)
            (optimize (speed 3)))
-  (when (mon:string-null-empty-or-all-whitespace-p enumerated-attrib-names)
+  (when (MON:STRING-NULL-EMPTY-OR-ALL-WHITESPACE-P enumerated-attrib-names)
     (return-from field-attribs-find-normalize-names nil))
   (let ((rtn-nrmlzd
          (etypecase enumerated-attrib-names
            (list   enumerated-attrib-names)
            (string (list enumerated-attrib-names))
            (vector (map 'list #'identity enumerated-attrib-names))
-           (hash-table (mon:hash-get-keys enumerated-attrib-names)))))
+           (hash-table (MON:HASH-GET-KEYS enumerated-attrib-names)))))
     (declare (list rtn-nrmlzd))
-    (remove-if-not #'mon:string-not-null-empty-or-all-whitespace-p rtn-nrmlzd)))
+    (remove-if-not #'MON:STRING-NOT-NULL-EMPTY-OR-ALL-WHITESPACE-P rtn-nrmlzd)))
 
 ;; *xml-refs-match-list*
 ;; (declare (special *xml-refs-match-list*))
@@ -223,7 +223,7 @@
   (let ((attrib-nms-nrmlz (field-attribs-find-normalize-names attrib-names)))
     (when (null attrib-nms-nrmlz)
       (return-from field-attribs-find nil))
-    (locally (declare (mon:each-a-string attrib-nms-nrmlz))
+    (locally (declare (MON:EACH-A-STRING attrib-nms-nrmlz))
       (let* ;; (klacks:list-attributes  *tt--xml-dmp*)
           ;; (klacks:get-attribute  *tt--xml-dmp* "name")
           ;; :NOTE Would be much better to use
@@ -246,8 +246,8 @@
   (let* ((get-if (field-attribs-find src))
          (consume-it (and get-if (klacks:consume src)))
          (chars-if (and (eql consume-it :start-element) 
-                        (eql (klacks:peek src) :characters)
-                        (cadr (multiple-value-bind (chrs elt) (klacks:consume src)
+                        (eql (KLACKS:PEEK src) :characters)
+                        (cadr (multiple-value-bind (chrs elt) (KLACKS:CONSUME src)
                                 (list chrs elt)))))
 	 ;; (cln-if (gethash get-if *xml-refs-match-table*))
 	 ;; (cln-with (or 
@@ -277,28 +277,28 @@
   ;; (values nil (type-of source)))) 
   ;;    "not type"))
   (typecase source 
-    (cxml::cxml-source t)
+    (CXML::CXML-SOURCE t)
     ;; (return-from end-document-find-and-close  "CXML::CXML-SOURCE"))
-    (klacks:tapping-source  t)
+    (KLACKS:TAPPING-SOURCE  t)
     ;; (return-from end-document-find-and-close  "KLACKS:TAPPING-SOURCE"))
-    (klacks:source  t)
+    (KLACKS:SOURCE  t)
     ;; (return-from end-document-find-and-close  "KLACKS:SOURCE"))
     (t (return-from end-document-find-and-close  "not-type")))
-  (when (eql (klacks:peek source) :bogus) ;; :SEE cxml::fill-source 
+  (when (eql (KLACKS:PEEK source) :bogus) ;; :SEE cxml::fill-source 
     (return-from end-document-find-and-close 
-      (values (klacks:peek source) source)))
+      (values (KLACKS:PEEK source) source)))
   (unwind-protect
-       (if (klacks:find-event source :end-document)
-           (do ((i (klacks:consume source) 
-                   (klacks:consume source)))
+       (if (KLACKS:FIND-EVENT source :end-document)
+           (do ((i (KLACKS:CONSUME source) 
+                   (KLACKS:CONSUME source)))
                ((null i) 
-                (klacks:close-source source)))
-           (do ((i (klacks:consume source) 
-                   (klacks:consume source)))
+                (KLACKS:CLOSE-SOURCE source)))
+           (do ((i (KLACKS:CONSUME source) 
+                   (KLACKS:CONSUME source)))
                ((null i) 
-                (klacks:close-source source))))
-    (klacks:close-source source))
-  (values (null (multiple-value-list (klacks:peek-value source))) source))
+                (KLACKS:CLOSE-SOURCE source))))
+    (KLACKS:CLOSE-SOURCE source))
+  (values (null (multiple-value-list (KLACKS:PEEK-VALUE source))) source))
 
 ;;; ==============================
 ;;; :WORKS 
@@ -316,38 +316,38 @@
     ;; still need to keep the existing behaviour around the :CHARACTERS case
     ;; below b/c we can't be _sure_ that some :CHARACTERS event won't happen.
      (unwind-protect
-	  (klacks:with-open-source (s (cxml:make-source sql-xml-dmp))
+	  (klacks:with-open-source (s (CXML:MAKE-SOURCE sql-xml-dmp))
 	    (loop
-	       :for key = (klacks:peek s)
+	       :for key = (KLACKS:PEEK s)
 	       :while key
 	       :do (case key
 		     (:start-element
-		      (let ((nm (klacks:get-attribute s "name")))
-			(cond ((equal (klacks:current-lname s) "row")
+		      (let ((nm (KLACKS:GET-ATTRIBUTE s "name")))
+			(cond ((equal (KLACKS:CURRENT-LNAME s) "row")
 			       (format ous "~%~A" 
 				       (make-string 68 :initial-element #\;)))
 			      ;; :NOTE What about when there are multiple attributes?
 			      ;; This doesn't happen in the current case but it
 			      ;; will if we ever try to generalize around this function.
-			      ((equal (klacks:current-lname s) "field")
+			      ((equal (KLACKS:CURRENT-LNAME s) "field")
 			       ;; Convert "ugly_sym" -> ":UGLY-SYM"
 			       (format ous "~%:~A " (string-upcase (substitute  #\- #\_  nm))))
 			      (t nil))))
 		     (:end-element
-		      (when (equal (klacks:current-lname s) "field")
+		      (when (equal (KLACKS:CURRENT-LNAME s) "field")
 			(format ous "~%")))
 		     ;; Ideally these are only :CHARACTERS events related to
 		     ;; formatting of the XML docs body, e.g. events occuring
 		     ;; outside of any :START-ELEMENT/:END-ELEMENT event blocks.
 		     (:characters 
-		      (let ((kcc (klacks:current-characters s)))
-			(or (and (eql (mon:string-trim-whitespace kcc) 0)
+		      (let ((kcc (KLACKS:CURRENT-CHARACTERS s)))
+			(or (and (eql (MON:STRING-TRIM-WHITESPACE kcc) 0)
 				 (format ous " "))
 			    (format ous "~A" kcc))))
 		     ;; (:comment <DO-SOMETHING-HERE???>) 
 		     (:end-document
 		      (format ous "~%~A~%;;; EOF"  (make-string 68 :initial-element #\;))))
-	       (klacks:consume s))
+	       (KLACKS:CONSUME s))
 	    (prog1 (setf ous-out (get-output-stream-string ous))
 		(close ous))))))
 
