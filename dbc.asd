@@ -114,6 +114,8 @@
             ((:file "date-localtime-utils")))
    (:module "dbc-classes"
             :components
+            ;; dbc-docstrings-for-class.lisp interns docstrings for many of
+            ;; classes below to a hashtable holding docstrings. Load it first
             ((:file "dbc-docstrings-for-class")
              (:file "dbc-class")
              (:file "dbc-class-paths")
