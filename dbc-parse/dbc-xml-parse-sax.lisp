@@ -349,8 +349,9 @@ When we are finished with the field we push the slot-value onto the FIELD-DATA s
     (error ":FUNCTION `make-parsed-class-output-directory-ensuring-pathname'~% ~
              when arg PATHNAME-DATED-P is non-nil both PATHNAME-SUB-DIRECTORY and PATHNAME-BASE-DIRECTORY must be supplied."))
   (let* ((base-dir-if
-           (or (osicat:directory-exists-p pathname-base-directory)
-               (error "Arg PATHNAME-BASE-DIRECTORY does not name an existing directory.~% got: ~A"
+           (or ;; :WAS (osicat:directory-exists-p pathname-base-directory)
+            (uiop:directory-exists-p pathname-base-directory)
+            (error "Arg PATHNAME-BASE-DIRECTORY does not name an existing directory.~% got: ~A"
                       pathname-base-directory)))
          (ensure-subname-maybe-dated
            (etypecase pathname-sub-directory
