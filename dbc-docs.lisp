@@ -470,9 +470,7 @@ return value of `local-time:decode-timestamp'.~%~@
 The value of the `system-path' slot affects _all_ instances of `system-path' and~@
 subclassed instances.~%
 :NOTE User code should not specialize methods on this function use system-path instead.~%
-:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', 
-`system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if',
-`*dbc-xml-dump-dir-name*'.~%")
+:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', `system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if',`*dbc-xml-dump-dir-name*'.~%")
 
 (generic-doc #'(setf system-base-path)
 "Set class allocated slot `system-path' to PATH for DBC-SYSTEM.~%~@
@@ -480,57 +478,41 @@ Setting the `system-path' slot affects _all_ instances of `system-path' class an
 subclassing instances.~%~@
 :NOTE The intent is that this slot be bound _once_ at system loadtime.
 IOW not intendend for user code method specializers!~%
-:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', 
-`system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if',
-`*dbc-xml-dump-dir-name*'.~%")
+:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', `system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if',`*dbc-xml-dump-dir-name*'.~%")
 
 (generic-doc #'system-path
 "Access the class allocated slot value `system-path' of DBC-SYSTEM.~%~@
 The value of the the `system-path' slot affects _all_ instances of `system-path' and~@
 subclassed instances. It is not intendend that this slot be setfable.
 :NOTE User code should specialize methods on this function.~%
-:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', 
-`system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if',
-`*dbc-xml-dump-dir-name*'.~%")
+:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', `system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if',`*dbc-xml-dump-dir-name*'.~%")
              
 (generic-doc #'(setf system-path)
  "A no-op when attempting to set class allocated slot value `system-path' of DBC-SYSTEM.~%~@
 The value of the the `system-path' slot affects _all_ instances of `system-path' and~@
 subclassed instances.~%
 :NOTE It is not intendend that this slot be directly setfable!~%
-:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', 
-`system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if',
-`*dbc-xml-dump-dir-name*'.~%")
+:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', `system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if',`*dbc-xml-dump-dir-name*'.~%")
 
 (generic-doc #'system-described
  "Describer for instances of subclasses of `system-base'.~%
-:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', 
-`system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if',
-`*dbc-xml-dump-dir-name*'.~%")
+:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', `system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if',`*dbc-xml-dump-dir-name*'.~%")
 
 (generic-doc #'system-path-var-binding
 "Names a variable bound to an object instance.~%~
-:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', 
-`system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if',
-`*dbc-xml-dump-dir-name*'.~%%")
+:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', `system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if', `*dbc-xml-dump-dir-name*'.~%")
 
 (generic-doc #'(setf system-path-var-binding)
  "Set the name of  a variable bound to an object instance of a class `system-path' or subclasses.~%
-:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', 
-`system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if',
-`*dbc-xml-dump-dir-name*'.~%")
+:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', `system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if', `*dbc-xml-dump-dir-name*'.~%")
 
 (generic-doc #'system-path-if
  "Set the path for OBJECT if other slots are available and directory exists.~%
-:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', 
-`system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if',
-`*dbc-xml-dump-dir-name*'.~%")
+:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', `system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if', `*dbc-xml-dump-dir-name*'.~%")
 
 (generic-doc #'system-parent-path-ensure
  "Ensure the specified parent path for object exists.~%
-:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', 
-`system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if',
-`*dbc-xml-dump-dir-name*'.~%")
+:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', `system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if', `*dbc-xml-dump-dir-name*'.~%")
 
 (fundoc 'system-path-xml-dump-dir-ensure
 "Verify, bind, create a base system relative directory for dbc xml->CLOS.~%~@
@@ -539,18 +521,14 @@ Binds value of `dbc:*xml-output-dir*' according to `dbc:*dbc-xml-dump-dir-name*'
 Return non-nil on success.~%~@
 :EXAMPLE~%
  \(ensure-dbc-xml-dump-dir\)~%~@
-:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', 
-`system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if',
-`*dbc-xml-dump-dir-name*'.~%▶▶▶")
+:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', `system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if', `*dbc-xml-dump-dir-name*'.~%▶▶▶")
 
 (fundoc 'find-system-path
 "Return the pathname-directory of the system.~%~@
 Signal an error if system can not be found or its directory does not exist.~%~@
 :EXAMPLE~%
  \(find-system-path\)~%~@
-:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', 
-`system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if',
-`*dbc-xml-dump-dir-name*'.~%▶▶▶")
+:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', `system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if', `*dbc-xml-dump-dir-name*'.~%▶▶▶")
 
 (fundoc 'system-subdir-init-w-var
  "Make W-VAR an instance of class SYSTEM-SUBDIR.~%~@
@@ -562,9 +540,7 @@ When W-VAR is already an instance of class SYSTEM-SUBDIR signal an error.~%~@
 :EXAMPLE~%
  \(system-subdir-init-w-var '*dbc-notes-dir*
                      :parent-path \(system-base-path *system-path*\)\)~%~@
-:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', 
-`system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if',
-`*dbc-xml-dump-dir-name*'..~%▶▶▶")
+:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', `system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if', `*dbc-xml-dump-dir-name*'.~%▶▶▶")
 
 
 
@@ -4779,12 +4755,12 @@ pathname where parsed TGM XML Concepts are written to.~%
 :NOTE Rebound at loadtime with form:
 \(system-subdir-init-w-var '*parsed-tgm-theme-output-dir*
                               :parent-path\(dbc::sub-path dbc::*parsed-class-table-output-dir*\)\)~%
-:SEE-ALSO `*parsed-tgm-theme-record-hash-table*', `*parsed-tgm-theme-field-to-accessor-table*'
+:SEE-ALSO `*parsed-class-table-output-dir*', `*parsed-class-table-csv-output-dir*', 
+`*parsed-class-table-output-pathname-type*', `*parsed-tgm-theme-output-dir*',
+`*parsed-tgm-theme-record-hash-table*', `*parsed-tgm-theme-field-to-accessor-table*'
 `system-described', `system-path', `sub-path', `sub-name', `parent-path',
-`var-name', `*system-path*',`*system-tests-dir*', `*system-tests-temp-dir*',
-`*xml-output-dir*', `*xml-input-dir*', `*dbc-base-item-number-image-pathname*'
-`*parsed-class-table-output-dir*',`*parsed-class-table-csv-output-dir*',
-`*parsed-class-table-output-pathname-type*',`*parsed-tgm-theme-output-dir*'.~%▶▶▶")
+`var-name', `*system-path*', `*system-tests-dir*', `*system-tests-temp-dir*',
+`*xml-output-dir*', `*xml-input-dir*', `*dbc-base-item-number-image-pathname*'.~%▶▶▶")
 
 (vardoc '*parsed-tgm-theme-input-dir*
 "An instance of class `dbc-system-subdir' that dereferences a directory
@@ -4815,19 +4791,17 @@ as per the following form:~%
  \(make-pathname :name \"tgm1\" :type \"xml\"\) ~%
 and is located in the directory with pathname dereferenced by `*parsed-tgm-theme-input-dir*', i.e.:~%
  \(sub-path *parsed-tgm-theme-input-dir*\)~%
-It is bound at loadtime with `tgm-parse-concepts-set-source-xml-file'.~%
-:EXAMPLE~%
+It is bound at loadtime with `tgm-parse-concepts-set-source-xml-file' with following form.~%
 \(tgm-parse-concepts-set-source-xml-file \(merge-pathnames
                                          \(dbc::sub-path dbc::*parsed-tgm-theme-input-dir*\)
                                          \(make-pathname :name \"tgm1\" :type \"xml\"\)\)\)~%
 :SEE-ALSO `*parsed-tgm-theme-input-dir*',`*parsed-tgm-theme-record-hash-table*',
 `*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶")
 
-
 (vardoc '*parsed-tgm-theme-xml-source*
         "A variable for dereferencing to an object of type `cxml::cxml-source'.
 Used when parsing TGM concepts. It's value is set with `tgm-parse-concepts-make-source'.~%
-:EXAMPLE
+:EXAMPLE~%
  \(typep *parsed-tgm-theme-xml-source* 'cxml::cxml-source\)~%
 :SEE-ALSO `*parsed-tgm-theme-xml-source-pathname*', `tgm-parse-concepts-set-source-xml-file',
 `tgm-parse-concepts-set-source-xml-file'.~%▶▶▶")
@@ -4858,35 +4832,46 @@ On SBCL it satisfies `sb-ext:hash-table-synchronized-p'.~%
 (fundoc 'tgm-parse-concepts-set-source-xml-file
   "Set value of `*parsed-tgm-theme-xml-source-pathname*' to PATHNAME.
 PATHNAME names a pathname containing an LOC TGM XML file.~%
+When non-nil, it's value is used by `tgm-parse-concepts-make-source' to bind
+value of `*parsed-tgm-theme-xml-source*' to return value of `cxml:make-source'.~%
 :EXAMPLE~%
 \(tgm-parse-concepts-set-source-xml-file
  \(merge-pathnames \(dbc::sub-path dbc::*parsed-tgm-theme-input-dir*\)
                   \(make-pathname :name \"tgm1\" :type \"xml\"\)\)\)~%
-:SEE-ALSO `*parsed-tgm-theme-xml-source-pathname*',
-`*parsed-tgm-theme-input-dir*', `tgm-parse-concepts-make-source'.~%▶▶▶")
+:SEE-ALSO `*parsed-tgm-theme-xml-source-pathname*', `*parsed-tgm-theme-xml-source*',
+`*parsed-tgm-theme-input-dir*', `tgm-parse-concepts-make-source', `cxml:make-source'.~%▶▶▶")
 
 (fundoc 'tgm-parse-concepts-make-source
-          "Make an object of type 'cxml::cxml-source as if by `cxml:make-source' and set
+          "Make an object of type 'cxml::cxml-source' as if by `cxml:make-source' and set
 it to value of `*parsed-tgm-theme-xml-source*' using pathname stored in  parameter
-`*parsed-tgm-theme-xml-source-pathname*' and return the an instance of `cxml::cxml-source'.~%
+`*parsed-tgm-theme-xml-source-pathname*', and return the an instance of `cxml::cxml-source'.~%
 When value of `*parsed-tgm-theme-xml-source*' satisfies the following form:
  (typep *parsed-tgm-theme-xml-source* 'cxml::cxml-source)
-Close the existing source as if by `klacks:close-source' first before setting
-Signal an error if value of `*parsed-tgm-theme-xml-source-pathname*' is null or does not satisfy `cl:pathnamep'.
+Closes the existing source as if by `klacks:close-source' first before setting
+value of `*parsed-tgm-theme-xml-source*'.t
+Signal an error if value of `*parsed-tgm-theme-xml-source-pathname*' is null or
+does not satisfy `cl:pathnamep'.~%
 :EXAMPLE
  \(progn \(tgm-parse-concepts-make-source\)
         \(typep  *parsed-tgm-theme-xml-source* 'cxml::cxml-source\)\)~%
 :SEE-ALSO `tgm-parse-concepts-set-source-xml-file'.~%▶▶▶")
 
 (fundoc 'tgm-assoc-elt
-          "Find ELT in MAPPING and return it.
-ELT should satisfy cl:stringp, signal an error if not.
+          "Find ELT in MAPPING and return it the symbol it maps to.
+ELT should satisfy either `cl:stringp' or `cl:null', signal an error if not.~%
 MAPPING designates an alist identifying xml :start-element qname/lames as per
-`klacks:peek'. MAPPING alist has the form:~%
+`klacks:peek'. MAPPING is a list of the form:~%
  (<STRING> :<KEYWORD>)
 <STRING> denotes an xml element name
 :<KEYWORD> names an associated keyword to use as an initarg for a
 parsed-tgm-theme-record slot accessor.
+Mapping when not supplied defaults to value of `*parsed-tgm-theme-field-to-accessor-table*'.~%
+:EXAMPLE~%~@
+ \(tgm-assoc-elt \"UF\"\)~%~@
+ \(tgm-assoc-elt \"BT\"\)~%~@
+ \(tgm-assoc-elt nil\)~%
+ ; Following errors successfully:~%
+ \(tgm-assoc-elt 5\)~%
 :SEE-ALSO `tgm-assoc-elt',`tgm-peeking', `tgm-peeking-get-val',
 `tgm-consume', `tgm-characters-every-whitespace-p',
 `tgm-peek-start-element-and-maybe-add-to-slot',
@@ -4948,18 +4933,18 @@ PEEK-VAL is an mvb'd list as per return value of `tgm-peeking'.
 :EXAMPLE~%~% \(macroexpand-1 '\(%tgm-sec-helper
                  \(make-instance 'parsed-tgm-theme-record :control-id-display-theme-name \"FOO\"\)
                  'control-id-display-theme-name 1 \(tgm-peeking :stream *tt--tgm*\) *tt--tgm*\)\)~%
-:SEE-ALSO ~%▶▶▶")
+:SEE-ALSO `tgm-peek-start-element-and-maybe-add-to-slot.'~%▶▶▶")
 
 (fundoc 'tgm-peek-start-element-and-maybe-add-to-slot
   "A dispatching function for tgm XML parses. Pivot on start-element values
-according to the key/value pairs mapped by variable `*parsed-tgm-theme-field-to-accessor-table*'.
+according to the key/value pairs mapped by variable `*parsed-tgm-theme-field-to-accessor-table*'.~%
 :SEE-ALSO `tgm-assoc-elt',`tgm-peeking', `tgm-peeking-get-val',
 `tgm-consume', `tgm-characters-every-whitespace-p', `tgm-peek-start-element-and-maybe-add-to-slot',
 `tgm-parse-concept', `parsed-tgm-theme-record'.~%▶▶▶")
 
 (fundoc 'tgm-parse-concept
           "Parse a single TGM XML concept event from the current STREAM.
-Keyword STREAM names a source as per `cxml:make-source'. 
+Keyword STREAM names a source as per `CXML:MAKE-SOURCE'.~%
 Return an instance of `parsed-tgm-theme-record' with slot-values populated by
 parsed XML values.~%
 :EXAMPLE~%~% \(tgm-parse-concept :stream *parsed-tgm-theme-xml-source*\)~%
@@ -4967,53 +4952,72 @@ parsed XML values.~%
 `tgm-characters-every-whitespace-p',`tgm-peek-start-element-and-maybe-add-to-slot',
 `tgm-parse-concept',`parsed-tgm-theme-record',`*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶")
 
-
 (fundoc 'tgm-parse-concepts-in-stream
-   "Parse all TGM XML concepts in STREAM and close it as if by `klacks:close-source'.
+   "Parse all TGM XML concepts in STREAM and close it as if by `KLACKS:CLOSE-SOURCE'.
 Return as if by values HASH-TABLE and the number of concpets parsed and the
 number of objects with unbound slots that were updated as if by
-`tgm-parse-concepts-update-unbound-slots'.
-STREAM is a source per return value of `cxml:make-source'. Default is return
+`tgm-parse-concepts-update-unbound-slots'.~%
+STREAM is a source per return value of `CXML:MAKE-SOURCE'. Default is return
 value of `tgm-parse-concepts-make-source' which when called resets the current
 value of `*parsed-tgm-theme-xml-source-pathname*' by closing any pre-existing
-stream object as if by `klacks:close-source'. When STREAM is supplied the stream
+stream object as if by `KLACKS:CLOSE-SOURCE'. When STREAM is supplied the stream
 is not reset and parsing will continue from current position in stream.
 HASH-TABLE is a table to store parsed concepts key/value parse to.
-Default is `*parsed-tgm-theme-record-hash-table*'.
+Default is `*parsed-tgm-theme-record-hash-table*'.~%
 The keys of hash-table correspond to the `control-id-display-theme' slot-value
 of an instance of `parsed-tgm-theme-record'. The values are object instances of same.
 CLEAR-HASH-P when T (the default) indicates that HASH-TABLE should be cleared as
-if by `cl:clrhash' before parsing concepts.
+if by `CL:CLRHASH' before parsing concepts.~%
+:NOTE Evaluates `tgm-parse-concepts-update-unbound-slots' when finished
+successfully parsing all concepts in STREAM.~%
 :EXAMPLE~% \(tgm-parse-concepts-in-stream  :stream  \(tgm-parse-concepts-make-source\)\)~%
 :NOTE Following elements if present in STREAM signal an error when parsing and
 need to be removed before calling either `tgm-parse-concept' or `tgm-parse-concepts-in-stream':
-  <!-- unknown line type [@@@] -->
-  <CONCEPT><DESCRIPTOR>Artists materials</DESCRIPTOR><NT>Crayons</NT></CONCEPT>
-  <BT>Artists materials</BT> ; <-- tgm013301 \"Crayons\"
-:SEE-ALSO `write-parsed-parsed-tgm-theme-record-parse-table-to-file', `tgm-assoc-elt',
+  <!-- unknown line type [@@@] -->~%
+  <CONCEPT><DESCRIPTOR>Artists materials</DESCRIPTOR><NT>Crayons</NT></CONCEPT>~%
+  <BT>Artists materials</BT> ; <-- tgm013301 \"Crayons\"~%
+:SEE-ALSO `write-parsed-tgm-theme-record-parse-table-to-file', `tgm-assoc-elt',
 `tgm-peeking', `tgm-peeking-get-val', `tgm-consume', `tgm-characters-every-whitespace-p',
 `tgm-peek-start-element-and-maybe-add-to-slot',`tgm-parse-concept',`parsed-tgm-theme-record',
 `*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶")
 
-(fundoc 'write-parsed-parsed-tgm-theme-record-parse-table-to-file
-          "Write contents of HASH-TABLE to file.
+(fundoc 'write-parsed-tgm-theme-record-parse-table-to-file
+          "Write contents of HASH-TABLE to file.~%
+On success, return as if by `cl:values' the following:~%~@
+ <FULL-PATH>                                <- the full pathname written to.~@
+ <PATHNAME-NAME><TIMESTAMP>.<PATHNAME-TYPE> <- the filename written to with timestamp.~@
+ <HASH-TABLE>                               <- table with contents written to <FULL-PATH>~%
 HASH-TABLE contains key/value pairs that dereference instances of class
 `parsed-tgm-theme-record' as per `*parsed-tgm-theme-record-hash-table*'.
+An error is signalled if HASH-TABLE does not satisfy `cl:hash-table-p' or it's
+`cl:hash-table-count' doesn't sasitfy `cl:zerop'.
+When HASH-TABLE is not supplied it defaults to value of `*parsed-tgm-theme-record-hash-table*'.~%
 BASE-OUTPUT-DIRECTORY is a pathname designating the base directory beneath which
-to write the file. It is merged with OUTPUT-SUB-DIRECTORY to generate directory
-for the output file to be written. BASE-OUTPUT-DIRECTORY must satisfy
-`cl:probe-file', an error is signaled if not.%
-OUTPUT-SUB-DIRECTORY is a string or list of strings identifying any relative
-pathname directory components beneath BASE-OUTPUT-DIRECTORY.
-This is a convenience function wrapped  around `write-parsed-class-parse-table-to-file' \(which see\).~%
-:NOTE Evaluates `tgm-parse-concepts-update-unbound-slots' when finished successfully parsing all concepts in STREAM.~%
+to write the file. It's pathname must name a directory ending in a trailing slash, ie:~%~@
+  #P\"/some/path/to/foo/\"~%
+BASE-OUTPUT-DIRECTORY must satisfy `uiop:directory-exists-p', an error is signaled if not.%
+PATHNAME-NAME is the namestring for a file to write beneath BASE-OUTPUT-DIRECTORY.
+When PATHNAME-NAME is not supplied it's default is \"parsed-tgm-theme-record\".~%
+PATHANAME-TYPE is a string identifying a file name extension.
+When PATHANAME-TYPE is not supplied it's default is value of
+`*parsed-class-table-output-pathname-type*'.~%
+Wwhen TIMESTAMP-P is non-nil \(the default\), a timestamp is appended to
+PATHNAME-NAME prior to writing to the specified file. Timestamp is generated as if by
+`mon:timestamp-for-file.'
+When TIMESTAMP-P is null the file written to will supercede any preexisting file
+with the same pathname as if by the :if-exists :supersede argument to `cl:with-open-file'.~%
 :EXAMPLE~%~@
-\(progn \(tgm-parse-concepts-in-stream :stream *parsed-tgm-theme-xml-source*\)
-       \(write-parsed-parsed-tgm-theme-record-parse-table-to-file
-        :hash-table *parsed-tgm-theme-record-hash-table*
-        :base-output-directory \(merge-pathname \(make-pathname :directory '\(:relative \"parsed-class-table-dumps\"\)\)
-                                               \(dbc::sub-path dbc::*xml-output-dir*\)\)
-        :output-sub-directory \"parsed-tgm-theme-record\"\)\)
+ \(write-parsed-tgm-theme-record-parse-table-to-file 
+  :base-output-directory \(sub-path *parsed-tgm-theme-output-dir*\)
+  :pathname-name \"parsed-tgm-theme-record\"
+  :pathname-type \"pctd\"
+  :hash-table *parsed-tgm-theme-record-hash-table*
+  :timestamp-p t\)~%~@
+ ;; :NOTE Above form is equivalent to:~%~@
+ \(write-parsed-tgm-theme-record-parse-table-to-file\)~%
+  ;; Following fail succesfully:~%~@
+ \(write-parsed-tgm-theme-record-parse-table-to-file :hash-table \(make-hash-table\)\)~%~@
+ \(write-parsed-tgm-theme-record-parse-table-to-file :base-output-directory \"FOO\"\)~%
 :SEE-ALSO `tgm-assoc-elt',`tgm-peeking', `tgm-peeking-get-val', `tgm-consume',
 `tgm-characters-every-whitespace-p',`tgm-peek-start-element-and-maybe-add-to-slot',
 `tgm-parse-concept',`parsed-tgm-theme-record',`*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶")
@@ -5022,7 +5026,7 @@ This is a convenience function wrapped  around `write-parsed-class-parse-table-t
   "Set all unbound `slot-value's to nil for instances of class
 `parsed-tgm-theme-record' in HASH-TABLE.
 Return the number of objects with unbound slots that were frobbed.
-Evaluated after succesful calls to `write-parsed-parsed-tgm-theme-record-parse-table-to-file'.~%
+Evaluated after succesful calls to `write-parsed-tgm-theme-record-parse-table-to-file'.~%
 :SEE-ALSO .~%▶▶▶")
 
 (fundoc  'tgm-parse-concept-count-slot-value-list-length
@@ -5036,6 +5040,7 @@ return value is a list of the form:~%
 :EXAMPLE~%~@
  \(tgm-parse-concept-count-slot-value-list-length 'broader-theme :hash-table *parsed-tgm-theme-record-hash-table*\)
 :SEE-ALSO `<XREF>'.~%▶▶▶")
+
 
 
 ;;; ==============================

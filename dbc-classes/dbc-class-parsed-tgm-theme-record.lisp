@@ -63,6 +63,17 @@ where each theme has the same form as above, eg:
 Or, we can store the UUID in the object itself and walk the hash-table storing
 our `parsed-tgm-theme-record' instances.l
 
+
+;;; ==============================
+CXML source:
+:SEE (URL "https://github.com/sharplispers/cxml")
+
+CXML documentation:
+:SEE (URL "https://cxml.common-lisp.dev/")
+
+Klacks documentation:
+:SEE (URL "https://cxml.common-lisp.dev/klacks.html")
+
 ;;; ==============================
 
 |#
@@ -86,36 +97,38 @@ our `parsed-tgm-theme-record' instances.l
 (defparameter *parsed-tgm-theme-xml-source* nil)
 
 (defvar *parsed-tgm-theme-field-to-accessor-table*
-  '(("DESCRIPTOR"      :CONTROL-ID-DISPLAY-THEME)
-    ("NON-DESCRIPTOR"  :NON-DESCRIPTOR)
-    ("USE"             :USE-THEME)
-    ("Facet"           :FACET-NOTE)
-    ("SN"              :SCOPE-NOTE)
-    ("UF"              :USED-FOR)
-    ("BT"              :BROADER-THEME)
-    ("NT"              :NARROWER-THEME)
-    ("RT"              :RELATED-THEME)
-    ("CN"              :CATALOGER-NOTE)
-    ("HN"              :HISTORY-NOTE)
-    ("FUN"             :FORMER-USAGE-NOTE)
-    ("TTCRef"          :TERM-TYPE-CATEGORY-REFERENCE)
-    ("TTCSubd"         :TERM-TYPE-CATEGORY-SUBDIVISION)
-    ("TTCSubj"         :TERM-TYPE-CATEGORY-SUBJECT)
-    ("TTCForm"         :TERM-TYPE-CATEGORY-GENRE)
-    ("FCNgmgpc"        :CONTROL-ID-THEME-ENTITY-TGM-2-FORMER-NUM)
-    ("FCNlctgm"        :CONTROL-ID-THEME-ENTITY-TGM-1-FORMER-NUM)
-    ("TNR"             :CONTROL-ID-THEME-ENTITY-LOC-NUM)
+  '(("DESCRIPTOR"      . control-id-display-theme)
+    ("NON-DESCRIPTOR"  . non-descriptor)
+    ("USE"             . use-theme)
+    ("Facet"           . facet-note)
+    ("SN"              . scope-note)
+    ("UF"              . used-for)
+    ("BT"              . broader-theme)
+    ("NT"              . narrower-theme)
+    ("RT"              . related-theme)
+    ("CN"              . cataloger-note)
+    ("HN"              . history-note)
+    ("FUN"             . former-usage-note)
+    ("TTCRef"          . theme-type-category-reference)
+    ("TTCSubd"         . theme-type-category-subdivision)
+    ("TTCSubj"         . theme-type-category-subject)
+    ("TTCForm"         . theme-type-category-genre)
+    ("FCNgmgpc"        . control-id-theme-entity-tgm-2-former-num)
+    ("FCNlctgm"        . control-id-theme-entity-tgm-1-former-num)
+    ("TNR"             . control-id-theme-entity-loc-num)
     ;; Following doesn't appear in the downloaded TGM XML file.
     ;; Including here for consistency w/r/t `make-parsed-class-field-slot-accessor-mapping'
     ;; in case we ever decide to tie into the parsed-class-foo methods
-    ("__IGNORED-1"     :CONTROL-ID-THEME-ENTITY-LOC-URI)
-    ("__IGNORED-2"     :IMAGE-COREF)
-    ("__IGNORED-3"     :IMAGE-DEFAULT-XREF)
-    ("__IGNORED-4"     :RECORD-STATUS-ACTIVE)
-    ("__IGNORED-5"     :EDIT-TIMESTAMP)
-    ("__IGNORED-6"     :CONTROL-ID-THEME-ENTITY-DBC-NUM)
-    )
-)
+    ("__IGNORED-1"     . control-id-theme-entity-loc-uri)
+    ("__IGNORED-2"     . image-coref)
+    ("__IGNORED-3"     . image-default-xref)
+    ("__IGNORED-4"     . record-status-active)
+    ("__IGNORED-5"     . edit-timestamp)
+    ("__IGNORED-6"     . control-id-theme-entity-dbc-num))
+  )
+
+;; (make-parsed-class-field-slot-accessor-mapping 'parsed-tgm-theme-record *parsed-tgm-theme-field-to-accessor-table*)
+
 
 ;; :TODO We need to rename this to something more descriptive.  We should also
 ;; probably make this a :SYNCHRONIZED t hash-table for concurrent access.
@@ -164,433 +177,146 @@ our `parsed-tgm-theme-record' instances.l
 ;; However, we leave them that way initially so that we can identify when a 
 ;; concept was parsed incorrectly.
 (defclass parsed-tgm-theme-record () ;; (parsed-class)
-  (
-   ;; congruent with slot in class `parsed-theme-record'
-   (control-id-display-theme
+  ((control-id-display-theme ;; congruent with slot in class `parsed-theme-record'
     :initarg :control-id-display-theme
     :accessor control-id-display-theme
-    :documentation "The printed representation of a TGM theme, eg it's display name.
- :NOTE The display name is the same whether the theme's non-descriptor is T or not.")
-
- (non-descriptor
-  :initarg :non-descriptor
-  :accessor non-descriptor
-  :documentation "When non-nil \(a string value\) indicates that this theme is
-not to be used for indexing purposes. Refer to the `USE-THEME' slot value for
-the preferred theme to use instead.  :NOTE We assign the `non-descriptor'
-slot-value to the `control-id-display-theme' as the string token for ALL
-themes is used as the primary key for accessing structures which index themes,
-ie hash-table/alist/plist key/val pairs.")
-
- (use-theme
-  :initarg :use-theme
-  ;; :initform '() ; don't default when used it's a string.
-  :accessor use-theme
-  :documentation "Original TGM value \"USE\".
-This slot is non-nil \(a string value\) when slot-value of `non-descriptor' is non-nil.
-the `use-theme' slot-value dentifies a TGM theme to use in preference to this
-one and leads from a non-preferred, unauthorized form of a theme to the theme as used.")
- 
- (used-for
-  :initarg :used-for
-  :initform '()
-  :accessor used-for
-  :documentation "Original TGM value \"UF\". Postable (Main Term) to nonpostable (UF).
-used-for - indicates a non-preferred theme, such as an alternative spelling,
-inverted form, or synonym; helps define a theme's meaning. The `used-for'
-slot-value identifies a reciprocal relationship with themes with a non-nil
-`use-theme' slot-value, ie the object instance for theme with `non-descriptor'
-slot-value: \"70s\" and use-theme `slot-value' \"Nineteen seventies\" has a
-reciprical relationship with the object instance for theme with
-`control-id-display-theme' slot-value: \"Nineteen seventies\" and a
-`used-for' slot-value: \"70s\"")
- 
- (broader-theme
-  :initarg :broader-theme
-  :initform '()
-  :accessor broader-theme
-  :documentation "Original TGM value \"BT\".
-broader-theme - indicates the more general class to which a theme belongs;
-everything that is true of a theme is also true of its broader-theme. ")
-
- (narrower-theme
-  :initarg :narrower-theme
-  :initform '()
-  :accessor narrower-theme
-  :documentation "Original TGM value \"NT\".
-narrower-theme - indicates a more specific term or member of a class.")
-
- (related-theme
-  :initarg :related-theme
-  :initform '()
-  :accessor related-theme
-  :documentation "Original TGM value \"RT\".
-related-theme - brings to the catalog user's attention themes that are associated
-because of overlapping meanings or part-whole relationships. TGM I tends to be
-generous in supplying related-theme references. This is partly because
-relationships that would be implicit in a hierarchical display of the themes are
-less apparent when the themes appear in an alphabetical display. In accordance
-with thesaurus construction guidelines, however, related-theme references are
-never made to two themes at different levels in the same hierarchy.
-
-:EXAMPLE       Game industry  NOT  Game industry
-               RT  Games           RT  Games
-                                   Board games   
-                                  [a narrower term to Games]
-
-An authorized theme which is closely related to the theme under which it is
-listed, but the relationship is not a hierarchical one. The reciprocal is also
-RT. Although no precise rules dictate when related term references should be
-supplied, some typical situations include:
-
- Near synonyms
- Overlapping meanings
- Discipline and the object of study
- Persons and their occupations
- Products and industries
- Whole/part relationships
-
-More detailed definitions and discussion of hierarchical and related term
-relationships can be found in the ANSI standard.")
-
- (facet-note
-  :initarg :facet-note
-  :initform '()
-  :accessor facet-note
-  :documentation "Original TGM value \"FACET\". A Geographical faceting note.
-facet-note indicators, which appear in brackets directly underneath authorized themes,
-signal that a theme may be subdivided by geographic and/or nationality
-designations.
-
-:EXAMPLE  Military camps
-          --[nationality]--[country or state]--[city]
-
-These indicators have been included on a systematic basis with certain
-categories of headings; with other types of headings, they are added as need
-arises in P&P's cataloging. \(See Section III for further information about using
-geographic, nationality, and other types of subdivisions.\)")
-
- (scope-note
-  :initarg :scope-note
-  :initform '()
-  :accessor scope-note
-  :documentation "Original TGM value \"SN\". Formerly \"Public Note\".
-TGM I uses several kinds of notes to help catalogers apply themes consistently
-and to help researchers find appropriate search themes.  
-
-The `scope-note' slote-value defines a theme, explains its scope, or helps a user
-understand the structure of the thesaurus.
-
-:EXAMPLE   Bison
-           PN     For the American buffalo. Search under BUFFALOES 
-                  for buffaloes of the eastern hemisphere.
-:NOTE This field was formerly named Public Note, but was changed to\"Scope
-note\" as of 2007\).")
-
- (cataloger-note
-  :initarg :cataloger-note
-  :initform '()
-  :accessor cataloger-note
-  :documentation "Original TGM value \"CN\".
-cataloger-note - guides indexers in selecting a theme; for thesaurus
-maintenance, records other notes in which the theme appears and clarifies how to
-use a theme or when to use it in conjunction with another theme \(\"double
-indexing\"\).
-
-:EXAMPLE  Sick bays
-          CN     Double index under type of vessel.
-
-The note \"TGM II theme,\" which occurs frequently throughout TGM I, refers to
-themes which also appear in Thesaurus for Graphic Materials II: Genre and
-Physical Characteristic Themes. \(See Section II.E. for guidance on application of
-these themes.\)
-
-:EXAMPLE  Stereographs
-          CN     TGM II theme.
-
-Notes beginning with the phrase \"Used in a note under ...\" are of value
-primarily in editing and maintaining the thesaurus.
-
-:EXAMPLE  Doves
-          CN     Used in a note under SYMBOLS.")
-
- (history-note
-  :initarg :history-note
-  :initform '()
-  :accessor history-note
-  :documentation  "Original TGM value \"HN\".
-The history note \(HN\) records the fact that a change has taken place in a theme
-or the status of a theme since the publication of the first edition of TGM
-I. This may prove useful to searchers since it suggests themes that may have been
-in use formerly and that should be checked to retrieve older catalog
-records. Generally, if one theme has been completely replaced by another theme,
-the older theme appears as a \"UF.\"
-
-A History note - accounts for earlier ways in which a theme appeared in the
-list, in particular, themes that formerly appeared as non-preferred \(UF\) themes;
-also, prompts the catalog user to search under earlier forms of headings, in
-case headings in a catalog have not been updated to the current forms.
-
-:EXAMPLE  Gem photographs: HN: Changed 5/89.  Formerly, Gem
-          photographs may have been indexed as Miniature works.
-
-:EXAMPLE  Draft 
-          HN     Changed 11/1987 from COMPULSORY MILITARY SERVICE.")
- 
- (term-type-category-reference
-  :initarg :term-type-category-reference
-  :initform '()
-  :accessor term-type-category-reference
-  :documentation "Original TGM value \"TTCRef\".
-:EXAMPLE
-   Reference \(MARC 150\)
-:NOTE Field added to TGM data in 2007.")
- 
- (term-type-category-subdivision
-  :initarg :term-type-category-subdivision
-  :initform '()
-  :accessor term-type-category-subdivision
-  :documentation "Original TGM value \"TTCSubd\". Subdivision (MARC 180+x/650+x).
-:NOTE This filed ield added to TGM data in 2007.")
- 
- (term-type-category-subject
-  :initarg :term-type-category-subject
-  :initform '()
-  :accessor term-type-category-subject
-  :documentation "Original TGM value \"TTCSubj\". Subject (MARC 150/650).
-:NOTE This field added to TGM data in 2007.")
- 
- (term-type-category-genre
-  :initarg :term-type-category-genre
-  :initform '()
-  :accessor term-type-category-genre
-  :documentation
-  "Original TGM value \"TTCForm\". Genre/format \(MARC 155/655\).
-The difference between genres and physical characteristics may be unclear, for
-example, with themes like BROADSIDES, in which purpose is closely identified with
-one physical manifestation. The form-genre field \(655\) is to be used for the
-entire vocabulary.
-:NOTE This field was added to TGM data in 2007.")
-
- ;; :NOTE Not included in xml/txt file we are parsing, but it is usefull to include this now.
- ;; corresponds to slot `control-id-theme-entity-loc-uri' in class `parsed-theme-record'.
- (former-usage-note
-  :initarg :former-usage-note
-  :initform '()
-  :accessor former-usage-note
-  :documentation "Original TGM value \"FUN\". Clarifies TGM I & TGM II past history.
-:EXAMPLE
-   Formerly TGMI term \(nonpostable\).
-:NOTE Field added to TGM data in 2007.")
- 
- ; control-id-theme-entity-tgm-2-former-num control-id-theme-entity-tgm-2-former-num
- (control-id-theme-entity-tgm-2-former-num
-  :initarg :control-id-theme-entity-tgm-2-former-num
-  ;; :initform ;; don't default
-  :accessor control-id-theme-entity-tgm-2-former-num
-  :documentation "Original TGM value \"FCNgmgpc\".
-Former control number from TGM II in format gmgpc000001.
-Applies only to terms established prior to 2007.
-:NOTE This field added to TGM data in 2007.")
-
- (control-id-theme-entity-tgm-1-former-num
-  :initarg :control-id-theme-entity-tgm-1-former-num
-  ;; :initform ;; don't default
-  :accessor control-id-theme-entity-tgm-1-former-num
-  :documentation "Original TGM value \"FCNlctgm\".
-Former control number from TGM I in format: lctgm000001.
-Applies only to terms established prior to 2007.
-:NOTE This field added to TGM data in 2007.")
-
- ;; congruent with slot in class `parsed-theme-record'
- (control-id-theme-entity-loc-num
-  :initarg :control-id-theme-entity-loc-num
-  :accessor control-id-theme-entity-loc-num
-  :documentation "Original TGM value \"TNR\".
-Control number for merged TGM \(new numbers assigned in 2007 in format: tgm000001\).
-:NOTE This field added to TGM data in 2007.")
-
- ;; congruent with slot in class `parsed-theme-record'
- (control-id-theme-entity-loc-uri
-  :initarg :control-id-theme-entity-loc-uri
-  :initform '()
-  :accessor control-id-theme-entity-loc-uri
-  :documentation "A cannonical LOC TGM theme URI the form:
-
-  <RESOURCE-PATH>/<CONTROL-ID-THEME-ENTITY-LOC-NUM>
- 
- <RESOURCE-PATH> -> \"http://id.loc.gov/vocabulary/graphicMaterials/\";
- 
-  <CONTROL-ID-THEME-ENTITY-LOC-NUM> -> \"tgmNNNNNN\"
-
-Potentially useful to grab LOC skos/rdf-xml data.")
-
- (image-coref
-  :initarg       :image-coref
-  :initform      '()
-  :accessor      image-coref
-  :documentation "List of parsed-theme-record `inventory-number' references \(strings\).
-Field name from orignial dbc sql table was \"related_pic_num\".
-When non-nil has the format:
- \(\"<ITEM-REF>\"* \)
-Orignially, when non-nil, value of field `image-default-xref' would be present
-as a member and `record-status-active' was T.
-Orignially, when NIL, the value of `image-default-xref' was also NIL and value
-of `record-status-active' was \"0000-00-00 00:00:00\".")
-
- (image-default-xref
-     :initarg      :image-default-xref
-     :initform     '()
-     :accessor     image-default-xref
-     :documentation "
-Field name from orignial dbc sql table was \"display_pic\".
-Nil if unassigned, else corresponds with inventory-number slot-value for
-instance of class `parsed-inventory-record'. When non-nil value is also present
-in list for slot `image-coref'.
-Originally, when NIL, the value of `record-status-active' was also NIL and value
-of `edit-timestamp'was be \"0000-00-00 00:00:00\".")
-    
- (record-status-active
-  :initarg      :record-status-active
-  :initform     '()
-  :accessor      record-status-active
-  :documentation "
-Field name from orignial dbc sql table was \"active\".
-When T indicates the theme is active and mayb be made abvailable for end-user presentation.
-When NIL indicates the theme is inactive and may not be made available for end-user presentations.
-Originally, when NIL value of `image-default-xref' and `image-coref' were also
-be NIL, and value of `edit-timestamp' was be \"0000-00-00 00:00:00\".
-Originally, when T value of `image-default-xref' and `image-coref' contained item reference(s).")
-
- (edit-timestamp
-  :initarg       :edit-timestamp
-  :initform      '()
-  :accessor       edit-timestamp
-  :documentation "The date of the last date the theme was updated in the database.
-Field name from orignial dbc sql table was \"date_edit\".
-
-:EXAMPLE
-
-  \"2008-09-20 22:33:51\"
-  \"0000-00-00 00:00:00\"
-  \"2008-09-20 22:30:25\" ; 7156
-
-When present originally, this value indicates the last time the dbc database was
-updated with relation data. When value was \"0000-00-00 00:00:00\" the
-slot-values of `record-status-cative' `image-default-xref', `image-coref' were
-be nil.")
-    
- ;; Following has slot-value's in parsed-tgm-theme-record that are unused
- ;; elswhere in the system AFAIK.  ought to be named :CONTROL-ID-THEME-ENTITY-DBC-NUM
- ;; to indicate it references an internal DBC number and not an external
- ;; identity that dereferences to something.
- (control-id-theme-entity-dbc-num
-  :initarg        :control-id-theme-entity-dbc-num
-  :initform      '()
-  :accessor      control-id-theme-entity-dbc-num
-  :documentation "An integer value represented as a string identifying a TGM in the dbc database.
-Field name from the orignial dbc SQL table was \"id\".
-Originally, this was a unique integer (represented now as a string)
-dereferncing a TGM theme in the dbd SQL database.
-
-:NOTE We mretain the existing value because it appeared in the originally
-database and currently shares a coreference with values from the `thems_fr`
-table, which is as yet unparsed and xrefd.! IOW, don't delete or modify it's
-value unless/until that occurs!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-
- )
-  (:documentation
-    #.(format nil
-              "Class for parsed LOC TGM XML `themes'file.~%~@
-The Thesaurus of Graphic Materials \(TGM\) I is a thesaurus in alphabetical
-format. TGM I conforms to the ANSI standard for structure and
-syntax. \"Postable\" themes \(themes that are authorized for indexing\) and
-\"non-postable\" themes \(cross references pointing from unauthorized to
-authorized themes\) are interfiled. Under each authorized theme, the reference
-structure includes unauthorized themes \(UF\), broader themes \(BT\), narrower
-themes \(NT\), and related themes \(RT\). For each relationship that is
-established in the thesaurus, its reciprocal relationship can be found at
-another point in the thesaurus.
-
-:EXAMPLE
-          Building dedications           (authorized theme)
-
-           UF  Dedication of buildings   (theme not authorized)
-           BT  Dedications               (broader authorized theme)
-           NT  Church dedications        (narrower authorized themes)
-               Cornerstone laying
-           RT  Buildings                 (related authorized themes)
-               Groundbreaking ceremonies
-               Toppings out
-
-         Dedication of buildings
-
-          USE  Building dedications     (cross reference from unauthorized
-                                         theme to authorized theme)
-
-TGHM structure is intended to help both catalogers and researchers select the
-theme\(s\) most appropriate for indexing and retrieval. Themes appear in
-alphabetical order and are listed in word-by-word filing sequence. Scope notes
-\(here called \"public notes\"\) define the themes in the context of the
-thesaurus. Associations between themes are indicated by the convention of
-broader, narrower, related, and \"used for\" relationships. Themes listed under
-a heading also appear in the alphabetical filing sequence with the reciprocal
-relationship noted. For example, the theme EPHEMERA has LABELS listed as a
-narrower theme, and the theme LABELS has EPHEMERA listed as its broader theme.~%~@
-:NOTE Compound themes are established \(1\) when a single concept is expressed
-by multiple words in natural language, \(2\) when it would be difficult or
-unnecessary for an indexer to differentiate between two closely related
-concepts, and \(3\) when splitting them into single themes to be placed in
-separate fields would lead to retrieval of irrelevant material.~%~@
-:EXAMPLE
-          Artificial flowers
-          Cattle ranches
-          Educational organizations
-          Real estate development
-          Tobacco industry~%~@
-Compound themes are always expressed in natural language order, never inverted:~%~@
-:EXAMPLE~%  Protestant churches  NOT   Churches, Protestant~%~@
-Compound themes which include the word \"and\" are used when two themes occur
-together with such frequency that it would be undesirable to establish them
-separately. Such themes are constructed with an ampersand \(&\) in order to
-differentiate in retrieval systems between the use of \"and\" as a Boolean
-operator and the use of \"&\" as part of an indexing theme:~%~@
-:EXAMPLE
-         Doors & doorways
-         Good & evil~%~@
-:NOTE Parenthetical qualifiers are used to differentiate between homographs.~%~@
-:EXAMPLE  Camouflage \(Biology\)
-          Camouflage \(Military science\)~%~@
-:SEE \(URL \"https://www.loc.gov/rr/print/tgm1/tgm1.xml\"\)
-     \(URL \"https://www.loc.gov/rr/print/tgm2/tgm2.xml\"\)
-     \(URL \"https://www.loc.gov/rr/print/tgm1/downloadtgm1.html\"\)
-     \(URL \"https://www.loc.gov/pictures/collection/tgm/fields.html\"\)
-     \(URL \"https://www.loc.gov/rr/print/tgm1/ic.html\"\)~%~@
-:NOTE Not to be confused with class `parsed-theme-record' which references
-themes recorded to the orginal dbc SQL table!~%~@
-:SEE-ALSO `parsed-theme-record', `theme-entity',
-`dbc-theme-request-loc-x-uri',`tgm-assoc-elt',`tgm-peeking',
-`tgm-peeking-get-val', `tgm-consume', `tgm-characters-every-whitespace-p',
-`tgm-peek-start-element-and-maybe-add-to-slot', `tgm-parse-concept',
-`parsed-tgm-theme-record', `*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶")))
-
+    :documentation #.(classdoc 'parsed-tgm-theme-record :control-id-display-theme))
+   (non-descriptor
+    :initarg :non-descriptor
+    :accessor non-descriptor
+    :documentation #.(classdoc 'parsed-tgm-theme-record :non-descriptor))
+   (use-theme
+    :initarg :use-theme
+    ;; :initform '() ; don't default when used it's a string.
+    :accessor use-theme
+    :documentation #.(classdoc 'parsed-tgm-theme-record :use-theme))
+   (used-for
+    :initarg :used-for
+    :initform '()
+    :accessor used-for
+    :documentation #.(classdoc 'parsed-tgm-theme-record :used-for))
+   (broader-theme
+    :initarg :broader-theme
+    :initform '()
+    :accessor broader-theme
+    :documentation #.(classdoc 'parsed-tgm-theme-record :broader-theme))
+   (narrower-theme
+    :initarg :narrower-theme
+    :initform '()
+    :accessor narrower-theme
+    :documentation #.(classdoc 'parsed-tgm-theme-record :narrower-theme))
+   (related-theme
+    :initarg :related-theme
+    :initform '()
+    :accessor related-theme
+    :documentation #.(classdoc 'parsed-tgm-theme-record :related-theme))
+   (facet-note
+    :initarg :facet-note
+    :initform '()
+    :accessor facet-note
+    :documentation #.(classdoc 'parsed-tgm-theme-record :facet-note))
+   (scope-note
+    :initarg :scope-note
+    :initform '()
+    :accessor scope-note
+    :documentation #.(classdoc 'parsed-tgm-theme-record :scope-note))
+   (cataloger-note
+    :initarg :cataloger-note
+    :initform '()
+    :accessor cataloger-note
+    :documentation #.(classdoc 'parsed-tgm-theme-record :cataloger-note))
+   (history-note
+    :initarg :history-note
+    :initform '()
+    :accessor history-note
+    :documentation  #.(classdoc 'parsed-tgm-theme-record :history-note))
+   (theme-type-category-reference
+    :initarg :theme-type-category-reference
+    :initform '()
+    :accessor theme-type-category-reference
+    :documentation #.(classdoc 'parsed-tgm-theme-record :theme-type-category-reference))
+   (theme-type-category-subdivision
+    :initarg :theme-type-category-subdivision
+    :initform '()
+    :accessor theme-type-category-subdivision
+    :documentation #.(classdoc 'parsed-tgm-theme-record :theme-type-category-subdivision))
+   (theme-type-category-subject
+    :initarg :theme-type-category-subject
+    :initform '()
+    :accessor theme-type-category-subject
+    :documentation #.(classdoc 'parsed-tgm-theme-record :theme-type-category-subject))
+   (theme-type-category-genre
+    :initarg :theme-type-category-genre
+    :initform '()
+    :accessor theme-type-category-genre
+    :documentation #.(classdoc 'parsed-tgm-theme-record :theme-type-category-genre))
+   (former-usage-note
+    :initarg :former-usage-note
+    :initform '()
+    :accessor former-usage-note
+    :documentation #.(classdoc 'parsed-tgm-theme-record :former-usage-note))
+   (control-id-theme-entity-tgm-2-former-num
+    :initarg :control-id-theme-entity-tgm-2-former-num
+    ;; :initform ;; don't default
+    :accessor control-id-theme-entity-tgm-2-former-num
+    :documentation #.(classdoc 'parsed-tgm-theme-record :control-id-theme-entity-tgm-2-former-num))
+   (control-id-theme-entity-tgm-1-former-num
+    :initarg :control-id-theme-entity-tgm-1-former-num
+    ;; :initform ;; don't default
+    :accessor control-id-theme-entity-tgm-1-former-num
+    :documentation #.(classdoc 'parsed-tgm-theme-record :control-id-theme-entity-tgm-1-former-num))
+   (control-id-theme-entity-loc-num ;; congruent with slot in class `parsed-theme-record'
+    :initarg :control-id-theme-entity-loc-num
+    :accessor control-id-theme-entity-loc-num
+    :documentation #.(classdoc 'parsed-tgm-theme-record :control-id-theme-entity-loc-num))
+   ;; :NOTE Not included in xml/txt file we are parsing, but it is usefull to include this now.
+   (control-id-theme-entity-loc-uri ;; congruent with slot in class `parsed-theme-record'
+    :initarg :control-id-theme-entity-loc-uri
+    :initform '()
+    :accessor control-id-theme-entity-loc-uri
+    :documentation #.(classdoc 'parsed-tgm-theme-record :control-id-theme-entity-loc-uri))
+   (image-coref
+    :initarg       :image-coref
+    :initform      '()
+    :accessor      image-coref
+    :documentation #.(classdoc 'parsed-tgm-theme-record :image-coref))
+   (image-default-xref
+    :initarg      :image-default-xref
+    :initform     '()
+    :accessor     image-default-xref
+    :documentation #.(classdoc 'parsed-tgm-theme-record :image-default-xref))
+   (record-status-active
+    :initarg      :record-status-active
+    :initform     '()
+    :accessor      record-status-active
+    :documentation #.(classdoc 'parsed-tgm-theme-record :record-status-active))
+   (edit-timestamp
+    :initarg       :edit-timestamp
+    :initform      '()
+    :accessor       edit-timestamp
+    :documentation #.(classdoc 'parsed-tgm-theme-record :edit-timestamp))
+   ;; Following has slot-value's in parsed-tgm-theme-record that are unused
+   ;; elswhere in the system AFAIK.  ought to be named :CONTROL-ID-THEME-ENTITY-DBC-NUM
+   ;; to indicate it references an internal DBC number and not an external
+   ;; identity that dereferences to something.
+   (control-id-theme-entity-dbc-num
+    :initarg        :control-id-theme-entity-dbc-num
+    :initform      '()
+    :accessor      control-id-theme-entity-dbc-num
+    :documentation #.(classdoc 'parsed-tgm-theme-record :control-id-theme-entity-dbc-num)))
+  (:documentation #.(classdoc 'parsed-tgm-theme-record :class-doc)))
 
-;;(tgm-assoc-elt 5)
-(defun tgm-assoc-elt (elt &key (mapping *parsed-tgm-theme-field-to-accessor-table*))
 
-  (unless (stringp elt)
+;; (tgm-assoc-elt "DESCRIPTOR")
+(defun tgm-assoc-elt (elt &key (mapping *parsed-tgm-theme-field-to-accessor-table*))
+  ;; :NOTE we probably don't need to allow for NIL and could constrain to `cl:strinp' only, 
+  ;; but `tgm-assoc-elt' is used in macrology inside
+  (unless (or (null elt) (stringp elt))
     (MON:SIMPLE-ERROR-MON :w-sym 'tgm-assoc-elt
                           :w-type 'function
                           :w-spec "expected a string for arg ELT"
                           :w-got elt :w-type-of t))
-  (let ((maybe-match (assoc elt mapping :test #'equal)))
-    (and maybe-match (cadr maybe-match))))
-
-;; Temporary helper function hardwired to stream `*parsed-tgm-theme-xml-source*'. for debugging.
-;; (defun %qpeek ()
-;;   (multiple-value-bind (v1 v2 v3 v4)
-;;       (KLACKS:PEEK *parsed-tgm-theme-xml-source*)
-;;     (list v1 v2 v3 v4)))
+  (cdr  (find elt mapping :key #'car :test #'string-equal)))
 
 (defun tgm-peeking (&key stream)
   (multiple-value-bind (v1 v2 v3 v4)
@@ -605,16 +331,14 @@ themes recorded to the orginal dbc SQL table!~%~@
       (KLACKS:CONSUME stream)
     (list v1 v2 v3 v4)))
 
-;; (tgm-characters-every-whitespace-p :stream *tt--tgm*)
 (defun tgm-characters-every-whitespace-p (&key stream)
-  (let (;(peek-chars (tgm-peeking :stream stream))
-         (v2 (tgm-peeking-get-val :nth-val 1 :stream stream)))
+  (let ((v2 (tgm-peeking-get-val :nth-val 1 :stream stream)))
     (and (or (stringp v2)
              (error (format nil ":FUNCTION `tgm-characters-every-whitespace-p' - expected a string ~%:GOT ~S" v2)))
          (<= (length v2) 2)
          (every #'MON:WHITESPACE-CHAR-P v2))))
 
-(defun tgm-start-element-consume (&key object accessor (nth-val 1) peek-val stream)
+(defun tgm-start-element-consume (&key object accessor (nth-val 1) peek-val stream (as-values nil))
   (let* ((consumed (progn
                      (tgm-consume :stream stream)
                      (if (eq (car (tgm-peeking :stream stream)) :characters)
@@ -630,222 +354,115 @@ themes recorded to the orginal dbc SQL table!~%~@
          (slot-val     (nth nth-val consumed)))
     (if (slot-boundp object accessor) ;; we leave certain slots unbound as these should always default to a string
         (cond ((listp (slot-value object accessor))
-               ;; (format t "Pushing SLOT-VALUE: ~S~%With Accessor: ~S~%" slot-val accessor)
                (push slot-val (slot-value object accessor)))
               ((stringp (slot-value object accessor))
-               ;; (format t "Setf'ing SLOT-VALUE: ~S~%With Accessor: ~S~%" slot-val accessor)
                (setf (slot-value object accessor) slot-val)))
-      ;; (progn (format t
-      ;;         "Slot unbound setfing SLOT-VALUE: ~S~%With slot Accessor: ~S~%" slot-val accessor)
-      ;;         (eval `(setf (,accessor ,object) ,slot-val))))
-      (eval `(setf (,accessor ,object) ,slot-val)))
-    (values
-       (slot-value object accessor)
-       peek-val
-       consumed
-       object)))
+        (eval `(setf (,accessor ,object) ,slot-val)))
+    (if as-values
+        (values
+         (slot-value object accessor)
+         peek-val
+         consumed
+         object)
+        (slot-value object accessor))))
 
-
-;; (let ((obj (make-instance 'parsed-tgm-theme-record
-;;                           :control-id-display-theme-name "FOO"))
-;;       (acc 'control-id-display-theme-name)
-;;       (nth 1)
-;;       (pk-val  nil) 
-;;       (str *tt--tgm*))
-;;   (macroexpand-1  '(def-tgm-start-element-consume obj acc nth pk-val str)))
 (defmacro %tgm-sec-helper (object accessor nth-val peek-val stream)
-
   `(tgm-start-element-consume :object   ,object
-                            :accessor ,accessor
-                            :nth-val  ,nth-val
-                            :peek-val ,peek-val ;(or peek-val (tgm-peeking :stream stream))
-                            :stream   ,stream))
+                              :accessor ,accessor                              
+                              :nth-val  ,nth-val
+                              :peek-val ,peek-val
+                              :stream   ,stream))
 
 
+;; 
+;; klacks:peek returns as values:
+;; :start-document
+;; :start-document, version, encoding, standalonep
+;; :dtd, name, public-id, system-id
+;; :start-element, uri, lname, qname
+;; :end-element, uri, lname, qname
+;; :characters, data
+;; :processing-instruction, target, data
+;; :comment, data
+;; :end-document, data
+;; nil
 (defun tgm-peek-start-element-and-maybe-add-to-slot (object &key stream)
-  (let (;; (object (make-instance 'parsed-tgm-theme-record))
-        ;; (mapping *parsed-tgm-theme-field-to-accessor-table*)
-          (peek-val)
-          (case-key ))
-      (case (setf case-key (tgm-peeking-get-val  :nth-val 0 :stream stream))
-        (:start-document 
-         (KLACKS:FIND-ELEMENT stream  "CONCEPT"))
-        (:start-element
-           (setq peek-val (tgm-peeking-get-val :nth-val 2 :stream stream))
-           (cond
-            ((equal "CONCEPT" peek-val) ;; (nth 1 '(:START-ELEMENT NIL "CONCEPT" "CONCEPT"))
-             (let ((consumed (tgm-consume :stream stream)))
-               (values
-                case-key
-                peek-val
-                consumed
-                object)))
-            ;; :NOTE We put the `non-descriptor' slot value on
-            ;; `control-id-display-theme' slot value as well, because the
-            ;; display name for a given theme is our key primary key for use
-            ;; with indexing data structures that index and perform lookups on
-            ;; themese. The structure will likely be a hash-table.
-            ((or (equal "DESCRIPTOR" peek-val)
-                 (equal "NON-DESCRIPTOR" peek-val))
-             (values
-              ;;
-              ;; (%tgm-sec-helper object 'control-id-display-theme 1 (tgm-peeking :stream stream) stream)
-               (tgm-start-element-consume
-               :object object
-               :accessor 'control-id-display-theme
-               :nth-val 1
-               :peek-val (tgm-peeking :stream stream)
-               :stream stream)
-               (setf (non-descriptor object)
-                    (control-id-display-theme object))))
-            ;; ((EQUAL "NON-DESCRIPTOR")
-            ((equal "USE"   peek-val)
-             (tgm-start-element-consume
-              :object object
-              :accessor 'use-theme
-              :nth-val 1
-              :peek-val (tgm-peeking :stream stream)
-              :stream stream)) 
-            ((equal "Facet" peek-val) ; facet-note
-             (tgm-start-element-consume
-              :object object
-              :accessor 'facet-note
-              :nth-val 1
-              :peek-val (tgm-peeking :stream stream)
-              :stream stream)) 
-            ((equal "SN"    peek-val) ; scope-note
-             (tgm-start-element-consume
-              :object object
-              :accessor 'scope-note
-              :nth-val 1
-              :peek-val (tgm-peeking :stream stream)
-              :stream stream)) 
-            ((equal "UF"    peek-val) ; used-for
-             (tgm-start-element-consume
-              :object object
-              :accessor 'used-for
-              :nth-val 1
-              :peek-val (tgm-peeking :stream stream)
-              :stream stream)             ) 
-            ((equal "BT"    peek-val) ; broader-theme
-             (tgm-start-element-consume
-              :object object
-              :accessor 'broader-theme
-              :nth-val 1
-              :peek-val (tgm-peeking :stream stream)
-              :stream stream)) 
-            ((equal "NT"    peek-val) ; narrower-theme
-             (tgm-start-element-consume
-              :object object
-              :accessor 'narrower-theme
-              :nth-val 1
-              :peek-val (tgm-peeking :stream stream)
-              :stream stream)) 
-            ((equal "RT"    peek-val) ; related-theme
-             (tgm-start-element-consume
-              :object object
-              :accessor 'related-theme
-              :nth-val 1
-              :peek-val (tgm-peeking :stream stream)
-              :stream stream)) 
-            ((equal "CN"    peek-val)   ; cataloger-note
-             (tgm-start-element-consume
-              :object object
-              :accessor 'cataloger-note
-              :nth-val 1
-              :peek-val (tgm-peeking :stream stream)
-              :stream stream)) 
-            ((EQUAL "HN"    peek-val) ; history-note
-             (tgm-start-element-consume
-              :object object
-              :accessor 'history-note
-              :nth-val 1
-              :peek-val (tgm-peeking :stream stream)
-              :stream stream)) 
-            ((equal "FUN"      peek-val) ; former-usage-note
-             (tgm-start-element-consume
-              :object object
-              :accessor 'former-usage-note
-              :nth-val 1
-              :peek-val (tgm-peeking :stream stream)
-              :stream stream))
-            ((EQUAL "TTCRef" peek-val) ;term-type-category-reference
-             (tgm-start-element-consume
-              :object object
-              :accessor 'term-type-category-reference
-              :nth-val 1
-              :peek-val (tgm-peeking :stream stream)
-              :stream stream))
-            ((equal "TTCSubd" peek-val) ;term-type-category-subdivision
-             (tgm-start-element-consume
-              :object object
-              :accessor 'term-type-category-subdivision
-              :nth-val 1
-              :peek-val (tgm-peeking :stream stream)
-              :stream stream))
-            ((equal "TTCSubj"   peek-val) ;term-type-category-subject
-             (tgm-start-element-consume
-              :object object
-              :accessor 'term-type-category-subject
-              :nth-val 1
-              :peek-val (tgm-peeking :stream stream)
-              :stream stream))
-            ((equal "TTCForm" peek-val) ; term-type-category-genre
-             (tgm-start-element-consume
-              :object object
-              :accessor 'term-type-category-genre
-              :nth-val 1
-              :peek-val (tgm-peeking :stream stream)
-              :stream stream))
-            ((equal "FCNgmgpc" peek-val) ; control-id-theme-entity-tgm-2-former-num
-             (tgm-start-element-consume
-              :object object
-              :accessor 'control-id-theme-entity-tgm-2-former-num
-              :nth-val 1
-              :peek-val (tgm-peeking :stream stream)
-              :stream stream))
-            ((equal "FCNlctgm" peek-val)  ; control-id-theme-entity-tgm-1-former-num
-             (tgm-start-element-consume
-              :object object
-              :accessor 'control-id-theme-entity-tgm-1-former-num
-              :nth-val 1
-              :peek-val (tgm-peeking :stream stream)
-              :stream stream))
-            ((equal "TNR" peek-val) ;; control-id-theme-entity-loc-num
-             (tgm-start-element-consume
-              :object object
-              :accessor 'control-id-theme-entity-loc-num
-              :nth-val 1
-              :peek-val (tgm-peeking :stream stream)
-              :stream stream)) 
+  (let ((peek-val)
+        (case-key ))
+    ;; (case (setf case-key (tgm-peeking-get-val  :nth-val 0 :stream stream))
+    (ecase (setf case-key (tgm-peeking-get-val  :nth-val 0 :stream stream))
+      (:start-document 
+       (KLACKS:FIND-ELEMENT stream  "CONCEPT"))
+      (:processing-instruction ;; , target, data
+       (KLACKS:FIND-ELEMENT stream  "CONCEPT"))
+      (:dtd ;; , name, public-id, system-id
+       (KLACKS:FIND-ELEMENT stream  "CONCEPT"))
+      (:comment
+       (klacks:consume stream))
+      (:end-element
+       ;; (if (equal (nth 2 (tgm-peeking :stream stream)) "CONCEPT")
+       ;;     (values nil (tgm-consume :stream stream) object "END CONCEPT")
+       ;;     (values case-key (tgm-consume :stream stream) object))
+       (if (equal (nth 2 (tgm-peeking :stream stream)) "CONCEPT")
+           (progn (tgm-consume :stream stream) nil )
+           (progn (tgm-consume :stream stream) case-key)))
+      (:characters
+       ;; (if (tgm-characters-every-whitespace-p :stream stream)
+       ;;     (values case-key (tgm-consume :stream stream) object)
+       ;;     ;; we need to set the slot value if we aren't looking at whitespace. can this happen?
+       ;;     (values case-key (tgm-peeking :stream stream) object ))
+       (if (tgm-characters-every-whitespace-p :stream stream)
+           (progn (tgm-consume :stream stream) case-key )
+           ;; we need to set the slot value if we aren't looking at whitespace. can this happen?
+           (progn (tgm-peeking :stream stream) case-key)))
+      (:end-document
+       ;; (values nil peek-val object)
+       nil)
+      (:start-element
+       (setq peek-val (tgm-peeking-get-val :nth-val 2 :stream stream))
+       (let ((mapping '("USE" "Facet" "SN" "UF" "BT" "NT" "RT"   
+                        "CN" "HN" "FUN" "TTCRef" "TTCSubd" "TTCSubj"
+                        "TTCForm"  "FCNgmgpc"  "FCNlctgm" "TNR")))
+         (cond
+           ((equal "CONCEPT" peek-val) ;; (nth 1 '(:START-ELEMENT NIL "CONCEPT" "CONCEPT"))
+            ;; (let ((consumed (tgm-consume :stream stream)))
+            ;;    (values
+            ;;     case-key
+            ;;     peek-val
+            ;;     consumed
+            ;;     object))
+            (progn 
+              (tgm-consume :stream stream)
+              case-key))
+           ((equal "DESCRIPTOR" peek-val)
+            ;; (tgm-assoc-elt "DESCRIPTOR")
+            (%tgm-sec-helper object (tgm-assoc-elt peek-val) 1 (tgm-peeking :stream stream) stream))
+            ;; :NOTE We put the `non-descriptor' slot value on `control-id-display-theme' slot value as well, because the
+            ;; display name for a given theme is our key primary key for use with indexing data structures
+            ;; that index and perform lookups on themes. The structure will likely be a hash-table.
+            ((equal "NON-DESCRIPTOR" peek-val) ;; (tgm-assoc-elt "NON-DESCRIPTOR")
+             ;; (values
+             ;;  (%tgm-sec-helper object (tgm-assoc-elt peek-val) 1 (tgm-peeking :stream stream) stream)
+             ;;  (setf (control-id-display-theme object) (non-descriptor object))))
+             (progn
+               (%tgm-sec-helper object (tgm-assoc-elt peek-val) 1 (tgm-peeking :stream stream) stream)
+               (setf (control-id-display-theme object) (non-descriptor object))
+               ))
+            ((member peek-val mapping :test #'string=)
+             (%tgm-sec-helper object (tgm-assoc-elt peek-val) 1 (tgm-peeking :stream stream) stream))
             ;; This shouldnt ever happen. print a message to standard
-            ;; out, and return NIL. Doing so allows droping out of parsing loops. by callers
-            (t (format t (concatenate 'string  "~%!!!!!!!!!!~%:FUNCTION `tgm-peek-start-element-and-maybe-add-to-slot'~%"
-                       "           -- When parsing a :START-ELEMENT event, case forms failed to trigger correctly.~%!!!!!!!!!!~%"))
-               nil )))
-        (:end-element
-           ;; (KLACKS:FIND-EVENT stream :start-element)
-           ;; :TODO when the current event is  :end-element and lname is "CONCEPT" we need to start a new object
-           ;; :END-ELEMENT nil "CONCEPT"
-            (if (equal (nth 2 (tgm-peeking :stream stream)) "CONCEPT")
-                (values nil (tgm-consume :stream stream) object "END CONCEPT")
-              (values case-key (tgm-consume :stream stream) object)))
-        (:characters
-           (if (tgm-characters-every-whitespace-p :stream stream)
-               (values case-key (tgm-consume :stream stream) object )
-             ;; we need to set the slot value if we aren't looking at whitespace. can this happen?
-             (values case-key (tgm-peeking :stream stream) object )))
-        (:comment
-         ;; (values case-key peek-val object)
-         (values nil peek-val object))
-        (:end-document
-         (values nil peek-val object))
-        (t (values case-key peek-val object)))))
+             ;; out, and return NIL. Doing so allows droping out of parsing loops. by callers
+            (t  
+              (warn (concatenate 'string 
+                                "~%!!!!!!!!!!~%:FUNCTION `tgm-peek-start-element-and-maybe-add-to-slot'~%           "
+                                "-- When parsing a :START-ELEMENT event, case forms failed to trigger correctly.~%!!!!!!!!!!~%"))
+             nil)))))))
 
 (defun tgm-parse-concept (&key stream)
   (let ((current-object (make-instance 'parsed-tgm-theme-record)))
-    (loop for reading = (tgm-peek-start-element-and-maybe-add-to-slot current-object :stream stream)
-          until (null reading))
+    (loop 
+      for reading = (tgm-peek-start-element-and-maybe-add-to-slot current-object :stream stream)
+      until (null reading))
     (if  (slot-boundp current-object 'control-id-display-theme)
         ;; Don't set the slot value and don't return object if we never found an
         ;; XML value for control-id-display-theme when parsing current concept.
@@ -855,7 +472,7 @@ themes recorded to the orginal dbc SQL table!~%~@
       (values nil nil))))
 
 (defun tgm-parse-concepts-update-unbound-slots (&key (hash-table *parsed-tgm-theme-record-hash-table*))
-  (let ((class-slots (mon:class-slot-list 'parsed-tgm-theme-record)))
+  (let ((class-slots (MON:CLASS-SLOT-LIST 'parsed-tgm-theme-record)))
   (loop with ht = hash-table ;*parsed-tgm-theme-record-hash-table* ; hash-table
         for obj-id being the hash-keys in ht
         for obj being the hash-values in ht
@@ -864,11 +481,6 @@ themes recorded to the orginal dbc SQL table!~%~@
                     for slot in class-slots
                     unless (slot-boundp  obj-inner slot)
                     do (setf (slot-value obj-inner  slot) nil)
-                    ;; and collect slot into inner-gather
-                    ;; finally (return
-                    ;;          (if (null inner-gather)
-                    ;;              nil
-                    ;;            (list obj-inner-id inner-gather))))
                     and count obj-inner-id into cnt
                     end
                     finally (return (if (> cnt 0) cnt nil)))
@@ -889,29 +501,77 @@ themes recorded to the orginal dbc SQL table!~%~@
   ;; (KLACKS:WITH-OPEN-SOURCE (s stream)
   (unwind-protect 
        (loop for read-obj = (tgm-parse-concept :stream stream)
-                                 for set-hash = (when read-obj
-                                                  (setf (gethash (control-id-display-theme read-obj) hash-table)
-                                                        read-obj))
-                                 until (null read-obj)
-                                 finally (return
-                                          (values
-                                           hash-table
-                                           (hash-table-count hash-table)
-                                           (tgm-parse-concepts-update-unbound-slots
-                                            :hash-table hash-table))))
+             for set-hash = (when read-obj
+                              (setf (gethash (control-id-display-theme read-obj) hash-table)
+                                    read-obj))
+             until (null read-obj)
+             finally (return
+                       (values
+                        hash-table
+                        (hash-table-count hash-table)
+                        (tgm-parse-concepts-update-unbound-slots :hash-table hash-table))))
     (KLACKS:CLOSE-SOURCE stream)))
 
-;; (write-parsed-parsed-tgm-theme-record-parse-table-to-file)
-(defun write-parsed-parsed-tgm-theme-record-parse-table-to-file (&key
-                                                                 (hash-table *parsed-tgm-theme-record-hash-table*)
-                                                                 ;; (sub-path *parsed-tgm-theme-output-dir*)
-                                                                 (base-output-directory (dbc::sub-path dbc::*parsed-class-table-output-dir*))
-                                                                 (output-sub-directory "parsed-tgm-theme-record"))
 
-  (write-parsed-class-parse-table-to-file  :parsed-class 'parsed-tgm-theme-record
-                                           :hash-table hash-table
-                                           :base-output-directory base-output-directory
-                                           :output-sub-directory output-sub-directory))
+;; No longer wrapping around `write-parsed-class-parse-table-to-file' doing it by hand now.
+;; :WAS (defun write-parsed-tgm-theme-record-parse-table-to-file (&key (hash-table *parsed-tgm-theme-record-hash-table*)
+;;                                                                (base-output-directory (dbc::sub-path dbc::*parsed-class-table-output-dir*))
+;;                                                                (output-sub-directory "parsed-tgm-theme-record"))
+(defun write-parsed-tgm-theme-record-parse-table-to-file (&key
+                                                          (hash-table *parsed-tgm-theme-record-hash-table*)
+                                                          (base-output-directory (sub-path *parsed-tgm-theme-output-dir*))
+                                                          (pathname-name "parsed-tgm-theme-record")
+                                                          (pathname-type  *parsed-class-table-output-pathname-type*)
+                                                          (timestamp-p t))
+  (let*  ((pathname-stamped  (make-pathname :name (or (and timestamp-p (concatenate 'string pathname-name "-" (MON:TIMESTAMP-FOR-FILE)))
+                                                      pathname-name)))
+          (pathname-and-type (make-pathname :name (pathname-name pathname-stamped) :type pathname-type))
+          (ensure-directory 
+            (or (and (eql base-output-directory (sub-path *parsed-tgm-theme-output-dir*))
+                     base-output-directory)
+                (or (UIOP:DIRECTORY-EXISTS-P base-output-directory)
+                    (MON:SIMPLE-ERROR-MON :w-sym '%write-parsed-tgm-theme-record-parse-table-to-file
+                                          :w-type 'function
+                                          :w-spec '("Arg BASE-OUTPUT-DIRECTORY did not satisfy `uiop:directory-exists-p'.~%"
+                                                    "   -- Declining to write to :FILE ~S~%"
+                                                    "   -- With contents of :HASH-TABLE ~S~%"
+                                                    "   -- To :DIRECTORY ~S")
+                                          :w-args `(,pathname-and-type ,hash-table ,base-output-directory)))))
+          (full-path (make-pathname :directory (pathname-directory ensure-directory)
+                                    :name (pathname-name pathname-stamped)
+                                    :type pathname-type))
+          (hash-table (or (and (eql hash-table *parsed-tgm-theme-record-hash-table*)
+                               (> (hash-table-count *parsed-tgm-theme-record-hash-table*) 0)
+                               *parsed-tgm-theme-record-hash-table*)
+                          (and (hash-table-p  *parsed-tgm-theme-record-hash-table*)
+                               (not (zerop (hash-table-count hash-table)))
+                               *parsed-tgm-theme-record-hash-table*)
+                          (MON:SIMPLE-ERROR-MON :w-sym '%write-parsed-tgm-theme-record-parse-table-to-file
+                                                :w-type 'function
+                                                :w-spec '("ARG HASH-TABLE not suitable. Failed to satisfy either "
+                                                          "`cl:hash-table-p' or `cl:zerop'  of it's `hash-table-count'.~%"
+                                                          "   -- Declining to write to :FILE ~S~%"
+                                                          "   -- IN :DIRECTORY ~S~%"
+                                                          "   -- With contents of :HASH-TABLE ~S~%")
+                                                :w-args `(,pathname-and-type ,base-output-directory ,hash-table)))))
+    (with-open-file (fl full-path :direction :output
+                                  :if-exists :supersede
+                                  :if-does-not-exist :create
+                                  :element-type 'character
+                                  :external-format :UTF-8)
+      (format fl ";;; :CLASS `~A'~%;;; :FILE-CREATED ~A~%~%"
+              'parsed-tgm-theme-record
+              (LOCAL-TIME:FORMAT-TIMESTRING nil (LOCAL-TIME:NOW)))
+      (loop
+        for obj being the hash-values of hash-table
+        for frmt-cntl = (print-sax-parsed-slots-padding-format-control obj)
+        do (print-sax-parsed-slots obj :stream fl :print-unbound nil :pre-padded-format-control frmt-cntl)
+           (write-char #\Newline fl)
+           (write-char #\Newline fl))
+      (values
+       full-path
+       pathname-and-type
+       hash-table))))
 
 ;; (tgm-parse-concept-count-slot-value-list-length 'broader-theme :hash-table *parsed-tgm-theme-record-hash-table*)
 (defun tgm-parse-concept-count-slot-value-list-length (slot &key (hash-table *parsed-tgm-theme-record-hash-table*))
@@ -932,10 +592,51 @@ themes recorded to the orginal dbc SQL table!~%~@
                      #'>
                      :key #'car))
          (length rslt)))))
-        
+
+
+;; 6900  :CONTROL-ID-THEME-ENTITY-DBC-NUM
+
+;; (load-parsed-theme-record-default-file-to-parse-table  :key-accessor 'CONTROL-ID-DISPLAY-THEME )
+;;  (parsed-class-parse-table 'parsed-theme-record)
+
 
+;; (defparameter *tt--matching-themes-table* (make-hash-table :test #'equal))
+;;
+;; Following finds all parsed-theme-record's with control-id-display-theme id's that aren't in *parsed-tgm-theme-record-hash-table*.
+;; (progn
+;;   (loop 
+;;    with hash-table-themes = (parsed-class-parse-table 'parsed-theme-record)
+;;    with hash-table-tgm = *parsed-tgm-theme-record-hash-table*
+;;    for theme-id being the hash-keys in hash-table-themes
+;;    for theme-obj being the hash-values in hash-table-themes
+;;     unless (gethash theme-id hash-table-tgm)
+;;     do (setf (gethash theme-id *tt--matching-themes-table*) theme-obj))
+;;   *tt--matching-themes-table*)
+
+;; (clrhash *tt--matching-themes-table*)
+
 
 #|
+
+
+*parsed-tgm-theme-xml-source-pathname*
+(tgm-parse-concepts-set-source-xml-file (merge-pathnames
+                                        (dbc::sub-path dbc::*parsed-tgm-theme-input-dir*)
+                                        (make-pathname :name "tgm1" :type "xml")))
+
+
+(tgm-parse-concepts-make-source)
+
+(tgm-parse-concept :stream *parsed-tgm-theme-xml-source*)
+
+(tgm-parse-concepts-in-stream  :stream *parsed-tgm-theme-xml-source*)
+
+
+(gethash "Accessories (Clothing & dress)" *parsed-tgm-theme-record-hash-table*)
+
+
+
+;;; ==============================
 
 ;facet-note
 (tgm-parse-concept-count-slot-value-list-length 'facet-note :hash-table *parsed-tgm-theme-record-hash-table*) -> nil
