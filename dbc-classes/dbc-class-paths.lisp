@@ -4,7 +4,6 @@
 
 
 (in-package #:dbc)
-;; *package*
 
 
 
@@ -186,7 +185,8 @@
                (MON:EACH-A-STRING (make-pathname :directory   `(:relative ,@sub-name)))
                (string (make-pathname :directory `(:relative ,sub-name))))
              chk-parent))
-      (MON::REF-BIND chk-sub (fad:directory-exists-p chk-parent)
+      ;;(MON::REF-BIND chk-sub (FAD:DIRECTORY-EXISTS-P chk-parent)
+      (MON::REF-BIND chk-sub (UIOP:DIRECTORY-EXISTS-P chk-parent)
         (setf sub-path chk-sub)
         (error 'system-path-error
                :w-sym 'system-parent-path-ensure
@@ -209,7 +209,8 @@
 ;; specialized on `asdf:load-op'. IOW by the time the `dbc:find-system-path'
 ;; form is evaluated the :dbc system _must_ present. And, if it isn't
 ;; `mon:pathname-directory-system' will make it so...
-;; However, `mon:pathname-directory-system' may eventually be rewritten because I misunderstood the semantics of which asdf:find-system
+;; However, `mon:pathname-directory-system' may eventually be rewritten because
+;; I misunderstood the semantics of which asdf:find-system
 (defun find-system-path ()
   (let* ((dbc-sys-chk
           (or ;; :NOTE what about `cl:*load-pathname*'?
@@ -243,7 +244,7 @@
 	       (setf *xml-output-dir* dbc-dump))
 	  (warn ":FUNCTION `system-path-xml-dump-dir-ensure' failed to initialize")))))
 
-;; This needs to have a restart that won't signal when we're simply reloading the system.
+;; :TODO This needs to have a restart that won't signal when we're simply reloading the system.
 (defun system-subdir-init-w-var (w-var &key sub-name parent-path)
   (unless dbc-build-system::*dbc-build-system-reloading-system*
     (and (or (and (not (symbolp w-var))
