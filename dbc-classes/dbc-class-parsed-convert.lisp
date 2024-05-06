@@ -362,7 +362,7 @@
            (and slot-value-to-file-name
                 (if pre-padded-format-control
                     pre-padded-format-control
-                    (print-sax-parsed-slots-padding-format-control object)))))
+                  (print-sax-parsed-slots-padding-format-control object)))))
     (when (and if-exists-rename
                slot-value-to-file-name
                (probe-file slot-value-to-file-name))
@@ -577,7 +577,7 @@
                                        (error ":FUNCTION `~S'~% -- did not find suitable directory containing parsed-table-dump-file"
                                               ',generated-name))))
                 (maybe-find-wilds
-                  (directory maybe-wild-pathname))
+                 (directory maybe-wild-pathname))
                 ;; (parsed-class-wild-pathname-pattern
                 ;;   ;; regex matching pathname-names with the format "<parsed-class>-YYYY-MM-DDTHHSSMM"
                 ;;   (format nil "^~(~A~)-2[0-9]{3}?-[0-9]{2}?-[0-9]{2}?T[0-9]{6}?$" ',parsed-class))
