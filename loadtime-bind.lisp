@@ -108,6 +108,7 @@
                               :parent-path (dbc::sub-path dbc::*parsed-tgm-theme-output-dir*))
    (terpri))
 
+;; `*parsed-tgm-theme-xml-source-pathname*'
 (tgm-parse-concepts-set-source-xml-file (merge-pathnames
                                         (dbc::sub-path dbc::*parsed-tgm-theme-input-dir*)
                                         (make-pathname :name "tgm1" :type "xml")))
@@ -223,13 +224,13 @@
       for def-slot in slot-sym-to-function
       do (setf (documentation def-slot 'function)
                (format nil 
-                      "Find slot value for :~S for instance of class `parsed-inventory-record' with HAShH-KEY in the associated hash-table for the class..~%~@
+                      "Find slot value for :~S for instance of class `parsed-inventory-record' with HAShH-KEY in the associated hash-table for the class.~%~@
  HASH-KEY is a string unless keyword WITH-STRING-INTEGER-COERCION is non-nil~%~@
  :EXAMPLE~%~@
    \(~S  \"666\"\)~%~@
    \(~S  \"666\" :with-string-integer-coercion t\)~%~@
- :SEE-ALSO `parsed-inventory-record-parse-table-lookup',`parsed-inventory-record-parse-table-lookup-slot-value', `parsed-class-parse-table-lookup-slot-value',
- ~{~<~%~1,100:; `~(~S~)'~>~^,~}.~%▶▶▶" slot-sym def-slot def-slot slot-sym-to-function )))))
+ :SEE-ALSO `parsed-inventory-record-parse-table-lookup',`parsed-inventory-record-parse-table-lookup-slot-value', 
+`parsed-class-parse-table-lookup-slot-value', ~{~<~%~1,100:; `~(~S~)'~>~^,~}.~%▶▶▶" slot-sym def-slot def-slot slot-sym-to-function )))))
 
 
 ;;; ==============================
@@ -305,8 +306,8 @@
 ;; `set-parsed-theme-record-slot-value'
 ;; `set-parsed-translation-for-inventory-record-slot-value'
 ;;
-
-;; loaders
+;;
+;; Loaders:
 ;; (load-parsed-inventory-record-default-file-to-parse-table)
 ;; (load-parsed-artist-record-default-file-to-parse-table)
 ;; (load-parsed-author-record-default-file-to-parse-table)
@@ -317,8 +318,8 @@
 ;; (load-parsed-technique-record-default-file-to-parse-table)
 ;; (load-parsed-documentation-record-default-file-to-parse-table)
 ;; (load-parsed-translation-for-inventory-record-default-file-to-parse-table)
-
-;; writers
+;;
+;; Writers:
 ;; (write-parsed-inventory-record-parse-table-to-file)
 ;; (write-parsed-artist-record-parse-table-to-file)
 ;; (write-parsed-author-record-parse-table-to-file)
@@ -340,7 +341,8 @@
 ;;   (write-sax-parsed-inventory-record-hash-to-zero-padded-directory 
 ;;    (parsed-class-parse-table 'parsed-inventory-record)))
 ;; 
-;;  :NOTE inspect `*parsed-class-parse-table*' to understand schema and dispatch mechanisms around it.   (documentation '*parsed-class-parse-table* 'variable)
+;;  :NOTE inspect `*parsed-class-parse-table*' to understand schema and dispatch mechanisms around it.   
+;;   (documentation '*parsed-class-parse-table* 'variable)
 ;;   (gethash 'parsed-inventory-record *parsed-class-parse-table*)
 ;;
 ;;; ==============================
@@ -1105,7 +1107,7 @@
   matching one of the following:~%
  \"Century Himalayas\"  \"Birds of New Guinea\" \"Birds of Europe\"
  \"Birds of Great Britain\" \"Birds of Australia\"~%"
-  (let ((results (alexandria:mappend #'(lambda (coref)
+  (let ((results (ALEXANDRIA:MAPPEND #'(lambda (coref)
                           (parsed-class-slot-value-collect-string= 
                            'parsed-inventory-record 
                            'category-entity-3-coref coref))
