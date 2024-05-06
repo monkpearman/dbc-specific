@@ -253,7 +253,7 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
 (eval-when (:compile-toplevel :load-toplevel :execute)
 
 (defun %parsed-class-set-slot-value-format-and-intern-symbol (parsed-class)
-  (alexandria:format-symbol (find-package "DBC") "~:@(SET-~A-SLOT-VALUE~)" parsed-class))
+  (ALEXANDRIA:FORMAT-SYMBOL (find-package "DBC") "~:@(SET-~A-SLOT-VALUE~)" parsed-class))
 
 (defun %parsed-class-documenting-set-parsed-class-record-slot-value-function (parsed-class generated-name)
   (let* ((example-accessor (mon:last-elt (accessors-of-parsed-class parsed-class)))
@@ -315,7 +315,7 @@ OBJECT to FIELD-VALUE as if by the following expression:~%~% ~
     `(defun ,generated-name (field-string field-value object)
        ,docstring
        (values
-        (string-case:string-case (field-string)
+        (STRING-CASE:STRING-CASE (field-string)
           ,@body-forms)
           object))))
 
