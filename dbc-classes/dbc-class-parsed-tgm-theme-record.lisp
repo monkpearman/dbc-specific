@@ -458,8 +458,7 @@ The interface for functions defined herein is as follows:
             ((equal "NON-DESCRIPTOR" peek-val)
              (progn
                (%tgm-sec-helper object (tgm-assoc-elt peek-val) 1 (tgm-peeking :stream stream) stream)
-               (setf (control-id-display-theme object) (non-descriptor object))
-               ))
+               (setf (control-id-display-theme object) (non-descriptor object))))
             ((member peek-val mapping :test #'string=)
              (%tgm-sec-helper object (tgm-assoc-elt peek-val :mapping mapping) 1 (tgm-peeking :stream stream) stream))
             ;; This shouldnt ever happen. print a message to standard out, and
@@ -477,30 +476,30 @@ The interface for functions defined herein is as follows:
       for reading = (tgm-peek-start-element-and-maybe-add-to-slot current-object :stream stream)
       until (null reading))
     (if  (slot-boundp current-object 'control-id-display-theme)
-        ;; Don't set the slot value and don't return object if we never found an
-        ;; XML value for control-id-display-theme when parsing current concept.
-        (values current-object (control-id-display-theme current-object))
-      ;; Instead, return NIL. Doing so lets us drop out of the file parsing loop by
-      ;; calling functions, eg: (loop  unitl (null tgm-parse-concept :stream stream) ...)
-      (values nil nil))))
+         ;; Don't set the slot value and don't return object if we never found an
+         ;; XML value for control-id-display-theme when parsing current concept.
+         (values current-object (control-id-display-theme current-object))
+        ;; Instead, return NIL. Doing so lets us drop out of the file parsing loop by
+        ;; calling functions, eg: (loop  unitl (null tgm-parse-concept :stream stream) ...)
+        (values nil nil))))
 
 (defun tgm-parse-concepts-update-unbound-slots (&key (hash-table *parsed-tgm-theme-record-hash-table*))
   (let ((class-slots (MON:CLASS-SLOT-LIST 'parsed-tgm-theme-record)))
-  (loop with ht = hash-table ;*parsed-tgm-theme-record-hash-table*
-        for obj-id being the hash-keys in ht
-        for obj being the hash-values in ht
-        when (loop  with obj-inner = obj
-                    with obj-inner-id = obj-id
-                    for slot in class-slots
-                    unless (slot-boundp  obj-inner slot)
-                    do (setf (slot-value obj-inner  slot) nil)
-                    and count obj-inner-id into cnt
-                    end
-                    finally (return (if (> cnt 0) cnt nil)))
-        ;; collect it into outer-gather
-        count it into outer-count
-        end
-        finally (return outer-count))))
+    (loop with ht = hash-table
+          for obj-id being the hash-keys in ht
+          for obj being the hash-values in ht
+          when (loop with obj-inner = obj
+                     with obj-inner-id = obj-id
+                     for slot in class-slots
+                     unless (slot-boundp  obj-inner slot)
+                     do (setf (slot-value obj-inner  slot) nil)
+                     and count obj-inner-id into cnt
+                     end
+                     finally (return (if (> cnt 0) cnt nil)))
+          ;; collect it into outer-gather
+          count it into outer-count
+          end
+          finally (return outer-count))))
 
 ;; (tgm-parse-concept :stream *parsed-tgm-theme-xml-source*)
 ;; (tgm-parse-concepts-in-stream :stream *parsed-tgm-theme-xml-source*)
@@ -551,9 +550,9 @@ The interface for functions defined herein is as follows:
           (hash-table (or (and (eql hash-table *parsed-tgm-theme-record-hash-table*)
                                (> (hash-table-count *parsed-tgm-theme-record-hash-table*) 0)
                                *parsed-tgm-theme-record-hash-table*)
-                          (and (hash-table-p  *parsed-tgm-theme-record-hash-table*)
+                          (and (hash-table-p  hash-table)
                                (not (zerop (hash-table-count hash-table)))
-                               *parsed-tgm-theme-record-hash-table*)
+                               hash-table)
                           (MON:SIMPLE-ERROR-MON :w-sym '%write-parsed-tgm-theme-record-parse-table-to-file
                                                 :w-type 'function
                                                 :w-spec '("ARG HASH-TABLE not suitable. Failed to satisfy either "
