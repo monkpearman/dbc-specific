@@ -1113,8 +1113,8 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
 `parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
 
-(fundoc 'Parsed-class-slot-value-count-equal
-" <DOCSTR> ~%~@
+(fundoc 'parsed-class-slot-value-count-equal
+        "Count number of CLASS instances with SLOT value `cl:equal' to MATCH-VALUE~%
 :EXAMPLE~%~@
 \(parsed-class-slot-value-count-equal 'parsed-inventory-record 'category-entity-3-coref  \"Birds of New Guinea\"\) ~%~@
 `parsed-class-slot-value-sort-unique-numeric-string-sequence',
