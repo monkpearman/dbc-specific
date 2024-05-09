@@ -128,6 +128,11 @@ The interface for functions defined herein is as follows:
 
 (defparameter *parsed-tgm-theme-xml-source* nil)
 
+;; :NOTE The current TGM file contains 13203 concepts.
+(defparameter *parsed-tgm-theme-record-hash-table*
+              #-sbcl(make-hash-table :test #'equal :synchronized t)
+              #+sbcl(make-hash-table :size (MON:PRIME-OR-NEXT-GREATEST 13202) :test #'equal :synchronized t))
+
 (defvar *parsed-tgm-theme-field-to-accessor-table*
   '(("DESCRIPTOR"      . control-id-display-theme)
     ("NON-DESCRIPTOR"  . non-descriptor)
@@ -158,33 +163,13 @@ The interface for functions defined herein is as follows:
     ("__IGNORED-5"     . edit-timestamp)
     ("__IGNORED-6"     . control-id-theme-entity-dbc-num)))
 
+;; :TODO once we have finalized the TGM parse we can begin unifying instances of
+;; `parsed-tgm-theme-record' with instances of `parsed-theme-record'. we will
+;; start by making `parsed-tgm-theme-record' a subclass of `parsed-class'
+;; and then uncommeing following `make-parsed-class-field-slot-accessor-mapping' form:
+;;
 ;; (make-parsed-class-field-slot-accessor-mapping 'parsed-tgm-theme-record *parsed-tgm-theme-field-to-accessor-table*)
-
-;; :NOTE The current TGM file contains 13203 concepts.
-(defparameter *parsed-tgm-theme-record-hash-table*
-              #-sbcl(make-hash-table :test #'equal :synchronized t)
-              #+sbcl(make-hash-table :size (MON:PRIME-OR-NEXT-GREATEST 13202) :test #'equal :synchronized t))
-
-(defun tgm-parse-concepts-set-source-xml-file (pathname)
-  (and (or (pathnamep pathname)
-               (error ":FUNCTION `tgm-parse-concepts-set-source-xml-file' -- arg PATHNAME does not satisfy `cl:pathnamep' -- :GOT ~S~%" pathname))
-       (or (probe-file pathname)
-               (error (concatenate 'string ":FUNCTION `tgm-parse-concepts-set-source-xml-file' unable to set~%"
-                                   ":VARIABLE `*parsed-tgm-theme-xml-source-pathname*'~%:PATHNAME ~S supplied did not satisfy `cl:probe-file'.~%")
-                      pathname))
-       (setf *parsed-tgm-theme-xml-source-pathname* pathname)))
-        
-(defun tgm-parse-concepts-make-source ()
-  (unless (and (not (null *parsed-tgm-theme-xml-source-pathname*))
-               (pathnamep *parsed-tgm-theme-xml-source-pathname*))
-    (MON:SIMPLE-ERROR-MON :w-sym 'tgm-parse-concepts-make-source
-                          :w-type 'function
-                          :w-spec (concatenate 'string "Attempting to set Value of parameter `*parsed-tgm-theme-xml-source*',~%"
-                                               "but `*parsed-tgm-theme-xml-source-pathname*' either null or does not satisfy `cl:pathnamep'.")
-                          :w-got *parsed-tgm-theme-xml-source-pathname* :w-type-of t))
-  (when (typep  *parsed-tgm-theme-xml-source* 'cxml::cxml-source)
-    (klacks:close-source  *parsed-tgm-theme-xml-source*))
-  (setf *parsed-tgm-theme-xml-source* (cxml:make-source  *parsed-tgm-theme-xml-source-pathname* :pathname t)))
+;;
 
 
 ;;; ==============================
@@ -325,7 +310,6 @@ The interface for functions defined herein is as follows:
     :documentation #.(classdoc 'parsed-tgm-theme-record :control-id-theme-entity-dbc-num)))
   (:documentation #.(classdoc 'parsed-tgm-theme-record :class-doc)))
 
-
 (defun %print-parsed-tgm-theme-record-helper (object stream)
   (let ((disp (and (slot-boundp object 'control-id-display-theme)
                    (slot-value  object 'control-id-display-theme))))
@@ -336,6 +320,28 @@ The interface for functions defined herein is as follows:
 (defmethod print-object ((object parsed-tgm-theme-record) stream)
   (print-unreadable-object (object stream :type t)
     (%print-parsed-tgm-theme-record-helper object stream)))
+
+
+(defun tgm-parse-concepts-set-source-xml-file (pathname)
+  (and (or (pathnamep pathname)
+               (error ":FUNCTION `tgm-parse-concepts-set-source-xml-file' -- arg PATHNAME does not satisfy `cl:pathnamep' -- :GOT ~S~%" pathname))
+       (or (probe-file pathname)
+               (error (concatenate 'string ":FUNCTION `tgm-parse-concepts-set-source-xml-file' unable to set~%"
+                                   ":VARIABLE `*parsed-tgm-theme-xml-source-pathname*'~%:PATHNAME ~S supplied did not satisfy `cl:probe-file'.~%")
+                      pathname))
+       (setf *parsed-tgm-theme-xml-source-pathname* pathname)))
+        
+(defun tgm-parse-concepts-make-source ()
+  (unless (and (not (null *parsed-tgm-theme-xml-source-pathname*))
+               (pathnamep *parsed-tgm-theme-xml-source-pathname*))
+    (MON:SIMPLE-ERROR-MON :w-sym 'tgm-parse-concepts-make-source
+                          :w-type 'function
+                          :w-spec (concatenate 'string "Attempting to set Value of parameter `*parsed-tgm-theme-xml-source*',~%"
+                                               "but `*parsed-tgm-theme-xml-source-pathname*' either null or does not satisfy `cl:pathnamep'.")
+                          :w-got *parsed-tgm-theme-xml-source-pathname* :w-type-of t))
+  (when (typep  *parsed-tgm-theme-xml-source* 'cxml::cxml-source)
+    (klacks:close-source  *parsed-tgm-theme-xml-source*))
+  (setf *parsed-tgm-theme-xml-source* (cxml:make-source  *parsed-tgm-theme-xml-source-pathname* :pathname t)))
 
 
 ;; (tgm-assoc-elt "DESCRIPTOR")
