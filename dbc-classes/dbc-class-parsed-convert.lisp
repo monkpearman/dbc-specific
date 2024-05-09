@@ -193,11 +193,6 @@
                       (MON:CLASS-SLOT-LIST object)))
          value-column-overage))
 
-;; (let ((object 'parsed-inventory-record))
-;;   (list (+ (reduce #'max (map 'list #'(lambda (x) (length (string x))) (mon:class-slot-list (find-class object)))) 4)
-;;         (+ (reduce #'max (map 'list #'(lambda (x) (length (string x))) (accessors-of-parsed-class object))) 4)))
-
-
 (defun print-sax-parsed-slots-padding-format-control (object &key (value-column-overage 4))
   (declare ((unsigned-byte 4) value-column-overage))
   (format nil "~~&(~~{~~{:~~~D:A~~S~~}~~^~~%~~})"
@@ -238,13 +233,6 @@
           slot-for-file-name-value
           (MON:TIMESTAMP-FOR-FILE)))
 
-;;
-;;; :FILE-CREATED <Timestamp: #{2012-03-02T11:55:04-05:00Z}#{12095} - by MON>
-;; (mon:timestamp)
-;; "<Timestamp: #{2012-03-02T11:56:02+05:00Z} - by MON>"
-;;  #P"/mnt/RMT-PILOT-SHR/Ohio-State-auction-2012-February/lot-images-unsorted/IMG_0046.JPG")
-;;
-
 ;; (write-sax-parsed-slots-to-file (gethash "12393" *tt--parse-table*)
 ;;                                 ;;:prefix-for-file-name "bubba"
 ;;                                 ;; :slot-for-file-name 'naf-entity-artist-coref ;warns and bails
@@ -256,8 +244,7 @@
 ;; Following example is a one off version `write-sax-parsed-inventory-record-hash-to-zero-padded-directory'
 ;; The example writes slot values of one inventory record in the
 ;; parsed-class-parse-table for class parsed-inventory-record if its
-;; :IMAGE-DIRECTORY-PATHNAME is non-nil (parsed-class-parse-table
-;; 'parsed-inventory-record)
+;; :IMAGE-DIRECTORY-PATHNAME is non-nil (parsed-class-parse-table 'parsed-inventory-record)
 ;;
 ;; (let* ((current-object (%get-inventory-record "12413"))
 ;;        (with-image-directory
@@ -498,29 +485,10 @@
                       :direction :input
                       :element-type 'character
                       :external-format :UTF-8)
-    ;; (let ((new-hash (make-hash-table :test (hash-table-test hash-table)
-    ;;                                  :size (hash-table-size hash-table))))
-    ;;   (loop
-    ;;     for key being the hash-keys in hash-table using (hash-value val)
-    ;;     do (setf (gethash key new-hash) val))
-    ;;   (unwind-protect
-    ;;        (loop
-    ;;          for x = (read fl nil 'EOF)
-    ;;          until (eql x 'EOF)
-    ;;          do (let ((obj (and x ;; paranoia in case x was the empty list.
-    ;;                             (apply #'make-instance parsed-class x))))
-    ;;               (and obj
-    ;;                    (setf (gethash (funcall key-accessor obj) hash-table) obj)))
-    ;;          finally (return (values hash-table (hash-table-count hash-table))))
-    ;; The setf here fails why?
-    ;;     (values (setf hash-table new-hash)
-    ;;                    (format nil ":FUNCTION `load-parsed-class-default-file-to-hash-table' errored when reading INPUT-FILE: ~
-    ;;                                    ~A~% reverting to original value of HASH-TABLE with all key/val pairs unchanged"
-    ;;                              input-file))))))
     (loop
-      for x = (read fl nil 'EOF)
+     for x = (read fl nil 'EOF)
       until (eql x 'EOF)
-      do (let ((obj (and x ;; paranoia in case x was the empty list.
+      do (let ((obj (and x ; paranoia in case x was the empty list.
                          (apply #'make-instance parsed-class x))))
            (and load-verbose
                 (print obj))
@@ -652,15 +620,6 @@
       (maphash #'hash-file-writer hash-table))
     (coerce file-namestrings 'list)))
 
-;; (funcall #'(lambda (&key (x 1) (y (+ x 1))) y)) => 3
-;; (funcall #'(lambda (&key (y (+ x 1)) (x 1)) y) :y 8) => 8
-;; (funcall #'(lambda (&key (y (+ x 1)) (x 1)) y)) => error
-;; (funcall #'(lambda (&key y (x 1) &aux (y (+ (or y 0) x 2))) y)) => 3
-;; (funcall #'(lambda (&key y (x 1) &aux (y (+ (or y 0) x 2))) y) :y 4) => 7
-;; (funcall #'(lambda (&key (y nil y-supplied-p) (x 1) &aux (y (if (and y y-supplied-p)
-;;                                                                 y
-;;                                                                 (+ (or y 0) x 2)))) y) :y 4) => 4
-;;
 ;; :NOTE At this point call this a sax related function is a complete
 ;; misnomer... we're no longer really using the early raw sax parses _AT ALL_.
 ;; IOW the name of this function really sux and I have alot of trouble
@@ -829,8 +788,6 @@
 ;;          do (push (slot-value existing-object-with-values accessor) changed))
 ;;     finally (return changed))
 ;;
-;; (equal "ABC" "abc")
-;; (equal (cons "a" nil) (list "a"))
 (defmacro def-parsed-class-record-xml-dump-file-and-hash (&key parsed-class
                                                                default-key-accessor
                                                                default-input-pathname-name
@@ -841,16 +798,9 @@
                                                                ;; (output-pathname-type "lisp")
                                                                ;; (set-parsed-class-parse-table t)
                                                                )
-  ;; let* to ensure `%parsed-class-dumper-format-and-intern-symbol' evaluated at macroexpansion time.
-  ;; (let* ((generated-name (%parsed-class-dumper-format-and-intern-symbol parsed-class))
-  ;; :NOTE PARSED-CLASS' `parsed-class-slot-dispatch-function' may need to
-  ;; be evaluated at macroexpansion time.
-  ;; (dispatch-fun   (parsed-class-slot-dispatch-function parsed-class)))
-  ;;)
   (let ((generated-name (ALEXANDRIA:FORMAT-SYMBOL (find-package "DBC")
                                                   "~:@(~A-XML-DUMP-FILE-AND-HASH~)"
-                                                  parsed-class))
-        );; (dispatch-fun (parsed-class-slot-dispatch-function parsed-class)))
+                                                  parsed-class)))
     `(defun ,generated-name (&key (input-file (make-pathname
                                                :directory (pathname-directory (sub-path *xml-input-dir*))
                                                :name ,default-input-pathname-name))
@@ -871,8 +821,6 @@
                                 :pathname-name-dated-p output-pathname-dated-p
                                 :pathname-type output-pathname-type))))
               (parsed-hash  (make-hash-table :test 'equal :size (MON:PRIME-OR-NEXT-GREATEST (caddr parsed-xml-file)))))
-         ;; (loaded-hash
-         ;; (multiple-value-list
          (let ((dispatch-fun (parsed-class-slot-dispatch-function ',parsed-class)))
            (load-sax-parsed-xml-file-to-parsed-class-hash
             :parsed-class ',parsed-class
@@ -884,7 +832,6 @@
             :slot-dispatch-function dispatch-fun))
          (values
           (if set-parsed-class-parse-table
-              ;; (setf (gethash ',parsed-class *parsed-class-parse-table*) parsed-hash)
               (setf (parsed-class-parse-table ',parsed-class) parsed-hash)
               parsed-hash)
           (cadr  parsed-xml-file)
