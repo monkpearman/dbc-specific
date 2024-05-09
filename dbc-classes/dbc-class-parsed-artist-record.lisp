@@ -18,6 +18,7 @@
 
 (in-package #:dbc)
 
+;; (make-instance 'parsed-artist-record)
 ;; (length (mon:class-slot-list 'parsed-artist-record))
 
 ;; To get at just the string of the original field:
@@ -25,7 +26,6 @@
 ;;   (replace-match "\\2"))
 ;;
 (defclass parsed-artist-record (parsed-naf-entity)
-
   (
    ;; control-id-indexed-artist
    (control-id-entity-num-artist
@@ -253,7 +253,7 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
     ;; (declare (mon:string-or-null control-num-if))
     ;; (print-unreadable-object (object stream :type t :identity (not control-num-if))
     ;;   (format stream "~S" control-num-if))))
-    (declare (mon:string-or-null control-num control-id-display))
+    (declare (MON:STRING-OR-NULL control-num control-id-display))
     (print-unreadable-object (object stream :type t :identity (not control-num))
       (format stream ":CONTROL-ID-ENTITY-NUM ~S :CONTROL-ID-DISPLAY-NAME ~S" control-num control-id-display))))
 
