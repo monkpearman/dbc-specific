@@ -108,11 +108,11 @@
 ;;     base-entity
 ;;     base-control-id
 ;;     system-object-uuid
+;;; ==============================
 
 
 
 (in-package #:dbc)
-;; *package*
 
 
 ;;;; The class SYSTEM-OBJECT-UUID
@@ -130,7 +130,7 @@
 ;;
 ;; :NOTE This class was originally named `uuid-namespace-control-id' which
 ;; coupled nicely with `base-control-id' and it's slots
-;; `control-id-namespace-required' and `control-id-namespace' but we found the
+;; `control-id-namespace-required' and `control-id-namespace', but we found the
 ;; original to be unwieldly once we started defining methods which specialized
 ;; `uuid-namespace-control-id'.
 ;; So, despite the use of "system-" as a prefix for this class and it's
@@ -195,17 +195,18 @@
 ;; mon:symbol-not-null-or-string-not-empty
 ;; mon::%fast-string-all-whitespace-p
 (defun %verify-valid-string-or-symbol-for-identity (verify-identity)
-  (declare #+:IS-MON(type mon:symbol-not-null-or-string-not-empty verify-identity)
+  (declare #+:IS-MON(type MON:SYMBOL-NOT-NULL-OR-STRING-NOT-EMPTY verify-identity)
            #-:IS-MON(type (or string (and symbol (not null))) verify-identity))
-  #+:IS-MON(unless (mon:symbol-not-null-or-string-not-empty-p verify-identity)
+  #+:IS-MON(unless (MON:SYMBOL-NOT-NULL-OR-STRING-NOT-EMPTY-P verify-identity)
            (error "arg IDENTITY did not satisfy `mon:symbol-not-null-or-string-not-empty-p'"))
   #-:IS-MON(when (and (stringp verify-identity)
                     (string= (make-string 0) verify-identity))
            (error "arg IDENTITY did not satisfy `mon:symbol-not-null-or-string-not-empty-p'"))
   (if (stringp verify-identity)
-      (if #+:IS-MON(mon::%fast-string-all-whitespace-p verify-identity)
+      (if #+:IS-MON(MON::%FAST-STRING-ALL-WHITESPACE-P verify-identity)
           #-:IS-MON(loop for char across verify-identity
                          always (member char (list #\SPACE #\NEWLINE #\TAB #\RETURN #\NO-BREAK_SPACE #\PAGE #\VT) :test 'char=))
+          ;; 
           (error "arg IDENTITY must not be contained of all whitespace characters")
           verify-identity)
       verify-identity))
@@ -217,7 +218,7 @@
       (slot-value sys-object 'system-identity-parent-uuid))))
 
 (defgeneric (setf system-identity-parent-uuid) (uuid sys-object)
-  (:method  ((uuid unicly:unique-universal-identifier) (sys-object system-object-uuid))
+  (:method  ((uuid UNICLY:UNIQUE-UNIVERSAL-IDENTIFIER) (sys-object system-object-uuid))
     (if (slot-exists-p sys-object 'system-identity-parent-uuid)
         (setf (slot-value sys-object 'system-identity-parent-uuid)
               uuid)
@@ -231,7 +232,7 @@
 
 (defgeneric (setf system-identity-uuid-byte-array) (byte-array sys-object)
   (:method ((byte-array array) (sys-object system-object-uuid))
-    (declare (unicly::uuid-byte-array-16 byte-array))
+    (declare (UNICLY::UUID-BYTE-ARRAY-16 byte-array))
     (if (slot-exists-p sys-object 'system-identity-uuid-byte-array)
         (setf (slot-value  sys-object 'system-identity-uuid-byte-array)
               byte-array)
@@ -246,7 +247,7 @@
 (defgeneric (setf system-identity-uuid-bit-vector) (uuid-bit-vector sys-object)
   
   (:method  ((uuid-bit-vector bit-vector) (sys-object system-object-uuid)) ; simple-bit-vector
-    (declare (unicly::uuid-bit-vector-128 uuid-bit-vector))
+    (declare (UNICLY::UUID-BIT-VECTOR-128 uuid-bit-vector))
     (if (slot-exists-p sys-object 'system-identity-uuid-bit-vector)
         (setf (slot-value sys-object 'system-identity-uuid-bit-vector)
               uuid-bit-vector)
@@ -254,9 +255,9 @@
 
   (:method :after
            ((uuid-bit-vector bit-vector) (sys-object system-object-uuid)) ; simple-bit-vector
-    (declare (unicly::uuid-bit-vector-128 uuid-bit-vector))
+    (declare (UNICLY::UUID-BIT-VECTOR-128 uuid-bit-vector))
     (let ((slot-value-if (system-identity-uuid-version sys-object))
-          (version-if    (unicly::uuid-version-bit-vector uuid-bit-vector)))
+          (version-if    (UNICLY::UUID-VERSION-BIT-VECTOR uuid-bit-vector)))
       (declare ((mod 6) version-if))
       (when (zerop version-if)
         (error "Declining to set value for slot SYSTEM-IDENTITY-UUID-VERSION ~
@@ -269,9 +270,9 @@
           (setf (system-identity-uuid-version sys-object) version-if)))))
 
 (defmethod (setf system-identity-uuid-bit-vector) :after ((uuid-bit-vector bit-vector) (sys-object system-object-uuid)) ; simple-bit-vector
-  (declare (unicly::uuid-bit-vector-128 uuid-bit-vector))
+  (declare (UNICLY::UUID-BIT-VECTOR-128 uuid-bit-vector))
   (let ((slot-value-if (system-identity-uuid-version sys-object))
-        (version-if    (unicly::uuid-version-bit-vector uuid-bit-vector)))
+        (version-if    (UNICLY::UUID-VERSION-BIT-VECTOR uuid-bit-vector)))
     (declare ((mod 6) version-if))
     (when (zerop version-if)
       (error "Declining to set value for slot SYSTEM-IDENTITY-UUID-VERSION ~
@@ -291,7 +292,7 @@
 
 (defgeneric (setf system-identity-uuid-integer) (uuid-integer-128 sys-object)
   (:method  ((uuid-integer-128 bignum) (sys-object system-object-uuid))
-    (declare (unicly::uuid-ub128 uuid-integer-128))
+    (declare (UNICLY::UUID-UB128 uuid-integer-128))
     (if (slot-exists-p sys-object 'system-identity-uuid-integer)
         (setf (slot-value sys-object 'system-identity-uuid-integer)
               uuid-integer-128)
@@ -325,10 +326,10 @@
 
   ;; (:method  ((integer integer) (sys-object system-object-uuid))
   (:method  ((version-integer fixnum) (sys-object system-object-uuid))
-    (declare (type unicly::uuid-version-int version-integer))
+    (declare (type UNICLY::UUID-VERSION-INT version-integer))
     ;; :NOTE Specializing on fixnum should prevent us from ever seeing the null-uuid here.
     ;; Also, we don't allow v1 or v2 UUID's here either.
-    (unless (typep version-integer 'unicly::uuid-v3-4-or-5-int)
+    (unless (typep version-integer 'UNICLY::UUID-V3-4-OR-5-INT)
       (error "Declining to set value for slot SYSTEM-IDENTITY-UUID-VERSION.~%~
                 Version is non-valid for class `system-object-uuid'~% got: ~A~%"
              version-integer))
@@ -338,11 +339,11 @@
         version-integer))
   
   (:method  ((uuid-bit-vector bit-vector) (sys-object system-object-uuid))
-    (declare (unicly::uuid-bit-vector-128 uuid-bit-vector))
-    (let ((bv-version (unicly::uuid-version-bit-vector  uuid-bit-vector)))
-      (declare (type (or unicly::uuid-version-int null) bv-version))
+    (declare (UNICLY::UUID-BIT-VECTOR-128 uuid-bit-vector))
+    (let ((bv-version (UNICLY::UUID-VERSION-BIT-VECTOR  uuid-bit-vector)))
+      (declare (type (or UNICLY::UUID-VERSION-INT null) bv-version))
       ;; :NOTE  We don't allow null-uuid, v1, or v2 UUID's.
-      (unless (typep bv-version 'unicly::uuid-v3-4-or-5-int)
+      (unless (typep bv-version 'UNICLY::UUID-V3-4-OR-5-INT)
         (error "Declining to set value for slot SYSTEM-IDENTITY-UUID-VERSION.~%~
                 Version is non-valid for class `system-object-uuid'~% got: ~A~%"
                bv-version))
@@ -380,32 +381,32 @@
     (declare (type list namespace-and-identity))
     (destructuring-bind (namespace identity) namespace-and-identity ;; (list (make-v4-uuid)  "<IDENTITY>")
       (declare ((and (or string symbol) (not null)) identity)
-               (unicly:unique-universal-identifier namespace))
+               (UNICLY:UNIQUE-UNIVERSAL-IDENTIFIER namespace))
       (%verify-valid-string-or-symbol-for-identity identity)
-      (let ((new-namespace       (unicly:make-v5-uuid namespace (if (symbolp identity) 
+      (let ((new-namespace       (UNICLY:MAKE-V5-UUID namespace (if (symbolp identity) 
                                                                     (string identity)
                                                                     identity)))
             (old-id-slot         (and (slot-exists-p sys-object 'system-identity)
-                                      (slot-boundp  sys-object 'system-identity)
+                                      (slot-boundp  sys-object  'system-identity)
                                       (system-identity sys-object)))
             (old-base-namespace  (and (slot-exists-p sys-object 'system-identity-parent-uuid)
-                                      (slot-boundp  sys-object 'system-identity-parent-uuid)
+                                      (slot-boundp  sys-object  'system-identity-parent-uuid)
                                       (system-identity-parent-uuid sys-object)))
             ;; We might not have any slots set or only some, so get all of them.
             (old-namespace-slot  (and (slot-exists-p sys-object 'system-identity-uuid)
-                                      (slot-boundp  sys-object 'system-identity-uuid)
+                                      (slot-boundp  sys-object  'system-identity-uuid)
                                       (system-identity-uuid sys-object)))
             (old-byte-array-slot (and (slot-exists-p sys-object 'system-identity-uuid-byte-array)
-                                      (slot-boundp  sys-object 'system-identity-uuid-byte-array)
+                                      (slot-boundp  sys-object  'system-identity-uuid-byte-array)
                                       (system-identity-uuid-byte-array sys-object)))
             (old-bit-vector-slot (and (slot-exists-p sys-object 'system-identity-uuid-bit-vector)
-                                      (slot-boundp  sys-object 'system-identity-uuid-bit-vector)
+                                      (slot-boundp  sys-object  'system-identity-uuid-bit-vector)
                                       (system-identity-uuid-bit-vector sys-object)))
-            (old-integer-slot   (and (slot-exists-p sys-object 'system-identity-uuid-integer)
-                                     (slot-boundp  sys-object 'system-identity-uuid-integer)
+            (old-integer-slot   (and (slot-exists-p sys-object  'system-identity-uuid-integer)
+                                     (slot-boundp  sys-object   'system-identity-uuid-integer)
                                      (system-identity-uuid-integer sys-object)))
             (old-hex-string-slot (and (slot-exists-p sys-object 'system-identity-uuid-string-36)
-                                      (slot-boundp  sys-object 'system-identity-uuid-string-36)
+                                      (slot-boundp  sys-object  'system-identity-uuid-string-36)
                                       (system-identity-uuid-string-36 sys-object)))
             ;; (old-version-slot    (system-identity-uuid-version     sys-object))
             (new-namespace-slot  '()))
@@ -438,8 +439,7 @@
                   (progn
                     (setf (system-identity-parent-uuid sys-object) old-base-namespace)
                     ;; We set the slot-value explicitly instead of using the
-                    ;; method specialized because it would land us right back
-                    ;; here!  
+                    ;; method specialized because it would land us right back here!
                     ;; The slot system-object-uuid-identity no longer exists or its name has changed.
                     ;; It became either system-identity or system-identity-uuid.
                     ;; I'm pretty sure it is `system-identity' and the following change reflects that assumption.
@@ -456,9 +456,6 @@
                                (slot-boundp sys-object   'system-identity))
                       (slot-makunbound sys-object 'system-identity)))))))))))
 
-
-
-
 (defgeneric system-identity-uuid (sys-object)
   (:method  ((sys-object system-object-uuid))
     (when (slot-boundp sys-object 'system-identity-uuid)
@@ -471,14 +468,14 @@
   (:method  ((uuid-string string) (sys-object system-object-uuid))
 
             ;; :DARWWIN REENABL/e if we can get it to compile (declare (unicly::uuid-hex-string-36 uuid-string))
-    (let ((uuid-from-string (unicly:make-uuid-from-string uuid-string)))
-      (declare (unicly:unique-universal-identifier uuid-from-string))
+    (let ((uuid-from-string (UNICLY:MAKE-UUID-FROM-STRING uuid-string)))
+      (declare (UNICLY:UNIQUE-UNIVERSAL-IDENTIFIER uuid-from-string))
       (if (slot-exists-p sys-object 'system-identity-uuid)
           (setf (slot-value sys-object 'system-identity-uuid)
                 uuid-from-string)
           uuid-from-string)))
 
-  (:method  ((uuid unicly:unique-universal-identifier) (sys-object system-object-uuid))
+  (:method  ((uuid UNICLY:UNIQUE-UNIVERSAL-IDENTIFIER) (sys-object system-object-uuid))
     (if (slot-exists-p sys-object 'system-identity-uuid)
         (setf (slot-value sys-object 'system-identity-uuid)
               ;; make-sure we don't create eq UUID's
@@ -486,28 +483,28 @@
         uuid))
 
   (:method  ((uuid-byte-array array) (sys-object system-object-uuid))
-    (declare (unicly::uuid-byte-array-16 uuid-byte-array))
+    (declare (UNICLY::UUID-BYTE-ARRAY-16 uuid-byte-array))
     (let ((uuid-from-byte-array (uuid-from-byte-array uuid-byte-array)))
-      (declare (unicly:unique-universal-identifier uuid-from-byte-array))
+      (declare (UNICLY:UNIQUE-UNIVERSAL-IDENTIFIER uuid-from-byte-array))
       (if (slot-exists-p sys-object 'system-identity-uuid)
           (setf (slot-value sys-object 'system-identity-uuid)
                 uuid-from-byte-array)
           uuid-from-byte-array)))
 
   (:method  ((uuid-bit-vector bit-vector) (sys-object system-object-uuid))
-    (declare (unicly::uuid-bit-vector-128 uuid-bit-vector))
-    (let ((uuid-from-bv (unicly::uuid-from-bit-vector uuid-bit-vector)))
-      (declare (unicly:unique-universal-identifier uuid-from-bv))
+    (declare (UNICLY::UUID-BIT-VECTOR-128 uuid-bit-vector))
+    (let ((uuid-from-bv (UNICLY::UUID-FROM-BIT-VECTOR uuid-bit-vector)))
+      (declare (UNICLY:UNIQUE-UNIVERSAL-IDENTIFIER uuid-from-bv))
       (if (slot-exists-p sys-object 'system-identity-uuid)
           (setf (slot-value sys-object 'system-identity-uuid)
                 uuid-from-bv)
           uuid-from-bv)))
 
   (:method  ((integer-128 bignum) (sys-object system-object-uuid))
-    (declare (unicly::uuid-ub128 integer-128))
-    (let ((uuid-from-int (unicly::uuid-from-bit-vector 
-                          (unicly::uuid-integer-128-to-bit-vector integer-128))))
-      (declare (unicly:unique-universal-identifier uuid-from-int))
+    (declare (UNICLY::UUID-UB128 integer-128))
+    (let ((uuid-from-int (UNICLY::UUID-FROM-BIT-VECTOR 
+                          (UNICLY::UUID-INTEGER-128-TO-BIT-VECTOR integer-128))))
+      (declare (UNICLY:UNIQUE-UNIVERSAL-IDENTIFIER uuid-from-int))
       (if (slot-exists-p sys-object 'system-identity-uuid)
           (setf (slot-value sys-object 'system-identity-uuid)
                 uuid-from-int)
@@ -518,73 +515,70 @@
   ;; This was an early 
   ;; (find-method #'(setf system-identity-uuid) '(:after) '(t system-object-uuid))
   (:method  :after  ((uuid-arg t) (sys-object system-object-uuid))
-    (let* ((uuid-bv-prevent (unicly:uuid-to-bit-vector (system-identity-uuid sys-object)))
-           (uuid-bv    (if (unicly:uuid-bit-vector-128-p uuid-arg)
+    (let* ((uuid-bv-prevent (UNICLY:UUID-TO-BIT-VECTOR (system-identity-uuid sys-object)))
+           (uuid-bv    (if (UNICLY:UUID-BIT-VECTOR-128-P uuid-arg)
                            ;; if the uuid-arg is the same bv128 as the conversion don't re-trigger
-                           (if (unicly:uuid-bit-vector-eql uuid-arg uuid-bv-prevent)
+                           (if (UNICLY:UUID-BIT-VECTOR-EQL uuid-arg uuid-bv-prevent)
                                nil
                                uuid-arg)
                            uuid-bv-prevent))
-           (uuid-bytes (if (unicly:uuid-byte-array-16-p uuid-arg)
+           (uuid-bytes (if (UNICLY:UUID-BYTE-ARRAY-16-P uuid-arg)
                            (let* ((existing-slot    (system-identity-uuid-byte-array sys-object))
-                                  (existing-slot-bv (when existing-slot (unicly:uuid-byte-array-to-bit-vector existing-slot)))
+                                  (existing-slot-bv (when existing-slot (UNICLY:UUID-BYTE-ARRAY-TO-BIT-VECTOR existing-slot)))
                                   (ba-to-bv 
                                    (if existing-slot-bv
                                        nil
-                                       (unicly:uuid-byte-array-to-bit-vector uuid-arg))))
+                                       (UNICLY:UUID-BYTE-ARRAY-TO-BIT-VECTOR uuid-arg))))
                              (if existing-slot-bv
-                                 (if (unicly:uuid-bit-vector-eql existing-slot-bv uuid-bv-prevent)
+                                 (if (UNICLY:UUID-BIT-VECTOR-EQL existing-slot-bv uuid-bv-prevent)
                                      nil
                                      uuid-arg)
-                                 (if (unicly:uuid-bit-vector-eql ba-to-bv uuid-bv-prevent)
+                                 (if (UNICLY:UUID-BIT-VECTOR-EQL ba-to-bv uuid-bv-prevent)
                                      nil
                                      uuid-arg)))
-                           (unicly:uuid-bit-vector-to-byte-array uuid-bv-prevent)))
+                           (UNICLY:UUID-BIT-VECTOR-TO-BYTE-ARRAY uuid-bv-prevent)))
            (uuid-int   (if (typep uuid-arg 'bignum)
-                           (let* ((existing-slot    
-                                   (system-identity-uuid-integer sys-object))
+                           (let* ((existing-slot    (system-identity-uuid-integer sys-object))
                                   (existing-slot-bv
                                    (when existing-slot 
-                                     (unicly::uuid-integer-128-to-bit-vector existing-slot)))
+                                     (UNICLY::UUID-INTEGER-128-TO-BIT-VECTOR existing-slot)))
                                   (int-to-bv      
                                    (if existing-slot-bv
                                        nil
-                                       (unicly::uuid-integer-128-to-bit-vector uuid-arg))))
+                                       (UNICLY::UUID-INTEGER-128-TO-BIT-VECTOR uuid-arg))))
                              (if existing-slot-bv
-                                 (if (unicly:uuid-bit-vector-eql existing-slot-bv uuid-bv-prevent)
+                                 (if (UNICLY:UUID-BIT-VECTOR-EQL existing-slot-bv uuid-bv-prevent)
                                      nil
                                      uuid-arg)
-                                 (if (unicly:uuid-bit-vector-eql int-to-bv uuid-bv-prevent)
+                                 (if (UNICLY:UUID-BIT-VECTOR-EQL int-to-bv uuid-bv-prevent)
                                      nil
                                      uuid-arg)))
-                           (unicly::uuid-bit-vector-to-integer uuid-bv-prevent)))
+                           (UNICLY::UUID-BIT-VECTOR-TO-INTEGER uuid-bv-prevent)))
            ;;; DARWIN when binding DBC::UUID-HEX-36 [Condition of type TYPE-ERROR]
            (uuid-hex-36   (if (and (stringp uuid-arg)
-                                   (unicly::uuid-string-36-p (the string uuid-arg)))
+                                   (UNICLY::UUID-STRING-36-P (the string uuid-arg)))
                               (let* ((existing-slot
                                       (system-identity-uuid-string-36 sys-object))
                                      (existing-slot-bv 
                                       (when existing-slot 
-                                        (unicly::uuid-to-bit-vector (unicly:make-uuid-from-string existing-slot))))
+                                        (UNICLY::UUID-TO-BIT-VECTOR (UNICLY:MAKE-UUID-FROM-STRING existing-slot))))
                                      (hex-to-bv         
                                       (if existing-slot-bv
                                           nil
-                                          (unicly::uuid-to-bit-vector (unicly:make-uuid-from-string uuid-arg)))))
+                                          (UNICLY::UUID-TO-BIT-VECTOR (UNICLY:MAKE-UUID-FROM-STRING uuid-arg)))))
                                 (if existing-slot-bv
-                                    (if (unicly:uuid-bit-vector-eql existing-slot-bv uuid-bv-prevent)
+                                    (if (UNICLY:UUID-BIT-VECTOR-EQL existing-slot-bv uuid-bv-prevent)
                                         nil
                                         uuid-arg)
-                                    (if (unicly:uuid-bit-vector-eql hex-to-bv uuid-bv-prevent)
+                                    (if (UNICLY:UUID-BIT-VECTOR-EQL hex-to-bv uuid-bv-prevent)
                                         nil
                                         uuid-arg)))
-                            (unicly:uuid-princ-to-string (system-identity-uuid sys-object))
-
-                            )))
-      (declare (type (or unicly::uuid-byte-array-16 null)  uuid-bytes)
-               (type (or unicly::uuid-bit-vector-128 null) uuid-bv)
-               (type (or unicly::uuid-ub128 null)          uuid-int)
+                            (UNICLY:UUID-PRINC-TO-STRING (system-identity-uuid sys-object)))))
+      (declare (type (or UNICLY::UUID-BYTE-ARRAY-16 null)  uuid-bytes)
+               (type (or UNICLY::UUID-BIT-VECTOR-128 null) uuid-bv)
+               (type (or UNICLY::UUID-UB128 null)          uuid-int)
                ;; DARWIN UNCOMMENT AFTER IT WORKS
-               ;; (type (or unicly::uuid-hex-string-36 null)  uuid-hex-36)
+               ;; (type (or UNICLY::UUID-HEX-STRING-36 null)  uuid-hex-36)
                )
       (when (and uuid-bv (slot-exists-p sys-object 'system-identity-uuid-bit-vector)
                  (setf (system-identity-uuid-bit-vector sys-object) uuid-bv)))
@@ -598,41 +592,40 @@
                (system-identity sys-object))
           (if (and (slot-exists-p sys-object 'system-identity-parent-uuid)
                    (system-identity-parent-uuid sys-object))
-              ;; make sure that the namespace and identity evaluate to the
+              ;; Make sure that the namespace and identity evaluate to the
               ;; namespace we just set, and if not remove them.
               (unless (and (slot-exists-p sys-object 'system-identity-uuid-bit-vector)
-                           (slot-boundp sys-object 'system-identity-uuid-bit-vector)
+                           (slot-boundp sys-object   'system-identity-uuid-bit-vector)
                            (slot-exists-p sys-object 'system-identity-parent-uuid)
-                           (slot-boundp sys-object 'system-identity-parent-uuid)
+                           (slot-boundp sys-object   'system-identity-parent-uuid)
                            (slot-exists-p sys-object 'system-identity)
-                           (slot-boundp sys-object 'system-identity)
-                           (unicly::uuid-bit-vector-eql 
+                           (slot-boundp sys-object   'system-identity)
+                           (UNICLY::UUID-BIT-VECTOR-EQL
                             (system-identity-uuid-bit-vector sys-object)
-                            (uuid-to-bit-vector (make-v5-uuid (system-identity-parent-uuid sys-object)
+                            (UNICLY:UUID-TO-BIT-VECTOR (UNICLY:MAKE-V5-UUID (system-identity-parent-uuid sys-object)
                                                               (string (system-identity sys-object))))))
                 (when (slot-exists-p sys-object 'system-identity)
-                  (slot-makunbound sys-object 'system-identity))
+                  (slot-makunbound sys-object   'system-identity))
                 (when (slot-exists-p sys-object 'system-identity-parent-uuid)
-                  (slot-makunbound sys-object 'system-identity-parent-uuid)))
+                  (slot-makunbound sys-object   'system-identity-parent-uuid)))
 
               (when (slot-exists-p sys-object 'system-identity)
-                (slot-makunbound sys-object 'system-identity)))
+                (slot-makunbound sys-object   'system-identity)))
 
           ;; The control-identity isn't present, so if the base-namespace is as
           ;; well it shouldn't be
           (when (system-identity-parent-uuid sys-object)
             (slot-makunbound sys-object 'system-identity-parent-uuid)))
-
       uuid-arg)))
 
 ;; namespace-and-identity
 (defun update-system-object-uuid (sys-object &key base-namespace control-id)
   (declare (type system-object-uuid sys-object)
-           (type unicly:unique-universal-identifier base-namespace)
-           #+:IS-MON((or mon:string-not-null-empty-or-all-whitespace mon:symbol-not-null) control-id)
+           (type UNICLY:UNIQUE-UNIVERSAL-IDENTIFIER base-namespace)
+           #+:IS-MON((or MON:STRING-NOT-NULL-EMPTY-OR-ALL-WHITESPACE MON:SYMBOL-NOT-NULL) control-id)
            #-:IS-MON(type (or string (and symbol (not null))) control-id))
   ;; #-:mon (%verify-valid-string-or-symbol-for-identity identity)
-  (let ((new-nmspc (unicly:make-v5-uuid base-namespace 
+  (let ((new-nmspc (UNICLY:MAKE-V5-UUID base-namespace 
                                         (if (symbolp control-id) 
                                             (string control-id)
                                             control-id))))
@@ -641,15 +634,15 @@
   sys-object)
 
 ;;; ==============================
-;; DARWIN `make-system-object-uuid'  is having trouble using quoted symobl '*system-object-uuid-base-namespace* as value suppled fo keyword :control-id
-;; do we need to loosen the declaratiohs
+;; DARWIN `make-system-object-uuid'  is having trouble using quoted symobl '*system-object-uuid-base-namespace* as value suppled for keyword :control-id
+;; do we need to loosen the declarations?
 (defun make-system-object-uuid (&key base-namespace control-id)
   ;; (declare (unicly:unique-universal-identifier base-namespace)
   ;;          #+:IS-MON((or mon:string-not-null-empty-or-all-whitespace mon:symbol-not-null) control-id)
   ;;          #-:IS-MON(type (or string (and symbol (not null))) control-id))
   ;; #-:IS-MON (%verify-valid-string-or-symbol-for-identity identity)
   (let ((new-obj   (make-instance 'system-object-uuid))
-        (new-nmspc (unicly:make-v5-uuid base-namespace 
+        (new-nmspc (UNICLY:MAKE-V5-UUID base-namespace 
                                         (if (symbolp control-id) 
                                             (string control-id)
                                             control-id))))
@@ -659,22 +652,18 @@
 
 
 ;; (find-method #'system-object-uuid-description nil '(system-object-uuid))
-;; (let ((q (with-output-to-string (s) (system-object-uuid-description *control-id-artist-namespace* :stream s :verbose t)))
-;;       (y '())) 
-;;   (declare (ignore q))
-;;   y)
 (defmethod system-object-uuid-description ((sys-object system-object-uuid) &key stream verbose)
   (declare (type boolean verbose))
   (if (not verbose)
       (let* ((unbound "#<UNBOUND>")
              (sys-id-if (and (slot-exists-p sys-object 'system-identity)
-                             (slot-boundp  sys-object 'system-identity)
+                             (slot-boundp  sys-object  'system-identity)
                              (system-identity sys-object)))
              (sys-id     (if sys-id-if
                              (prin1-to-string sys-id-if)
                              unbound))
              (sys-id-uuid   (or (and (slot-exists-p sys-object 'system-identity-uuid)
-                                     (slot-boundp  sys-object 'system-identity-uuid)
+                                     (slot-boundp  sys-object  'system-identity-uuid)
                                      (system-identity-uuid sys-object))
                                 unbound)))
         (with-standard-io-syntax 
@@ -686,37 +675,37 @@
 
       (let* ((unbound "#<UNBOUND>")
              (sys-id-if (and (slot-exists-p sys-object 'system-identity)
-                             (slot-boundp  sys-object 'system-identity)
+                             (slot-boundp  sys-object  'system-identity)
                              (system-identity sys-object)))
              (sys-id     (if sys-id-if
                              (prin1-to-string sys-id-if)
                              unbound))
 
              (sys-id-uuid   (or (and (slot-exists-p sys-object 'system-identity-uuid)
-                                     (slot-boundp  sys-object 'system-identity-uuid)
+                                     (slot-boundp  sys-object  'system-identity-uuid)
                                      (system-identity-uuid sys-object))
                                 unbound))
              
              (byte-array    (or (and (slot-exists-p sys-object 'system-identity-uuid-byte-array)
-                                     (slot-boundp  sys-object 'system-identity-uuid-byte-array)
+                                     (slot-boundp  sys-object  'system-identity-uuid-byte-array)
                                      (system-identity-uuid-byte-array sys-object))
                                 unbound))
 
              (bit-vector    (or (and (slot-exists-p sys-object 'system-identity-uuid-bit-vector)
-                                     (slot-boundp  sys-object 'system-identity-uuid-bit-vector)
+                                     (slot-boundp  sys-object  'system-identity-uuid-bit-vector)
                                      (system-identity-uuid-bit-vector sys-object))
                                 unbound))
 
              (hex-string-if (and (slot-exists-p sys-object 'system-identity-uuid-string-36)
-                                 (slot-boundp  sys-object 'system-identity-uuid-string-36)
+                                 (slot-boundp  sys-object  'system-identity-uuid-string-36)
                                  (system-identity-uuid-string-36 sys-object)))
 
              (hex-string    (if hex-string-if
                                 (prin1-to-string hex-string-if)
                                 unbound))
-
+             
              (integer-128-if (and (slot-exists-p sys-object 'system-identity-uuid-integer)
-                                  (slot-boundp  sys-object 'system-identity-uuid-integer)
+                                  (slot-boundp  sys-object  'system-identity-uuid-integer)
                                   (system-identity-uuid-integer sys-object)))
              (integer-128    (if integer-128-if
                                  (let ((*print-base* 16)
@@ -725,12 +714,12 @@
                                  unbound))
 
              (parent-uuid    (or (and (slot-exists-p sys-object 'system-identity-parent-uuid)
-                                      (slot-boundp  sys-object 'system-identity-parent-uuid)
+                                      (slot-boundp  sys-object  'system-identity-parent-uuid)
                                       (system-identity-parent-uuid sys-object))
                                  unbound))
          
              (version-if    (and (slot-exists-p sys-object 'system-identity-uuid-version)
-                                 (slot-boundp  sys-object 'system-identity-uuid-version)
+                                 (slot-boundp  sys-object  'system-identity-uuid-version)
                                  (system-identity-uuid-version sys-object)))
              (version       (if version-if 
                                 (prin1-to-string version-if)
