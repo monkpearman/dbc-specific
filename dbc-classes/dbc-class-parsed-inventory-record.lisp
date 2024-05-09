@@ -518,11 +518,9 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
                        (slot-value object 'inventory-number)))
          (inv-num-if (and (stringp inv-num)
                           (control-id-indexed-number-zero-padded-string inv-num))))
-    (declare (mon:string-or-null inv-num-if))
+    (declare (MON:STRING-OR-NULL inv-num-if))
     (print-unreadable-object (object stream :type t :identity (not inv-num-if))
       (format stream "~S" inv-num-if))))
-
-
 
 ;; (parsed-class-slot-value-format-price (%get-inventory-record "12415") 'price-ask :prefix nil)
 ;; (parsed-class-slot-value-format-price (%get-inventory-record "12415") 'price-ask)
