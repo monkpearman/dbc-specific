@@ -5066,14 +5066,20 @@ contents erased as if by `cl:clrhash' before loading file.~%
 `tgm-characters-every-whitespace-p',`tgm-peek-start-element-and-maybe-add-to-slot',
 `tgm-parse-concept',`parsed-tgm-theme-record',`*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶")
 
-
-
 (fundoc 'tgm-parse-concepts-update-unbound-slots
   "Set all unbound `slot-value's to nil for instances of class
 `parsed-tgm-theme-record' in HASH-TABLE.
 Return the number of objects with unbound slots that were frobbed.
 Evaluated after succesful calls to `write-parsed-tgm-theme-record-parse-table-to-file'.~%
-:SEE-ALSO .~%▶▶▶")
+:SEE-ALSO `%print-parsed-tgm-theme-record-helper'.~%▶▶▶")
+
+(fundoc '%print-parsed-tgm-theme-record-helper
+"Helper function for `print-unreadable-object' of `parsed-tgm-theme-record' instances.~%~@
+:EXAMPLE~%~@
+\(%print-parsed-tgm-theme-record-helper 
+ \(make-instance 'parsed-tgm-theme-record :control-id-display-theme  \"FOO\"\) nil\)~%
+ \(make-instance 'parsed-tgm-theme-record\)~%
+:SEE-ALSO `tgm-parse-concepts-update-unbound-slots'.~%▶▶▶")
 
 (fundoc  'tgm-parse-concept-count-slot-value-list-length
 "Loop over key/val pairs of HASH-TABLE gathering slot-value's for
