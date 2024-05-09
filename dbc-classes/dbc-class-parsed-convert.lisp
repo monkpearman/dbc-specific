@@ -552,8 +552,7 @@
                                                                   ;;  (merge-pathnames(make-pathname :directory '(:relative "parsed-class-table-dumps"))(dbc::sub-path dbc::*xml-output-dir*)))
                                                                   ;;(default-pathname-type "pctd")
                                                                   (default-input-pathname-base-directory (sub-path *parsed-class-table-output-dir*))
-                                                                  (default-pathname-type  *parsed-class-table-output-pathname-type*)
-
+                                                                  (default-pathname-type  *parsed-class-table-output-pathname-type*))
   (let ((generated-name (ALEXANDRIA:FORMAT-SYMBOL (find-package "DBC")
                                                   "~:@(LOAD-~A-DEFAULT-FILE-TO-PARSE-TABLE~)"
                                                   parsed-class)))
@@ -594,7 +593,7 @@
                              (pathname (directory-namestring maybe-wild-pathname))))))
            (when most-recent-parse-file
              (let ((table (parsed-class-parse-table ',parsed-class)))
-               (and clear-existing-table (clrhash table))
+               ;; (and clear-existing-table (clrhash table))
                (load-parsed-class-default-file-to-hash-table :parsed-class ',parsed-class
                                                              :input-file most-recent-parse-file
                                                              :hash-table table
