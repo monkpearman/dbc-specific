@@ -62,6 +62,7 @@ etags ./specials.lisp \
 ./dbc-classes/dbc-class-parsed-inventory-sales-order-record.lisp \
 ./dbc-classes/dbc-class-parsed-inventory-sales-sold-record.lisp \
 ./dbc-classes/dbc-class-parsed-inventory-sales-sold-in-store-record.lisp \
+/.dbc-classes/dbc-class-parsed-tgm-theme-record.lisp \
 ./dbc-classes/dbc-class-image.lisp \
 ./dbc-classes/dbc-class-image-path-convert.lisp \
 ./dbc-classes/dbc-class-image-path-inventory-record.lisp \
