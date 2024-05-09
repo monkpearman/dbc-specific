@@ -337,23 +337,6 @@ The interface for functions defined herein is as follows:
   (print-unreadable-object (object stream :type t)
     (%print-parsed-tgm-theme-record-helper object stream)))
 
-
-
-;; (defmethod print-object ((object parsed-inventory-record) stream)
-;;   (let* ((inv-num (and (slot-boundp object 'inventory-number)
-;;                        (slot-value object 'inventory-number)))
-;;          (inv-num-if (and (stringp inv-num)
-;;                           (control-id-indexed-number-zero-padded-string inv-num))))
-;;     (declare (MON:STRING-OR-NULL inv-num-if))
-;;     (print-unreadable-object (object stream :type t :identity (not inv-num-if))
-;;       (format stream "~S" inv-num-if))))
-
-;; (defmethod print-object ((object parsed-tgm-theme-record) stream)
-;;   (let* ((id (and (slot-boundp object 'control-id-display-theme)
-;;                   (slot-value object ''control-id-display-theme)))
-;;   (print-unreadable-object (object stream :type t)
-;;     (system-object-uuid-description sys-object :stream  stream)))
-
 
 ;; (tgm-assoc-elt "DESCRIPTOR")
 (defun tgm-assoc-elt (elt &key (mapping *parsed-tgm-theme-field-to-accessor-table*))
