@@ -17,28 +17,8 @@ https://www.loc.gov/rr/print/tgm1/downloadtgm1.html
 https://www.loc.gov/pictures/collection/tgm/fields.html
 https://www.loc.gov/rr/print/tgm1/ic.html
 
-First things first, we need to set the correct coding system for the tgm.txt
-and/or tgm1.xml files the xml file has encoding="ISO-8859-1" so we will assume
-the same is true for the .txt version.  so for example we get "A la poupée
-prints" instead of "A la poup�e prints" or "LATIN SMALL LETTER E WITH ACUTE"
-
-`buffer-file-coding-system' `set-buffer-file-coding-system'
-`find-file-literally' `coding-system-for-write' `coding-system-for-write'
-`detect-coding-region'
-
 
 
-;;; ==============================
-:NOTE Our last known TGM conversion lives here:
-
-#P"$DEFHOME/CL-MON-CODE/dbc-specific/xml-class-dump-dir/parsed-xml-records/parsed-xml-theme-records/theme-records-2012-03-20T202042.lisp"
-
-;;; ==============================
-
-The atest TGM file we will work from:
-
-#P"$DEVHOME/CL-MON-CODE/dbc-specific/notes-versioned/tgm-conversion-elisp-notes/TGM-Conversion-03-25-24/tgm1_SCRATCH.xml"
-
 ;;; ==============================
 
 :TODO once the parser is finalized, need to walk through lists for each of the
@@ -75,6 +55,58 @@ Klacks documentation:
 :SEE (URL "https://cxml.common-lisp.dev/klacks.html")
 
 ;;; ==============================
+
+:NOTE Our last known TGM conversion for class instances of `parsed-theme-record' lives here:
+#P"$DEvHOME/CL-MON-CODE/dbc-specific/xml-class-dump-dir/parsed-class-table-dumps/parsed-theme-record/parsed-theme-record-2012-03-21T000438.pctd"
+
+:NOTE The Latest TGM file we will work from:
+#P"$DEvHOME/CL-MON-CODE/dbc-specific/xml-class-dump-dir/parsed-class-table-dumps/parsed-tgm-theme-record/TGM-TO-PARSE/tgm1.xml"
+
+;;; ==============================
+
+The interface for functions defined herein is as follows:
+
+(sub-path *parsed-tgm-theme-output-dir*)
+
+(sub-path *parsed-tgm-theme-input-dir*)
+
+*parsed-tgm-theme-xml-source-pathname*
+
+(tgm-parse-concepts-set-source-xml-file (merge-pathnames
+                                        (dbc::sub-path dbc::*parsed-tgm-theme-input-dir*)
+                                        (make-pathname :name "tgm1" :type "xml")))
+
+(tgm-parse-concepts-make-source)
+
+(eq (type-of *parsed-tgm-theme-xml-source*) 'cxml::cxml-source)
+
+(tgm-parse-concept :stream *parsed-tgm-theme-xml-source*)
+
+(clrhash *parsed-tgm-theme-record-hash-table*)
+
+(tgm-parse-concepts-in-stream  :stream *parsed-tgm-theme-xml-source*)
+
+(gethash "Accessories (Clothing & dress)" *parsed-tgm-theme-record-hash-table*)
+
+;; write the `parsed-tgm-theme-record' instances to their default location:
+(write-parsed-tgm-theme-record-parse-table-to-file)
+
+;; load the written file to our default hash-table
+(load-parsed-tgm-theme-record-parse-file-to-hash-table)
+
+;; count the length >= 2 of all 'broader-theme slot-values for instances in default hash-table.
+(tgm-parse-concept-count-slot-value-list-length 'broader-theme :hash-table *parsed-tgm-theme-record-hash-table*)
+
+;; load the `parsed-theme-record' instances to their hash-table ie. 
+(parsed-class-parse-table 'parsed-theme-record)
+
+(load-parsed-theme-record-default-file-to-parse-table  :key-accessor 'CONTROL-ID-DISPLAY-THEME )
+
+;; Identify all class instances of `parsed-theme-record''s with slot-value of
+;; `control-id-display-theme' id's that aren't currently present in
+;; `*parsed-tgm-theme-record-hash-table*'
+(tgm-parse-concept-count-parsed-theme-record-diff)
+
 
 |#
 
@@ -124,20 +156,11 @@ Klacks documentation:
     ("__IGNORED-3"     . image-default-xref)
     ("__IGNORED-4"     . record-status-active)
     ("__IGNORED-5"     . edit-timestamp)
-    ("__IGNORED-6"     . control-id-theme-entity-dbc-num))
-  )
+    ("__IGNORED-6"     . control-id-theme-entity-dbc-num)))
 
 ;; (make-parsed-class-field-slot-accessor-mapping 'parsed-tgm-theme-record *parsed-tgm-theme-field-to-accessor-table*)
 
-
-;; :TODO We need to rename this to something more descriptive.  We should also
-;; probably make this a :SYNCHRONIZED t hash-table for concurrent access.
 ;; :NOTE The current TGM file contains 13203 concepts.
-;; :TODO Rename *tgm-hash-table* or whatevert is appropriate to match with the
-;; rest of the dbc-specific-transfer hash-table variables.
-
-;; (setq *parsed-tgm-theme-record-hash-table* (make-hash-table :size 13203 :test #'equal :synchronized t))
-
 (defparameter *parsed-tgm-theme-record-hash-table*
               #-sbcl(make-hash-table :test #'equal :synchronized t)
               #+sbcl(make-hash-table :size (MON:PRIME-OR-NEXT-GREATEST 13202) :test #'equal :synchronized t))
@@ -165,17 +188,13 @@ Klacks documentation:
 
 
 ;;; ==============================
-;; :NOTE Not to be confused with class `parsed-theme-record' which references
-;; themes recorded to the orginal dbc SQL table.
-;; :TODO currently we don't set initforms for some slots:
+;; :NOTE The class `parsed-tgm-theme-record' is NOT to be confused with class
+;; `parsed-theme-record' which references themes recorded to the orginal dbc SQL
+;; table.
+;; :NOTE currently we don't set initforms for some slots:
 ;; `control-id-display-theme',`non-descriptor',
 ;; `use-theme', `control-id-theme-entity-tgm-2-former-num',
 ;; `control-id-theme-entity-tgm-1-former-num',`control-id-theme-entity-loc-num'
-;; Once we finalize the XML file parse and all object instance are in a
-;; hash-table, (The current TGM file contains 13203 concepts) we need to walk
-;; back over these slots ands set them to NIL and not leave them unbound.
-;; However, we leave them that way initially so that we can identify when a 
-;; concept was parsed incorrectly.
 (defclass parsed-tgm-theme-record () ;; (parsed-class)
   ((control-id-display-theme ;; congruent with slot in class `parsed-theme-record'
     :initarg :control-id-display-theme
@@ -305,12 +324,13 @@ Klacks documentation:
     :accessor      control-id-theme-entity-dbc-num
     :documentation #.(classdoc 'parsed-tgm-theme-record :control-id-theme-entity-dbc-num)))
   (:documentation #.(classdoc 'parsed-tgm-theme-record :class-doc)))
-
 
+
 ;; (tgm-assoc-elt "DESCRIPTOR")
 (defun tgm-assoc-elt (elt &key (mapping *parsed-tgm-theme-field-to-accessor-table*))
   ;; :NOTE we probably don't need to allow for NIL and could constrain to `cl:strinp' only, 
-  ;; but `tgm-assoc-elt' is used in macrology inside
+  ;; but `tgm-assoc-elt' is used in macrology inside `%tgm-sec-helper' so don't mess around, 
+  ;; and play it safe instead.
   (unless (or (null elt) (stringp elt))
     (MON:SIMPLE-ERROR-MON :w-sym 'tgm-assoc-elt
                           :w-type 'function
@@ -374,8 +394,7 @@ Klacks documentation:
                               :stream   ,stream))
 
 
-;; 
-;; klacks:peek returns as values:
+;; klacks:peek returns as values the following:
 ;; :start-document
 ;; :start-document, version, encoding, standalonep
 ;; :dtd, name, public-id, system-id
@@ -389,7 +408,6 @@ Klacks documentation:
 (defun tgm-peek-start-element-and-maybe-add-to-slot (object &key stream)
   (let ((peek-val)
         (case-key ))
-    ;; (case (setf case-key (tgm-peeking-get-val  :nth-val 0 :stream stream))
     (ecase (setf case-key (tgm-peeking-get-val  :nth-val 0 :stream stream))
       (:start-document 
        (KLACKS:FIND-ELEMENT stream  "CONCEPT"))
@@ -398,25 +416,17 @@ Klacks documentation:
       (:dtd ;; , name, public-id, system-id
        (KLACKS:FIND-ELEMENT stream  "CONCEPT"))
       (:comment
-       (klacks:consume stream))
+       (KLACKS:CONSUME stream))
       (:end-element
-       ;; (if (equal (nth 2 (tgm-peeking :stream stream)) "CONCEPT")
-       ;;     (values nil (tgm-consume :stream stream) object "END CONCEPT")
-       ;;     (values case-key (tgm-consume :stream stream) object))
        (if (equal (nth 2 (tgm-peeking :stream stream)) "CONCEPT")
            (progn (tgm-consume :stream stream) nil )
            (progn (tgm-consume :stream stream) case-key)))
       (:characters
-       ;; (if (tgm-characters-every-whitespace-p :stream stream)
-       ;;     (values case-key (tgm-consume :stream stream) object)
-       ;;     ;; we need to set the slot value if we aren't looking at whitespace. can this happen?
-       ;;     (values case-key (tgm-peeking :stream stream) object ))
        (if (tgm-characters-every-whitespace-p :stream stream)
            (progn (tgm-consume :stream stream) case-key )
-           ;; we need to set the slot value if we aren't looking at whitespace. can this happen?
+           ;; We need to set the slot value if we aren't looking at whitespace. can this happen?
            (progn (tgm-peeking :stream stream) case-key)))
       (:end-document
-       ;; (values nil peek-val object)
        nil)
       (:start-element
        (setq peek-val (tgm-peeking-get-val :nth-val 2 :stream stream))
@@ -424,40 +434,31 @@ Klacks documentation:
                         "CN" "HN" "FUN" "TTCRef" "TTCSubd" "TTCSubj"
                         "TTCForm"  "FCNgmgpc"  "FCNlctgm" "TNR")))
          (cond
-           ((equal "CONCEPT" peek-val) ;; (nth 1 '(:START-ELEMENT NIL "CONCEPT" "CONCEPT"))
-            ;; (let ((consumed (tgm-consume :stream stream)))
-            ;;    (values
-            ;;     case-key
-            ;;     peek-val
-            ;;     consumed
-            ;;     object))
+           ((equal "CONCEPT" peek-val)
             (progn 
               (tgm-consume :stream stream)
               case-key))
            ((equal "DESCRIPTOR" peek-val)
-            ;; (tgm-assoc-elt "DESCRIPTOR")
             (%tgm-sec-helper object (tgm-assoc-elt peek-val) 1 (tgm-peeking :stream stream) stream))
             ;; :NOTE We put the `non-descriptor' slot value on `control-id-display-theme' slot value as well, because the
             ;; display name for a given theme is our key primary key for use with indexing data structures
             ;; that index and perform lookups on themes. The structure will likely be a hash-table.
-            ((equal "NON-DESCRIPTOR" peek-val) ;; (tgm-assoc-elt "NON-DESCRIPTOR")
-             ;; (values
-             ;;  (%tgm-sec-helper object (tgm-assoc-elt peek-val) 1 (tgm-peeking :stream stream) stream)
-             ;;  (setf (control-id-display-theme object) (non-descriptor object))))
+            ((equal "NON-DESCRIPTOR" peek-val)
              (progn
                (%tgm-sec-helper object (tgm-assoc-elt peek-val) 1 (tgm-peeking :stream stream) stream)
                (setf (control-id-display-theme object) (non-descriptor object))
                ))
             ((member peek-val mapping :test #'string=)
-             (%tgm-sec-helper object (tgm-assoc-elt peek-val) 1 (tgm-peeking :stream stream) stream))
-            ;; This shouldnt ever happen. print a message to standard
-             ;; out, and return NIL. Doing so allows droping out of parsing loops. by callers
+             (%tgm-sec-helper object (tgm-assoc-elt peek-val :mapping mapping) 1 (tgm-peeking :stream stream) stream))
+            ;; This shouldnt ever happen. print a message to standard out, and
+             ;; return NIL. Doing so allows droping out of parsing loops by calling function.
             (t  
-              (warn (concatenate 'string 
+             (warn (concatenate 'string 
                                 "~%!!!!!!!!!!~%:FUNCTION `tgm-peek-start-element-and-maybe-add-to-slot'~%           "
                                 "-- When parsing a :START-ELEMENT event, case forms failed to trigger correctly.~%!!!!!!!!!!~%"))
              nil)))))))
 
+
 (defun tgm-parse-concept (&key stream)
   (let ((current-object (make-instance 'parsed-tgm-theme-record)))
     (loop 
@@ -473,7 +474,7 @@ Klacks documentation:
 
 (defun tgm-parse-concepts-update-unbound-slots (&key (hash-table *parsed-tgm-theme-record-hash-table*))
   (let ((class-slots (MON:CLASS-SLOT-LIST 'parsed-tgm-theme-record)))
-  (loop with ht = hash-table ;*parsed-tgm-theme-record-hash-table* ; hash-table
+  (loop with ht = hash-table ;*parsed-tgm-theme-record-hash-table*
         for obj-id being the hash-keys in ht
         for obj being the hash-values in ht
         when (loop  with obj-inner = obj
@@ -498,8 +499,7 @@ Klacks documentation:
                                          (clear-hash-p T))
   (when (and clear-hash-p (> (hash-table-count hash-table) 0))
     (clrhash hash-table))
-  ;; (KLACKS:WITH-OPEN-SOURCE (s stream)
-  (unwind-protect 
+  (unwind-protect  ;; (KLACKS:WITH-OPEN-SOURCE (s stream)
        (loop for read-obj = (tgm-parse-concept :stream stream)
              for set-hash = (when read-obj
                               (setf (gethash (control-id-display-theme read-obj) hash-table)
@@ -512,11 +512,7 @@ Klacks documentation:
                         (tgm-parse-concepts-update-unbound-slots :hash-table hash-table))))
     (KLACKS:CLOSE-SOURCE stream)))
 
-
-;; No longer wrapping around `write-parsed-class-parse-table-to-file' doing it by hand now.
-;; :WAS (defun write-parsed-tgm-theme-record-parse-table-to-file (&key (hash-table *parsed-tgm-theme-record-hash-table*)
-;;                                                                (base-output-directory (dbc::sub-path dbc::*parsed-class-table-output-dir*))
-;;                                                                (output-sub-directory "parsed-tgm-theme-record"))
+
 (defun write-parsed-tgm-theme-record-parse-table-to-file (&key
                                                           (hash-table *parsed-tgm-theme-record-hash-table*)
                                                           (base-output-directory (sub-path *parsed-tgm-theme-output-dir*))
@@ -573,6 +569,58 @@ Klacks documentation:
        pathname-and-type
        hash-table))))
 
+;; (write-parsed-tgm-theme-record-parse-table-to-file)
+;; (load-parsed-tgm-theme-record-parse-file-to-hash-table :clear-existing-table t)
+(defun load-parsed-tgm-theme-record-parse-file-to-hash-table (&key 
+                                                              (input-pathname nil)
+                                                              (key-accessor 'control-id-display-theme)
+                                                              (hash-table *parsed-tgm-theme-record-hash-table*)
+                                                              (clear-existing-table nil)
+                                                              (input-pathname-directory (sub-path *parsed-tgm-theme-output-dir*))
+                                                              (input-pathname-name "parsed-tgm-theme-record")
+                                                              (input-pathname-type  *parsed-class-table-output-pathname-type*)
+                                                              (load-verbose t))
+  (let ((in-file
+         (if input-pathname 
+             (or (probe-file input-pathname)
+                 (mon:simple-error-mon 
+                 :w-spec "`cl:probe-file' did not find suitable directory for INPUT-PATHNAME"
+                 :w-sym 'load-parsed-tgm-theme-record-parse-file-to-hash-table
+                 :w-got input-pathname
+                 :w-type-of t))
+             (let* ((wild-pathname-pattern
+                      (CL-PPCRE:CREATE-SCANNER
+                       (format nil "^~(~A~)-2[0-9]{3}?-[0-9]{2}?-[0-9]{2}?T[0-9]{6}?$" 'parsed-tgm-theme-record)))
+                    (maybe-wild-pathnames  (merge-pathnames (make-pathname :name :wild :type input-pathname-type)
+                                                            (or (probe-file  (make-pathname :directory (pathname-directory input-pathname-directory)))
+                                                                (mon:simple-error-mon 
+                                                                 :w-spec "`cl:probe-file' did not find suitable directory for INPUT-PATHNAME-DIRECTORY"
+                                                                 :w-sym 'load-parsed-tgm-theme-record-parse-file-to-hash-table
+                                                                 :w-got  input-pathname-directory
+                                                                 :w-type-of t))))
+                    (maybe-find-wilds (directory maybe-wild-pathnames))
+                    (most-recent-parse-file (or (and maybe-find-wilds
+                                          (car (sort (delete-if-not #'(lambda (x) (CL-PPCRE:SCAN wild-pathname-pattern x))
+                                                                    maybe-find-wilds
+                                                                    :key #'pathname-name)
+                                                     #'string>
+                                                     :key #'pathname-name)))
+                                     (mon:simple-error-mon 
+                                      :w-spec "did not find suitable parsed file beneath directory: ~S~%"
+                                      :w-sym 'load-parsed-tgm-theme-record-parse-file-to-hash-table
+                                      :w-got  input-pathname-directory
+                                      :w-type-of t))))
+               most-recent-parse-file))))
+    (when in-file
+      (and clear-existing-table (clrhash hash-table))
+      (load-parsed-class-default-file-to-hash-table 
+       :parsed-class 'parsed-tgm-theme-record
+       :input-file in-file
+       :hash-table hash-table
+       :key-accessor key-accessor
+       :load-verbose load-verbose))))
+
+
 ;; (tgm-parse-concept-count-slot-value-list-length 'broader-theme :hash-table *parsed-tgm-theme-record-hash-table*)
 (defun tgm-parse-concept-count-slot-value-list-length (slot &key (hash-table *parsed-tgm-theme-record-hash-table*))
   (let ((rslt (loop 
@@ -581,6 +629,7 @@ Klacks documentation:
                 for sv = (slot-value obj slot)
                 for sv-len = (length sv)
                 unless (or (null sv)
+                           (stringp sv)
                            (= sv-len 1))
                 collect (list sv-len obj-id sv) into gthr
                 end
@@ -593,88 +642,86 @@ Klacks documentation:
                      :key #'car))
          (length rslt)))))
 
-
-;; 6900  :CONTROL-ID-THEME-ENTITY-DBC-NUM
-
 ;; (load-parsed-theme-record-default-file-to-parse-table  :key-accessor 'CONTROL-ID-DISPLAY-THEME )
-;;  (parsed-class-parse-table 'parsed-theme-record)
-
-
-;; (defparameter *tt--matching-themes-table* (make-hash-table :test #'equal))
+;; (parsed-class-parse-table 'parsed-theme-record)
 ;;
-;; Following finds all parsed-theme-record's with control-id-display-theme id's that aren't in *parsed-tgm-theme-record-hash-table*.
-;; (progn
-;;   (loop 
-;;    with hash-table-themes = (parsed-class-parse-table 'parsed-theme-record)
-;;    with hash-table-tgm = *parsed-tgm-theme-record-hash-table*
-;;    for theme-id being the hash-keys in hash-table-themes
-;;    for theme-obj being the hash-values in hash-table-themes
-;;     unless (gethash theme-id hash-table-tgm)
-;;     do (setf (gethash theme-id *tt--matching-themes-table*) theme-obj))
-;;   *tt--matching-themes-table*)
-
-;; (clrhash *tt--matching-themes-table*)
+;; (defparameter *tt--matching-themes-table* (make-hash-table :test #'equal)) (clrhash *tt--matching-themes-table*)
+;;
+;; Following finds all parsed-theme-record's with control-id-display-theme id's that aren't in 
+;; *parsed-tgm-theme-record-hash-table*.
+;; (tgm-parse-concept-count-parsed-theme-record-diff :match-table *tt--matching-themes-table*)
+(defun tgm-parse-concept-count-parsed-theme-record-diff (&key (tgm-hash-table *parsed-tgm-theme-record-hash-table*)
+                                                              (match-table (make-hash-table :test #'equal)))
+  (loop 
+    with hash-table-themes = (parsed-class-parse-table 'parsed-theme-record)
+    with hash-table-tgm = tgm-hash-table
+    for theme-id being the hash-keys in hash-table-themes
+    for theme-obj being the hash-values in hash-table-themes
+    unless (gethash theme-id hash-table-tgm)
+    do (setf (gethash theme-id match-table) theme-obj))
+match-table)
 
 
 #|
 
+:NOTE despite what the tgm1.xml DTD says to the contrary currently the
+followinhg slots when non-nil have a list-length of 1:
+`facet-note', `history-note', `scope-note', `cataloger-note',
+`theme-type-category-reference', `theme-type-category-reference',
+`theme-type-category-subdivision', `theme-type-category-genre',
+`former-usage-note', `use-theme',
 
-*parsed-tgm-theme-xml-source-pathname*
-(tgm-parse-concepts-set-source-xml-file (merge-pathnames
-                                        (dbc::sub-path dbc::*parsed-tgm-theme-input-dir*)
-                                        (make-pathname :name "tgm1" :type "xml")))
+IOW, we can currently effectively say that for all instance parsed each of the
+above slots are of type (or (string null)) and we don't need to pack them into a
+list structure.
 
+Only slot-value of following slots will be lists of length larger than 1 containing strings.
+`used-for', `broader-theme', `narrower-theme',`related-theme'
 
-(tgm-parse-concepts-make-source)
+; use-theme
+(tgm-parse-concept-count-slot-value-list-length 'use-theme :hash-table *parsed-tgm-theme-record-hash-table*) -> nil
 
-(tgm-parse-concept :stream *parsed-tgm-theme-xml-source*)
-
-(tgm-parse-concepts-in-stream  :stream *parsed-tgm-theme-xml-source*)
-
-
-(gethash "Accessories (Clothing & dress)" *parsed-tgm-theme-record-hash-table*)
-
-
-
-;;; ==============================
-
-;facet-note
+; facet-note
 (tgm-parse-concept-count-slot-value-list-length 'facet-note :hash-table *parsed-tgm-theme-record-hash-table*) -> nil
 
-;history-note
+; history-note
 (tgm-parse-concept-count-slot-value-list-length 'history-note :hash-table *parsed-tgm-theme-record-hash-table*) -> nil
 
-;scope-note
+; scope-note
 (tgm-parse-concept-count-slot-value-list-length 'scope-note :hash-table *parsed-tgm-theme-record-hash-table*) -> nil
 
-cataloger-note
+; cataloger-note
 (tgm-parse-concept-count-slot-value-list-length 'cataloger-note :hash-table *parsed-tgm-theme-record-hash-table*) -> nil
 
-'term-type-category-reference
-(tgm-parse-concept-count-slot-value-list-length 'TERM-TYPE-CATEGORY-REFERENCE :hash-table *parsed-tgm-theme-record-hash-table*) -> hil
+; theme-type-category-reference
+(tgm-parse-concept-count-slot-value-list-length 'THEME-TYPE-CATEGORY-REFERENCE :hash-table *parsed-tgm-theme-record-hash-table*) -> hil
 
-; 'term-type-category-subdivision
-(tgm-parse-concept-count-slot-value-list-length 'term-type-category-subdivision :hash-table *parsed-tgm-theme-record-hash-table*)
+; theme-type-category-subdivision
+(tgm-parse-concept-count-slot-value-list-length 'theme-type-category-subdivision :hash-table *parsed-tgm-theme-record-hash-table*)
 
-;term-type-category-subject
-(tgm-parse-concept-count-slot-value-list-length 'term-type-category-subject :hash-table *parsed-tgm-theme-record-hash-table*) -> nil
+;theme-type-category-subject
+(tgm-parse-concept-count-slot-value-list-length 'theme-type-category-subject :hash-table *parsed-tgm-theme-record-hash-table*) -> nil
 
-;'term-type-category-genre
-(tgm-parse-concept-count-slot-value-list-length 'term-type-category-genre :hash-table *parsed-tgm-theme-record-hash-table*) -> nil
+; theme-type-category-genre
+(tgm-parse-concept-count-slot-value-list-length 'theme-type-category-genre :hash-table *parsed-tgm-theme-record-hash-table*) -> nil
 
+; former-usage-note
 (tgm-parse-concept-count-slot-value-list-length 'former-usage-note :hash-table *parsed-tgm-theme-record-hash-table*) -> nil
 
-
+; used-for
 (tgm-parse-concept-count-slot-value-list-length 'used-for :hash-table *parsed-tgm-theme-record-hash-table*) -> 1430, longest 11
 
+; broader-theme
 (tgm-parse-concept-count-slot-value-list-length 'broader-theme :hash-table *parsed-tgm-theme-record-hash-table*) -> 350, 3
 
+; narrower-theme
 (tgm-parse-concept-count-slot-value-list-length 'narrower-theme :hash-table *parsed-tgm-theme-record-hash-table*) 
  -> 883, 148 "Activities", 143 "People", 138 "Equipment", 94 "Objects", 88
     "Communication", 78 "Events", 74 "Interiors", 70 "Concepts",
      66 "Mental states", 63 "Photographs" ...
 
-(tgm-parse-concept-count-slot-value-list-length 'related-theme :hash-table *parsed-tgm-theme-record-hash-table*)
+; narrower-theme
+(tgm-parse-concept-count-slot-value-list-length 'related-themew :hash-table *parsed-tgm-theme-record-hash-table*)
   ->  3236,  43 "Religion", 40 "Sports", 38 "War", 35 "Human body" ... 
 
 |#

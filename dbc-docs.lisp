@@ -5018,9 +5018,55 @@ with the same pathname as if by the :if-exists :supersede argument to `cl:with-o
   ;; Following fail succesfully:~%~@
  \(write-parsed-tgm-theme-record-parse-table-to-file :hash-table \(make-hash-table\)\)~%~@
  \(write-parsed-tgm-theme-record-parse-table-to-file :base-output-directory \"FOO\"\)~%
-:SEE-ALSO `tgm-assoc-elt',`tgm-peeking', `tgm-peeking-get-val', `tgm-consume',
+:SEE-ALSO `load-parsed-tgm-theme-record-parse-file-to-hash-table',
+`tgm-parse-concepts-in-stream', `tgm-assoc-elt',`tgm-peeking',
+`tgm-peeking-get-val', `tgm-consume', `tgm-characters-every-whitespace-p',
+`tgm-peek-start-element-and-maybe-add-to-slot', `tgm-parse-concept',
+`parsed-tgm-theme-record', `*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶")
+
+(fundoc 'load-parsed-tgm-theme-record-parse-file-to-hash-table
+ "Load `parsed-tgm-theme-record' class instances from file contents to HASH-TABLE.~%
+Content of loaded file should resemble that written by `write-parsed-tgm-theme-record-parse-table-to-file'.~%
+INPUT-PATHNAME when non-nil is a fully qualified pathname to an input
+filename and the arguments INPUT-PATHNAME-DIRECTORY, INPUT-PATHNAME-NAME, an
+INPUT-PATHNAME-TYPE are ignored.
+If INPUT-PATHNAME is supplied and does not satisfy `cl:probe-file' an error is signaled.
+When INPUT-PATHNAME is nil, the pathname for file is generated autoagically from 
+values of and contents of INPUT-PATHNAME-DIRECTORY, INPUT-PATHNAME-NAME, and
+INPUT-PATHNAME-TYPE and the most recent file beneath INPUT-PATHNAME-DIRECTORY
+will be loaded automagically.
+Automagically identified pathnames are located as follows, all wild pathnames
+matching the following wild pathname pattern:~%
+ \"#P/INPUT-PATHNAME-DIRECTORY/*.<INPUT-PATHNAME-TYPE>\"~%
+are identified and the most recent file with a timestamp matching return value
+of `MON:TIMESTAMP-FOR-FILE'. is used, ie.:~%
+\"#P/INPUT-PATHNAME-DIRECTORY.<INPUT-PATHNAME-NAME>-<MON:TIMESTAMP-FOR-FILE>.<INPUT-PATHNAME-TYPE>\"~%
+INPUT-PATHNAME-DIRECTORY is a pathname naming a directory. When supplied, the
+pathname should contain a trailing #\\. An error is signaled if not.~%
+INPUT-PATHNAME-NAME is a pathname name.
+Default is \"parsed-tgm-theme-record\".~%
+INPUT-PATHNAME-TYPE is a pathname type.
+Default is value of `*parsed-class-table-output-pathname-type*'.~%
+LOAD-VERBOSE indicates whether to load the file verbosely and as per
+`load-parsed-class-default-file-to-hash-table'.~%
+KEY-ACCESSOR is a an accesor of class `parsed-tgm-theme-record' to use as key
+for ojbects added HASH-TABLE.~%
+HASH-TABLE is a hash-table with :test #'equal.
+Default is value of `*parsed-tgm-theme-record-hash-table*'.~%
+CLEAR-EXISTING-TABLE, when non-nil indicates that HASH-TABLE should have it's
+contents erased as if by `cl:clrhash' before loading file.~%
+:EXAMPLE~%
+ \(load-parsed-tgm-theme-record-parse-file-to-hash-table :clear-existing-table t\)~%
+ Following errors succesfully:~%
+ \(load-parsed-tgm-theme-record-parse-file-to-hash-table
+  :clear-existing-table t
+  :input-pathname #P\\\"/NON-EXISTENT-FILE.pctd\"\)~%
+:SEE-ALSO `write-parsed-tgm-theme-record-parse-table-to-file', `tgm-parse-concepts-in-stream',
+`tgm-assoc-elt',`tgm-peeking', `tgm-peeking-get-val', `tgm-consume',
 `tgm-characters-every-whitespace-p',`tgm-peek-start-element-and-maybe-add-to-slot',
 `tgm-parse-concept',`parsed-tgm-theme-record',`*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶")
+
+
 
 (fundoc 'tgm-parse-concepts-update-unbound-slots
   "Set all unbound `slot-value's to nil for instances of class
@@ -5039,9 +5085,16 @@ return value is a list of the form:~%
 <SLOT-VALUE-CONTENTS> is a list of strings.
 :EXAMPLE~%~@
  \(tgm-parse-concept-count-slot-value-list-length 'broader-theme :hash-table *parsed-tgm-theme-record-hash-table*\)
-:SEE-ALSO `<XREF>'.~%▶▶▶")
+:SEE-ALSO `tgm-parse-concept-count-parsed-theme-record-diff'.~%▶▶▶")
 
-
+(fundoc 'tgm-parse-concept-count-parsed-theme-record-diff
+  "Identify all parsed-theme-record's with slot-value of `control-id-display-theme'
+id's that aren't currently present in  TGM-HASH-TABLE.~%
+TGM-HASH-TABLE when not supplied defaults to value of `*parsed-tgm-theme-record-hash-table*'.
+MATCH0TABLE is a hash-table to store identified results to.
+It's `cl:hash-table-test' should satisfy `cl:equal'.~%
+:EXAMPLE~% \(tgm-parse-concept-count-parsed-theme-record-diff\)~%
+:SEE-ALSO `tgm-parse-concept-count-slot-value-list-length'.~%▶▶▶")
 
 ;;; ==============================
 
