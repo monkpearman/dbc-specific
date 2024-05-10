@@ -2,6 +2,22 @@
 ;;; :FILE ../dbc-classes/dbc-class-parsed-convert.lisp
 ;;; ==============================
 
+;; :EXTERNAL-SYMBOLS
+;; MON:TIME-STRING-YYYY-MM-DD
+;; MON:FILE-WRITE-DATE-TIMESTRING
+;; MON:PATHNAME-OR-NAMESTRING
+;; MON:PRIME-OR-NEXT-GREATEST
+;; MON:PLIST-KEYS
+;; MON:STRING-NOT-EMPTY
+;; MON:CLASS-SLOT-LIST
+;; LOCAL-TIME:FORMAT-TIMESTRING
+;; LOCAL-TIME:NOW
+;; CL-PPCRE:CREATE-SCANNER
+;; CL-PPCRE:SCAN
+;; ALEXANDRIA::ENSURE-LIST
+;; ALEXANDRIA:FORMAT-SYMBOL
+;; UIOP::DIRECTORY-EXISTS-P
+
 
 ;;; ==============================
 ;;; Interface for the xml->parse-class->hash-table->file conversion
@@ -429,7 +445,7 @@
                           :external-format :UTF-8)
         (format fl ";;; :CLASS `~A'~%;;; :FILE-CREATED ~A~%~%"
                 class-string-name
-                (LOCAL-TIME:FORMAT-TIMESTRING nil (local-time:now)))
+                (LOCAL-TIME:FORMAT-TIMESTRING nil (LOCAL-TIME:NOW)))
         (loop
           for obj being the hash-values of parsed-hash ;(parsed-class-parse-table parsed-class)
           do
@@ -454,7 +470,7 @@
                                                            ;; (default-pathname-type "pctd")
                                                            (default-output-pathname-base-directory (sub-path *parsed-class-table-output-dir*))
                                                            (default-pathname-type  *parsed-class-table-output-pathname-type*))
-  (let ((generated-name (alexandria:format-symbol (find-package "DBC")
+  (let ((generated-name (ALEXANDRIA:FORMAT-SYMBOL (find-package "DBC")
                                                   "~:@(WRITE-~A-PARSE-TABLE-TO-FILE~)"
                                                   parsed-class)))
     `(defun ,generated-name (&key hash-table
