@@ -7,6 +7,12 @@
 ;; csv-parser:*field-separator*
 ;; csv-parser:*quote-character*
 
+;; CSV-PARSER:WRITE-CSV-LINE
+;; MON:STRING-NOT-NULL-EMPTY-OR-ALL-WHITESPACE
+;; MON:STRING-LENGTH
+;; ALEXANDRIA::ENSURE-LIST
+
+
 
 (in-package #:dbc)
 
@@ -20,12 +26,9 @@
                  is the empty string after cleaning~% got: ~S" prefix-for-file-name)
         (concatenate 'string cln-prefix-for-file-name "-CSV"))))
 
-;; In its final form this should be `write-parsed-class-parse-table-to-csv-file';;
 (defun write-parsed-class-parse-table-to-csv-file (&key parsed-class
                                                         prefix-for-file-name
                                                         output-sub-directory
-                                                        ;; (base-output-directory (merge-pathnames(make-pathname :directory '(:relative "parsed-csv-records"))
-                                                        ;;                                        (dbc::sub-path dbc::*xml-output-dir*)))
                                                         (base-output-directory (sub-path *parsed-class-table-csv-output-dir*))
                                                         filtering-slot-list
                                                         (slot-header-case :downcase))
@@ -76,17 +79,13 @@
                   for slot-chk in slots-matching-header
                   for x = (and (slot-boundp object slot-chk) (slot-value object slot-chk))
                   collect x into rtn
-                  finally  (csv-parser:write-csv-line c (nreverse rtn))))
+                  finally  (CSV-PARSER:WRITE-CSV-LINE c (nreverse rtn))))
            output-file))))))
 
 ;; `write-parsed-inventory-record-parse-table-to-csv-file'
 (defmacro def-parsed-class-write-csv-file  (&key parsed-class
                                              default-prefix-for-file-name
                                              default-output-pathname-sub-directory
-                                             ;; (default-output-pathname-base-directory
-                                             ;;  (merge-pathnames
-                                             ;;   (make-pathname :directory '(:relative "parsed-csv-records"))
-                                             ;;   (dbc::sub-path dbc::*xml-output-dir*)))
                                              (default-output-pathname-base-directory (sub-path *parsed-class-table-csv-output-dir*))
                                              (default-slot-header-case :downcase))
   ;; let* to ensure `%parsed-class-dumper-format-and-intern-symbol' evaluated at macroexpansion time.
