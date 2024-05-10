@@ -452,9 +452,8 @@
                                                            ;; (default-output-pathname-base-directory
                                                            ;;  (merge-pathnames(make-pathname :directory '(:relative "parsed-class-table-dumps"))(dbc::sub-path dbc::*xml-output-dir*)))
                                                            ;; (default-pathname-type "pctd")
-                                                           (default-input-pathname-base-directory (sub-path *parsed-class-table-output-dir*))
+                                                           (default-output-pathname-base-directory (sub-path *parsed-class-table-output-dir*))
                                                            (default-pathname-type  *parsed-class-table-output-pathname-type*))
-
   (let ((generated-name (alexandria:format-symbol (find-package "DBC")
                                                   "~:@(WRITE-~A-PARSE-TABLE-TO-FILE~)"
                                                   parsed-class)))
