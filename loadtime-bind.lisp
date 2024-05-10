@@ -381,7 +381,7 @@
   :default-key-accessor inventory-number
   :default-input-pathname-sub-directory "parsed-inventory-record"
   ;; :default-input-pathname-base-directory (merge-pathnames (make-pathname :directory '(:relative "parsed-class-table-dumps"))(sub-path *xml-output-dir*))
-  :default-output-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
+  :default-input-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
   :default-pathname-type *parsed-class-table-output-pathname-type*)
 
 ;; `write-parsed-inventory-record-parse-table-to-csv-file'
@@ -438,7 +438,7 @@
   :default-key-accessor order-number
   :default-input-pathname-sub-directory "parsed-inventory-sales-order-record"
   ;; :default-input-pathname-base-directory (merge-pathnames (make-pathname :directory '(:relative "parsed-class-table-dumps"))(sub-path *xml-output-dir*))
-  :default-output-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
+  :default-input-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
   :default-pathname-type *parsed-class-table-output-pathname-type*)
 
 ;; (write-parsed-inventory-sales-order-record-parse-table-to-csv-file)
@@ -495,7 +495,7 @@
   :default-key-accessor inventory-number
   :default-input-pathname-sub-directory "parsed-inventory-sales-sold-in-store-record"
   ;; :default-input-pathname-base-directory (merge-pathnames(make-pathname :directory '(:relative "parsed-class-table-dumps"))(sub-path *xml-output-dir*))
-  :default-output-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
+  :default-input-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
   :default-pathname-type *parsed-class-table-output-pathname-type*)
 
 
@@ -544,7 +544,7 @@
   :default-key-accessor control-id-entity-num-artist
   :default-input-pathname-sub-directory "parsed-artist-record"
   ;; :default-input-pathname-base-directory (merge-pathnames(make-pathname :directory '(:relative "parsed-class-table-dumps"))(sub-path *xml-output-dir*))
-  :default-output-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
+  :default-input-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
   :default-pathname-type *parsed-class-table-output-pathname-type*)
 
 ;; `write-parsed-artist-record-parse-table-to-csv-file'
@@ -595,7 +595,7 @@
   :default-key-accessor control-id-entity-num-author
   :default-input-pathname-sub-directory "parsed-author-record"
   ;; :default-input-pathname-base-directory (merge-pathnames(make-pathname :directory '(:relative "parsed-class-table-dumps"))(sub-path *xml-output-dir*))
-  :default-output-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
+  :default-input-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
   :default-pathname-type *parsed-class-table-output-pathname-type*)                                                    
 
 ;; `write-parsed-author-record-parse-table-to-csv-file'
@@ -643,7 +643,7 @@
   :default-key-accessor control-id-entity-num-brand
   :default-input-pathname-sub-directory "parsed-brand-record"
   ;;:default-input-pathname-base-directory (merge-pathnames(make-pathname :directory '(:relative "parsed-class-table-dumps"))(dbc::sub-path dbc::*xml-output-dir*))
-  :default-output-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
+  :default-input-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
   :default-pathname-type *parsed-class-table-output-pathname-type*)
 
 
@@ -694,7 +694,7 @@
   :default-key-accessor control-id-entity-num-person
   :default-input-pathname-sub-directory "parsed-person-record"
   ;;:default-input-pathname-base-directory (merge-pathnames(make-pathname :directory '(:relative "parsed-class-table-dumps"))(dbc::sub-path dbc::*xml-output-dir*))
-  :default-output-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
+  :default-input-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
   :default-pathname-type *parsed-class-table-output-pathname-type*)
 
 ;; `write-parsed-person-record-parse-table-to-csv-file'
@@ -744,7 +744,7 @@
   :default-key-accessor control-id-entity-num-publication
   :default-input-pathname-sub-directory "parsed-publication-record"
   ;;:default-input-pathname-base-directory (merge-pathnames(make-pathname :directory '(:relative "parsed-class-table-dumps"))(dbc::sub-path dbc::*xml-output-dir*))
-  :default-output-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
+  :default-input-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
   :default-pathname-type *parsed-class-table-output-pathname-type*)
 
 ;; `write-parsed-publication-record-parse-table-to-csv-file'
@@ -790,7 +790,7 @@
   :default-key-accessor control-id-entity-num-technique
   :default-input-pathname-sub-directory "parsed-technique-record"
   ;;:default-input-pathname-base-directory (merge-pathnames(make-pathname :directory '(:relative "parsed-class-table-dumps"))(sub-path *xml-output-dir*))
-  :default-output-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
+  :default-input-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
   :default-pathname-type *parsed-class-table-output-pathname-type*)
   
 
@@ -839,7 +839,7 @@
   :default-key-accessor control-id-documentation-record-document-page-id
   :default-input-pathname-sub-directory "parsed-documentation-record"
   ;; :default-input-pathname-base-directory (merge-pathnames(make-pathname :directory '(:relative "parsed-class-table-dumps"))(dbc::sub-path dbc::*xml-output-dir*))
-  :default-output-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
+  :default-input-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
   :default-pathname-type *parsed-class-table-output-pathname-type*)
 
 ;; `write-parsed-doc-record-parse-table-to-csv-file'
@@ -885,7 +885,7 @@
   :default-key-accessor control-id-theme-entity-num
   :default-input-pathname-sub-directory "parsed-theme-record"
   ;;:default-input-pathname-base-directory (merge-pathnames(make-pathname :directory '(:relative "parsed-class-table-dumps"))(dbc::sub-path dbc::*xml-output-dir*))
-  :default-output-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
+  :default-input-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
   :default-pathname-type *parsed-class-table-output-pathname-type*)
 
 ;; `write-parsed-doc-record-parse-table-to-csv-file'
@@ -934,7 +934,7 @@
   :default-key-accessor inventory-number
   :default-input-pathname-sub-directory "parsed-translation-for-inventory-record"
   ;; :default-input-pathname-base-directory (merge-pathnames(make-pathname :directory '(:relative "parsed-class-table-dumps"))(sub-path *xml-output-dir*))
-  :default-output-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
+  :default-input-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
   :default-pathname-type *parsed-class-table-output-pathname-type*)
 
 ;; `write-parsed-translation-for-inventory-record-parse-table-to-csv-file'
