@@ -653,9 +653,7 @@
   :default-prefix-for-file-name "brand-records"
   :default-output-pathname-sub-directory "parsed-csv-brand-records"
   ;;:default-output-pathname-base-directory (merge-pathnames(make-pathname :directory '(:relative "parsed-csv-records"))(sub-path *xml-output-dir*)))
-  :default-output-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
-  :default-pathname-type *parsed-class-table-output-pathname-type*)
-                                                          
+  :default-output-pathname-base-directory (sub-path *parsed-class-table-output-dir*))
 
 
 ;;; ==============================
