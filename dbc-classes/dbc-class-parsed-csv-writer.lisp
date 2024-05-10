@@ -11,11 +11,11 @@
 (in-package #:dbc)
 
 (defun parsed-class-csv-clean-prefix-for-file-name (prefix-for-file-name)
-  (declare (mon:string-not-null-empty-or-all-whitespace prefix-for-file-name))
+  (declare (MON:STRING-NOT-NULL-EMPTY-OR-ALL-WHITESPACE prefix-for-file-name))
   (let ((cln-prefix-for-file-name
-          (string-trim `(#\_ #\- ,@mon:*whitespace-chars*)
-                       (mon:string-replace-all prefix-for-file-name "CSV" "" :test #'char-equal))))
-    (if (zerop (mon:string-length cln-prefix-for-file-name))
+          (string-trim `(#\_ #\- ,@MON:*WHITESPACE-CHARS*)
+                       (MON:STRING-REPLACE-ALL prefix-for-file-name "CSV" "" :test #'char-equal))))
+    (if (zerop (MON:STRING-LENGTH cln-prefix-for-file-name))
         (error ":FUNCTION `parsed-class-csv-clean-prefix-for-file-name' -- arg PREFIX-FOR-FILE-NAME ~
                  is the empty string after cleaning~% got: ~S" prefix-for-file-name)
         (concatenate 'string cln-prefix-for-file-name "-CSV"))))
@@ -24,15 +24,14 @@
 (defun write-parsed-class-parse-table-to-csv-file (&key parsed-class
                                                         prefix-for-file-name
                                                         output-sub-directory
-                                                        (base-output-directory
-                                                         (merge-pathnames
-                                                          (make-pathname :directory '(:relative "parsed-csv-records"))
-                                                          (dbc::sub-path dbc::*xml-output-dir*)))
+                                                        ;; (base-output-directory (merge-pathnames(make-pathname :directory '(:relative "parsed-csv-records"))
+                                                        ;;                                        (dbc::sub-path dbc::*xml-output-dir*)))
+                                                        (base-output-directory (sub-path *parsed-class-table-csv-output-dir*))
                                                         filtering-slot-list
                                                         (slot-header-case :downcase))
-  (declare (mon:string-not-null-empty-or-all-whitespace prefix-for-file-name)
+  (declare (MON:STRING-NOT-NULL-EMPTY-OR-ALL-WHITESPACE prefix-for-file-name)
            (type (or string (and list (not null))) output-sub-directory)
-           (mon:pathname-or-namestring base-output-directory)
+           (MON:PATHNAME-OR-NAMESTRING base-output-directory)
            (list filtering-slot-list)
            (type (or (eql :downcase) (eql :upcase)) slot-header-case))
   ;; (osicat:directory-exists-p base-output-directory)
@@ -42,7 +41,7 @@
            (unless (zerop (hash-table-count parse-table))
              (make-parsed-class-output-file-ensuring-pathname
               :pathname-base-directory base-output-directory
-              :pathname-sub-directory `(,@(alexandria::ensure-list output-sub-directory))
+              :pathname-sub-directory `(,@(ALEXANDRIA::ENSURE-LIST output-sub-directory))
               :pathname-name (parsed-class-csv-clean-prefix-for-file-name prefix-for-file-name)
               :pathname-name-dated-p t
               :pathname-type "csv"))))
@@ -84,10 +83,11 @@
 (defmacro def-parsed-class-write-csv-file  (&key parsed-class
                                              default-prefix-for-file-name
                                              default-output-pathname-sub-directory
-                                             (default-output-pathname-base-directory
-                                              (merge-pathnames
-                                               (make-pathname :directory '(:relative "parsed-csv-records"))
-                                               (dbc::sub-path dbc::*xml-output-dir*)))
+                                             ;; (default-output-pathname-base-directory
+                                             ;;  (merge-pathnames
+                                             ;;   (make-pathname :directory '(:relative "parsed-csv-records"))
+                                             ;;   (dbc::sub-path dbc::*xml-output-dir*)))
+                                             (default-output-pathname-base-directory (sub-path *parsed-class-table-csv-output-dir*))
                                              (default-slot-header-case :downcase))
   ;; let* to ensure `%parsed-class-dumper-format-and-intern-symbol' evaluated at macroexpansion time.
   ;; (let* ((generated-name (%parsed-class-dumper-format-and-intern-symbol parsed-class))

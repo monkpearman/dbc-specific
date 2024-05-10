@@ -389,7 +389,6 @@
     :parsed-class parsed-inventory-record
   :default-prefix-for-file-name "inventory-records"
   :default-output-pathname-sub-directory "parsed-csv-inventory-records"
-  ;; :default-output-pathname-base-directory (merge-pathnames (make-pathname :directory '(:relative "parsed-csv-records"))(sub-path *xml-output-dir*))
   :default-output-pathname-base-directory (sub-path *parsed-class-table-csv-output-dir*))
 
 
