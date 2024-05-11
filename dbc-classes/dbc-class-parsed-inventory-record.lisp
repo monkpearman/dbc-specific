@@ -248,6 +248,15 @@
    ;; they xref the parsed-documentation-record slot
    ;; control-id-documentation-record-document-id but their primary key is the
    ;; control-id-documentation-record-document-page-id slot
+   ;; 
+   ;; (parsed-class-slot-value-collect-non-null 'parsed-inventory-record
+   ;;                                            'documentation-category-entity-0-coref) => 850
+   ;; (parsed-class-slot-value-collect-non-null 'parsed-inventory-record
+   ;;                                            'documentation-category-entity-1-coref) => nil
+   ;; (parsed-class-slot-value-collect-non-null 'parsed-inventory-record
+   ;;                                             'documentation-category-entity-2-coref) => 814
+   ;; (parsed-class-slot-value-collect-non-null 'parsed-inventory-record
+   ;;                                             'documentation-category-entity-3-coref) => 0
    (documentation-category-entity-0-coref
     :initarg :documentation-category-entity-0-coref
     :accessor documentation-category-entity-0-coref
