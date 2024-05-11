@@ -5,6 +5,19 @@
 
 #| 
 
+:EXTERNAL SYMBOLS
+
+MON:PRIME-OR-NEXT-GREATEST
+MON:SIMPLE-ERROR-MON
+KLACKS:PEEK
+KLACKS:CONSUME
+KLACKS:CONSUME-CHARACTERS
+KLACKS:FIND-ELEMENT
+KLACKS:CLOSE-SOURCE
+
+
+;;; ==============================
+
 Notes regarding conversion and transformation of LOC TGM files updated quarterly
 as posted at following URLs:
 
@@ -110,7 +123,6 @@ The interface for functions defined herein is as follows:
 
 |#
 
-
 
 (in-package :dbc)
 
@@ -180,6 +192,13 @@ The interface for functions defined herein is as follows:
 ;; `control-id-display-theme',`non-descriptor',
 ;; `use-theme', `control-id-theme-entity-tgm-2-former-num',
 ;; `control-id-theme-entity-tgm-1-former-num',`control-id-theme-entity-loc-num'
+;;
+;; Reciprocal Relationships among these slots:
+;; use-theme <--> used-for
+;; broader-theme <--> narrowoer-theme
+;; related-theme <--> related-theme
+;;
+
 (defclass parsed-tgm-theme-record () ;; (parsed-class)
   ((control-id-display-theme ;; congruent with slot in class `parsed-theme-record'
     :initarg :control-id-display-theme
@@ -269,41 +288,40 @@ The interface for functions defined herein is as follows:
     ;; :initform ;; don't default
     :accessor control-id-theme-entity-tgm-1-former-num
     :documentation #.(classdoc 'parsed-tgm-theme-record :control-id-theme-entity-tgm-1-former-num))
-   (control-id-theme-entity-loc-num ;; congruent with slot in class `parsed-theme-record'
+   (control-id-theme-entity-loc-num  ; congruent with slot in class `parsed-theme-record'
     :initarg :control-id-theme-entity-loc-num
     :accessor control-id-theme-entity-loc-num
     :documentation #.(classdoc 'parsed-tgm-theme-record :control-id-theme-entity-loc-num))
    ;; :NOTE Not included in xml/txt file we are parsing, but it is usefull to include this now.
-   (control-id-theme-entity-loc-uri ;; congruent with slot in class `parsed-theme-record'
+   ;; dbc-theme-request-loc-x-uri
+   (control-id-theme-entity-loc-uri  ; congruent with slot in class `parsed-theme-record'
     :initarg :control-id-theme-entity-loc-uri
     :initform '()
     :accessor control-id-theme-entity-loc-uri
     :documentation #.(classdoc 'parsed-tgm-theme-record :control-id-theme-entity-loc-uri))
-   (image-coref
+   (image-coref        ; congruent with slot in class `parsed-theme-record'
     :initarg       :image-coref
     :initform      '()
     :accessor      image-coref
     :documentation #.(classdoc 'parsed-tgm-theme-record :image-coref))
-   (image-default-xref
+   (image-default-xref ; congruent with slot in class `parsed-theme-record' 
     :initarg      :image-default-xref
     :initform     '()
     :accessor     image-default-xref
     :documentation #.(classdoc 'parsed-tgm-theme-record :image-default-xref))
-   (record-status-active
+   (record-status-active ; congruent with slot in class `parsed-theme-record'
     :initarg      :record-status-active
     :initform     '()
     :accessor      record-status-active
     :documentation #.(classdoc 'parsed-tgm-theme-record :record-status-active))
-   (edit-timestamp
+   (edit-timestamp  ; congruent with slot in class `parsed-theme-record'
     :initarg       :edit-timestamp
     :initform      '()
     :accessor       edit-timestamp
     :documentation #.(classdoc 'parsed-tgm-theme-record :edit-timestamp))
    ;; Following has slot-value's in parsed-tgm-theme-record that are unused
-   ;; elswhere in the system AFAIK.  ought to be named :CONTROL-ID-THEME-ENTITY-DBC-NUM
-   ;; to indicate it references an internal DBC number and not an external
-   ;; identity that dereferences to something.
-   (control-id-theme-entity-dbc-num
+   ;; elswhere in the system AFAIK.
+   (control-id-theme-entity-dbc-num ; congruent with slot in class `parsed-theme-record'
     :initarg        :control-id-theme-entity-dbc-num
     :initform      '()
     :accessor      control-id-theme-entity-dbc-num
@@ -587,7 +605,7 @@ The interface for functions defined herein is as follows:
        hash-table))))
 
 ;; (write-parsed-tgm-theme-record-parse-table-to-file)
-;; (load-parsed-tgm-theme-record-parse-file-to-hash-table :clear-existing-table t)
+;; (load-parsed-tgm-theme-record-parse-file-to-hash-table :clear-existing-table t load-verbose nil)
 (defun load-parsed-tgm-theme-record-parse-file-to-hash-table (&key 
                                                               (input-pathname nil)
                                                               (key-accessor 'control-id-display-theme)
@@ -679,6 +697,61 @@ The interface for functions defined herein is as follows:
 match-table)
 
 
+;; (loop 
+;;        with null-control-id-theme-entity-loc-num-cnt  = 0
+;;        with null-control-id-theme-entity-loc-num      = '()
+;;        for obj being the hash-values of (parsed-class-parse-table 'parsed-theme-record)
+;;        do (with-slots (record-status-active
+;;                        control-id-theme-entity-loc-num
+;;                        control-id-display-theme)
+;;               obj
+;;             (when  (null control-id-theme-entity-loc-num)
+;;               (incf null-control-id-theme-entity-loc-num-cnt)
+;;               (push  `(:control-id-display-theme ,control-id-display-theme
+;;                          :record-status-active ,record-status-active)
+;;                      null-control-id-theme-entity-loc-num)))
+;;             finally (return (values null-control-id-theme-entity-loc-num null-control-id-theme-entity-loc-num)))
+
+;; return the number of 'parsed-theme-record instances that are currently active in the dbc system:
+;; (loop 
+;;   for obj-id being the hash-keys of (parsed-class-parse-table 'parsed-theme-record) using (hash-value obj)
+;;   for theme = (control-id-display-theme obj)
+;;   for active = (record-status-active obj)
+;;   when active
+;;   collect theme) 
+;; ;; => 2041
+
+;; inactive themes with an loc number 4435
+;; (loop 
+;;   with innactive-loc-themes-count = 0
+;;   for obj being the hash-values of (parsed-class-parse-table 'parsed-theme-record)
+;;   do (with-slots (record-status-active
+;;                   control-id-theme-entity-loc-num
+;;                   );control-id-display-theme)
+;;          obj
+;;        (when (and (null record-status-active)
+;;                   control-id-theme-entity-loc-num)
+;;          (incf  innactive-loc-themes-count)))
+;;   finally (return  innactive-loc-themes-count))
+
+;; active themes without an loc number 69
+;; (loop 
+;;   with active-no-loc-themes-count = 0
+;;   with active-no-loc-themes = '()
+;;   for obj being the hash-values of (parsed-class-parse-table 'parsed-theme-record)
+;;   do (with-slots (record-status-active
+;;                   control-id-theme-entity-loc-num
+;;                   control-id-display-theme
+;;                   control-id-theme-entity-dbc-num
+;;                   image-coref)
+;;          obj
+;;        (when (and record-status-active
+;;                   (null control-id-theme-entity-loc-num))
+;;          (incf  active-no-loc-themes-count)
+;;          (push (list control-id-theme-entity-dbc-num control-id-display-theme image-coref) active-no-loc-themes)))
+;;   finally (return (values active-no-loc-themes active-no-loc-themes-count )))
+
+
 #|
 
 :NOTE despite what the tgm1.xml DTD says to the contrary currently the
@@ -740,6 +813,9 @@ Only slot-value of following slots will be lists of length larger than 1 contain
 ; narrower-theme
 (tgm-parse-concept-count-slot-value-list-length 'related-themew :hash-table *parsed-tgm-theme-record-hash-table*)
   ->  3236,  43 "Religion", 40 "Sports", 38 "War", 35 "Human body" ... 
+
+
+
 
 |#
 
