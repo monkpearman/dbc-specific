@@ -288,14 +288,17 @@ Use it to grab LOC skos/rdf-xml data.")
 ;; "Charcoal"
 ;; "7992"  -> "tgm001892"
 ;; "13728" -> "tgm001892"
+;; (%parsed-theme-record-find-display-theme "Charcoal")
 (defun %parsed-theme-record-find-display-theme (control-id-display-theme)
-  (loop with ht = (parsed-class-parse-table 'parsed-theme-record)
-      for hk being the hash-keys of ht
-      for hv being the hash-values of ht           
-      for cidt = (control-id-display-theme hv)
-      when (string= (control-id-display-theme hv) control-id-display-theme)
-      collect (list :control-id-theme-entity-dbc-num hk :control-id-display-theme cidt :object hv) into gthr
-finally (return gthr)))
+"\:EXAMPLE (%parsed-theme-record-find-display-theme \"Charcoal\"\)"
+  (loop 
+    with ht = (parsed-class-parse-table 'parsed-theme-record)
+    for hk being the hash-keys of ht
+    for hv being the hash-values of ht           
+    for cidt = (control-id-display-theme hv)
+    when (string= (control-id-display-theme hv) control-id-display-theme)
+    collect (list :control-id-theme-entity-dbc-num hk :control-id-display-theme cidt :object hv) into gthr
+    finally (return gthr)))
 
 ;; (length (%parsed-theme-record-find-duplicate-control-id-display-theme)) => 16
 ;; this returns the inverse duplicates 
@@ -320,30 +323,12 @@ finally (return gthr)))
         when maybe 
         collect (list :outer-key hk :outer-object hv maybe)))
 
-;; "Hawaii"   "13562" "13561" ; no tgm num
-;; "Lilac"    "13787" "13780" ; no tgm num
-;; "Charcoal" "7992" "13728"  ;  7992 -> "tgm001892"
-;; "Gold"     "13762" "9450"  ; 13762 -> "tgm004594"
-;; "Ivory"    "13776"  "9948" ; 9948 -> "tgm005543"
-;; "Mustard"  "13801" "10737" ; 10737 -> "tgm006940"
-;; "Salmon"   "13830" "11961" ; 11961 -> "tgm009127"
-;; "Silver"   "13837" "12235" ; 12235 -> "tgm009630"
-
 #|
 
 (equal 
 (length 
 (mapcar 'cdr (parsed-class-slot-value-collect-all 'parsed-theme-record 'control-id-display-theme)))
-(hash-table-count (parsed-class-parse-table 'parsed-theme-record))
-
-
-
-(loop with ht= (parsed-class-parse-table 'parsed-theme-record)
-     for hk being the hash-keys of ht
-     hv being the hash-values of ht
-     when (string= (control-id-display-theme hv) "Charcoal")
-    collect it into gthr
-finall (return gthr))
+(hash-table-count (parsed-class-parse-table 'parsed-theme-record)))
 
  (loop 
    for obj being the hash-values of (parsed-class-parse-table 'parsed-theme-record)
@@ -369,13 +354,6 @@ finall (return gthr))
   when (not (stringp idx)) 
   collect idx)
 
-
-
-  when (or (and (not (stringp stat)) stat)
-           (and (not (or (string= "1" stat) (string= "0" stat)))
-                stat))
-  collect it)
-           
 
 ;; populate the loc xrefs -- will take a long time!
  (loop 
@@ -433,16 +411,8 @@ finall (return gthr))
          (push (list control-id-theme-entity-dbc-num control-id-display-theme image-coref) active-no-loc-themes)))
   finally (return (values active-no-loc-themes active-no-loc-themes-count )))
 
- ; colors                               ;
- "Yellow" "White" "Seashell" "Ruby" "Rose" "Red" "Purple" "Primrose" "Pink"
- "Orange" "Heather" "Green" "Grey" "Garnet" "Fawn" "Coral" "Chocolate"
- "Chestnut" "Cardinal" "Canary" "Buff" "Brown" "Bronze" "Blue" "Blonde" "Black"
- "Azure" "Auburn" 
+(write-parsed-theme-record-parse-table-to-file :hash-table (parsed-class-parse-table 'parsed-theme-record))
 
- ; countries 
- "Turkey" "Morocco" "Japan" "India" "Egypt" "Canada"
-
-(write-parsed-theme-record-parse-table-to-file)
 (load-parsed-theme-record-default-file-to-parse-table)
 
 ;; convert image-corefs to list
