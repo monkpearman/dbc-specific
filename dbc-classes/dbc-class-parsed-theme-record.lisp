@@ -122,7 +122,7 @@
     :accessor ignorable-subdivision-number
     :documentation ":ORIGINAL-FIELD \"subdivision_number\"")
 
-   ;; has teh form: "Age-Alg", 
+   ;; has the form: "Age-Alg", 
    (ignorable-range  
     :initarg :ignorable-range
     :accessor ignorable-range
@@ -194,7 +194,7 @@ Use it to grab LOC skos/rdf-xml data.")
 ;; :NOTE everything above 13484 was added after the fact and isn't a TGM term.
 (make-parsed-class-field-slot-accessor-mapping 
  'parsed-theme-record
- '(("id"                 . control-id-theme-entity-dbc-num) ;; should be renamed to :CONTROL-ID-THEME-ENTITY-DBC-NUM
+ '(("id"                 . control-id-theme-entity-dbc-num)
    ("theme"              . control-id-display-theme)
    ("active"             . record-status-active)
    ("display_pic"        . image-default-xref)
@@ -210,6 +210,18 @@ Use it to grab LOC skos/rdf-xml data.")
    ("__IGNORED-1"        . control-id-theme-entity-loc-num)
    ("__IGNORED-2"        . control-id-theme-entity-loc-uri))
  )
+
+(defun %print-parsed-theme-record-helper (object stream)
+  (let ((disp (and (slot-boundp object 'control-id-display-theme)
+                   (slot-value  object 'control-id-display-theme))))
+    (if disp
+        (format stream ":CONTROL-ID-DISPLAY-THEME ~S" disp)
+        ;; Shouldn't ever actually happen... 
+        (format stream ":CONTROL-ID-DISPLAY-THEME NUL/UNBOUND"))))
+
+(defmethod print-object ((object parsed-theme-record) stream)
+  (print-unreadable-object (object stream :type t)
+    (%print-parsed-theme-record-helper object stream)))
 
 
 ;; :TODO following updates the `parsed-theme-record' to match the slots of enable this once we've converted the existing parse file over to the new slot-names:
@@ -274,7 +286,65 @@ Use it to grab LOC skos/rdf-xml data.")
 
 ;; (cl-ppcre:split #\| "9190|9186|510|")
 
+;; "Charcoal"
+;; "7992"  -> "tgm001892"
+;; "13728" -> "tgm001892"
+(defun %parsed-theme-record-find-display-theme (control-id-display-theme)
+  (loop with ht = (parsed-class-parse-table 'parsed-theme-record)
+      for hk being the hash-keys of ht
+      for hv being the hash-values of ht           
+      for cidt = (control-id-display-theme hv)
+      when (string= (control-id-display-theme hv) control-id-display-theme)
+      collect (list :control-id-theme-entity-dbc-num hk :control-id-display-theme cidt :object hv) into gthr
+finally (return gthr)))
+
+;; (length (%parsed-theme-record-find-duplicate-control-id-display-theme)) => 16
+;; this returns the inverse duplicates 
+(defun %parsed-theme-record-find-duplicate-control-id-display-theme  ()
+  (loop with ht = (parsed-class-parse-table 'parsed-theme-record)
+        with gthr = ()
+        for hk being the hash-keys of ht
+        for hv being the hash-values of ht
+        for cidt = (control-id-display-theme hv)
+        for maybe =  (loop 
+                       for inner-hk being the hash-keys of ht
+                       for inner-hv being the hash-values of ht
+                       for inner-cidt = (control-id-display-theme inner-hv)
+                       when (and (not (eql inner-hv hv))
+                                 (string= inner-cidt cidt))
+                       collect (list :control-id-theme-entity-dbc-num inner-hk 
+                                     :control-id-display-theme  inner-cidt
+                                     :object inner-hv)
+                       into inner-gather
+                       end
+                       finally (return inner-gather))
+        when maybe 
+        collect (list :outer-key hk :outer-object hv maybe)))
+
+;; "Hawaii"   "13562" "13561" ; no tgm num
+;; "Lilac"    "13787" "13780" ; no tgm num
+;; "Charcoal" "7992" "13728"  ;  7992 -> "tgm001892"
+;; "Gold"     "13762" "9450"  ; 13762 -> "tgm004594"
+;; "Ivory"    "13776"  "9948" ; 9948 -> "tgm005543"
+;; "Mustard"  "13801" "10737" ; 10737 -> "tgm006940"
+;; "Salmon"   "13830" "11961" ; 11961 -> "tgm009127"
+;; "Silver"   "13837" "12235" ; 12235 -> "tgm009630"
+
 #|
+
+(equal 
+(length 
+(mapcar 'cdr (parsed-class-slot-value-collect-all 'parsed-theme-record 'control-id-display-theme)))
+(hash-table-count (parsed-class-parse-table 'parsed-theme-record))
+
+
+
+(loop with ht= (parsed-class-parse-table 'parsed-theme-record)
+     for hk being the hash-keys of ht
+     hv being the hash-values of ht
+     when (string= (control-id-display-theme hv) "Charcoal")
+    collect it into gthr
+finall (return gthr))
 
  (loop 
    for obj being the hash-values of (parsed-class-parse-table 'parsed-theme-record)
@@ -308,7 +378,7 @@ Use it to grab LOC skos/rdf-xml data.")
   collect it)
            
 
- ;populate the loc xrefs -- will take a long time!
+;; populate the loc xrefs -- will take a long time!
  (loop 
    for obj being the hash-values of (parsed-class-parse-table 'parsed-theme-record)
    do (multiple-value-bind (termid uri) (dbc-theme-request-loc-x-uri (control-id-display-theme obj) :render-uri t)
@@ -316,11 +386,16 @@ Use it to grab LOC skos/rdf-xml data.")
           (setf (control-id-theme-entity-loc-num obj) termid
                 (control-id-theme-entity-loc-uri obj) uri))))
 
-*parsed-class-parse-table*
- ;;   with eg = '("id" "barlg") 
- ;;   for (termid uri) = eg
- ;;   collect termid)
+;; return the number of 'parsed-theme-record instances that are currently active in the dbc system:
+(loop 
+  for obj-id being the hash-keys of (parsed-class-parse-table 'parsed-theme-record) using (hash-value obj)
+  for theme = (control-id-display-theme obj)
+  for active = (record-status-active obj)
+  when active
+  collect theme) 
+;; => 2041 of 6897
 
+;; (+ 4861 2041)
 
 ;; inactive themes => 4861
 (loop 
@@ -359,7 +434,7 @@ Use it to grab LOC skos/rdf-xml data.")
          (push (list control-id-theme-entity-dbc-num control-id-display-theme image-coref) active-no-loc-themes)))
   finally (return (values active-no-loc-themes active-no-loc-themes-count )))
 
- ; colors
+ ; colors                               ;
  "Yellow" "White" "Seashell" "Ruby" "Rose" "Red" "Purple" "Primrose" "Pink"
  "Orange" "Heather" "Green" "Grey" "Garnet" "Fawn" "Coral" "Chocolate"
  "Chestnut" "Cardinal" "Canary" "Buff" "Brown" "Bronze" "Blue" "Blonde" "Black"
