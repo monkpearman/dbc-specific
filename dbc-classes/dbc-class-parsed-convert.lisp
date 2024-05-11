@@ -414,15 +414,22 @@
   (let* ((frmt-cntl (print-sax-parsed-slots-padding-format-control (make-instance parsed-class)))
          (class-string-name (string-downcase (class-name (find-class parsed-class))))
          (parsed-hash
-           (or (and hash-table
+          (or (and hash-table
                     (if (zerop (hash-table-count hash-table))
-                        (return-from write-parsed-class-parse-table-to-file (values nil hash-table))
-                        (or (and (loop
-                                   for vals being the hash-values in hash-table
-                                   always (eql (type-of  vals) parsed-class))
-                                 (setf class-string-name (concatenate 'string "non-default-table-" class-string-name))
-                                 hash-table)
-                            (error ":FUNCTION `write-parsed-class-parse-table-to-file' -- arg hash-table contains value which is not a ~A"
+                        (progn
+                          (warn "~%:FUNCTION `write-parsed-class-parse-table-to-file' arg HASH-TABLE was had `cl:hash-table-count' that was `zerop'~%")
+                          (return-from write-parsed-class-parse-table-to-file (values nil hash-table)))
+                      (or
+                       (and (eql hash-table (parsed-class-parse-table parsed-class))
+                            hash-table)
+                       (and (not (eql hash-table (parsed-class-parse-table parsed-class)))
+                               (setf class-string-name (concatenate 'string "non-default-table-" class-string-name))
+                               hash-table)
+                       (and (loop
+                                 for vals being the hash-values in hash-table
+                                 always (eql (type-of  vals) parsed-class))
+                            hash-table)
+                       (error ":FUNCTION `write-parsed-class-parse-table-to-file' -- arg hash-table contains value which is not a ~A"
                                    class-string-name))))
                (parsed-class-parse-table parsed-class)))
          (output-file
