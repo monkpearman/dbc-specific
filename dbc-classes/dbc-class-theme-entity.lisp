@@ -2,6 +2,14 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-theme-entity.lisp
 ;;; ==============================
 
+;;
+;; :EXTERNAL-SYMBOLS
+;; PURI:RENDER-URI
+;; MON::STRING-PERCENT-ENCODE
+;; PURI:RENDER-URI
+;;
+
+;;; ==============================
 ;; *header-stream*
 ;; (http-request "http://id.loc.gov/vocabulary/graphicMaterials/label/Action%20%26%20adventure%20dramas")
 ;; curl -I http://id.loc.gov/vocabulary/graphicMaterials/label/Action%20%26%20adventure%20dramas
@@ -132,9 +140,6 @@
 ;; dbc-specific/dbc-classes/dbc-class-parsed-theme-record.lisp
 
 
-;; for an early attempt at a theme index
-;; :SEE dbc-specific/dbc-classes/record-type-scratch-2011-12-08.lisp
-
 ;;; ==============================
 ;;
 ;; base-theme-entity (base-entity)
@@ -158,16 +163,18 @@
   ()
   )
 
-;; :NOTE as of drakma 1.2.6 there appears to be a bug in drakma when url encoding "%20%26%20" but the following commit fixes it
-;; https://github.com/edicl/drakma/commit/f6a380940b2b69a700a9c91cd79532c0d1027a8c
+
+;; :NOTE as of drakma 1.2.6 there appears to be a bug in drakma when URL
+;; encoding "%20%26%20" but the following commit fixes it:
+;; :SEE (URL "https://github.com/edicl/drakma/commit/f6a380940b2b69a700a9c91cd79532c0d1027a8c")
 (defun dbc-theme-request-loc-x-uri (theme-string &key (render-uri nil))
   (declare (string theme-string)
            (boolean render-uri))
   (let* ((base-theme-url "http://id.loc.gov/vocabulary/graphicMaterials/label/")
-         (encoded-theme-string (mon::string-percent-encode theme-string))
+         (encoded-theme-string (MON::STRING-PERCENT-ENCODE theme-string))
          (request-url           (concatenate 'string base-theme-url encoded-theme-string)))
     (multiple-value-bind (ignored-content response-code parameter-list p-uri f-strm)
-        (drakma:http-request  request-url :preserve-uri t :method :head)
+        (DRAKMA:HTTP-REQUEST  request-url :preserve-uri t :method :head)
       (declare (ignore ignored-content  f-strm))
       (let ((maybe-x-uri
               (and (eql response-code 200)
@@ -175,7 +182,7 @@
         (when maybe-x-uri
           (values (file-namestring maybe-x-uri)
                   (if render-uri
-                      (puri:render-uri p-uri nil)
+                      (PURI:RENDER-URI p-uri nil)
                       p-uri)))))))
 
 
