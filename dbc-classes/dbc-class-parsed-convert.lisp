@@ -423,15 +423,16 @@
                        (and (eql hash-table (parsed-class-parse-table parsed-class))
                             hash-table)
                        (and (not (eql hash-table (parsed-class-parse-table parsed-class)))
-                               (setf class-string-name (concatenate 'string "non-default-table-" class-string-name))
-                               hash-table)
-                       (and (loop
+                            (or (loop
                                  for vals being the hash-values in hash-table
                                  always (eql (type-of  vals) parsed-class))
-                            hash-table)
-                       (error ":FUNCTION `write-parsed-class-parse-table-to-file' -- arg hash-table contains value which is not a ~A"
-                                   class-string-name))))
-               (parsed-class-parse-table parsed-class)))
+                                (error ":FUNCTION `write-parsed-class-parse-table-to-file' -- arg hash-table contains value which is not a ~A"
+                                   class-string-name))
+                            (warn "~%:FUNCTION `write-parsed-class-parse-table-to-file' arg HASH-TABLE is non-standard. file name written too now: ~S~%"
+                                  (concatenate 'string "non-default-table-" class-string-name))
+                            (setf class-string-name (concatenate 'string "non-default-table-" class-string-name))
+                            hash-table))))
+              (parsed-class-parse-table parsed-class)))
          (output-file
            (if (zerop (hash-table-count parsed-hash))
                (return-from write-parsed-class-parse-table-to-file (values nil hash-table))
