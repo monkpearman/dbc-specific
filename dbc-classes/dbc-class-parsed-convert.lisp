@@ -634,17 +634,6 @@
       (maphash #'hash-file-writer hash-table))
     (coerce file-namestrings 'list)))
 
-;; :NOTE At this point call this a sax related function is a complete
-;; misnomer... we're no longer really using the early raw sax parses _AT ALL_.
-;; IOW the name of this function really sux and I have alot of trouble
-;; remembering its name and/or that it exists!
-;; The only reason we keep it like this is for congruence with other associated
-;; functions an for Slime symbol name completion.
-;; maybe consider an alias `write-parsed-inventory-record-parse-table-to-files'
-;;
-;; Following writes a <0NNNNN>.lisp file containing the value of each item
-;; record in default parsed-inventory-record hash-table to a subdir beneath
-;; *dbc-base-item-number-image-pathname*:
 ;; (write-parsed-inventory-record-parse-table-to-files (parsed-class-parse-table 'parsed-inventory-record))
 (defun write-parsed-inventory-record-parse-table-to-files (hash-table
                                                            &key (base-output-directory *dbc-base-item-number-image-pathname*)
