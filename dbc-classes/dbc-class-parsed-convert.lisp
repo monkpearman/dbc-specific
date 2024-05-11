@@ -434,7 +434,7 @@
                 :pathname-name class-string-name
                 :pathname-name-dated-p t
                 ;:pathname-type "lisp"))))
-                :pathname-type pathname-type))))
+                :pathname-type default-pathname-type))))
     (when output-file
       (with-open-file (fl output-file
                           :direction :output
@@ -484,7 +484,7 @@
                                                :hash-table hash-table
                                                :output-sub-directory  output-sub-directory
                                                :base-output-directory base-output-directory
-                                               :pathname-type pathname-type))))
+                                               :default-pathname-type pathname-type))))
 
 ;;; :TODO Currently this can corrupt an existing hash-table when loading a
 ;;; poorly formed "pctd" file e.g. if the is a missing paren or unclosed string.
