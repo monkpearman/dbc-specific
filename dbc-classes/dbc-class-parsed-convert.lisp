@@ -405,8 +405,7 @@
                                                     output-sub-directory
                                                     ;; (base-output-directory (merge-pathnames(make-pathname :directory '(:relative "parsed-class-table-dumps"))
                                                     ;;                                        (dbc::sub-path dbc::*xml-output-dir*)))
-                                                    ;; (pathname-type "pctd"))
-                                                    (default-input-pathname-base-directory (sub-path *parsed-class-table-output-dir*))
+                                                    (base-output-directory (sub-path *parsed-class-table-output-dir*))
                                                     (default-pathname-type  *parsed-class-table-output-pathname-type*))
   (declare (symbol parsed-class)
            (type (or null hash-table) hash-table)
