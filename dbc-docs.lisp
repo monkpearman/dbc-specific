@@ -2963,6 +2963,23 @@ the parsed-class' sql XML file.~%~@
 `write-sax-parsed-xml-file', `parsed-inventory-record-xml-dump-file-and-hash',
 `load-sax-parsed-xml-file-to-parsed-class-hash'.~%▶▶▶")
 
+(fundoc 'write-parsed-inventory-record-parse-table-to-files
+ "Write a <0NNNNN>.lisp file containing the value of each item record in a
+parsed-inventory-record HASH-TABLE eg return value of:~%
+ (parsed-class-parse-table 'parsed-inventory-record)~%
+to a subdir beneath BASE-OUTPUT-DIRECTORY.
+Default is value of `*dbc-base-item-number-image-pathname*'
+:EXAMPLE
+(write-parsed-inventory-record-parse-table-to-files
+ (parsed-class-parse-table 'parsed-inventory-record))
+CHECKING-SOLD when non-nil (the default), indicates to check if the current
+record is sold.~%
+IF-EXISTS-RENAME when non-nil (the default), indicates to rename an existing
+file if one by the same name already exists.~%
+:SEE-ALSO `write-parsed-inventory-record-parse-table-to-file',
+`write-parsed-class-parse-table-to-file', `write-sax-parsed-slots-to-file',
+`write-sax-parsed-class-hash-to-files'.~%▶▶▶")
+
 (fundoc 'def-parsed-class-write-parse-table-to-file
         "Return a function for writing contents of a `parsed-class-parse-table' to file as
 if by `write-parsed-class-parse-table-to-file'.~%~@
