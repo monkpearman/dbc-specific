@@ -879,9 +879,8 @@
 ;; `load-parsed-theme-record-default-file-to-parse-table'
 (def-parsed-class-load-default-parsed-file-to-hash 
     :parsed-class parsed-theme-record
-  :default-key-accessor control-id-theme-entity-num
+  :default-key-accessor control-id-theme-entity-dbc-num ;; control-id-display-theme
   :default-input-pathname-sub-directory "parsed-theme-record"
-  ;;:default-input-pathname-base-directory (merge-pathnames(make-pathname :directory '(:relative "parsed-class-table-dumps"))(dbc::sub-path dbc::*xml-output-dir*))
   :default-input-pathname-base-directory (sub-path *parsed-class-table-output-dir*)
   :default-pathname-type *parsed-class-table-output-pathname-type*)
 
