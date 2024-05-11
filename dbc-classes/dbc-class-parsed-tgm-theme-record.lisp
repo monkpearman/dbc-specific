@@ -507,6 +507,10 @@ The interface for functions defined herein is as follows:
         ;; calling functions, eg: (loop  unitl (null tgm-parse-concept :stream stream) ...)
         (values nil nil))))
 
+;; :TODO We need a similiar function wrapped around
+;; `dbc-theme-request-loc-x-uri' similiar to what
+;; `tgm-parse-concepts-update-unbound-slots' does.
+
 (defun tgm-parse-concepts-update-unbound-slots (&key (hash-table *parsed-tgm-theme-record-hash-table*))
   (let ((class-slots (MON:CLASS-SLOT-LIST 'parsed-tgm-theme-record)))
     (loop with ht = hash-table
@@ -524,6 +528,7 @@ The interface for functions defined herein is as follows:
           count it into outer-count
           end
           finally (return outer-count))))
+
 
 ;; (tgm-parse-concept :stream *parsed-tgm-theme-xml-source*)
 ;; (tgm-parse-concepts-in-stream :stream *parsed-tgm-theme-xml-source*)
