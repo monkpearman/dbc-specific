@@ -22,10 +22,12 @@
 ;;; (declaim (optimize (debug 3)))
 ;;; Or, (sb-ext:restrict-compiler-policy 'debug 3)
 ;;;
+;;; To set it back to default (debug 1):
+;;; (sb-ext:restrict-compiler-policy 'debug 1)
+;;;
 ;;; (setf *break-on-signals* t)
 ;;;
-;;; (setf sb-debug:*show-entry-point-details* t)
-;;;
+;;; sb-debug:
 ;;; ==============================
 ;;;
 ;;; To remove the compile fasls do:
