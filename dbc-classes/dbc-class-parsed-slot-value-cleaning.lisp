@@ -100,7 +100,9 @@
     for slot-v = (slot-value obj slot)
     when (null slot-v) 
     count it))
-;;(parsed-class-slot-value-count-null 'parsed-inventory-record 'title-ebay)
+
+;; (parsed-class-slot-value-collect-non-null 'parsed-inventory-record 'title-ebay)
+;; (parsed-class-slot-value-count-non-null 'parsed-inventory-record 'title-ebay)
 (defun parsed-class-slot-value-count-non-null (class slot)
   (declare (symbol class slot))
   (loop 
