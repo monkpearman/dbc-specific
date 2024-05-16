@@ -194,7 +194,8 @@ Its pathname is accessible with the `dbc:sub-path' accessor.~%~@
 :EXAMPLE~%
   \(dbc:sub-path dbc:*system-tests-dir*\)~%
   \(pathname-directory \(dbc:sub-path dbc:*system-tests-dir*\)\)~%~@
-:SEE-ALSO `*system-path*', `*system-tests-dir*', `*system-tests-temp-dir*', `*xml-output-dir*', `*xml-input-dir*', `*dbc-base-item-number-image-pathname*'.~%▶▶▶")
+:SEE-ALSO `*system-path*', `*system-tests-dir*', `*system-tests-temp-dir*',
+`*xml-output-dir*', `*xml-input-dir*', `*dbc-base-item-number-image-pathname*'.~%▶▶▶")
 
 (vardoc '*system-tests-temp-dir*
 "Initially set to the string \"tests\".
@@ -213,7 +214,8 @@ Its pathname is accessible with the `dbc:sub-path' accessor.~%~@
 :EXAMPLE~%
   \(dbc:sub-path dbc::*system-tests-temp-dir*\)~%
   \(pathname-directory \(dbc:sub-path dbc::*system-tests-temp-dir*\)\)~%~@
-:SEE-ALSO `*system-path*', `*system-tests-dir*', `*system-tests-temp-dir*', `*xml-output-dir*', `*xml-input-dir*'.~%▶▶▶")
+:SEE-ALSO `*system-path*', `*system-tests-dir*', `*system-tests-temp-dir*',
+`*xml-output-dir*', `*xml-input-dir*'.~%▶▶▶")
 
 ;;; ==============================
 
@@ -302,8 +304,8 @@ Evaluated when system is loaded.~%~@
 
 (typedoc 'hour-range
 "A range to satisfy predicate `valid-hour-date-p'.~%~@
-:SEE-ALSO  `valid-hour-date-or-error', `nanosecond-range', `second-minute-range', `hour-range', `day-range',~@
-`month-range', `year-range', `year-range-non-zero-unsigned'.~%▶▶▶")
+:SEE-ALSO  `valid-hour-date-or-error', `nanosecond-range', `second-minute-range',
+`hour-range', `day-range', `month-range', `year-range', `year-range-non-zero-unsigned'.~%▶▶▶")
 
 (typedoc 'day-range
 "A range to satisfy predicate `valid-day-date-p'.~%~@
@@ -432,7 +434,8 @@ return value of `local-time:decode-timestamp'.~%~@
 :SEE-ALSO `timestamp-year-month-only-p'.~%▶▶▶")
 
 (fundoc 'timestamp-year-month-day-p
-"Return T if TIMESTAMP denotes year month and day portion of a timestamp per return value of `local-time:decode-timestamp'~%~@
+"Return T if TIMESTAMP denotes year month and day portion of a timestamp per
+return value of `local-time:decode-timestamp'.~%~@
 :EXAMPLE~%~@
 \(timestamp-year-month-day-p \(make-timestamp-year-month-day 2012 3 1\)\)~%~@
 \(null \(timestamp-year-month-day-p \(make-timestamp-year-only 2012\)\)\)~%~@
@@ -470,7 +473,9 @@ return value of `local-time:decode-timestamp'.~%~@
 The value of the `system-path' slot affects _all_ instances of `system-path' and~@
 subclassed instances.~%
 :NOTE User code should not specialize methods on this function use system-path instead.~%
-:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', `system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if',`*dbc-xml-dump-dir-name*'.~%")
+:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding',
+`system-parent-path-ensure',`system-path-xml-dump-dir-ensure', `find-system-path',
+ `system-subdir-init-w-var', `system-path-if',`*dbc-xml-dump-dir-name*'.~%")
 
 (generic-doc #'(setf system-base-path)
 "Set class allocated slot `system-path' to PATH for DBC-SYSTEM.~%~@
@@ -478,29 +483,44 @@ Setting the `system-path' slot affects _all_ instances of `system-path' class an
 subclassing instances.~%~@
 :NOTE The intent is that this slot be bound _once_ at system loadtime.
 IOW not intendend for user code method specializers!~%
-:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', `system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if',`*dbc-xml-dump-dir-name*'.~%")
+:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding',
+`system-parent-path-ensure', `system-path-xml-dump-dir-ensure',
+`find-system-path', `system-subdir-init-w-var',
+`system-path-if', `*dbc-xml-dump-dir-name*'.~%")
 
 (generic-doc #'system-path
 "Access the class allocated slot value `system-path' of DBC-SYSTEM.~%~@
 The value of the the `system-path' slot affects _all_ instances of `system-path' and~@
 subclassed instances. It is not intendend that this slot be setfable.
 :NOTE User code should specialize methods on this function.~%
-:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', `system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if',`*dbc-xml-dump-dir-name*'.~%")
+:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding',
+`system-parent-path-ensure', `system-path-xml-dump-dir-ensure',
+`find-system-path', `system-subdir-init-w-var',
+`system-path-if', `*dbc-xml-dump-dir-name*'.~%")
              
 (generic-doc #'(setf system-path)
  "A no-op when attempting to set class allocated slot value `system-path' of DBC-SYSTEM.~%~@
 The value of the the `system-path' slot affects _all_ instances of `system-path' and~@
 subclassed instances.~%
 :NOTE It is not intendend that this slot be directly setfable!~%
-:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', `system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if',`*dbc-xml-dump-dir-name*'.~%")
+:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding',
+`system-parent-path-ensure', `system-path-xml-dump-dir-ensure',
+`find-system-path', `system-subdir-init-w-var',
+`system-path-if', `*dbc-xml-dump-dir-name*'.~%")
 
 (generic-doc #'system-described
  "Describer for instances of subclasses of `system-base'.~%
-:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', `system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if',`*dbc-xml-dump-dir-name*'.~%")
+:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding',
+`system-parent-path-ensure', `system-path-xml-dump-dir-ensure',
+`find-system-path', `system-subdir-init-w-var',
+`system-path-if', `*dbc-xml-dump-dir-name*'.~%")
 
 (generic-doc #'system-path-var-binding
 "Names a variable bound to an object instance.~%~
-:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', `system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if', `*dbc-xml-dump-dir-name*'.~%")
+:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding',
+`system-parent-path-ensure', `system-path-xml-dump-dir-ensure',
+`find-system-path', `system-subdir-init-w-var', `system-path-if',
+`*dbc-xml-dump-dir-name*'.~%")
 
 (generic-doc #'(setf system-path-var-binding)
  "Set the name of  a variable bound to an object instance of a class `system-path' or subclasses.~%
@@ -521,14 +541,20 @@ Binds value of `dbc:*xml-output-dir*' according to `dbc:*dbc-xml-dump-dir-name*'
 Return non-nil on success.~%~@
 :EXAMPLE~%
  \(ensure-dbc-xml-dump-dir\)~%~@
-:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', `system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if', `*dbc-xml-dump-dir-name*'.~%▶▶▶")
+:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding',
+`system-parent-path-ensure', `system-path-xml-dump-dir-ensure',
+`find-system-path', `system-subdir-init-w-var', `system-path-if',
+`*dbc-xml-dump-dir-name*'.~%▶▶▶")
 
 (fundoc 'find-system-path
 "Return the pathname-directory of the system.~%~@
 Signal an error if system can not be found or its directory does not exist.~%~@
 :EXAMPLE~%
  \(find-system-path\)~%~@
-:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', `system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if', `*dbc-xml-dump-dir-name*'.~%▶▶▶")
+:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding',
+`system-parent-path-ensure', `system-path-xml-dump-dir-ensure',
+`find-system-path', `system-subdir-init-w-var', `system-path-if',
+`*dbc-xml-dump-dir-name*'.~%▶▶▶")
 
 (fundoc 'system-subdir-init-w-var
  "Make W-VAR an instance of class SYSTEM-SUBDIR.~%~@
@@ -540,7 +566,10 @@ When W-VAR is already an instance of class SYSTEM-SUBDIR signal an error.~%~@
 :EXAMPLE~%
  \(system-subdir-init-w-var '*dbc-notes-dir*
                      :parent-path \(system-base-path *system-path*\)\)~%~@
-:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding', `system-parent-path-ensure', `system-path-xml-dump-dir-ensure', `find-system-path', `system-subdir-init-w-var', `system-path-if', `*dbc-xml-dump-dir-name*'.~%▶▶▶")
+:SEE-ALSO `system-base-path', `system-described', `system-path-var-binding',
+`system-parent-path-ensure', `system-path-xml-dump-dir-ensure',
+`find-system-path', `system-subdir-init-w-var', `system-path-if',
+`*dbc-xml-dump-dir-name*'.~%▶▶▶")
 
 
 
@@ -1330,9 +1359,9 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
 
 (fundoc 'parsed-class-slot-value-count-non-null
-"count numer of non-null instances of CLASS with SLOT.~%~@
+"Count numer of non-null instances of CLASS with SLOT.~%~@
 :EXAMPLE~%~@
-\(parsed-class-slot-value-count-null 'parsed-inventory-record 'title-ebay\) ~%~@
+\(parsed-class-slot-value-count-non-null 'parsed-inventory-record 'title-ebay\) ~%~@
 `parsed-class-slot-value-sort-unique-numeric-string-sequence',
 `parsed-class-slot-value-collect-slot-values-using-slot-list',
 `parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
@@ -3073,7 +3102,7 @@ have the symbol name:~%
 ;;; ==============================
 
 (generic-doc #'parsed-class-slot-value-format-string-list
-"Generic function for formating slot-values for instances of class `parsed-class'.~%~@
+"Generic function for formatting slot-values for instances of class `parsed-class'.~%~@
 Methods specializers ispatch on slot SLOT-NAME for instances of class `parsed-class' eg:~% 
  \(PARSED-INVENTORY-RECORD \(EQL CATEGORY-ENTITY-PRECEDENCE-LIST\)\)~%
 Keyword STREAM identifies an output stream as if for `cl:format'.~%~@
@@ -3085,7 +3114,7 @@ Keyword STREAM identifies an output stream as if for `cl:format'.~%~@
 `parsed-class-slot-value-format-date-plist'.~%")
 
 (generic-doc #'parsed-class-slot-value-format-image-pathnames
-"Generic function for formating slot-values for instances of class `parsed-class'.~%~@
+"Generic function for formatting slot-values for instances of class `parsed-class'.~%~@
 Keyword STREAM identifies an output stream as if for `cl:format'~%~@
 :SEE-ALSO `parsed-class-slot-value-format-string-list',
 `parsed-class-slot-value-format-image-pathnames',
@@ -3095,7 +3124,7 @@ Keyword STREAM identifies an output stream as if for `cl:format'~%~@
 `parsed-class-slot-value-format-date-plist'.~%")
 
 (generic-doc #'parsed-class-slot-value-format-delimited-string-list
-"Generic function for formating slot-values for instances of class `parsed-class'.~%~@
+"Generic function for formatting slot-values for instances of class `parsed-class'.~%~@
 Method specializers dispatch on slot SLOT-NAME for instances of class `parsed-class' eg:~% 
  \(PARSED-INVENTORY-RECORD \(EQL CATEGORY-ENTITY-PRECEDENCE-LIST\)\)~%
 Keyword STREAM identifies an output stream as if for `cl:format'.~%~@
@@ -3108,7 +3137,7 @@ Keyword DELIMITER specifys a delimitng character satisfying `cl:characterp', eg 
 `parsed-class-slot-value-format-date-plist'.~%")
 
 (generic-doc #'parsed-class-slot-value-format-price
-"Generic function for formating slot-values for instances of class `parsed-class'.~%~@
+"Generic function for formatting slot-values for instances of class `parsed-class'.~%~@
 Method specializers dispatch on slot SLOT-NAME for instances of class `parsed-class'.~%~@
 Keyword PREFIX is a character to use when formatting a price, eg #\\$~%~@
 Keyword STREAM identifies an output stream as if for `cl:format'.~%~@
@@ -3120,7 +3149,7 @@ Keyword STREAM identifies an output stream as if for `cl:format'.~%~@
 `parsed-class-slot-value-format-date-plist'.~%")
 
 (generic-doc #'parsed-class-slot-value-format-unit-dimension
-"Generic function for formating slot-values for instances of class `parsed-class'.~%~@
+"Generic function for formatting slot-values for instances of class `parsed-class'.~%~@
 Method specializers dispatch on slot SLOT-NAME for instances of class `parsed-class'.~%~@
 Keyword STREAM identifies an output stream as if for `cl:format'.~%~@
 :SEE-ALSO `parsed-class-slot-value-format-string-list',
@@ -3131,7 +3160,7 @@ Keyword STREAM identifies an output stream as if for `cl:format'.~%~@
 `parsed-class-slot-value-format-date-plist'.~%")
 
 (generic-doc #'parsed-class-slot-value-format-date-plist
-"Generic function for formating slot-values for instances of class `parsed-class'.~%~@
+"Generic function for formatting slot-values for instances of class `parsed-class'.~%~@
 Method specializers dispatch on slot SLOT-NAME for instances of class `parsed-class'.~%~@
 When date is a plist of the form:~%
  (:MONTH NN :DAY NN :YEAR NNNN)~%
@@ -3139,8 +3168,9 @@ Keyword DATE-STYLE is one of following:~%
  - :YEAR-ONLY \"YYYY\"~%
  - :NUMERIC-DELIMITED \"YYYY/MM/DD\"~%
  - :ALPHA-MONTH \"MONTH DD, YYYY\", or if ALLOW-EMPTY-MONTH-DAY is T and DAY is null \"MONTH YYYY\" ~%
-Keyword ALLOW-EMPTY-MONTH-DAY should default to NIL. and indicates whether it is permissible for DAY in a supplied date to be nil.~%
-Keyword STREAM is a stream as if for `cl:format'.\"~%
+Keyword ALLOW-EMPTY-MONTH-DAY should default to NIL. and indicates whether it is
+permissible for DAY in a supplied date to be nil.~% Keyword STREAM is a stream
+as if for `cl:format'.\"~%
 :SEE-ALSO `parsed-class-slot-value-format-unit-dimension', 
  `parsed-class-slot-value-format-string-list',
 `parsed-class-slot-value-format-image-pathnames',
@@ -3697,7 +3727,8 @@ fails successfully:~%
 `def-set-parsed-class-record-slot-value'.~%")
 
 (method-doc #'field-to-accessor-mapping nil '(t parsed-class)
-"Return as if by `cl:values' the \"field string\" associated with ACCESSOR for OBJECT and a boolean as per `cl:gethash'.~%~@
+"Return as if by `cl:values' the \"field string\" associated with ACCESSOR for
+OBJECT and a boolean as per `cl:gethash'.~%~@
 When non-nil the  `cl:nth-value' 0 corresponds to an parsed SQL/XML field from the original dbc database dump.~%~@
 ACCESSOR is a symbol naming an accessor method defined for OBJECT.~%~@
 OBJECT should be an instance of class PARSED-CLASS and present as a key in
@@ -4088,8 +4119,7 @@ OBJECT is an instance of class parsed-inventory-record, a positive-integer, or
 the string equivalent of one.~%
 BASE-IMAGE-DIRECTORY-PATHNAME is a pathname identifying a directory to search
 for images beneath. Specializing methods default to `*dbc-base-item-number-image-pathname*'.~%~@
-:SEE-ALSO `inventory-record-image-jpg-probe'
-.~%▶▶▶")
+:SEE-ALSO `inventory-record-image-jpg-probe'.~%▶▶▶")
 
 (method-doc #'inventory-record-image-directory-probe nil '(integer)
             "~%:EXAMPLE~%
@@ -4444,7 +4474,8 @@ BASE-IMAGE-DIRECTORY-PATHNAME defaults to value of *dbc-base-item-number-image-p
  - It's `cl:pathanme-name' has length betwen 6-8 charcters.
  - Each character at position 0-6 satyisfies `cl:digit-char-p'.
  - The first 6 characters of it's `cl:pathanme-name' satisfy `cl:alpha-char-p'.
- 0 If it's `cl:pathanme-name' is longer than 6 characters, each character at position 7-8 satisfies `cl:alpha-char-p'.~%
+ 0 If it's `cl:pathanme-name' is longer than 6 characters, each character at
+ position 7-8 satisfies `cl:alpha-char-p'.~%
 :EXAMPLE~%
 \(%parsed-inventory-record-image-file-pathname-valid-p-or-error #P\"006305.jpg\"\)~%
 \(%parsed-inventory-record-image-file-pathname-valid-p-or-error #P\"006305-m.jpg\"\)~%
@@ -4553,7 +4584,8 @@ PRINT-UNBOUND are as per `dbc::write-sax-parsed-slots-to-file'.~%~@
 :SEE-ALSO `parsed-inventory-record-xml-dump-file-and-hash', `parsed-inventory-record-null-prototype'.~%▶▶▶")
 
 (fundoc 'parsed-inventory-record-publication-date-lookup-get-year 
-"Get value of :YEAR for PUBLICATION-DATE slot for an instance of class `parsed-inventory-record' with HASH-KEY.~%~@
+"Get value of :YEAR for PUBLICATION-DATE slot for an instance of class
+`parsed-inventory-record' with HASH-KEY.~%~@
 Return as by VALUES.~%~@
 :EXAMPLE~%~@
  \(parsed-inventory-record-publication-date-lookup-get-year 10491 :with-string-integer-coercion t\)
@@ -4566,7 +4598,8 @@ Return as by VALUES.~%~@
 `parsed-inventory-record-description-inventory-condition-lookup-get-description'.~%▶▶▶")
 
 (fundoc 'parsed-inventory-record-publication-date-lookup-get-month
-"Get value of :MONTH for PUBLICATION-DATE slot for an instance of class `parsed-inventory-record' with HASH-KEY.~%~@
+"Get value of :MONTH for PUBLICATION-DATE slot for an instance of class
+`parsed-inventory-record' with HASH-KEY.~%~@
 Return as by VALUES.~%~@
 :EXAMPLE~%~@
  \(parsed-inventory-record-publication-date-lookup-get-month 10491 :with-string-integer-coercion t\)
@@ -4579,7 +4612,8 @@ Return as by VALUES.~%~@
 `parsed-inventory-record-description-inventory-condition-lookup-get-description'.~%▶▶▶")
 
 (fundoc 'parsed-inventory-record-publication-date-lookup-get-day
-"Get value of :DAY for PUBLICATION-DATE slot for an instance of class `parsed-inventory-record' with HASH-KEY.~%~@
+"Get value of :DAY for PUBLICATION-DATE slot for an instance of class
+`parsed-inventory-record' with HASH-KEY.~%~@
 Return as by VALUES.~%~@
 :EXAMPLE~%~@
  \(parsed-inventory-record-publication-date-lookup-get-day 10491 :with-string-integer-coercion t\)
@@ -4592,7 +4626,8 @@ Return as by VALUES.~%~@
 
 
 (fundoc 'parsed-inventory-record-description-inventory-condition-lookup-get-rating 
-"Get value of :RATING for DESCRIPTION-INVENTORY-CONDITION slot for an instance of class `parsed-inventory-record' with HASH-KEY.~%~@
+"Get value of :RATING for DESCRIPTION-INVENTORY-CONDITION slot for an instance
+of class `parsed-inventory-record' with HASH-KEY.~%~@
 Return as by VALUES.~%~@
 :EXAMPLE~%~@
  \(parsed-inventory-record-description-inventory-condition-lookup-get-rating  \"6291\"\)~%~@
@@ -4603,7 +4638,8 @@ Return as by VALUES.~%~@
 `parsed-inventory-record-description-inventory-condition-lookup-get-description'.~%▶▶▶")
 
 (fundoc 'parsed-inventory-record-description-inventory-condition-lookup-get-description
-"Get value of :DESCRIPTION for DESCRIPTION-INVENTORY-CONDITION slot for an instance of class `parsed-inventory-record' with HASH-KEY.~%~@
+"Get value of :DESCRIPTION for DESCRIPTION-INVENTORY-CONDITION slot for an
+instance of class `parsed-inventory-record' with HASH-KEY.~%~@
 Return as by VALUES.~%~@
 :EXAMPLE~%~@
 \(parsed-inventory-record-description-inventory-condition-lookup-get-description  \"6291\"\) ~%~@
@@ -4613,8 +4649,9 @@ Return as by VALUES.~%~@
 `parsed-inventory-record-publication-date-lookup-get-day'.~%▶▶▶")
 
 (fundoc 'write-sax-parsed-inventory-record-hash-to-zero-padded-directory
-        "Write all parsed-inventory-records in HASH-TABLE to a relative sub-directory
-pathname of the form 0NNNNN beneath BASE-OUTPUT-DIRECTORY default is value of `*dbc-base-item-number-image-pathname*'.
+"Write all parsed-inventory-records in HASH-TABLE to a relative sub-directory
+pathname of the form 0NNNNN beneath BASE-OUTPUT-DIRECTORY default is value of
+`*dbc-base-item-number-image-pathname*'.~%
 If sub-directory does not exist it will be created as if by `cl:ensure-directories-exist'.~%~@
 When keyword CHECKING-SOLD is non-nil \(the default\) also check for presence of
 directory pathnames having the form #\"0NNNNN_SOLD/\" and if one is found write
@@ -4666,8 +4703,7 @@ symbol-name of the defined function. For example the following pair:~%~% ~
 generates a function with the `cl:symbol-name' \"PARSED-INVENTORY-RECORD-XML-DUMP-FILE-AND-HASH\".~%~@
 
 Keyword DEFAULT-KEY-ACCESSOR is a symbol designating a method specialized on PARSED-CLASS
-as per`load-sax-parsed-xml-file-to-parsed-class-hash'.
-
+as per`load-sax-parsed-xml-file-to-parsed-class-hash'.~%~%
 Keyword DEFAULT-INPUT-PATHNAME-NAME is a pathname-name \(a string\) naming
 the default xml file to parse, e.g.:~%
  :DEFAULT-INPUT-PATHNAME-NAME \"dump-refs-DUMPING\"~%~@
@@ -4763,8 +4799,8 @@ Return value is a list of the `cl:file-namestring's of each file written.~%~@
 ;;; dbc-specific/dbc-classes/dbc-class-parsed-tgm-theme-record.lisp
 
 (vardoc '*parsed-tgm-theme-output-dir*
-"An instance of class `dbc-system-subdir' that dereferences a directory
-pathname where parsed TGM XML Concepts are written to.~%
+"An instance of class `dbc-system-subdir' that dereferences a directory pathname
+where parsed TGM XML Concepts are written.~%
 :EXAMPLE~%
  \(sub-path *parsed-tgm-theme-output-dir*\)~%
  \(class-of *parsed-tgm-theme-output-dir*\)~%
