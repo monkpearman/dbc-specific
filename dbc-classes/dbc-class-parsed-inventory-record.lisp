@@ -47,10 +47,7 @@
 
 (in-package #:dbc)
 
-
-
 (defgeneric parsed-inventory-record-parse-table-lookup-slot-value (slot-name hash-key &key with-string-integer-coercion))
-
 
 
 ;;; ==============================
@@ -444,6 +441,8 @@ Orignially these had one of the four following status values with the following 
     :accessor price-ask-ebay
     :documentation ":ORIGINAL-FIELD \"ebay_price\"")
 
+   ;; :NOTE currently only two instances have this slot set:
+   ;; (parsed-class-slot-value-collect-non-null 'parsed-inventory-record 'title-ebay)
    (title-ebay
     :initarg :title-ebay
     :accessor title-ebay
@@ -496,7 +495,7 @@ Orignially these had one of the four following status values with the following 
    (image-file-pathnames
     :initarg :image-file-pathnames
     :accessor image-file-pathnames
-    :documentation "A list of pathname formatted as file-namestrings each element is an image associated with this record.")
+    :documentation "A list of pathname formatted as file-namestrings. Each element is an image associated with this record.")
    )
 
   (:documentation
