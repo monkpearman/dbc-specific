@@ -53,10 +53,9 @@
 (defvar *dbc-build-system-reloading-system* nil)
 
 (defvar *author-maintainer-contact* (format nil "MON KEY -- ~A"
-                                 (map 'string
-                                      'code-char
-                                      #(109 111 110 107 101 121 64 115 97 110 100 112 
-                                        102 114 97 109 105 110 103 46 99 111 109))))
+                                            (map 'string 'code-char
+                                                 #(109 111 110 107 112 101 97 114 109 97 110
+                                                       64 105 99 108 111 117 100 46 99 111 109))))
 
 (asdf:defsystem #:dbc
   ;; :name ""
