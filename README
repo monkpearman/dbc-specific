@@ -5,9 +5,13 @@ The bulk of the ORM defined herein revolves around the class `parsed-inventory-r
 
 
 Directory ./dbc-classes contains functions/classes for our new ORM
+
 Directory ./dbc-parse contains functions for SAX parsing an XML db schema
+
 Directory ./dbc-time contains functions time related parsing and stamping
+
 Directory ./dbc-translate contains variables for translating from French to English
+
 Directory ./dbc-translate/dbc-class-category-entities contains functions for an
             ORM translation of an XML based hierarchical structure of categories.
 
