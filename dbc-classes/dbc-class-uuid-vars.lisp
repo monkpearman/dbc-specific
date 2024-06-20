@@ -46,7 +46,7 @@ uuid-hex-string-36-p
 
 
 (in-package #:dbc)
-;; *package*
+
 ;; (find-method #'(setf system-identity-uuid) '(:after) '(t system-object-uuid))
 ;; (typep  (unicly:make-v5-uuid unicly:*uuid-namespace-oid* (string '*system-object-uuid-base-namespace*)) 'unicly:unique-universal-identifier)
 
@@ -199,8 +199,7 @@ uuid-hex-string-36-p
 
 ;;; ==============================
 
-(defvar *control-id-namespace-table* (make-hash-table-uuid)
-  "Maps the the system-identity-uuid's of *control-id-<FOO>namespaces* to their respective uuid-hash-tables.")
+(defvar *control-id-namespace-table* (make-hash-table-uuid))
 
 (dolist (namspace (list *control-id-inventory-namespace*
                         *control-id-documentation-namespace* *control-id-authority-namespace*

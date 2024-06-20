@@ -3856,6 +3856,7 @@ FIELD VALUE is the corresponding cdr of the consed key/value pair.~%~@
 ;;; dbc-specific/dbc-classes/dbc-class-uuid-vars.lisp
 ;;; ==============================
 
+
 (vardoc '*system-object-uuid-base-namespace*
 "The base UUID namespace for all other uuid namespaces in the dbc system.~%~@
 :EXAMPLE  (SYSTEM-IDENTITY-UUID *system-object-uuid-base-namespace*)
@@ -3915,6 +3916,25 @@ FIELD VALUE is the corresponding cdr of the consed key/value pair.~%~@
                                                    (regex (string var))
                                                    b)
    do (vardoc var (format nil vardoc match var))))
+
+(vardoc '*control-id-namespace-table*
+  "Maps the the system-identity-uuid's of *control-id-<FOO>namespaces* to their
+respective uuid-hash-tables.~%
+:EXAMPLE~%
+ \(gethash \(system-identity-uuid *control-id-inventory-namespace*\) *control-id-namespace-table*\)~%
+:SEE-ALSO `*system-object-uuid-base-namespace*', `*control-id-inventory-namespace*',
+`*control-id-inventory-publication-namespace*',
+`*control-id-inventory-sales-order-namespace*',
+`*control-id-inventory-sales-sold-namespace*',
+`*control-id-inventory-sales-sold-in-store-namespace*',
+`*control-id-documentation-namespace*', `*control-id-authority-namespace*',
+`*control-id-category-namespace*', `*control-id-theme-namespace*',
+`*control-id-location-namespace*', `*control-id-taxon-namespace*',
+`*control-id-technique-namespace*', `*control-id-mount-namespace*',
+`*control-id-material-namespace*', `*control-id-paper-namespace*',
+`*control-id-artist-namespace*', `*control-id-brand-namespace*',
+`*control-id-author-namespace*', `*control-id-person-namespace*',
+`*control-id-publication-namespace*'.▶▶▶")
 
 
 ;;; ==============================
