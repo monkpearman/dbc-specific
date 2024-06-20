@@ -10,6 +10,17 @@
 ;; *control-id-inventory-namespace*
 ;; control-id-inventory-record                (control-id-inventory-record-type)
 ;; control-id-inventory-record-indexed-number (control-id-inventory-record control-id-indexed-number)
+
+;; (system-identity *control-id-inventory-namespace*)
+;=>  *CONTROL-ID-INVENTORY-NAMESPACE*
+
+;; (system-identity-uuid *control-id-inventory-namespace*)
+;=> 2c16a3f7-8f23-5e88-9ff3-d58507355127
+
+;; (system-identity-parent-uuid *control-id-inventory-namespace*)
+;=> a348d6ac-5a81-5d66-b2fe-67fea1abd53d
+
+
 ;;; ==============================
 
 
