@@ -93,7 +93,7 @@
                ;; time dedicated system for these (and others).
                ;; :SEE :FILE "dbc-french-dates.lisp" below.
 	       ;; :local-time :chronicity
-               ;; :parse-time ;; Not sure which version to use 
+               ;; :parse-time ;; Not sure which version to use
                ;; :date-calc
                ;; #+sbcl :sb-ext ;; pretty sure :mon and :unicly already use this but....
 	       )
@@ -118,17 +118,31 @@
             ;; dbc-docstrings-for-class.lisp interns docstrings for many of
             ;; classes below to a hashtable holding docstrings. Load it first
             ((:file "dbc-docstrings-for-class")
-             (:file "dbc-class")
-             (:file "dbc-class-paths")
-             (:file "dbc-class-uuid")
-             (:file "dbc-class-system-object-uuid")
-             (:file "dbc-class-uuid-vars")
-             (:file "dbc-class-record")
-             (:file "dbc-class-inventory-record")
+             (:file "dbc-class")       ; defines class `base-dbc'
+             (:file "dbc-class-paths") ; defines class `system-base', `system-path'
+             (:file "dbc-class-uuid")  ; defines class `base-uuid'
+             (:file "dbc-class-system-object-uuid") ; defines class `system-object-uuid'
+             (:file "dbc-class-uuid-vars") ; class namespace variables cached to var `*control-id-namespace-table*'
+             (:file "dbc-class-record") ; defines class `base-record' subclass of `base-dbc'
+             (:file "dbc-class-inventory-record") ; defines class `base-inventory-record' subclass of `base-record'
              (:file "dbc-class-inventory-publication-record")
              (:file "dbc-class-inventory-sales-record")
              (:file "dbc-class-authority-record")
              (:file "dbc-class-entity")
+             ;; follwoing file "dbc-class-control-id" defines class definition scaffolding as follows:
+             ;; defines class `base-entity' subclass of `base-dbc'
+             ;; defines classes `base-control-id' & `control-id-type' subclass of `base-dbc'.
+             ;; defines class `control-id-indexed-number' subclass of `base-control-id'
+             ;; defines class `control-id-record-type' subclass of `control-id-type'
+             ;; defines classes `control-id-<FOO>-record-type' subclasses of `control-id-record-type'
+             ;; defines classes `control-id-<FOO>-indexed-number' subclasses of `control-id-indexed-number'
+             ;; defines class `control-id-entity-type' subclass of `control-id-type'
+             ;; defines classes `control-id-<FOO>-entity-type' subclasses of `control-id-entity-type'
+             ;; defines class `control-id-display-name' subclass of `base-control-id'
+             ;; defines class `control-id-display-name-for-entity-type' subclass of `control-id-display-name'
+             ;; defines class `control-id-<FOO>-record' subclasses `control-id-inventory-record-type' `base-control-id'
+             ;; defines class `control-id-indexed-<FOO>-record' subclasses `control-id-<FOO>-record' `control-id-record-indexed-number'
+             ;; ... a bunch of other abstract classes ...
              (:file "dbc-class-control-id")
              (:file "dbc-class-edit")
              (:file "dbc-class-naf-entity")
@@ -143,7 +157,7 @@
              (:file "dbc-class-users")
              (:file "dbc-class-description")
              (:file "dbc-class-documentation-record")
-             (:file "dbc-class-parsed")
+             (:file "dbc-class-parsed")  ; defines class `parsed-class' sublassed of `base-dbc'
              (:file "dbc-class-parsed-slot-value-equal")
              (:file "dbc-class-parsed-field-slot-mapping")
              (:file "dbc-class-parsed-convert")
