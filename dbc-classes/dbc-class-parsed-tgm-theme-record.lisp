@@ -120,6 +120,18 @@ The interface for functions defined herein is as follows:
 ;; `*parsed-tgm-theme-record-hash-table*'
 (tgm-parse-concept-count-parsed-theme-record-diff)
 
+(system-identity *control-id-theme-namespace*)
+;=>  *CONTROL-ID-THEME-NAMESPACE*
+
+(system-identity-parent-uuid *control-id-theme-namespace*)
+;=>  a348d6ac-5a81-5d66-b2fe-67fea1abd53d
+
+(system-identity-uuid *system-object-uuid-base-namespace*)
+;=> a348d6ac-5a81-5d66-b2fe-67fea1abd53d
+
+
+(gethash (system-identity-uuid *control-id-theme-namespace*) *control-id-namespace-table*)
+
 
 |#
 
