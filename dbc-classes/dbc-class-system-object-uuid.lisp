@@ -467,7 +467,7 @@
   ;; validity earlier.
   (:method  ((uuid-string string) (sys-object system-object-uuid))
 
-            ;; :DARWWIN REENABL/e if we can get it to compile (declare (unicly::uuid-hex-string-36 uuid-string))
+            ;; :DARWWIN REENABLE if we can get it to compile (declare (unicly::uuid-hex-string-36 uuid-string))
     (let ((uuid-from-string (UNICLY:MAKE-UUID-FROM-STRING uuid-string)))
       (declare (UNICLY:UNIQUE-UNIVERSAL-IDENTIFIER uuid-from-string))
       (if (slot-exists-p sys-object 'system-identity-uuid)
@@ -634,7 +634,8 @@
   sys-object)
 
 ;;; ==============================
-;; DARWIN `make-system-object-uuid'  is having trouble using quoted symobl '*system-object-uuid-base-namespace* as value suppled for keyword :control-id
+;; DARWIN `make-system-object-uuid' is having trouble using quoted symobl
+;; '*system-object-uuid-base-namespace* as value suppled for keyword :control-id
 ;; do we need to loosen the declarations?
 (defun make-system-object-uuid (&key base-namespace control-id)
   ;; (declare (unicly:unique-universal-identifier base-namespace)
@@ -724,7 +725,10 @@
              (version       (if version-if 
                                 (prin1-to-string version-if)
                                 unbound))
-             (format-description (let ((*print-lines* 0))
+             (format-description (let ((*print-lines* 0)
+                                       ;; (*print-length* 16)
+                                       ;; (*print-level* 1)
+                                       )
                                    (format nil "~%~{~4T~40A~A~%~}"
                                            (list ;; "TYPE-OF:"    (type-of sys-object)
                                             ":SYSTEM-IDENTITY"                  sys-id
