@@ -31,8 +31,8 @@
 ;; `record-status-active'          -> `record-status-active'         ; parsed-class
 ;; `edit-by'                       -> `edit-by'                      ; parsed-class
 ;; `edit-by-creator'               -> `edit-by-creator'              ; parsed-class
-;; `edit-timestamp-origin'              -> `edit-timestamp-origin'             ; parsed-class
-;; `edit-timestamp'                     -> `edit-timestamp'                    ; parsed-class
+;; `edit-timestamp-origin'         -> `edit-timestamp-origin'        ; parsed-class
+;; `edit-timestamp'                -> `edit-timestamp'               ; parsed-class
 ;;
 ;; control-id-
 ;; `control-id-display-name-for-entity-type' -> | `control-id-display-artist'       ; parsed-naf-entity
