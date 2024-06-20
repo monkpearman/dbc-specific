@@ -2,7 +2,9 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-uuid-vars.lisp
 ;;; ==============================
 
+;; *control-id-namespace-table*
 ;; *system-object-uuid-base-namespace*
+;;
 ;; *control-id-inventory-namespace*
 ;; *control-id-inventory-publication-namespace*
 ;; *control-id-inventory-sales-order-namespace*
@@ -197,6 +199,7 @@ uuid-hex-string-36-p
   (make-system-object-uuid :base-namespace (system-identity-uuid *system-object-uuid-base-namespace*)
                            :control-id '*system-object-uuid-base-namespace*))
 
+
 ;;; ==============================
 
 (defvar *control-id-namespace-table* (make-hash-table-uuid))
