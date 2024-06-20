@@ -286,7 +286,6 @@ and the following methods specialized on the classes:
 ;;; ==============================
 
 (in-package #:dbc)
-;; *package*
 
 ;; :NOTE I think this is probabably a bad idea as we've decided that every
 ;; entity in the system will have an UUID we should assume that each of them will
