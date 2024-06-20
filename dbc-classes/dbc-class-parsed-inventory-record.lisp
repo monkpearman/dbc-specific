@@ -41,6 +41,11 @@
 ;; for each object find the source bmp/nef images beneath /mnt/LV-NEF-DRV-B/ and
 ;; populate the path for it as well.
 ;;
+
+;;
+;;
+;; (gethash (system-identity-uuid *control-id-inventory-namespace*) *control-id-namespace-table*)
+
 ;;; ==============================
 
 
