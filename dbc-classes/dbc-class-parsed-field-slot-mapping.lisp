@@ -4,7 +4,7 @@
 
 
 (in-package #:dbc)
-;; *package*
+
 
 
 ;;; ==============================
@@ -194,7 +194,7 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
 (defmethod print-object ((object parsed-class-field-slot-accessor-mapping) stream)
   ;;(remove-method  #'print-object (find-method #'print-object nil '(parsed-class-field-slot-accessor-mapping t)))
   (print-unreadable-object (object stream) ; :type t)
-    (format stream "HASH-MAPPED-CLASS ~S" 
+    (format stream "HASH-MAPPED-CLASS ~S"
             ;; (class-name (slot-value object 'parsed-class-mapped))
             (slot-value object 'parsed-class-mapped))))
 
@@ -299,7 +299,7 @@ OBJECT to FIELD-VALUE as if by the following expression:~%~% ~
 ;; :EXAMPLE-USAGE
 ;; (def-set-parsed-class-record-slot-value
 ;;     set-parsed-inventory-record-slot-value              ; <FUN-NAME>
-;;     parsed-inventory-record)                            ; <PARSED-CLASS> 
+;;     parsed-inventory-record)                            ; <PARSED-CLASS>
 ;;   *parsed-class-field-slot-accessor-mapping-table*)     ; <GLOBAL-HASH-TABLE-VAR> currently unused!
 ;;
 ;; => DBC::SET-PARSED-INVENTORY-RECORD-SLOT-VALUE
