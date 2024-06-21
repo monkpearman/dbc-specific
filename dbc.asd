@@ -128,8 +128,14 @@
              (:file "dbc-class-inventory-publication-record")
              (:file "dbc-class-inventory-sales-record")
              (:file "dbc-class-authority-record")
+
+             ;; Following file "dbc-class-entity" class/subclass definitions:
+             ;; defines class `base-entity' subclass of `base-dbc',
+             ;; defines classes `base-<FOO>-entity' subclasses of `base-entity'
              (:file "dbc-class-entity")
-             ;; follwoing file "dbc-class-control-id" defines class definition scaffolding as follows:
+             
+             ;; Following file "dbc-class-control-id" defines class definition
+             ;; scaffolding as follows:
              ;; defines class `base-entity' subclass of `base-dbc'
              ;; defines classes `base-control-id' & `control-id-type' subclass of `base-dbc'.
              ;; defines class `control-id-indexed-number' subclass of `base-control-id'
@@ -266,7 +272,7 @@
 
 ;; Local Variables:
 ;; indent-tabs-mode: nil
-;; show-trailing-whitespace: t
+;; show-trailing-whitespace: nil
 ;; mode: lisp-interaction
 ;; End:
 
