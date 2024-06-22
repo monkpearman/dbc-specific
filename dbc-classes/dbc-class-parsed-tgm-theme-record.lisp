@@ -72,6 +72,12 @@ Klacks documentation:
 :NOTE Our last known TGM conversion for class instances of `parsed-theme-record' lives here:
 #P"$DEvHOME/CL-MON-CODE/dbc-specific/xml-class-dump-dir/parsed-class-table-dumps/parsed-theme-record/parsed-theme-record-2012-03-21T000438.pctd"
 
+
+:NOTE Our last known TGM conversion for class instances of `parsed-tgm-theme-record' lives here:
+#P"$DEVHOME//HG-Repos/CL-MON-CODE/dbc-specific/xml-class-dump-dir/parsed-class-table-dumps/parsed-tgm-theme-record/parsed-tgm-theme-record-2024-05-09T155002.pctd"
+
+:NOTE These are not the same and are currently orthoganal `parsed-theme-record' <=> `parsed-tgm-theme-record'
+
 :NOTE The Latest TGM file we will work from:
 #P"$DEvHOME/CL-MON-CODE/dbc-specific/xml-class-dump-dir/parsed-class-table-dumps/parsed-tgm-theme-record/TGM-TO-PARSE/tgm1.xml"
 
@@ -104,16 +110,20 @@ The interface for functions defined herein is as follows:
 ;; write the `parsed-tgm-theme-record' instances to their default location:
 (write-parsed-tgm-theme-record-parse-table-to-file)
 
-;; load the written file to our default hash-table
-(load-parsed-tgm-theme-record-parse-file-to-hash-table)
+;; Load the written file to our default hash-table. 
+;; :NOTE !!! This populates instances of class `parsed-tgm-theme-record' NOT `parsed-theme-record'
+(load-parsed-tgm-theme-record-parse-file-to-hash-table :clear-existing-table t :load-verbose nil)
+
+*parsed-tgm-theme-record-hash-table*
+
+;; Load the `parsed-theme-record' instances to their hash-table:
+;; :NOTE !!! This populates instances of class `parsed-theme-record' NOT `parsed-tgm-theme-record':
+(load-parsed-theme-record-default-file-to-parse-table  :key-accessor 'CONTROL-ID-DISPLAY-THEME )
+
+(clrhash (parsed-class-parse-table 'parsed-theme-record))
 
 ;; count the length >= 2 of all 'broader-theme slot-values for instances in default hash-table.
 (tgm-parse-concept-count-slot-value-list-length 'broader-theme :hash-table *parsed-tgm-theme-record-hash-table*)
-
-;; load the `parsed-theme-record' instances to their hash-table ie. 
-(parsed-class-parse-table 'parsed-theme-record)
-
-(load-parsed-theme-record-default-file-to-parse-table  :key-accessor 'CONTROL-ID-DISPLAY-THEME )
 
 ;; Identify all class instances of `parsed-theme-record''s with slot-value of
 ;; `control-id-display-theme' id's that aren't currently present in
@@ -185,7 +195,9 @@ The interface for functions defined herein is as follows:
     ("__IGNORED-3"     . image-default-xref)
     ("__IGNORED-4"     . record-status-active)
     ("__IGNORED-5"     . edit-timestamp)
-    ("__IGNORED-6"     . control-id-theme-entity-dbc-num)))
+    ("__IGNORED-6"     . control-id-theme-entity-dbc-num)
+    ;;("__IGNORED-7"     .  system-identity-uuid) ;; *CONTROL-ID-THEME-NAMESPACE*
+    ))
 
 ;; :TODO once we have finalized the TGM parse we can begin unifying instances of
 ;; `parsed-tgm-theme-record' with instances of `parsed-theme-record'. we will
@@ -338,7 +350,7 @@ The interface for functions defined herein is as follows:
     :initform      '()
     :accessor      control-id-theme-entity-dbc-num
     :documentation #.(classdoc 'parsed-tgm-theme-record :control-id-theme-entity-dbc-num)))
-  (:documentation #.(classdoc 'parsed-tgm-theme-record :class-doc)))
+  (:documentation  #.(classdoc 'parsed-tgm-theme-record :class-doc)))
 
 (defun %print-parsed-tgm-theme-record-helper (object stream)
   (let ((disp (and (slot-boundp object 'control-id-display-theme)
@@ -694,6 +706,26 @@ The interface for functions defined herein is as follows:
                      :key #'car))
          (length rslt)))))
 
+;; (fudoc 'tgm-parse-concept-count-slot-value-null
+;; "Return list of object ids and count of all `parsed-tgm-theme-record' instances for SLOT with null value.
+;; :EXAMPLE~%~@
+;;  \(tgm-parse-concept-count-slot-value-null 'control-id-theme-entity-loc-num\)
+;;  ~%~@
+;; :SEE-ALSO `<XREF>'.~%▶▶▶")
+;; 
+;; (tgm-parse-concept-count-slot-value-null 'control-id-theme-entity-loc-num)
+(defun tgm-parse-concept-count-slot-value-null (slot &key (hash-table *parsed-tgm-theme-record-hash-table*))
+  (loop 
+    for obj-id being the hash-keys in *parsed-tgm-theme-record-hash-table* using (hash-value obj)
+    for slot-v = (slot-value obj slot)
+    when (null slot-v) 
+    count it into cnt
+    and
+    collect obj-id into gthr
+    end
+    finally (return (values gthr cnt))))
+
+
 ;; (load-parsed-theme-record-default-file-to-parse-table  :key-accessor 'CONTROL-ID-DISPLAY-THEME )
 ;; (parsed-class-parse-table 'parsed-theme-record)
 ;;
@@ -735,7 +767,7 @@ match-table)
 ;;   for theme = (control-id-display-theme obj)
 ;;   for active = (record-status-active obj)
 ;;   when active
-;;   collect theme) 
+;;   collect theme)
 ;; ;; => 2041
 
 ;; inactive themes with an loc number 4435
@@ -831,10 +863,12 @@ Only slot-value of following slots will be lists of length larger than 1 contain
 (tgm-parse-concept-count-slot-value-list-length 'related-themew :hash-table *parsed-tgm-theme-record-hash-table*)
   ->  3236,  43 "Religion", 40 "Sports", 38 "War", 35 "Human body" ... 
 
+;;; ==============================
 
 
 
 |#
 
+       
 ;;; ==============================
 ;;; EOF
