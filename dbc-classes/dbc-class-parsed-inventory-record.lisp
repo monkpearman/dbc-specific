@@ -402,14 +402,22 @@ Orignially these had one of the four following status values with the following 
 - status \"1\" => 7466 ; set these to :ACTIVE
 - status \"2\" => 318  ; sold? looks like it. set these to :SOLD
 - status \"3\" => 667  ; duplicate?? pretty sure this is duplicate and/or editing :INACTIVE-DUPLICATE
-:NOTE In future we may convert these status values according to following plist:
+:NOTE In future, we may convert these status values according to following plist:
   \(\(0 . :INACTIVE-PENDING\)  \(1 . :ACTIVE\) \(2  . :SOLD\) \(3 . :INACTIVE-DUPLICATE\)\)
 :NOTE However, that Nouvelle Geographie Universelle have status 3 and were never placed online.")
-
+   ;; It isn't clear which is wich:
+   ;; 0 is likely :ACTIVE but what of 1, 2, and 3  :INACTIVE :OFFLINE ????
+   ;; currently following  are counts for status flags.
+   ;; :RECORD-STATUS-ACTIVE                         "0"  ;; 7642
+   ;; :RECORD-STATUS-ACTIVE                         "1"  ;; 198
+   ;; :RECORD-STATUS-ACTIVE                         "2"  ;; 314
+   ;; :RECORD-STATUS-ACTIVE                         "3"  ;; 667
    (record-status-active
     :initarg :record-status-active
     :accessor record-status-active
-    :documentation ":ORIGINAL-FIELD \"online\"")
+    :documentation ":ORIGINAL-FIELD \"online\"~%
+Statuses were originally \"0\", \"1\", \"2\", \"3\".~%
+Unclear what 1-3 corrsespond to, but 0 seems to be :ACTIVE~%")
 
    (inventory-uri
     :initarg :inventory-uri
