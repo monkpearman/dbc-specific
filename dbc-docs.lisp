@@ -1802,6 +1802,23 @@ For each instance of CLASS return a list with the format:~%
 ;;; dbc-parse/dbc-cln-parse.lisp
 ;;; ==============================
 
+(fundoc 'split-bag
+"SPLIT STRING-OR-NULL with character(s) of CHAR-OR-CHAR-BAG return a list of string(s).~%
+STRING-OR-NULL is a string or NIL.
+CHAR-OR-CHAR-BAG is a character or a list of characters.
+When STRING-OR-NULL is NIL return NIL.
+:EXAMPLE~%~@
+\(split-bag \" , . | foo , ,, . | BAR | , | \" \(list #\\, #\\. #\\|\)\)~%~@
+\(split-bag \" , . | foo , ,, . | BAR | , | \" \(list #\\, #\\. #\\| \)\)~%~@
+\(split-bag \" , . | foo , ,, . | BAR | , | 
+ \"  `\(#\\, #\\. #\\| ,@\(remove #\\ \(symbol-value 'mon::*whitespace-chars*\)\)\)\)~%~@
+\(split-bag \"\" \(list #\\, #\\. #\\|\)\)~%~@
+\(split-bag nil \(list #\\, #\\. #\\|\)\)~%~@
+\(split-bag \"\" #\\,\)~%~@
+\(split-bag nil #\\,\)~%~@
+:SEE-ALSO `split-piped-field-if', `mon:string-split-on-chars', `split-roles',
+`split-appeared-in', `split-loc-pre', `split-date-range', `split-comma-field'.~%▶▶▶")
+
 (fundoc 'field-convert-edit-timestamp
         "Return a string representation of a `local-time:timestamp' as if by cl:values
 when MAYBE-TIMESTAMP satisfies certain constraints.
@@ -1892,7 +1909,7 @@ When USED-FOR-STRING is either `mon:string-null-or-empty-p' or
  \(split-used-fors \"     \"\)~%
  \(split-used-fors \"\"\)~%
  \(split-used-fors nil\)~%~@
-:SEE-ALSO `split-piped-field-if', `mon:string-split-on-chars', `split-roles',
+:SEE-ALSO `split-bag', `split-piped-field-if', `mon:string-split-on-chars', `split-roles',
 `split-appeared-in', `split-loc-pre', `split-date-range', `split-comma-field'.~%▶▶▶")
 
 (fundoc 'split-field-on-char-if
@@ -1942,7 +1959,7 @@ is contained of only `mon:whitespace-char-p' and CHAR.~%
 :NOTE Has regression tests:
  `split-field-on-char-if-TEST.0' `split-field-on-char-if-TEST.1'
  `split-field-on-char-if-TEST.2' `split-field-on-char-if-TEST.3'
-:SEE-ALSO `split-piped-field-if', `split-comma-field' `split-comma-field-if'.~%▶▶▶")
+:SEE-ALSO `split-bag', `split-piped-field-if', `split-comma-field' `split-comma-field-if'.~%▶▶▶")
 
 (fundoc 'split-piped-field-if
         "Like `split-used-fors' but do not return a list if no #\\| are found.~%~@
@@ -1973,7 +1990,7 @@ elements from first value ruturned.  Default is to process nth-value 0 with
           \(multiple-value-list
            \(split-piped-field-if \"ref\"
                                  :known-field-hashtable *xml-refs-match-table*\)\)\)~%~@
-:SEE-ALSO `split-used-fors', `split-roles', `split-appeared-in',
+:SEE-ALSO `split-bag', `split-used-fors', `split-roles', `split-appeared-in',
 `split-loc-pre', `split-date-range', `split-comma-field',
 `mon:string-split-on-chars'.~%▶▶▶")
 
@@ -1992,7 +2009,7 @@ When APPEARED-IN-STRING is either `mon:string-null-or-empty-p' or
  \(split-appeared-in nil\)~%
  \(split-appeared-in \"\"\)~%
  \(split-appeared-in \"     \"\)~%~@
-:SEE-ALSO `split-roles', `split-used-fors', `split-loc-pre',
+:SEE-ALSO `split-bag', `split-roles', `split-used-fors', `split-loc-pre',
 `split-date-range'`mon:string-split-on-chars', `mon:string-trim-whitespace',
 `mon:*whitespace-chars*'.~%▶▶▶")
 
@@ -2012,7 +2029,7 @@ When ROLE-STRING is either `mon:string-null-or-empty-p' or
  \(split-roles nil\)~%
  \(split-roles \"\"\)~%
  \(split-roles \"       \"\)~%~@
-:SEE-ALSO `split-piped-field-if', `split-used-fors', `split-appeared-in',
+:SEE-ALSO `split-bag', `split-piped-field-if', `split-used-fors', `split-appeared-in',
 `split-loc-pre', `split-date-range', `split-comma-field'.~%▶▶▶")
 
 (fundoc 'split-loc-pre
@@ -2029,7 +2046,7 @@ When LOC-STRING is either `mon:string-null-or-empty-p' or
  \(split-loc-pre \"     \"\)~%
  \(split-loc-pre nil\)~%~@
 :NOTE This is actually a bad idea as the \"n 95121069\" is canonical...~%~@
-:SEE-ALSO `split-roles', `split-used-fors', `split-piped-field-if',
+:SEE-ALSO `split-bag', `split-roles', `split-used-fors', `split-piped-field-if',
 `split-appeared-in', `split-date-range'.~%▶▶▶")
 
 (fundoc 'split-date-range
@@ -2170,7 +2187,7 @@ is contained of only `mon:whitespace-char-p' and CHAR.~%
         \(split-comma-field-if  \"   \" :keep-first t\)
         \(split-comma-field-if  \"   \" :keep-duplicates t\)
         \(split-comma-field-if  \"   \" :keep-first t :keep-duplicates t\)\)~%
-:SEE-ALSO `split-used-fors', `split-piped-field-if', `split-roles',
+:SEE-ALSO `split-bag', `split-used-fors', `split-piped-field-if', `split-roles',
 `split-appeared-in', `split-loc-pre', `split-date-range', `split-comma-field',
 `mon:string-split-on-chars'.~%▶▶▶")
 
@@ -2189,7 +2206,7 @@ Intended for use with SEO and \"keyword\" like fields in the `refs` table.~%~@
 :NOTE Do not call unless reasonably sure sure that there are never free commas
 used in a non-delimiting position, e.g. the following string will not parse correctly:~%
  \(split-comma-field  \"Havell \(Robert, Jr.\), Havell \(Robert, Sr.\), Havell Lithograph, \"\)~%~@
-:SEE-ALSO `split-used-fors', `split-piped-field-if', `split-roles',
+:SEE-ALSO `split-bag', `split-used-fors', `split-piped-field-if', `split-roles',
 `split-appeared-in', `split-loc-pre', `split-date-range', `split-comma-field',
 `mon:string-split-on-chars'.~%▶▶▶")
 

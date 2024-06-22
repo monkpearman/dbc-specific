@@ -30,6 +30,43 @@
 
 
 (in-package #:dbc)
+
+;; (defun split-bag (string-or-null char-or-char-bag)
+;;   (mapcar #'(lambda (bag)
+;;             (if (null bag) 
+;;                 bag
+;;                 (mon:string-trim-whitespace bag)))
+;;         (remove-if #'mon:string-all-whitespace-p 
+;;                    (split-sequence:split-sequence-if #'(lambda (y) (member y char-or-char-bag))
+;;                                                      string-or-null
+;;                                                      :remove-empty-subseqs t))))
+(defun split-bag (string-or-null char-or-char-bag)
+  (declare (or (string null) string-or-null)
+           (or (character list) char-or-char-bag))
+ (labels ((map-trim-whitespace (bag)
+             (mapcar #'(lambda (thing)
+                         (if (null thing) 
+                             thing
+                             (mon:string-trim-whitespace thing)))
+                     bag))
+           (rmv-if (seq) (remove-if #'mon:string-all-whitespace-p  seq))
+           (char-or-bag-if (cobi) (if (characterp cobi)
+                                      (list cobi)
+                                      (if (or (null cobi)
+                                              (not (and (listp cobi)
+                                                         (every #'characterp cobi))))
+                                     (error ":FUNCTION `split-bag', argument CHAR-OR-CHAR-BAG is not a character or list of characters'~%:GOT ~S~%"  cobi)
+                                        cobi)))
+           (mem-split (y) (member y (char-or-bag-if char-or-char-bag)))
+           (split-if (son) (split-sequence:split-sequence-if #'mem-split
+                                                             son
+                                                             :remove-empty-subseqs t)))
+   (if (null string-or-null)
+       nil
+       (progn
+        (unless (stringp string-or-null)
+          (error ":FUNCTION `split-bag', argument STRING-OR-NULL does not satisfy `cl:stringp'~%:GOT ~S~%"  string-or-null))
+        (map-trim-whitespace (rmv-if (split-if string-or-null)))))))
 ;; 
 (defun field-string-cons (field-str)
   (typecase field-str  
