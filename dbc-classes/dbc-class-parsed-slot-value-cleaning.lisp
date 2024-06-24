@@ -599,10 +599,6 @@
                               gthr))
                   cnt))))
 
-;; 
-;; (fundoc 'parsed-class-set-slot-value-from-consed-pairs
-;; HASH-KEY-AND-NEW-VALUE is a list of conses of the form:
-;; (<HASH-KEY> . <NEW-VALUE>)
 ;; BE CAREFUL! This function does not check `slot-exists-p' `slot-boundp' and
 ;; does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 (defun parsed-class-set-slot-value-from-consed-pairs (parsed-class slot-name hash-key-and-new-value)
@@ -614,6 +610,40 @@
     for obj = (gethash hash-key ht)
     when obj
     do (setf (slot-value obj slot-name) new-value)))
+
+(defun parsed-class-set-slot-value-from-proper-list (parsed-class slot-name hash-key-and-new-value)
+  (declare (symbol parsed-class slot-name)
+           (cons hash-key-and-new-value))
+  (loop 
+    with ht = (parsed-class-parse-table parsed-class)
+    for (hash-key  new-value) in hash-key-and-new-value
+    for obj = (gethash hash-key ht)
+    when obj
+    do (setf (slot-value obj slot-name) new-value)))
+
+;; (parsed-class-slot-value-collect-split-bag 'parsed-artist-record
+;;                                            'naf-entity-artist-display-name-coref
+;;                                            `(#\| ,@(remove #\ (symbol-value 'mon::*whitespace-chars*))))
+(defun parsed-class-slot-value-collect-split-bag (parsed-class slot-name-for-split-bag char-or-char-bag)
+  (declare (symbol parsed-class slot-name-for-split-bag)
+           ((or character list) char-or-char-bag))
+  (loop 
+    for obj-id being the hash-keys in (parsed-class-parse-table parsed-class) using (hash-value obj)
+    for splits  = (slot-value obj slot-name-for-split-bag) 
+    for cleaned = (if (null splits) 
+                      nil 
+                      (split-bag 
+                       splits
+                       char-or-char-bag))
+    when (null splits) count it into null-count
+    when (not (null splits)) count it into not-null-count
+    unless (null cleaned)
+    collect (list obj-id cleaned) into gthr
+    end
+    finally (return (values 
+                     ;; (pprint gthr)
+                     gthr
+                   (list :NULL-SLOT-VALUE null-count :NOT-SLOT-VALUE not-null-count)))))
 
 ;; :NOTE There is no longer any reason to call this it is left here as a
 ;; reminder of the idiom we used to clean up edit-history junk

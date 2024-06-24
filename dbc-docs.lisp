@@ -1795,6 +1795,43 @@ For each instance of CLASS return a list with the format:~%
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
 `parsed-class-slot-value-thereis-equalp'.~%▶▶▶")
 
+(fundoc 'parsed-class-set-slot-value-from-consed-pairs
+"HASH-KEY-AND-NEW-VALUE is a list of conses of the form:
+ (<HASH-KEY> . <NEW-VALUE>)
+:EXAMPLE~%~@
+  { ... <EXAMPLE> ... } ~%~@
+:NOTE BE CAREFUL! This function does not check `slot-exists-p' `slot-boundp' and
+does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.~%
+:SEE-ALSO `parsed-class-slot-value-collect-split-bag'.~%▶▶▶")
+
+(fundoc 'parsed-class-set-slot-value-from-proper-list
+ " Like `parsed-class-set-slot-value-from-consed-pairs' but HASH-KEY-AND-NEW-VALUE
+ HASH-KEY-AND-NEW-VALUE is a proper list the form:~%
+  (<HASH-KEY> <NEW-VALUE>)~%~@
+:EXAMPLE~%~@
+  { ... <EXAMPLE> ... } ~%~@
+:SEE-ALSO `parsed-class-slot-value-collect-split-bag'.~%▶▶▶")
+
+(fundoc 'parsed-class-slot-value-collect-split-bag
+ "Lookup instances of PARSED-CLASS and split the string slot-value of SLOT-NAME-FOR-SPLIT-BAG with CHAR-OR-CHAR-BAG.~%
+Return as if by cl:values such that `cl:nth-value' 0 is a list, each element of
+which is a proper list of the form:~%
+(<HASH-KEY>  <LIST-OF-SPLIT-STRINGS>)~%
+cl:nth-value 1 is a list indicating which if any of the slot-values for
+SLOT-NAME-FOR-SPLIT-BAG where null prior to splitting, and has the form:~%
+\(:NULL-SLOT-VALUE <COUNT> :NOT-SLOT-VALUE <COUNT>\)~%
+PARSED-CLASS names a class dereferenced by `parsed-class-parse-table'.~%
+SLOT-NAME-FOR-SPLIT-BAG names a slot with a string or null value, the contents
+of which will be split according to characters of CHAR-OR-CHAR-BAG as if by
+`split-bag'.~%
+CHAR-OR-CHAR-BAG is a character or a list of characters.~%
+:NOTE Return value is suitable for used with
+`parsed-class-set-slot-value-from-proper-list' which see.~%
+:EXAMPLE~%~@
+ \(parsed-class-slot-value-collect-split-bag 'parsed-artist-record
+                                           'naf-entity-artist-display-name-coref
+                                           `\(#\\| ,@\(remove #\\ \(symbol-value 'mon::*whitespace-chars*\)\)\)\)~%~@
+:SEE-ALSO `parsed-class-set-slot-value-from-consed-pairs', `parsed-class-set-slot-value-from-proper-list'.~%▶▶▶")
 
 
 ;;; ==============================
