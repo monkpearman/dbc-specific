@@ -118,24 +118,46 @@
             ;; dbc-docstrings-for-class.lisp interns docstrings for many of
             ;; classes below to a hashtable holding docstrings. Load it first
             ((:file "dbc-docstrings-for-class")
-             (:file "dbc-class")       ; defines class `base-dbc'
-             (:file "dbc-class-paths") ; defines class `system-base', `system-path'
-             (:file "dbc-class-uuid")  ; defines class `base-uuid'
-             (:file "dbc-class-system-object-uuid") ; defines class `system-object-uuid'
-             (:file "dbc-class-uuid-vars") ; class namespace variables cached to var `*control-id-namespace-table*'
-             (:file "dbc-class-record") ; defines class `base-record' subclass of `base-dbc'
-             (:file "dbc-class-inventory-record") ; defines class `base-inventory-record' subclass of `base-record'
+             ;; ==============================
+             ;; Following file "dbc-class.lisp"
+             ;; defines class `base-dbc'
+             (:file "dbc-class")       
+             ;; ==============================
+             ;; Following file "dbc-class-paths.lisp"
+             ;; defines class `system-base', `system-path'
+             (:file "dbc-class-paths") 
+             ;; ==============================
+             ;; Following file "dbc-class-uuid.lisp"
+             ;; defines class `base-uuid'
+             (:file "dbc-class-uuid")  
+             ;; ==============================
+             ;; Following file "dbc-class-system-object-uuid.lisp"
+             ;; defines class `system-object-uuid'
+             (:file "dbc-class-system-object-uuid") 
+             ;; ==============================
+             ;; Following file "dbc-class-uuid-vars.lisp"
+             ;; class namespace variables cached to var `*control-id-namespace-table*'
+             (:file "dbc-class-uuid-vars") 
+             ;; ==============================
+             ;; Following file "dbc-class-record.lisp"
+             ;; defines class `base-record' subclass of `base-dbc'
+             (:file "dbc-class-record") 
+             ;; ==============================
+             ;; Following file "dbc-class-inventory-record.lisp"
+             ;; defines class `base-inventory-record' subclass of `base-record'
+             (:file "dbc-class-inventory-record")
              (:file "dbc-class-inventory-publication-record")
              (:file "dbc-class-inventory-sales-record")
              (:file "dbc-class-authority-record")
-
-             ;; Following file "dbc-class-entity" class/subclass definitions:
+             ;; ==============================
+             ;; Following file "dbc-class-entity.lips"
+             ;; defines following class/subclass definitions:
              ;; defines class `base-entity' subclass of `base-dbc',
              ;; defines classes `base-<FOO>-entity' subclasses of `base-entity'
              (:file "dbc-class-entity")
-             
-             ;; Following file "dbc-class-control-id" defines class definition
-             ;; scaffolding as follows:
+             ;; ==============================
+             ;; Following file "dbc-class-control-id.lisp"
+             ;; defines class definition scaffolding as follows:
              ;; defines class `base-entity' subclass of `base-dbc'
              ;; defines classes `base-control-id' & `control-id-type' subclass of `base-dbc'.
              ;; defines class `control-id-indexed-number' subclass of `base-control-id'
@@ -150,6 +172,7 @@
              ;; defines class `control-id-indexed-<FOO>-record' subclasses `control-id-<FOO>-record' `control-id-record-indexed-number'
              ;; ... a bunch of other abstract classes ...
              (:file "dbc-class-control-id")
+             
              (:file "dbc-class-edit")
              (:file "dbc-class-naf-entity")
              (:module "dbc-class-category-entities"
@@ -163,7 +186,10 @@
              (:file "dbc-class-users")
              (:file "dbc-class-description")
              (:file "dbc-class-documentation-record")
-             (:file "dbc-class-parsed")  ; defines class `parsed-class' sublassed of `base-dbc'
+             ;; ==============================
+             ;; Following file "dbc-class-parsed.lisp"
+             ;; defines class `parsed-class' sublasses `base-dbc'
+             (:file "dbc-class-parsed")
              (:file "dbc-class-parsed-slot-value-equal")
              (:file "dbc-class-parsed-field-slot-mapping")
              (:file "dbc-class-parsed-convert")
