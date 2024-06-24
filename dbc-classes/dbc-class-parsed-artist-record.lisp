@@ -96,8 +96,12 @@
     :initarg :location-nationality
     :accessor location-nationality
     :documentation ":ORIGINAL-FIELD \"nationality\"")
-
-   ;; shares-generic
+   ;; "https://id.loc.gov/authorities/names/"
+   ;; "https://id.loc.gov/authorities/names/n<NNNNNN>.html"
+   ;; (concatenate  'string "https://id.loc.gov/authorities/names/n" "98017260")
+   ;; "https://id.loc.gov/authorities/names/n98017260"
+   ;; => "https://id.loc.gov/authorities/names/n90656052"
+   ;; shares-generic   
    (control-id-authority-0 ;; LOC 
     :initarg :control-id-authority-0
     :accessor control-id-authority-0
