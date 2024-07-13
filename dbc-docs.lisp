@@ -44,7 +44,7 @@ with following string:~%
 \(eq \(type-of *system-notes-dir*\) 'system-subdir\)~%
 \(sub-path *system-notes-dir*\)~%
 \(system-described *system-notes-dir* nil\)~%
-:SEE-ALSO :SEE-ALSO `dbc:system-path', `*system-tests-dir*',
+:SEE-ALSO `dbc:system-path', `*system-tests-dir*',
 `*system-tests-temp-dir*', `*xml-output-dir*', `*xml-input-dir*',
 `*dbc-base-item-number-image-pathname*'.~%▶▶▶")
 
@@ -286,7 +286,53 @@ Evaluated when system is loaded.~%~@
  \(every-digit-char-p \"000000FOO\"\)~%~@
 :SEE-ALSO `notevery-digit-char-p'.~%▶▶▶")
 
+(fundoc 'make-hash-table-sync
+"Create and return a new hash table. The keywords are as follows:~%
+TEST Determines how keys are compared. Must a designator for one of the
+standard hash table tests, or a hash table test defined using
+SB-EXT:DEFINE-HASH-TABLE-TEST. Additionally, when an explicit
+HASH-FUNCTION is provided (see below), any two argument equivalence
+predicate can be used as the TEST.~%
+SIZE A hint as to how many elements will be put in this hash table.~%
+REHASH-SIZE Indicates how to expand the table when it fills up. If an integer,
+add space for that many elements. If a floating point number (which must be
+greater than 1.0), multiply the size by that amount.~%
+REHASH-THRESHOLD Indicates how dense the table can become before forcing a
+rehash. Can be any positive number <=1, with density approaching zero as the
+threshold approaches 0. Density 1 means an average of one entry per bucket.~%
+HASH-FUNCTION If unsupplied, a hash function based on the TEST argument is used,
+which then must be one of the standardized hash table test functions, or
+one for which a default hash function has been defined using
+`sb-ext:define-hash-table-test'. If HASH-FUNCTION is specified, the TEST
+argument can be any two argument predicate consistent with it. The
+HASH-FUNCTION is expected to return a non-negative fixnum hash code.
+If TEST is neither standard nor defined by DEFINE-HASH-TABLE-TEST,
+then the HASH-FUNCTION must be specified.~%
+WEAKNESS is one of :key | :value | :key-and-value | :key-or-value | nil~%
+SYNCHRONIZED If NIL (the default), the hash-table may have multiple concurrent
+readers, but results are undefined if a thread writes to the hash-table
+concurrently with another reader or writer. If T, all concurrent accesses are
+safe, but note that CLHS 3.6 \(Traversal Rules and Side Effects\) remains in
+force.~%
+:EXAMPLE~%~@
+ \(sb-ext:hash-table-synchronized-p \(make-hash-table-sync\)\)~%
+:SEE-ALSO `dbc::with-locked-hash-table', `sb-ext:define-hash-table-test'.~%▶▶▶")
 
+(fundoc  'with-locked-hash-table
+"Limits concurrent accesses to HASH-TABLE for the duration of BODY. 
+If HASH-TABLE is synchronized, BODY will execute with exclusive ownership of the table.
+If HASH-TABLE is not synchronized, BODY will execute with other
+`with-locked-hash-table' bodies excluded -- exclusion of hash-table accesses not
+surrounded by `with-locked-hash-table' is unspecified.
+:EXAMPLE~%~@
+\(let \(\(ht \(make-hash-table-sync\)\)\)
+ \(with-locked-hash-table
+  \(ht\)
+  \(setf \(gethash \"FOO\" ht\) 'bar\)\)\)
+SEE-ALSO `make-hash-table-sync'.~%▶▶▶")
+
+
+ 
 
 ;;; ==============================
 ;; dbc-time/date-localtime-utils.lisp

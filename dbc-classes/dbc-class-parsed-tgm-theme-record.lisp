@@ -162,10 +162,14 @@ The interface for functions defined herein is as follows:
 
 (defparameter *parsed-tgm-theme-xml-source* nil)
 
+;; (sb-ext:hash-table-synchronized-p *parsed-tgm-theme-record-hash-table*)
 ;; :NOTE The current TGM file contains 13203 concepts.
 (defparameter *parsed-tgm-theme-record-hash-table*
               #-sbcl(make-hash-table :test #'equal :synchronized t)
-              #+sbcl(make-hash-table :size (MON:PRIME-OR-NEXT-GREATEST 13202) :test #'equal :synchronized t))
+              (make-hash-table-sync :size (MON:PRIME-OR-NEXT-GREATEST 13202) :test #'equal))
+;; 
+;; (setq *parsed-tgm-theme-record-hash-table*
+;;       (make-hash-table-sync :size (MON:PRIME-OR-NEXT-GREATEST 13202) :test #'equal))
 
 (defvar *parsed-tgm-theme-field-to-accessor-table*
   '(("DESCRIPTOR"      . control-id-display-theme)
@@ -537,7 +541,8 @@ The interface for functions defined herein is as follows:
 
 (defun tgm-parse-concepts-update-unbound-slots (&key (hash-table *parsed-tgm-theme-record-hash-table*))
   (let ((class-slots (MON:CLASS-SLOT-LIST 'parsed-tgm-theme-record)))
-    (loop with ht = hash-table
+    (with-locked-hash-table (hash-table)
+      (loop with ht = hash-table
           for obj-id being the hash-keys in ht
           for obj being the hash-values in ht
           when (loop with obj-inner = obj
@@ -551,7 +556,7 @@ The interface for functions defined herein is as follows:
           ;; collect it into outer-gather
           count it into outer-count
           end
-          finally (return outer-count))))
+          finally (return outer-count)))))
 
 
 ;; (tgm-parse-concept :stream *parsed-tgm-theme-xml-source*)
@@ -562,19 +567,20 @@ The interface for functions defined herein is as follows:
                                          (hash-table *parsed-tgm-theme-record-hash-table*)
                                          (clear-hash-p T))
   (when (and clear-hash-p (> (hash-table-count hash-table) 0))
-    (clrhash hash-table))
+    (with-locked-hash-table (hash-table) (clrhash hash-table)))
   (unwind-protect  ;; (KLACKS:WITH-OPEN-SOURCE (s stream)
        (loop for read-obj = (tgm-parse-concept :stream stream)
-             for set-hash = (when read-obj
-                              (setf (gethash (control-id-display-theme read-obj) hash-table)
-                                    read-obj))
-             until (null read-obj)
-             finally (return
-                       (values
-                        hash-table
-                        (hash-table-count hash-table)
-                        (tgm-parse-concepts-update-unbound-slots :hash-table hash-table))))
-    (KLACKS:CLOSE-SOURCE stream)))
+               for set-hash = (when read-obj
+                                (with-locked-hash-table (hash-table)
+                                  (setf (gethash (control-id-display-theme read-obj) hash-table)
+                                        read-obj)))
+               until (null read-obj)
+               finally (return
+                         (values
+                          hash-table
+                          (hash-table-count hash-table)
+                          (tgm-parse-concepts-update-unbound-slots :hash-table hash-table))))
+         (KLACKS:CLOSE-SOURCE stream)))
 
 
 (defun write-parsed-tgm-theme-record-parse-table-to-file (&key
@@ -622,6 +628,7 @@ The interface for functions defined herein is as follows:
       (format fl ";;; :CLASS `~A'~%;;; :FILE-CREATED ~A~%~%"
               'parsed-tgm-theme-record
               (LOCAL-TIME:FORMAT-TIMESTRING nil (LOCAL-TIME:NOW)))
+      (with-locked-hash-table (hash-table)
       (loop
         for obj being the hash-values of hash-table
         for frmt-cntl = (print-sax-parsed-slots-padding-format-control obj)
@@ -631,7 +638,7 @@ The interface for functions defined herein is as follows:
       (values
        full-path
        pathname-and-type
-       hash-table))))
+       hash-table)))))
 
 ;; (write-parsed-tgm-theme-record-parse-table-to-file)
 ;; (load-parsed-tgm-theme-record-parse-file-to-hash-table :clear-existing-table t load-verbose nil)
@@ -676,18 +683,22 @@ The interface for functions defined herein is as follows:
                                       :w-type-of t))))
                most-recent-parse-file))))
     (when in-file
-      (and clear-existing-table (clrhash hash-table))
-      (load-parsed-class-default-file-to-hash-table 
-       :parsed-class 'parsed-tgm-theme-record
-       :input-file in-file
-       :hash-table hash-table
-       :key-accessor key-accessor
-       :load-verbose load-verbose))))
+      (and clear-existing-table 
+           (with-locked-hash-table (hash-table) (clrhash hash-table)))
+      (with-locked-hash-table (hash-table)
+        (load-parsed-class-default-file-to-hash-table 
+         :parsed-class 'parsed-tgm-theme-record
+         :input-file in-file
+         :hash-table hash-table
+         :key-accessor key-accessor
+         :load-verbose load-verbose)))))
 
 
 ;; (tgm-parse-concept-count-slot-value-list-length 'broader-theme :hash-table *parsed-tgm-theme-record-hash-table*)
 (defun tgm-parse-concept-count-slot-value-list-length (slot &key (hash-table *parsed-tgm-theme-record-hash-table*))
-  (let ((rslt (loop 
+  (let ((rslt 
+          (with-locked-hash-table (hash-table)
+            (loop 
                 for obj-id being the hash-keys in hash-table
                 for obj being the hash-values in hash-table
                 for sv = (slot-value obj slot)
@@ -697,7 +708,7 @@ The interface for functions defined herein is as follows:
                            (= sv-len 1))
                 collect (list sv-len obj-id sv) into gthr
                 end
-                finally (return gthr))))
+                finally (return gthr)))))
     (if (null rslt)
         rslt
         (values 
