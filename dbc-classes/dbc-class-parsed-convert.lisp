@@ -831,7 +831,7 @@
                                 :pathname-name output-pathname-name
                                 :pathname-name-dated-p output-pathname-dated-p
                                 :pathname-type output-pathname-type))))
-              (parsed-hash  (make-hash-table :test 'equal :size (MON:PRIME-OR-NEXT-GREATEST (caddr parsed-xml-file)))))
+              (parsed-hash  (make-hash-table-sync :test 'equal :size (MON:PRIME-OR-NEXT-GREATEST (caddr parsed-xml-file)))))
          (let ((dispatch-fun (parsed-class-slot-dispatch-function ',parsed-class)))
            (load-sax-parsed-xml-file-to-parsed-class-hash
             :parsed-class ',parsed-class

@@ -13,8 +13,6 @@
 
 
 (in-package #:dbc)
-;; *package*
-
 
 ;; :NOTE Some of these slot names aren't congruent with the other parsed naf-entity records:
 ;; founded-date

@@ -13,7 +13,8 @@
 
 (defclass parsed-documentation-record (parsed-class)
   ( 
-   (;; reference to the id of the sub-doc of meta-doc e.g. doc 0001, 0002, 0003 are each a sub-docs of meta-doc 9999
+   (;; reference to the id of the sub-doc of meta-doc e.g. doc 0001, 0002, 0003
+    ;; are each a sub-docs of meta-doc 9999
     ;; -- this is the tables primary key
     control-id-documentation-record-document-page-id
     :initarg :control-id-documentation-record-document-page-id

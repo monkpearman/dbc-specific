@@ -26,22 +26,7 @@
    ;; genearted with def-set-parsed-class-record-slot-value
    (parsed-class-slot-dispatch-function
     :reader parsed-class-slot-dispatch-function))
-  (:documentation
-   #.(format nil
-             "Object for holding a mappings of field-names with slot-accessors.~%~@
-slot parsed-class-mapped is symbol designating the parse-class whose slots are
-mapped by hash-tables in slots accessor-to-field-table and
-slot-accessor-field-name-table.~%~@
-Slot field-to-accessor-table is a hash-table mapping from:~%~% ~
-  field-name (a string) to slot-accessor \(a symbol)
-Its `cl:hash-table-test' is `cl:equal'.~%~@
-Slot accessor-to-field-table is a hash-table with an inverse mapping from:~%~% ~
- symbol to field-name~%~
-Its `cl:hash-table-test' is `cl:eql'.~%~@
-:SEE-ALSO `accessor-to-field-mapping', `field-to-accessor-mapping',
-`field-to-accessor-table', `accessor-to-field-table', `parsed-class-mapped',
-`make-parsed-class-field-slot-accessor-mapping',
-`def-set-parsed-class-record-slot-value'.~%▶▶▶")))
+  (:documentation  #.(classdoc 'parsed-class-field-slot-accessor-mapping :class-doc)))
 
 ;; :NOTE we define function `%parsed-class-mapped-with-known-key-helper' here b/c the
 ;; when compiling :FILE dbc-specific/dbc-classes/dbc-class-parsed.lisp
@@ -78,7 +63,7 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
 ;; (defmethod (setf parsed-class-mapped) (parsed-class-symbol (object parsed-class-field-slot-accessor-mapping))
 ;;   (setf (slot-value object 'parsed-class-mapped) parsed-class-symbol))
 
-
+;; (sb-ext:hash-table-synchronized-p *parsed-class-parse-table*)
 ;; (parsed-class-parse-table (parsed-class-mapped 'parsed-inventory-record))
 (defmethod parsed-class-parse-table ((object parsed-class-field-slot-accessor-mapping))
   (let* ((class-name-if (slot-value object 'parsed-class-mapped))
@@ -214,8 +199,8 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
            (table-size         (if (> table-length-maybe 7)
                                    table-length-maybe
                                    7))
-           (f2a-table  (setf (field-to-accessor-table mapping) (make-hash-table :test #'equal :size table-size)))
-           (a2f-table  (setf (accessor-to-field-table mapping) (make-hash-table :size table-size)))
+           (f2a-table  (setf (field-to-accessor-table mapping) (make-hash-table-sync :test #'equal :size table-size)))
+           (a2f-table  (setf (accessor-to-field-table mapping) (make-hash-table-sync :size table-size)))
            (slot-dispatch-function (%parsed-class-set-slot-value-format-and-intern-symbol
                                     parsed-class-subclass)))
       (setf (slot-value mapping 'parsed-class-slot-dispatch-function) slot-dispatch-function)
@@ -233,10 +218,11 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
           (setf (parsed-class-parse-table parsed-class-subclass)
                 (%parsed-class-parse-table-make-table)))))))
 
-;; :EXAMPLE
-;;  (%parsed-class-record-setf-slot-value-forms 'parsed-inventory-record)
+
+
 ;; :NOTE Arg HASH-TABLE will always be `*parsed-class-field-slot-accessor-mapping-table*'
 ;; But, lets not hardwire a global variable just in case!
+;;  (%parsed-class-record-setf-slot-value-forms 'parsed-inventory-record)
 (defun %parsed-class-record-setf-slot-value-forms (parsed-class-lookup) ; hash-table)
   ;; :NOTE This version with explicit call to HASH-TABLE and with backquoted template.
   ;; (let ((setf-forms ()))

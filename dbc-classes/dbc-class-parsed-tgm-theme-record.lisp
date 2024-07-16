@@ -207,9 +207,7 @@ The interface for functions defined herein is as follows:
 ;; `parsed-tgm-theme-record' with instances of `parsed-theme-record'. we will
 ;; start by making `parsed-tgm-theme-record' a subclass of `parsed-class'
 ;; and then uncommeing following `make-parsed-class-field-slot-accessor-mapping' form:
-;;
-;; (make-parsed-class-field-slot-accessor-mapping 'parsed-tgm-theme-record *parsed-tgm-theme-field-to-accessor-table*)
-;;
+;;  (make-parsed-class-field-slot-accessor-mapping 'parsed-tgm-theme-record *parsed-tgm-theme-field-to-accessor-table*)
 
 
 ;;; ==============================
@@ -226,9 +224,8 @@ The interface for functions defined herein is as follows:
 ;; broader-theme <--> narrowoer-theme
 ;; related-theme <--> related-theme
 ;;
-
 (defclass parsed-tgm-theme-record () ;; (parsed-class)
-  ((control-id-display-theme ;; congruent with slot in class `parsed-theme-record'
+  ((control-id-display-theme ; Congruent with slot in class `parsed-theme-record'.
     :initarg :control-id-display-theme
     :accessor control-id-display-theme
     :documentation #.(classdoc 'parsed-tgm-theme-record :control-id-display-theme))
@@ -238,7 +235,7 @@ The interface for functions defined herein is as follows:
     :documentation #.(classdoc 'parsed-tgm-theme-record :non-descriptor))
    (use-theme
     :initarg :use-theme
-    ;; :initform '() ; don't default when used it's a string.
+    ;; :initform '() ; Don't default when used it's a string.
     :accessor use-theme
     :documentation #.(classdoc 'parsed-tgm-theme-record :use-theme))
    (used-for
@@ -308,48 +305,48 @@ The interface for functions defined herein is as follows:
     :documentation #.(classdoc 'parsed-tgm-theme-record :former-usage-note))
    (control-id-theme-entity-tgm-2-former-num
     :initarg :control-id-theme-entity-tgm-2-former-num
-    ;; :initform ;; don't default
+    ;; :initform   ; Don't default.
     :accessor control-id-theme-entity-tgm-2-former-num
     :documentation #.(classdoc 'parsed-tgm-theme-record :control-id-theme-entity-tgm-2-former-num))
    (control-id-theme-entity-tgm-1-former-num
     :initarg :control-id-theme-entity-tgm-1-former-num
-    ;; :initform ;; don't default
+    ;; :initform   ; Don't default.
     :accessor control-id-theme-entity-tgm-1-former-num
     :documentation #.(classdoc 'parsed-tgm-theme-record :control-id-theme-entity-tgm-1-former-num))
-   (control-id-theme-entity-loc-num  ; congruent with slot in class `parsed-theme-record'
+   (control-id-theme-entity-loc-num  ; Congruent with slot in class `parsed-theme-record'.
     :initarg :control-id-theme-entity-loc-num
     :accessor control-id-theme-entity-loc-num
     :documentation #.(classdoc 'parsed-tgm-theme-record :control-id-theme-entity-loc-num))
    ;; :NOTE Not included in xml/txt file we are parsing, but it is usefull to include this now.
    ;; dbc-theme-request-loc-x-uri
-   (control-id-theme-entity-loc-uri  ; congruent with slot in class `parsed-theme-record'
+   (control-id-theme-entity-loc-uri  ; Congruent with slot in class `parsed-theme-record'.
     :initarg :control-id-theme-entity-loc-uri
     :initform '()
     :accessor control-id-theme-entity-loc-uri
     :documentation #.(classdoc 'parsed-tgm-theme-record :control-id-theme-entity-loc-uri))
-   (image-coref        ; congruent with slot in class `parsed-theme-record'
+   (image-coref        ; Congruent with slot in class `parsed-theme-record'.
     :initarg       :image-coref
     :initform      '()
     :accessor      image-coref
     :documentation #.(classdoc 'parsed-tgm-theme-record :image-coref))
-   (image-default-xref ; congruent with slot in class `parsed-theme-record' 
+   (image-default-xref ; Congruent with slot in class `parsed-theme-record'.
     :initarg      :image-default-xref
     :initform     '()
     :accessor     image-default-xref
     :documentation #.(classdoc 'parsed-tgm-theme-record :image-default-xref))
-   (record-status-active ; congruent with slot in class `parsed-theme-record'
+   (record-status-active ; Congruent with slot in class `parsed-theme-record'.
     :initarg      :record-status-active
     :initform     '()
     :accessor      record-status-active
     :documentation #.(classdoc 'parsed-tgm-theme-record :record-status-active))
-   (edit-timestamp  ; congruent with slot in class `parsed-theme-record'
+   (edit-timestamp  ; Congruent with slot in class `parsed-theme-record'.
     :initarg       :edit-timestamp
     :initform      '()
     :accessor       edit-timestamp
     :documentation #.(classdoc 'parsed-tgm-theme-record :edit-timestamp))
    ;; Following has slot-value's in parsed-tgm-theme-record that are unused
    ;; elswhere in the system AFAIK.
-   (control-id-theme-entity-dbc-num ; congruent with slot in class `parsed-theme-record'
+   (control-id-theme-entity-dbc-num ; Congruent with slot in class `parsed-theme-record'.
     :initarg        :control-id-theme-entity-dbc-num
     :initform      '()
     :accessor      control-id-theme-entity-dbc-num
@@ -373,7 +370,7 @@ The interface for functions defined herein is as follows:
                (error ":FUNCTION `tgm-parse-concepts-set-source-xml-file' -- arg PATHNAME does not satisfy `cl:pathnamep' -- :GOT ~S~%" pathname))
        (or (probe-file pathname)
                (error (concatenate 'string ":FUNCTION `tgm-parse-concepts-set-source-xml-file' unable to set~%"
-                                   ":VARIABLE `*parsed-tgm-theme-xml-source-pathname*'~%:PATHNAME ~S supplied did not satisfy `cl:probe-file'.~%")
+                                           ":VARIABLE `*parsed-tgm-theme-xml-source-pathname*'~%:PATHNAME ~S supplied did not satisfy `cl:probe-file'.~%")
                       pathname))
        (setf *parsed-tgm-theme-xml-source-pathname* pathname)))
         
@@ -383,7 +380,7 @@ The interface for functions defined herein is as follows:
     (MON:SIMPLE-ERROR-MON :w-sym 'tgm-parse-concepts-make-source
                           :w-type 'function
                           :w-spec (concatenate 'string "Attempting to set Value of parameter `*parsed-tgm-theme-xml-source*',~%"
-                                               "but `*parsed-tgm-theme-xml-source-pathname*' either null or does not satisfy `cl:pathnamep'.")
+                                                       "but `*parsed-tgm-theme-xml-source-pathname*' either null or does not satisfy `cl:pathnamep'.")
                           :w-got *parsed-tgm-theme-xml-source-pathname* :w-type-of t))
   (when (typep  *parsed-tgm-theme-xml-source* 'cxml::cxml-source)
     (klacks:close-source  *parsed-tgm-theme-xml-source*))
@@ -427,16 +424,15 @@ The interface for functions defined herein is as follows:
                      (tgm-consume :stream stream)
                      (if (eq (car (tgm-peeking :stream stream)) :characters)
                          ;; The if condition above accounts for :character
-                         ;; events that contain XML escaped characters "&apos;"
-                         ;; , "&amp;" eg:
+                         ;; events that contain XML escaped characters "&apos;", "&amp;" eg:
                          ;; <FUN>Formerly TGMI term (nonpostable) &amp; TGMII term (nonpostable).</FUN>
                          ;; and <RT>Farmers&apos; groups</RT>
-                         ;; we assume here than any characters encountered in
-                         ;; the element don't satisfy `tgm-characters-every-whitespace-p' 
+                         ;; We assume here than any characters encountered in
+                         ;; the element don't satisfy `tgm-characters-every-whitespace-p'.
                          (list nil (KLACKS:CONSUME-CHARACTERS stream))
                        (tgm-consume :stream stream))))
          (slot-val     (nth nth-val consumed)))
-    (if (slot-boundp object accessor) ;; we leave certain slots unbound as these should always default to a string
+    (if (slot-boundp object accessor)   ; We leave certain slots unbound, as these should always default to a string.
         (cond ((listp (slot-value object accessor))
                (push slot-val (slot-value object accessor)))
               ((stringp (slot-value object accessor))
@@ -513,8 +509,8 @@ The interface for functions defined herein is as follows:
                (setf (control-id-display-theme object) (non-descriptor object))))
             ((member peek-val mapping :test #'string=)
              (%tgm-sec-helper object (tgm-assoc-elt peek-val :mapping mapping) 1 (tgm-peeking :stream stream) stream))
-            ;; This shouldnt ever happen. print a message to standard out, and
-             ;; return NIL. Doing so allows droping out of parsing loops by calling function.
+            ;; This shouldnt ever happen. print a message to standard out, and return NIL.
+            ;; Doing so allows droping out of parsing loops by calling function.
             (t  
              (warn (concatenate 'string 
                                 "~%!!!!!!!!!!~%:FUNCTION `tgm-peek-start-element-and-maybe-add-to-slot'~%           "
@@ -531,14 +527,12 @@ The interface for functions defined herein is as follows:
          ;; Don't set the slot value and don't return object if we never found an
          ;; XML value for control-id-display-theme when parsing current concept.
          (values current-object (control-id-display-theme current-object))
-        ;; Instead, return NIL. Doing so lets us drop out of the file parsing loop by
-        ;; calling functions, eg: (loop  unitl (null tgm-parse-concept :stream stream) ...)
+         ;; Instead, return NIL. Doing so lets us drop out of the file parsing loop by
+         ;; calling functions, eg: (loop  unitl (null tgm-parse-concept :stream stream) ...)
         (values nil nil))))
 
-;; :TODO We need a similiar function wrapped around
-;; `dbc-theme-request-loc-x-uri' similiar to what
-;; `tgm-parse-concepts-update-unbound-slots' does.
-
+;; :TODO We need a like function wrapped around `dbc-theme-request-loc-x-uri' that should do
+;; similiarly to what `tgm-parse-concepts-update-unbound-slots' does.
 (defun tgm-parse-concepts-update-unbound-slots (&key (hash-table *parsed-tgm-theme-record-hash-table*))
   (let ((class-slots (MON:CLASS-SLOT-LIST 'parsed-tgm-theme-record)))
     (with-locked-hash-table (hash-table)
@@ -557,7 +551,6 @@ The interface for functions defined herein is as follows:
           count it into outer-count
           end
           finally (return outer-count)))))
-
 
 ;; (tgm-parse-concept :stream *parsed-tgm-theme-xml-source*)
 ;; (tgm-parse-concepts-in-stream :stream *parsed-tgm-theme-xml-source*)
@@ -589,9 +582,11 @@ The interface for functions defined herein is as follows:
                                                           (pathname-name "parsed-tgm-theme-record")
                                                           (pathname-type  *parsed-class-table-output-pathname-type*)
                                                           (timestamp-p t))
-  (let*  ((pathname-stamped  (make-pathname :name (or (and timestamp-p (concatenate 'string pathname-name "-" (MON:TIMESTAMP-FOR-FILE)))
+  (let*  ((pathname-stamped  (make-pathname :name (or (and timestamp-p 
+                                                           (concatenate 'string pathname-name "-" (MON:TIMESTAMP-FOR-FILE)))
                                                       pathname-name)))
-          (pathname-and-type (make-pathname :name (pathname-name pathname-stamped) :type pathname-type))
+          (pathname-and-type (make-pathname :name (pathname-name pathname-stamped) 
+                                            :type pathname-type))
           (ensure-directory 
             (or (and (eql base-output-directory (sub-path *parsed-tgm-theme-output-dir*))
                      base-output-directory)
@@ -632,7 +627,10 @@ The interface for functions defined herein is as follows:
       (loop
         for obj being the hash-values of hash-table
         for frmt-cntl = (print-sax-parsed-slots-padding-format-control obj)
-        do (print-sax-parsed-slots obj :stream fl :print-unbound nil :pre-padded-format-control frmt-cntl)
+        do (print-sax-parsed-slots obj 
+                                   :stream fl
+                                   :print-unbound nil
+                                   :pre-padded-format-control frmt-cntl)
            (write-char #\Newline fl)
            (write-char #\Newline fl))
       (values
@@ -654,7 +652,7 @@ The interface for functions defined herein is as follows:
   (let ((in-file
          (if input-pathname 
              (or (probe-file input-pathname)
-                 (mon:simple-error-mon 
+                 (MON:SIMPLE-ERROR-MON 
                  :w-spec "`cl:probe-file' did not find suitable directory for INPUT-PATHNAME"
                  :w-sym 'load-parsed-tgm-theme-record-parse-file-to-hash-table
                  :w-got input-pathname
@@ -664,19 +662,19 @@ The interface for functions defined herein is as follows:
                        (format nil "^~(~A~)-2[0-9]{3}?-[0-9]{2}?-[0-9]{2}?T[0-9]{6}?$" 'parsed-tgm-theme-record)))
                     (maybe-wild-pathnames  (merge-pathnames (make-pathname :name :wild :type input-pathname-type)
                                                             (or (probe-file  (make-pathname :directory (pathname-directory input-pathname-directory)))
-                                                                (mon:simple-error-mon 
+                                                                (MON:SIMPLE-ERROR-MON 
                                                                  :w-spec "`cl:probe-file' did not find suitable directory for INPUT-PATHNAME-DIRECTORY"
                                                                  :w-sym 'load-parsed-tgm-theme-record-parse-file-to-hash-table
                                                                  :w-got  input-pathname-directory
                                                                  :w-type-of t))))
                     (maybe-find-wilds (directory maybe-wild-pathnames))
                     (most-recent-parse-file (or (and maybe-find-wilds
-                                          (car (sort (delete-if-not #'(lambda (x) (CL-PPCRE:SCAN wild-pathname-pattern x))
-                                                                    maybe-find-wilds
-                                                                    :key #'pathname-name)
-                                                     #'string>
-                                                     :key #'pathname-name)))
-                                     (mon:simple-error-mon 
+                                                     (car (sort (delete-if-not #'(lambda (x) (CL-PPCRE:SCAN wild-pathname-pattern x))
+                                                                               maybe-find-wilds
+                                                                               :key #'pathname-name)
+                                                                #'string>
+                                                                :key #'pathname-name)))
+                                     (MON:SIMPLE-ERROR-MON 
                                       :w-spec "did not find suitable parsed file beneath directory: ~S~%"
                                       :w-sym 'load-parsed-tgm-theme-record-parse-file-to-hash-table
                                       :w-got  input-pathname-directory
@@ -688,42 +686,32 @@ The interface for functions defined herein is as follows:
       (with-locked-hash-table (hash-table)
         (load-parsed-class-default-file-to-hash-table 
          :parsed-class 'parsed-tgm-theme-record
-         :input-file in-file
-         :hash-table hash-table
-         :key-accessor key-accessor
-         :load-verbose load-verbose)))))
+         :input-file    in-file
+         :hash-table    hash-table
+         :key-accessor  key-accessor
+         :load-verbose  load-verbose)))))
 
 
 ;; (tgm-parse-concept-count-slot-value-list-length 'broader-theme :hash-table *parsed-tgm-theme-record-hash-table*)
 (defun tgm-parse-concept-count-slot-value-list-length (slot &key (hash-table *parsed-tgm-theme-record-hash-table*))
-  (let ((rslt 
-          (with-locked-hash-table (hash-table)
-            (loop 
-                for obj-id being the hash-keys in hash-table
-                for obj being the hash-values in hash-table
-                for sv = (slot-value obj slot)
-                for sv-len = (length sv)
-                unless (or (null sv)
-                           (stringp sv)
-                           (= sv-len 1))
-                collect (list sv-len obj-id sv) into gthr
-                end
-                finally (return gthr)))))
+  (let ((rslt (with-locked-hash-table (hash-table)
+                (loop 
+                  for obj-id being the hash-keys in hash-table
+                  for obj being the hash-values in hash-table
+                  for sv = (slot-value obj slot)
+                  for sv-len = (length sv)
+                  unless (or (null sv)
+                             (stringp sv)
+                             (= sv-len 1))
+                  collect (list sv-len obj-id sv) into gthr
+                  end
+                  finally (return gthr)))))
     (if (null rslt)
         rslt
         (values 
-         (setf rslt (stable-sort rslt
-                     #'>
-                     :key #'car))
+         (setf rslt (stable-sort rslt #'> :key #'car))
          (length rslt)))))
 
-;; (fudoc 'tgm-parse-concept-count-slot-value-null
-;; "Return list of object ids and count of all `parsed-tgm-theme-record' instances for SLOT with null value.
-;; :EXAMPLE~%~@
-;;  \(tgm-parse-concept-count-slot-value-null 'control-id-theme-entity-loc-num\)
-;;  ~%~@
-;; :SEE-ALSO `<XREF>'.~%▶▶▶")
-;; 
 ;; (tgm-parse-concept-count-slot-value-null 'control-id-theme-entity-loc-num)
 (defun tgm-parse-concept-count-slot-value-null (slot &key (hash-table *parsed-tgm-theme-record-hash-table*))
   (loop 
@@ -736,17 +724,17 @@ The interface for functions defined herein is as follows:
     end
     finally (return (values gthr cnt))))
 
-
 ;; (load-parsed-theme-record-default-file-to-parse-table  :key-accessor 'CONTROL-ID-DISPLAY-THEME )
 ;; (parsed-class-parse-table 'parsed-theme-record)
 ;;
 ;; (defparameter *tt--matching-themes-table* (make-hash-table :test #'equal)) (clrhash *tt--matching-themes-table*)
 ;;
 ;; Following finds all parsed-theme-record's with control-id-display-theme id's that aren't in 
-;; *parsed-tgm-theme-record-hash-table*.
+;; `*parsed-tgm-theme-record-hash-table*':
 ;; (tgm-parse-concept-count-parsed-theme-record-diff :match-table *tt--matching-themes-table*)
 (defun tgm-parse-concept-count-parsed-theme-record-diff (&key (tgm-hash-table *parsed-tgm-theme-record-hash-table*)
-                                                              (match-table (make-hash-table :test #'equal)))
+                                                              (match-table (make-hash-table-sync 
+                                                                            :test #'equal)))
   (loop 
     with hash-table-themes = (parsed-class-parse-table 'parsed-theme-record)
     with hash-table-tgm = tgm-hash-table
@@ -814,14 +802,14 @@ match-table)
 
 #|
 
-:NOTE despite what the tgm1.xml DTD says to the contrary currently the
+:NOTE despite what the tgm1.xml DTD says to the contrary currently, the
 followinhg slots when non-nil have a list-length of 1:
 `facet-note', `history-note', `scope-note', `cataloger-note',
 `theme-type-category-reference', `theme-type-category-reference',
 `theme-type-category-subdivision', `theme-type-category-genre',
 `former-usage-note', `use-theme',
 
-IOW, we can currently effectively say that for all instance parsed each of the
+IOW, we can currently effectively say that for all instance parsed, each of the
 above slots are of type (or (string null)) and we don't need to pack them into a
 list structure.
 
@@ -873,10 +861,6 @@ Only slot-value of following slots will be lists of length larger than 1 contain
 ; narrower-theme
 (tgm-parse-concept-count-slot-value-list-length 'related-themew :hash-table *parsed-tgm-theme-record-hash-table*)
   ->  3236,  43 "Religion", 40 "Sports", 38 "War", 35 "Human body" ... 
-
-;;; ==============================
-
-
 
 |#
 

@@ -1100,13 +1100,16 @@ KEY-ACCESSOR keyword of `load-sax-parsed-xml-file-to-parsed-class-hash'.~%
 
 
 #|
+
 (defun %%copy-hash (source-hash)
-  (loop
-    with dest-hash = (make-hash-table :test (hash-table-test source-hash))
+  (with-locked-hash-table
+   (source-hash)
+   (loop
+    with dest-hash = (make-hash-table-sync :test (hash-table-test source-hash))
     for keys being the hash-keys in source-hash using (hash-value vals)
     do (setf (gethash keys dest-hash)
              (MON:COPY-INSTANCE-OF-CLASS-SHALLOWLY vals))
-    finally (return dest-hash)))
+    finally (return dest-hash))))
 
 (parsed-inventory-record-load-default-parsed-file-to-hash :clear-existing-table t)
 

@@ -4,16 +4,7 @@
 
 ;; :NOTE currently nothing in here is checking `slot-exists-p' or `slot-boundp'
 
-
-;; always (or (null slot-v)
-;;            (and (stringp slot-v) 
-;;                 (string= slot-v "0"))))
-;; unless (and (stringp slot-v) 
-;;             (string= slot-v "0"))
-;; collect (list obj-id slot-v))
-
 (in-package #:dbc)
-
 
 ;; :PASTED #{2012-03-23T14:56:07-04:00Z}#{12125}
 ;; :PASTE-URL (URL `http://paste.lisp.org/display/128524')
@@ -49,7 +40,7 @@
                    int-from-string)))
         (declare ((or cons simple-vector) string-sequence))
         (let* ((seq-length (length string-sequence))
-               (int-string-ht (make-hash-table :size seq-length :test #'eq))
+               (int-string-ht (make-hash-table-sync :size seq-length :test #'eq))
                (seqtype (etypecase string-sequence
                           (cons           'list)
                           (simple-vector  'vector)))
@@ -74,6 +65,7 @@
             finally (return (or (and (eql seqtype 'list)
                                      (coerce maybe-coerced 'cons))
                                 maybe-coerced)))))))
+
 ;; (parsed-class-slot-value-compare-count 'parsed-inventory-record 'title-ebay)
 (defun parsed-class-slot-value-compare-count (class slot)
   (declare (symbol class slot))
@@ -86,11 +78,11 @@
     counting (and slot-v)  into cnt-non-null
     counting (stringp slot-v) into cnt-strings
     counting (not (stringp slot-v)) into cnt-not-strings
-    finally (return (list :hash-count (hash-table-count ht) 
-                          :strings cnt-strings
+    finally (return (list :hash-count  (hash-table-count ht) 
+                          :strings     cnt-strings
                           :not-strings cnt-not-strings
-                          :non-null cnt-non-null 
-                          :null cnt-null))))
+                          :non-null    cnt-non-null 
+                          :null        cnt-null))))
 
 ;; (parsed-class-slot-value-count-null 'parsed-inventory-record 'title-ebay)
 (defun parsed-class-slot-value-count-null (class slot)
@@ -241,6 +233,7 @@
     for slot-v = (slot-value obj slot)
     never (and (stringp slot-v) 
                (string= slot-v match-string))))
+
 ;; (parsed-class-slot-value-never-eql 'parsed-inventory-record 'unit-width  99)
 (defun parsed-class-slot-value-never-eql (class slot match-value)
   (declare (symbol class slot))
@@ -297,6 +290,7 @@
     for obj-id being the hash-keys in (parsed-class-parse-table class) using (hash-value obj)
     for slot-v = (slot-value obj slot)
     thereis (equal slot-v match-value)))
+
 ;; (parsed-class-slot-value-thereis-equalp 'parsed-inventory-record 'publication-date  '(:YEAR 1932 :MONTH 12 :DAY NIL))
 (defun parsed-class-slot-value-thereis-equalp (class slot match-value)
   (declare (symbol class slot))
@@ -316,10 +310,9 @@
     count slot-v into cnt-non-null
     else
     count slot-v into cnt-null
-    finally (return (values gthr 
-                            (list :hash-count (hash-table-count ht) 
-                                  :non-null cnt-non-null 
-                                  :null cnt-null)))))
+    finally (return (values gthr (list :hash-count (hash-table-count ht) 
+                                       :non-null cnt-non-null 
+                                       :null cnt-null)))))
 
 (defun parsed-class-slot-value-collect-string= (class slot match-string &key (sort-object-ids nil))
   (declare (symbol class slot)
@@ -331,10 +324,11 @@
               (string= slot-v match-string))
     count slot-v into cnt and
     collect obj-id into gthr 
-    finally (return (values (if sort-object-ids
-                                (parsed-class-slot-value-sort-unique-numeric-string-sequence gthr :test sort-object-ids)
-                                gthr)
-                            cnt))))
+    finally
+       (return (values (if sort-object-ids
+                           (parsed-class-slot-value-sort-unique-numeric-string-sequence gthr :test sort-object-ids)
+                           gthr)
+                       cnt))))
 
 ;; (parsed-class-slot-value-collect-string/= 'parsed-inventory-record 'price-sold-ebay "0")
 (defun parsed-class-slot-value-collect-string/= (class slot match-string)
@@ -575,6 +569,7 @@
                               (parsed-class-slot-value-sort-unique-numeric-string-sequence gthr :test sort-object-ids)
                               gthr))
                   cnt))))
+
 ;; (parsed-class-slot-value-collect-string/= 'parsed-inventory-record 'category-entity-0-coref "Natural History")
 (defun parsed-class-slot-value-set-when-string/= (class slot match-string replacement-value
                                                   &key (return-object-id t)

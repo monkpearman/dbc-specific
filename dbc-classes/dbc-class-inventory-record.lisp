@@ -28,7 +28,7 @@
 
 (defclass base-inventory-record (base-record)
   ()
-  (:documentation ":NOTE The inverse corollary to the class `base-record' is the class `base-entity'."))
+  (:documentation ":NOTE The inverse corollary to the class `base-record' is the class `base-entity'.~%"))
 
 
 

@@ -49,12 +49,1208 @@ relative to the systems system-path.~%~@
 Instances of this class should be instantiated at loadtime enabling subsequent
 system introspection of the system at runtime.~%▶▶▶~%"))
 
+)
+
+
+
+;;; ==============================
+;; :file dbc-classes/dbc-class-entity.lisp
+;;; ==============================
+
+(eval-when (:compile-toplevel); :load-toplevel :execute)
+
+(make-documented-class 'base-location-entity
+:class-doc
+   #.(format nil
+             "Base class for referencing DBC system location entities.~%~@
+              Location entities correspond with physical places.~%~@
+A physical place may be \"real\", \"imagined\", \"unverified\".~%~@
+Distinctions around whether a place is real, imagined, or unverified are broadly
+understood as follows:~% ~%
+ - A real place is one that is i.e. it is known to have existed in a given
+   temporaral context.~% ~
+ - An imagined place is one that is believed to never have existed in the known
+   temporaral contexts of the DBC system.~% ~
+ - An unverified place is one that is believed to have existed in some
+   temporaral context (known or as yet undefined) but which can not be verified
+   or corroborated as such.~%~@
+:EXAMPLE~%~% ~
+ \(mon:class-subclasses \(find-class 'base-location-entity\)\)~%
+:SEE-ALSO `base-entity', `base-theme-entity', `base-category-entity'
+`base-taxon-entity' `base-naf-entity' `base-media-entity'
+`base-location-entity', `naf-entity-type-regexp',
+`naf-entity-control-name-regexp', `naf-entity-alt-name-regexp'.~%▶▶▶~%"))
+
+(make-documented-class 'base-media-entity
+:class-doc
+#.(format nil
+"Base class for referencing DBC system media entities.~%~@
+Media entities include:~%~% ~
+  - techniques~%   ~
+    -- engraving, lithograph, photograph, offset, etc.~%~% ~
+  - materials~%   ~
+    -- paper, fabric, cardstock, etc.~%~% ~
+  - mounts~%   ~
+     -- linen backed, dry mounted, etc.~%~% ~
+  - color~%   ~
+    -- black and white, red, white, blue, etc.~%~%~@
+:EXAMPLE~% ~
+  \(mon:class-subclasses \(find-class 'base-media-entity\)\)~%
+:SEE-ALSO `base-entity', `base-theme-entity', `base-category-entity'
+`base-taxon-entity' `base-naf-entity', `base-media-entity',
+`base-location-entity', `media-entity-technique',`media-entity-material',
+`media-entity-mount', `media-entity-color', `base-description-media-entity-note',
+`naf-entity-type-regexp', `naf-entity-control-name-regexp', `naf-entity-alt-name-regexp'.~%▶▶▶~%"))
+
+(make-documented-class 'base-naf-entity
+:class-doc
+   #.(format nil
+"Base class for referencing DBC system NAF entities.~%~@
+:EXAMPLE~% ~
+ \(mon:class-subclasses \(find-class 'base-naf-entity\)\)~%
+:SEE-ALSO `base-entity', `base-theme-entity', `base-category-entity',
+`base-taxon-entity', `base-naf-entity', `base-media-entity',
+`base-location-entity'. `control-id-naf-entity-type', `control-id-naf-entity',
+`control-id-naf-entity-display-name', `naf-entity-type-regexp',
+`naf-entity-control-name-regexp', `naf-entity-alt-name-regexp'.~%▶▶▶~%"))
+
+(make-documented-class 'base-taxon-entity
+:class-doc
+ #.(format nil "Base class for referencing DBC taxonomic entitites.~%~% ~
+ ,----~%~
+ | taxon, \(pl. taxa\), n.~%~
+ | taxonomic unit, whether named or not: i.e. a population, or group of populations~%~
+ | of organisms which are usually inferred to be phylogenetically related and which~%~
+ | have characters in common which differentiate \(q.v.\) the unit \(e.g. a geographic~%~
+ | population, a genus, a family, an order\) from other such units. A taxon~%~
+ | encompasses all included taxa of lower rank \(q.v.\) and individual organisms.~%~
+ `---- The Glossary of the International Code of Zoological Nomenclature \(1999\).~%~@
+Precedence list of taxonmic rank:~%~% ~
+ life~% ~
+ - domain~% ~
+ -- kingdom~% ~
+ --- phylum~% ~
+ ---- class~% ~
+ ----- order~% ~
+ ------ family~% ~
+ ------- genus~% ~
+ -------- species~%~@
+And more specifically we are concerned with the mapping from:~%~% ~
+  historic-appellation -> modern-appellation~%~@
+:NOTE the decision to use the sybmolic prefix ``taxon'' is because I can
+ _NEVER_ remember how to spell Linnaeus/Linnaean...~%
+:SEE-ALSO `base-entity', `base-theme-entity', `base-category-entity', `base-taxon-entity',
+`base-naf-entity', `base-media-entity', `base-location-entity'.~%▶▶▶~%"))
+
+(make-documented-class 'base-category-entity
+:class-doc
+ #.(format nil "Base class for referencing DBC system category entities.~%~@
+:EXAMPLE~%
+ \(mon:class-subclasses \(find-class 'base-category-entity\)\)~%
+:SEE-ALSO `base-entity', `base-theme-entity', `base-category-entity', `base-taxon-entity',
+`base-naf-entity', `base-media-entity', `base-location-entity', `category-entity-regexp'.~%▶▶▶~%"))
+
+(make-documented-class 'base-theme-entity
+:class-doc
+ #.(format nil "Base class for referencing DBC system theme entities.~%
+EXAMPLE~%
+\(mon:class-subclasses \(find-class 'base-theme-entity\)\)~%
+:SEE-ALSO `base-entity', `base-theme-entity', `base-category-entity', `base-taxon-entity',
+`base-naf-entity', `base-media-entity', `base-location-entity', `theme-entity-regexp'.~%▶▶▶~%"))
+
+(make-documented-class 'base-entity
+:class-doc
+ #.(format nil "Base class for referencing DBC system entities.~%
+An entity is a \"non-abstract\" object capable of being represented by the DBC system.~%
+An object is not abstract if it represents an object knowable outside the
+context of the DBC system.~%~@
+For an object to be characterized as of this type it should be a known~%
+referenceable in common nomenclature or the nomenclature of its primary
+external domain.~%
+The inverse corollary to the class `base-entity' is the class `base-record'.~%
+Clarke's Third Law:~%
+\"Any sufficiently advanced technology is indistinguishable from magic.\"~%
+An \"entity\" is something we want to treat as uniquely identifiable.
+An entity is distinct from a \"record\".~%
+Both an entity and a record are uniquely identifiable, the difference being
+that where a record might uniquely identify some _thing_, the thing so
+identified will not have an identity commonly recognized outside the context
+of the thing it identifies.~%
+For example, instances which subcclass `base-inventory-record' will identify
+an inventory item, wheras instances of `base-theme-entity' will identify a
+theme. A theme is knowable outside the context of the dbc system an inventory
+item not so much so.~%
+:EXAMPLE~%
+ \(mon:class-subclasses \(find-class 'base-entity\)\)~%~@
+:SEE-ALSO `base-entity', `base-theme-entity', `base-category-entity', `base-taxon-entity',
+`base-naf-entity', `base-media-entity', `base-location-entity'.~%▶▶▶~%"))
+
+) ; close eval-when
+
+
+;;; ==============================
+;; :file dbc-classes/dbc-class-control-id
+;;; ==============================
+
+(eval-when (:compile-toplevel)  ; :load-toplevel :execute)
+
+(make-documented-class 'control-id-type
+:class-doc
+#.(format nil 
+"The type of class represented by subclasses of `base-control-id'.~%~%"))
+
+(make-documented-class 'base-control-id
+:class-doc
+#.(format nil
+             "The class `base-control-id' is an abstract-class.~%~@
+Its subclasses distinguish different types of controlled identities in classes~%~
+with slots specifying persitable values used for identification puroposes.~%~@
+The slot CONTROL-ID-UUID is a UUID generated as if by:~%
+ \(make-v5-uuid \(slot-value <OBJ> 'control-id-namespace\)
+               \(slot-value <OBJ> 'control-id-identifies\)\)~%
+The slot CONTROL-ID-NAMESPACE is a UUID namespace appropriate to the gerneration
+of a control-id-uuid slot-value applicable to a particlar object and it is used
+as the NAMESPACE arg used when generating the v5 UUIDs.~%~@
+The SLOT CONTROL-ID-IDENTIFIES is a string or symbol.~%~
+It is used as the NAME arg used when generating the the v5 UUID the slot-value~%~
+for control-id-uuid.~%~@
+:EXAMPLE~% ~
+ \(mon:class-subclasses \(%find-control-id-class-or-lose 'base-control-id\)\)~%~@
+:NOTE subclasses of `base-control-id' are distinct from those of the class
+`base-uuid' which defines _canonical_ identities for dbc system objects
+\(as distinct from the values they are contained of\).~%~@
+:SEE-ALSO .~%▶▶▶"))
+  
+(make-documented-class 'control-id-indexed-number
+:class-doc
+#.(format nil
+          "The class `control-id-indexed-number' is an abstract-class.~%
+Its subclasses distinguish different types of controlled identities which use
+\(or did use\) a positive fixnum as an indexed identifier.~%
+:NOTE Use of this class is deprecated. It is intended that subclassing instances
+will instantiate this class where retention of an original indexed number is
+important but where we expect and eventual migration to a more sophisticated approach.~%~@
+:SEE-ALSO `control-id-record-indexed-number', `control-id-indexed-number',
+`control-id-record-indexed-number', `control-id-media-entity-indexed-number',
+`control-id-category-entity-indexed-number', `control-id-theme-entity-indexed-number',
+`control-id-taxon-entity-indexed-number', `control-id-location-entity-indexed-number',
+`control-id-naf-entity-indexed-number'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-record-indexed-number
+:class-doc
+#.(format nil
+":ABSTRACT-CLASS for control-id-<FOO>-record-type classes which are primarily indexed by number.~%
+Usage of this class is roughly correllative with usage of
+`control-id-display-name' for `control-id-entity-<FOO>-type's.~%
+:SEE-ALSO `control-id-record-indexed-number', `control-id-indexed-number',
+`control-id-record-indexed-number', `control-id-media-entity-indexed-number',
+`control-id-category-entity-indexed-number', `control-id-theme-entity-indexed-number',
+`control-id-taxon-entity-indexed-number', `control-id-location-entity-indexed-number',
+`control-id-naf-entity-indexed-number'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-record-type
+ :control-id-of-class-type
+ #.(format nil 
+"A class object identified by the subclasses of class `base-control-id'.~%~@
+:NOTE This slot is informally class-allocated e.g. it should be treated as if~%~
+the following were specified:~%~% ~
+ \(control-id-of-class-type :allocation :class\) ~%~%~
+Its slot-value should not be instantiated via an initarg, nor should it be~%~
+specialized by a setf accessor form.~%
+:SEE-ALSO `control-id-record-type', `control-id-inventory-record-type',
+`control-id-documentation-record-type', `control-id-authority-record-type',
+`control-id-inventory-publication-record-type'.~%")
+ :class-doc
+  #.(format nil ":ABSTRACT-CLASS~%~@
+A mixin for subclasses of which identify classes containing \"record\" like data, e.g.:
+ `base-inventory-record', `base-authority-record', etc.
+:NOTE The inverse corollary to the class `base-record' is the class `base-entity'.~%~%
+:SEE-ALSO `control-id-inventory-record-type',`control-id-documentation-record-type',
+`control-id-authority-record-type', `control-id-inventory-publication-record-type'.%▶▶▶~%"))
+
+(make-documented-class 'control-id-inventory-record-type
+:class-doc
+#.(format nil "control-id for class instances which subclass `base-inventory-record'.~%
+:SEE-ALSO `control-id-inventory-record-type',`control-id-documentation-record-type',
+`control-id-authority-record-type',`control-id-inventory-publication-record-type',
+`parsed-inventory-record', `base-inventory-publication-record',
+`base-inventory-sales-record', `base-inventory-sales-order-record',
+`base-inventory-sales-sold-record', `base-inventory-sales-sold-in-store-record'.~%%▶▶▶~%"))
+
+(make-documented-class 'control-id-documentation-record-type
+:class-doc
+#.(format nil "control-id for class instances which subclass `base-documentation-record'.~%
+:SEE-ALSO `parsed-documentation-record', `control-id-inventory-record-type',
+`control-id-documentation-record-type', `control-id-authority-record-type',
+`control-id-inventory-publication-record-type'.~%%▶▶▶~%"))
+
+(make-documented-class 'control-id-authority-record-type
+:class-doc 
+   #.(format nil "control-id for class instances which subclass `base-authority-record'.~%
+:SEE-ALSO `control-id-inventory-record-type',`control-id-documentation-record-type',
+`control-id-authority-record-type',`control-id-inventory-publication-record-type'.~%%▶▶▶~%"))
+
+(make-documented-class 'control-id-inventory-publication-record-type
+:class-doc
+#.(format nil
+"control-id for class instances which subclass `dbc-class-inventory-publication-record'.~%
+:NOTE control ids of this type are Intended for individual loose periodical issues
+and/or publications. e.g. a loose issue of the periodical Femina is distinct
+from the linen-backed cover pulled from that issue and is distinct from
+instances of `control-id-inventory-record-type' because its individual leafs
+will become inventory-record insances once disassembled/disbound.~%
+:SEE-ALSO `control-id-inventory-record-type',`control-id-documentation-record-type',
+`control-id-authority-record-type',`control-id-inventory-publication-record-type'.~%%▶▶▶~%"))
+
+(make-documented-class 'control-id-entity-type
+:control-id-of-class-type
+    #.(format nil
+              "A class object identified by the subclasses of class `base-control-id'.~%~@
+:NOTE This slot is informally class-allocated e.g. it should be treated as if~%~
+the following were specified:~%~% ~
+ \(control-id-of-class-type  :allocation :class\) ~%~%~
+Its slot-value should not be instantiated via an initarg, nor should it be~%~
+specialized by a setf accessor form.~%")
+ :class-doc
+ #.(format nil ":ABSTRACT-CLASS~%~@
+A mixin for subclasses of classes with symbol-names of the form:~%~% ~
+control-id-<FOO>-entity-type~%
+:NOTE The inverse corollary to the class `base-entity' is the class `base-record'.~%
+:SEE-ALSO `control-id-naf-entity-type', `control-id-taxon-entity-type',
+`control-id-media-entity-type', `control-id-theme-entity-type',
+`control-id-category-entity-type',`control-id-location-entity-type'.~%%▶▶▶~%"))
+
+(make-documented-class 'control-id-naf-entity-type
+:class-doc
+#.(format nil "control-id for class instances which subclass `base-naf-entity'.~%'
+control-id's of this type provide an interface for uniquely referencing naf-entities.~%
+:SEE-ALSO `control-id-entity-type', `control-id-naf-entity-type',
+`control-id-location-entity-type', `control-id-category-entity-type',
+`control-id-theme-entity-type', `control-id-taxon-entity-type'.~%%▶▶▶~%"))
+
+(make-documented-class 'control-id-location-entity-type
+:class-doc
+   #.(format nil "control-id for class instances which subclass `base-location-entity'.~%
+control-id's of this type provide an interface for uniquely referencing location entities.~%
+:SEE-ALSO `control-id-entity-type', `control-id-naf-entity-type',
+`control-id-location-entity-type', `control-id-category-entity-type',
+`control-id-theme-entity-type', `control-id-taxon-entity-type'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-category-entity-type
+:class-doc
+   #.(format nil "control-id for class instances which subclass `base-category-entity'.~%
+control-id's of this type provide an interface for uniquely referencing category
+instances which subclass `category-entity-top-level'.~%
+:SEE-ALSO `control-id-entity-type', `control-id-naf-entity-type',
+`control-id-location-entity-type', `control-id-category-entity-type',
+`control-id-theme-entity-type', `control-id-taxon-entity-type'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-theme-entity-type
+:class-doc
+  #.(format nil "control-id for class instances which subclass `base-theme-entity'.~%
+control-id's of this type provide an interface for uniquely referencing 
+:SEE-ALSO `control-id-entity-type', `control-id-naf-entity-type',
+`control-id-location-entity-type', `control-id-category-entity-type',
+`control-id-theme-entity-type', `control-id-taxon-entity-type'.~%~%▶▶▶~%"))
+
+(make-documented-class 'control-id-media-entity-type
+:class-doc
+#.(format nil "control-id for class instances which subclass `base-media-entity'.~%
+control-id's of this type provide an interface for uniquely referencing entities which comprise a type of media.~%
+:SEE-ALSO `media-entity-technique', `media-entity-material',
+`media-entity-paper', `media-entity-mount', `media-entity-color',
+`control-id-entity-type', `control-id-naf-entity-type',
+`control-id-location-entity-type', `control-id-category-entity-type',
+`control-id-theme-entity-type', `control-id-taxon-entity-type'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-taxon-entity-type
+:class-doc
+  #.(format nil "control-id for class instances which subclass `base-taxon-entity'.~%
+control-id's of this type provide an interface for uniquely referencing  Linnean names.~%
+:SEE-ALSO `taxon-entity-coref', `control-id-taxon-entity-display-name',
+`*control-id-taxon-namespace*', `control-id-taxon-entity',
+`control-id-taxon-entity-display-name', `control-id-display-taxon'
+`control-id-entity-type', `control-id-naf-entity-type',
+`control-id-location-entity-type', `control-id-category-entity-type',
+`control-id-theme-entity-type'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-display-name
+:class-doc
+   #.(format nil
+             "The class `control-id-display-name' records information for classes with slots
+which record displayable control-ids which identify a nameable thing.~%~@
+:NOTE A nameable thing is not necessarily an entity.~%~@
+:EXAMPLE~%
+ \(mon:class-subclasses \(%find-control-id-class-or-lose 'control-id-display-name\)\)~%~@
+:SEE-ALSO `control-id-display-name', `control-id-naf-entity-display-name',
+`control-id-location-entity-display-name', `control-id-taxon-entity-display-name',
+`control-id-display-name-for-entity-type', `control-id-media-entity-display-name',
+`control-id-theme-entity-display-name', `control-id-category-entity-display-name'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-display-name-for-entity-type
+:class-doc
+#.(format nil
+             "Instances of this class hold information about an entities displayable name.~%~@
+The slot CONTROL-ID-INSTANCE-CLASS is a symbol indicating the class of the
+entity identified by the slot-value CONTROL-ID-IDENTIFIES.~%~@
+rThis slot should be instantiated to a class-object suitable for use as an
+argument to `cl:%find-control-id-class-or-lose' and which returns a class or subclass which is a
+member in the set of class-names returned by the following forms \(or their expansions\):~%~% ~
+ \(mon:class-subclasses \(%find-control-id-class-or-lose 'base-entity\)\)~%~% ~
+ \(member \(class-name \(%find-control-id-class-or-lose 'base-naf-entity\)\))~%~% ~
+ \(mon:class-subclasses \(%find-control-id-class-or-lose 'base-entity\)\)\)~%~% ~
+:NOTE There may be multiple different entities with a `control-id-identifies'
+slot-value which are `cl:string='.~%~@
+Likewise, such co-references may occur in both the same class and/or an entirely different class.)~%
+:EXAMPLE~%~% ~
+ \(mon:class-subclasses \(%find-control-id-class-or-lose 'control-id-display-name-for-entity-type\)\)~%~@
+:SEE-ALSO `base-control-id', `control-id-type', `control-id-record-type',
+`control-id-entity-type', `control-id-display-name-for-entity-type',
+`control-id-display-name', `control-id-indexed-number', `control-id-record-indexed-number'
+`control-id-display-name', `control-id-naf-entity-display-name',
+`control-id-location-entity-display-name', `control-id-taxon-entity-display-name',
+`control-id-display-name-for-entity-type', `control-id-media-entity-display-name',
+`control-id-theme-entity-display-name', `control-id-category-entity-display-name'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-inventory-record
+:class-doc
+#.(format nil
+"control-id for inventory reocrdss.~%
+:SEE-ALSO `control-id-indexed-inventory-record', `control-id-indexed-inventory-publication-record',
+`control-id-indexed-documentation-record', `control-id-indexed-authority-record'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-indexed-inventory-record
+:class-doc
+#.(format nil "See slot inventory-number of class `parsed-inventory-record'.~%
+:SEE-ALSO `control-id-indexed-inventory-record', `control-id-indexed-inventory-publication-record',
+`control-id-indexed-documentation-record', `control-id-indexed-authority-record'.~%▶▶▶~%"))
+
+;; Publication Recrods
+(make-documented-class 'control-id-inventory-publication-record
+ :class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-inventory-record', `control-id-inventory-publication-record',
+`control-id-documentation-record', `control-id-authority-record'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-indexed-inventory-publication-record
+:class-doc
+ #.(format nil "See slot inventory-number of class `parsed-inventory-record'.~%
+:SEE-ALSO `control-id-indexed-inventory-record', `control-id-indexed-inventory-publication-record',
+`control-id-indexed-documentation-record', `control-id-indexed-authority-record'.~%▶▶▶~%"))
+
+;; documentation records
+(make-documented-class 'control-id-documentation-record
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-indexed-inventory-record', `control-id-indexed-inventory-publication-record',
+`control-id-indexed-documentation-record', `control-id-indexed-authority-record'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-indexed-documentation-record
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-indexed-inventory-record', `control-id-indexed-inventory-publication-record',
+`control-id-indexed-documentation-record', `control-id-indexed-authority-record'.~%▶▶▶~%"))
+
+;; Authority Records
+(make-documented-class 'control-id-authority-record
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-indexed-inventory-record', `control-id-indexed-inventory-publication-record',
+`control-id-indexed-documentation-record', `control-id-indexed-authority-record'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-indexed-authority-record
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-indexed-inventory-record', `control-id-indexed-inventory-publication-record',
+`control-id-indexed-documentation-record', `control-id-indexed-authority-record'.~%▶▶▶~%"))
+
+;; Media Entities - these include Technique, Material, Paper, Mount
+(make-documented-class 'control-id-media-entity
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-media-entity', `control-id-category-entity', `control-id-naf-entity'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-media-entity-display-name
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-name', `control-id-naf-entity-display-name',
+`control-id-location-entity-display-name', `control-id-taxon-entity-display-name',
+`control-id-display-name-for-entity-type', `control-id-media-entity-display-name',
+`control-id-theme-entity-display-name', `control-id-category-entity-display-name'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-media-entity-indexed-number
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-indexed-number', `control-id-record-indexed-number',
+`control-id-media-entity-indexed-number', `control-id-category-entity-indexed-number',
+`control-id-theme-entity-indexed-number', `control-id-taxon-entity-indexed-number',
+`control-id-location-entity-indexed-number', `control-id-naf-entity-indexed-number'.~%▶▶▶~%"))
+
+;; Technique Entities
+(make-documented-class 'control-id-technique
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-taxon', `control-id-theme', `control-id-technique',
+`control-id-material', `control-id-mount', `control-id-paper'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-display-technique
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-technique', `control-id-display-material',
+`control-id-display-mount', `control-id-display-paper',
+`control-id-display-theme', `control-id-display-taxon',
+`control-id-display-location', `control-id-display-artist',
+`control-id-display-author', `control-id-display-person',
+`control-id-display-brand', `control-id-display-publication'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-indexed-technique
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-indexed-artist', `control-id-indexed-author',
+`control-id-indexed-person', `control-id-indexed-brand',
+`control-id-indexed-publication', `control-id-indexed-theme',
+`control-id-indexed-category', `control-id-indexed-taxon',
+`control-id-indexed-technique', `control-id-indexed-material',
+`control-id-indexed-mount', `control-id-indexed-paper'.~%▶▶▶~%"))
+
+;; Material Entities
+(make-documented-class 'control-id-material
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-technique', `control-id-material',
+ `control-id-mount', `control-id-paper'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-display-material
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-technique', `control-id-display-material',
+`control-id-display-mount', `control-id-display-paper',
+`control-id-display-theme', `control-id-display-taxon',
+`control-id-display-location', `control-id-display-artist',
+`control-id-display-author', `control-id-display-person',
+`control-id-display-brand', `control-id-display-publication'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-indexed-material
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-indexed-artist', `control-id-indexed-author',
+`control-id-indexed-person', `control-id-indexed-brand',
+`control-id-indexed-publication', `control-id-indexed-theme',
+`control-id-indexed-category', `control-id-indexed-taxon',
+`control-id-indexed-technique', `control-id-indexed-material',
+`control-id-indexed-mount', `control-id-indexed-paper'.~%▶▶▶~%"))
+
+;; Paper Entities
+(make-documented-class 'control-id-paper
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-taxon', `control-id-theme', `control-id-technique',
+`control-id-material', `control-id-mount', `control-id-paper'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-display-paper
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-technique', `control-id-display-material',
+`control-id-display-mount', `control-id-display-paper',
+`control-id-display-theme', `control-id-display-taxon',
+`control-id-display-location', `control-id-display-artist',
+`control-id-display-author', `control-id-display-person',
+`control-id-display-brand', `control-id-display-publication'~%▶▶▶~%"))
+
+(make-documented-class 'control-id-indexed-paper
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-indexed-artist', `control-id-indexed-author',
+`control-id-indexed-person', `control-id-indexed-brand',
+`control-id-indexed-publication', `control-id-indexed-theme',
+`control-id-indexed-category', `control-id-indexed-taxon',
+`control-id-indexed-technique', `control-id-indexed-material',
+`control-id-indexed-mount', `control-id-indexed-paper'.~%▶▶▶~%"))
+
+;; Mount Entities
+(make-documented-class 'control-id-mount
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-taxon', `control-id-theme', `control-id-technique',
+`control-id-material', `control-id-mount', `control-id-paper'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-display-mount
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-technique', `control-id-display-material',
+`control-id-display-mount', `control-id-display-paper',
+`control-id-display-theme', `control-id-display-taxon',
+`control-id-display-location', `control-id-display-artist',
+`control-id-display-author', `control-id-display-person',
+`control-id-display-brand', `control-id-display-publication'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-indexed-mount
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-indexed-artist', `control-id-indexed-author',
+`control-id-indexed-person', `control-id-indexed-brand',
+`control-id-indexed-publication', `control-id-indexed-theme',
+`control-id-indexed-category', `control-id-indexed-taxon',
+`control-id-indexed-technique', `control-id-indexed-material',
+`control-id-indexed-mount', `control-id-indexed-paper'.~%▶▶▶~%"))
+
+;; Category Entities
+(make-documented-class 'control-id-category-entity
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-media-entity',`control-id-naf-entity'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-category-entity-display-name
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-name', `control-id-naf-entity-display-name',
+`control-id-location-entity-display-name', `control-id-taxon-entity-display-name',
+`control-id-display-name-for-entity-type', `control-id-media-entity-display-name',
+`control-id-theme-entity-display-name', `control-id-category-entity-display-name'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-category-entity-indexed-number
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-indexed-number', `control-id-record-indexed-number',
+`control-id-media-entity-indexed-number', `control-id-category-entity-indexed-number',
+`control-id-theme-entity-indexed-number', `control-id-taxon-entity-indexed-number',
+`control-id-location-entity-indexed-number', `control-id-naf-entity-indexed-number'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-display-category
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-technique', `control-id-display-material',
+`control-id-display-mount', `control-id-display-paper',
+`control-id-display-theme', `control-id-display-taxon',
+`control-id-display-location', `control-id-display-artist',
+`control-id-display-author', `control-id-display-person',
+`control-id-display-brand', `control-id-display-publication'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-indexed-category
+:class-doc
+ #.(format nil "
+:NOTE categories have corresponding document numbers so we _do_ want this class,
+\(as opposed to location-entity where we don't\).~%
+:SEE-ALSO `control-id-indexed-artist', `control-id-indexed-author',
+`control-id-indexed-person', `control-id-indexed-brand',
+`control-id-indexed-publication', `control-id-indexed-theme',
+`control-id-indexed-category', `control-id-indexed-taxon',
+`control-id-indexed-technique', `control-id-indexed-material',
+`control-id-indexed-mount', `control-id-indexed-paper'.~%▶▶▶~%"))
+
+(make-documented-class 'category-id-display-advertising-and-graphics
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-category',
+`category-id-display-advertising-and-graphics',
+`category-id-display-architecture-and-design',
+`category-id-display-books-and-publications', `category-id-display-geography',
+`category-id-display-historical-life-and-scenes',
+`category-id-display-natural-history'.~%▶▶▶~%"))
+
+
+(make-documented-class 'category-id-display-architecture-and-design
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-category',
+`category-id-display-advertising-and-graphics',
+`category-id-display-architecture-and-design',
+`category-id-display-books-and-publications', `category-id-display-geography',
+`category-id-display-historical-life-and-scenes',
+`category-id-display-natural-history'.~%▶▶▶~%"))
+
+
+(make-documented-class 'category-id-display-books-and-publications
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-category',
+`category-id-display-advertising-and-graphics',
+`category-id-display-architecture-and-design', `category-id-display-geography',
+`category-id-display-historical-life-and-scenes',
+`category-id-display-natural-history'.~%▶▶▶~%"))
+
+(make-documented-class 'category-id-display-geography
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-category',
+`category-id-display-advertising-and-graphics',
+`category-id-display-architecture-and-design',
+`category-id-display-books-and-publications',
+`category-id-display-historical-life-and-scenes',
+`category-id-display-natural-history'.~%▶▶▶~%"))
+
+(make-documented-class 'category-id-display-historical-life-and-scenes
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-category',
+`category-id-display-advertising-and-graphics',
+`category-id-display-architecture-and-design',
+`category-id-display-books-and-publications',
+`category-id-display-geography',`category-id-display-natural-history'.~%▶▶▶~%"))
+
+(make-documented-class 'category-id-display-natural-history
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-category',
+`category-id-display-advertising-and-graphics',
+`category-id-display-architecture-and-design',
+`category-id-display-books-and-publications', `category-id-display-geography',
+`category-id-display-historical-life-and-scenes'~%▶▶▶~%"))
+
+;; theme entities
+(make-documented-class 'control-id-theme-entity
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-media-entity', `control-id-category-entity', `control-id-naf-entity'.
+`control-id-theme-entity', `control-id-taxon-entity'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-theme-entity-display-name
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-name', `control-id-naf-entity-display-name',
+`control-id-location-entity-display-name', `control-id-taxon-entity-display-name',
+`control-id-display-name-for-entity-type', `control-id-media-entity-display-name',
+`control-id-theme-entity-display-name', `control-id-category-entity-display-name'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-theme-entity-indexed-number
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-indexed-number', `control-id-record-indexed-number',
+`control-id-media-entity-indexed-number', `control-id-category-entity-indexed-number',
+`control-id-theme-entity-indexed-number', `control-id-taxon-entity-indexed-number',
+`control-id-location-entity-indexed-number', `control-id-naf-entity-indexed-number'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-theme
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-taxon', `control-id-theme', `control-id-technique',
+`control-id-material', `control-id-mount', `control-id-paper'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-display-theme
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-technique', `control-id-display-material',
+`control-id-display-mount', `control-id-display-paper',
+`control-id-display-theme', `control-id-display-taxon',
+`control-id-display-location', `control-id-display-artist',
+`control-id-display-author', `control-id-display-person',
+`control-id-display-brand', `control-id-display-publication'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-indexed-theme
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-indexed-artist', `control-id-indexed-author',
+`control-id-indexed-person', `control-id-indexed-brand',
+`control-id-indexed-publication', `control-id-indexed-theme',
+`control-id-indexed-category', `control-id-indexed-taxon',
+`control-id-indexed-technique', `control-id-indexed-material',
+`control-id-indexed-mount', `control-id-indexed-paper'.~%▶▶▶~%"))
+
+;;  taxon entities
+(make-documented-class 'control-id-taxon-entity
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-media-entity', `control-id-category-entity', `control-id-naf-entity'.
+`control-id-theme-entity', `control-id-taxon-entity'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-taxon-entity-display-name
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-name', `control-id-naf-entity-display-name',
+`control-id-location-entity-display-name', `control-id-taxon-entity-display-name',
+`control-id-display-name-for-entity-type', `control-id-media-entity-display-name',
+`control-id-theme-entity-display-name', `control-id-category-entity-display-name'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-taxon-entity-indexed-number
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-indexed-number', `control-id-record-indexed-number',
+`control-id-media-entity-indexed-number', `control-id-category-entity-indexed-number',
+`control-id-theme-entity-indexed-number', `control-id-taxon-entity-indexed-number',
+`control-id-location-entity-indexed-number', `control-id-naf-entity-indexed-number'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-taxon
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-taxon', `control-id-theme', `control-id-technique',
+`control-id-material', `control-id-mount', `control-id-paper'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-display-taxon
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-technique', `control-id-display-material',
+`control-id-display-mount', `control-id-display-paper',
+`control-id-display-theme', `control-id-display-taxon',
+`control-id-display-location', `control-id-display-artist',
+`control-id-display-author', `control-id-display-person',
+`control-id-display-brand', `control-id-display-publication'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-indexed-taxon
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-indexed-artist', `control-id-indexed-author',
+`control-id-indexed-person', `control-id-indexed-brand',
+`control-id-indexed-publication', `control-id-indexed-theme',
+`control-id-indexed-category', `control-id-indexed-taxon',
+`control-id-indexed-technique', `control-id-indexed-material',
+`control-id-indexed-mount', `control-id-indexed-paper'.~%▶▶▶~%"))
+
+;; location entities
+(make-documented-class 'control-id-location-entity
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-media-entity', `control-id-category-entity', `control-id-naf-entity'.
+`control-id-theme-entity', `control-id-taxon-entity'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-location-entity-display-name
+:class-doc
+ #.(format nil "
+:NOTE This can be tricky because for example \"New York\" and \"New York\" refer to two separate
+location entities, e.g. one is a state the other is a city.~%
+:SEE-ALSO `control-id-display-name', `control-id-naf-entity-display-name',
+`control-id-location-entity-display-name', `control-id-taxon-entity-display-name',
+`control-id-display-name-for-entity-type', `control-id-media-entity-display-name',
+`control-id-theme-entity-display-name', `control-id-category-entity-display-name'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-location-entity-indexed-number
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-indexed-number', `control-id-record-indexed-number',
+`control-id-media-entity-indexed-number', `control-id-category-entity-indexed-number',
+`control-id-theme-entity-indexed-number', `control-id-taxon-entity-indexed-number',
+`control-id-location-entity-indexed-number', `control-id-naf-entity-indexed-number'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-display-location
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-technique', `control-id-display-material',
+`control-id-display-mount', `control-id-display-paper',
+`control-id-display-theme', `control-id-display-taxon',
+`control-id-display-location', `control-id-display-artist',
+`control-id-display-author', `control-id-display-person',
+`control-id-display-brand', `control-id-display-publication'~%▶▶▶~%"))
+
+;; naf-entity display names
+
+(make-documented-class 'control-id-naf-entity
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-media-entity', `control-id-category-entity'
+`control-id-naf-entity', `control-id-naf-entity-artist',
+`control-id-naf-entity-author', `control-id-naf-entity-person',
+`control-id-naf-entity-brand', `control-id-naf-entity-publication'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-naf-entity-display-name
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-name', `control-id-naf-entity-display-name',
+`control-id-location-entity-display-name', `control-id-taxon-entity-display-name',
+`control-id-display-name-for-entity-type', `control-id-media-entity-display-name',
+`control-id-theme-entity-display-name', `control-id-category-entity-display-name'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-naf-entity-indexed-number
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-indexed-number', `control-id-record-indexed-number',
+`control-id-media-entity-indexed-number', `control-id-category-entity-indexed-number',
+`control-id-theme-entity-indexed-number', `control-id-taxon-entity-indexed-number',
+`control-id-location-entity-indexed-number', `control-id-naf-entity-indexed-number'.~%▶▶▶~%"))
+
+;; Artist entities
+(make-documented-class 'control-id-naf-entity-artist
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-naf-entity', `control-id-naf-entity-artist',
+`control-id-naf-entity-author', `control-id-naf-entity-person',
+`control-id-naf-entity-brand', `control-id-naf-entity-publication'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-display-artist
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-technique', `control-id-display-material',
+`control-id-display-mount', `control-id-display-paper',
+`control-id-display-theme', `control-id-display-taxon',
+`control-id-display-location', `control-id-display-artist',
+`control-id-display-author', `control-id-display-person',
+`control-id-display-brand', `control-id-display-publication'~%▶▶▶~%"))
+
+(make-documented-class 'control-id-indexed-artist
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-indexed-artist', `control-id-indexed-author',
+`control-id-indexed-person', `control-id-indexed-brand',
+`control-id-indexed-publication', `control-id-indexed-theme',
+`control-id-indexed-category', `control-id-indexed-taxon',
+`control-id-indexed-technique', `control-id-indexed-material',
+`control-id-indexed-mount', `control-id-indexed-paper'.~%▶▶▶~%"))
+
+;; Author entities
+(make-documented-class 'control-id-naf-entity-author
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-naf-entity', `control-id-naf-entity-artist',
+`control-id-naf-entity-author', `control-id-naf-entity-person',
+`control-id-naf-entity-brand', `control-id-naf-entity-publication'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-display-author
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-technique', `control-id-display-material',
+`control-id-display-mount', `control-id-display-paper',
+`control-id-display-theme', `control-id-display-taxon',
+`control-id-display-location', `control-id-display-artist',
+`control-id-display-author', `control-id-display-person',
+`control-id-display-brand', `control-id-display-publication'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-indexed-author
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-indexed-artist', `control-id-indexed-author',
+`control-id-indexed-person', `control-id-indexed-brand',
+`control-id-indexed-publication', `control-id-indexed-theme',
+`control-id-indexed-category', `control-id-indexed-taxon',
+`control-id-indexed-technique', `control-id-indexed-material',
+`control-id-indexed-mount', `control-id-indexed-paper'.~%▶▶▶~%"))
+
+;; Person entities
+(make-documented-class 'control-id-naf-entity-person
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-naf-entity', `control-id-naf-entity-artist',
+`control-id-naf-entity-author', `control-id-naf-entity-person',
+`control-id-naf-entity-brand', `control-id-naf-entity-publication'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-display-person
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-technique', `control-id-display-material',
+`control-id-display-mount', `control-id-display-paper',
+`control-id-display-theme', `control-id-display-taxon',
+`control-id-display-location', `control-id-display-artist',
+`control-id-display-author', `control-id-display-person',
+`control-id-display-brand', `control-id-display-publication'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-indexed-person
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-indexed-artist', `control-id-indexed-author',
+`control-id-indexed-person', `control-id-indexed-brand',
+`control-id-indexed-publication', `control-id-indexed-theme',
+`control-id-indexed-category', `control-id-indexed-taxon',
+`control-id-indexed-technique', `control-id-indexed-material',
+`control-id-indexed-mount', `control-id-indexed-paper'.~%▶▶▶~%"))
+
+;; Brad entities
+(make-documented-class 'control-id-naf-entity-brand
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-naf-entity', `control-id-naf-entity-artist',
+`control-id-naf-entity-author', `control-id-naf-entity-person',
+`control-id-naf-entity-brand', `control-id-naf-entity-publication'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-display-brand
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-technique', `control-id-display-material',
+`control-id-display-mount', `control-id-display-paper',
+`control-id-display-theme', `control-id-display-taxon',
+`control-id-display-location', `control-id-display-artist',
+`control-id-display-author', `control-id-display-person',
+`control-id-display-brand', `control-id-display-publication'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-indexed-brand
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-indexed-artist', `control-id-indexed-author',
+`control-id-indexed-person', `control-id-indexed-brand',
+`control-id-indexed-publication', `control-id-indexed-theme',
+`control-id-indexed-category', `control-id-indexed-taxon',
+`control-id-indexed-technique', `control-id-indexed-material',
+`control-id-indexed-mount', `control-id-indexed-paper'.~%▶▶▶~%"))
+
+;; Publication entities
+
+(make-documented-class 'control-id-naf-entity-publication
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-naf-entity', `control-id-naf-entity-artist',
+`control-id-naf-entity-author', `control-id-naf-entity-person',
+`control-id-naf-entity-brand', `control-id-naf-entity-publication'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-display-publication
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-display-technique', `control-id-display-material',
+`control-id-display-mount', `control-id-display-paper',
+`control-id-display-theme', `control-id-display-taxon',
+`control-id-display-location', `control-id-display-artist',
+`control-id-display-author', `control-id-display-person',
+`control-id-display-brand', `control-id-display-publication'.~%▶▶▶~%"))
+
+(make-documented-class 'control-id-indexed-publication
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-indexed-artist', `control-id-indexed-author',
+`control-id-indexed-person', `control-id-indexed-brand',
+`control-id-indexed-publication', `control-id-indexed-theme',
+`control-id-indexed-category', `control-id-indexed-taxon',
+`control-id-indexed-technique', `control-id-indexed-material',
+`control-id-indexed-mount', `control-id-indexed-paper'.~%▶▶▶~%"))
+
+) ;; close eval when
+
+
+;;; ==============================
+;; dbc-class-edit.lisp
+;;; ==============================
+
+(eval-when (:compile-toplevel); :load-toplevel :execute)
+  
+(make-documented-class 'base-edit
+:class-doc
+ #.(format nil "The intended use for subclassed instances of the base-edit class is to record
+information re the alteration of a class instance or slot value of an instance.~%
+Not all instances and slots should record edit information. However, when it is
+important to record when/how the data of a slot/instance was made it should be
+done using the edit-class interface.~%
+:SEE-ALSO `base-entity', `base-theme-entity', `base-category-entity', `base-taxon-entity',
+`base-naf-entity', `base-media-entity', `base-location-entity'.~%▶▶▶~%"))
+
+) ;; close eval when
+
+;;; ==============================
+;; (:file "dbc-class-naf-entity")
+;;; ==============================
+
+(eval-when (:compile-toplevel); :load-toplevel :execute)
+
+(make-documented-class 'naf-entity-publication
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-naf-entity-publication', `control-id-display-publication',
+`control-id-indexed-publication', `base-naf-entity', `naf-entity-artist', `naf-entity-author',
+`naf-entity-person', `naf-entity-brand', `naf-entity-publication'.~%▶▶▶~%"))
+
+(make-documented-class 'naf-entity-brand
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-naf-entity-brand', `control-id-display-brand', `control-id-indexed-brand',
+`base-naf-entity', `naf-entity-artist', `naf-entity-author',
+`naf-entity-person', `naf-entity-brand', `naf-entity-publication'.~%▶▶▶~%"))
+
+(make-documented-class 'naf-entity-person
+:class-doc
+ #.(format nil "
+:SEE-ALSO`control-id-naf-entity-person', `control-id-display-person',
+`control-id-indexed-person', `base-naf-entity', `naf-entity-artist',
+`naf-entity-author', `naf-entity-person', `naf-entity-brand',
+`naf-entity-publication'.~%▶▶▶~%"))
+
+(make-documented-class 'naf-entity-author
+:class-doc
+ #.(format nil "
+:SEE-ALSO`control-id-naf-entity-author', `control-id-display-author', `control-id-indexed-author',
+`base-naf-entity', `naf-entity-artist', `naf-entity-author',
+`naf-entity-person', `naf-entity-brand', `naf-entity-publication'.~%▶▶▶"))
+
+(make-documented-class 'naf-entity-artist
+:class-doc
+ #.(format nil "
+:SEE-ALSO `control-id-naf-entity-artist', `control-id-display-artist',
+`control-id-indexed-artist', `base-naf-entity', `naf-entity-artist', `naf-entity-author',
+`naf-entity-person', `naf-entity-brand', `naf-entity-publication'.~%▶▶▶~%"))
+
+;; :FILE dbc-class-theme-entity.lisp
+(make-documented-class 'theme-entity
+:class-doc
+#.(format nil "
+:SEE-ALSO `base-naf-entity', `naf-entity-artist', `naf-entity-author',
+`naf-entity-person', `naf-entity-brand', `naf-entity-publication'.~%▶▶▶~%"))
+
+) ;; close eval when
+
+;;; ==============================
+;; :file dbc-classes/dbc-class-media-entity.lisp
+;;; ==============================
+
+(eval-when (:compile-toplevel); :load-toplevel :execute)
+
+(make-documented-class 'media-entity-technique
+:class-doc
+ #.(format nil
+"Instances of this class used to describe techniques used in the production of a
+particular type of media.~%
+Possible \(generalized\) examples of a technique include:~%
+ engraving, lithograph, photography, offset, etc.~%
+:SEE-ALSO `description-media-entity-technique-note', `base-media-entity',
+`media-entity-technique', `media-entity-material', `media-entity-mount',
+`media-entity-color', `control-id-media-entity-type'.~%▶▶▶~%"))
+
+(make-documented-class 'media-entity-material
+:class-doc
+ #.(format nil
+"Instances of this class used to describe materials used in the production of a particular type of media.~%~@
+Slot values might be used to indicate the type of material \(i.e. paper, fabric,
+plastic, etc.\) as well as various aspects of its composition, e.g. whether it
+is glazed, cold-rolled, 10mil, etc.~%
+:SEE-ALSO `description-media-entity-material-note', `base-media-entity',
+`media-entity-technique', `media-entity-paper', `media-entity-mount',
+`media-entity-color', `control-id-media-entity-type'.~%▶▶▶~%"))
+
+(make-documented-class 'media-entity-paper
+:class-doc
+ #.(format nil
+"Instances of this class used to describe materials generally construed as being of the type \"paper\".~%
+:SEE-ALSO `description-media-entity-material-note', `base-media-entity',
+`media-entity-technique', `media-entity-material', `media-entity-mount',
+`media-entity-color', `control-id-media-entity-type'.~%▶▶▶~%"))
+
+(make-documented-class 'media-entity-mount
+:class-doc
+ #.(format nil
+"Instances of this class used to describe the mounting used in with a particular type of media.~%
+Slot values might be used to indicate the type of mount and its
+state,i.e. whether the media is linen backed, dry mounted, framed, etc.~%
+:SEE-ALSO `base-media-entity',`description-media-entity-mount-note' `base-media-entity',
+`media-entity-technique', `media-entity-material', `media-entity-mount',
+`media-entity-color', `control-id-media-entity-type'.~%▶▶▶~%"))
+
+(make-documented-class 'media-entity-color
+:class-doc
+#.(format nil
+            "Instances of this class used to describe aspects of the color of a particular type of media.~%
+Example uses include:~%~% ~
+ - slots indicating whether a color is represented by an HSV, RGB, or CMYK value;~%
+ - slot indicating a cannonical or standardized display name of a particular color value;~%
+ - slot indicating corefs to a cannonical or standardized display name of a particular color value;~% 
+ - slot indicating whether color has a generalized parent category, e.g. ruby-red is subsumed by red;~%
+:SEE-ALSO `description-media-entity-color-note', `base-media-entity',
+`media-entity-technique', `media-entity-material', `media-entity-mount',
+`media-entity-color'.~%▶▶▶~%"))
+
+) ; close eval when
+
+;;; ==============================
+;; :file dbc-classes/dbc-class-location-entity.lisp
+;;; ==============================
+
+(eval-when (:compile-toplevel); :load-toplevel :execute)
+
+(make-documented-class 'location-entity
+:display-name
+ #.(format nil
+"The default display-name for an entity.~%~%")
+ :appellations-modern
+ #.(format nil
+           "Enumeration of appellations used in _modern_ parlance \(i.e. contemporary usage\).~%
+Used to disambiguate identification of a geographic entity.~%~@
+For example, \"India\" as opposed to \"Hindostan\" or \"Ganges\".~% ~
+When non-nil slot-value is a [ <STRING> | <LIST-OF-STRINGS> ].~%~@
+:EXAMPLE~%
+ \"Republic of India\"~% ~
+ \(\"India\" \"Republic of India\"\)~%~%")
+
+ :appellations-historic
+  #.(format nil
+            "Enumeration of historic appellations used in _non-modern_ parlance \(i.e. non-contemporary\).~%~@
+Used to disambiguate identification of a geographic entity.~%~@
+For example, \"Hindostan\" as opposed to \"Republic of India\".~%~@
+Enumeration of appellations used in _modern_ parlance \(i.e. contempory usage\).~%~@
+Used to disambiguate identification of a geographic entity.~%~@
+For example, India as opposed to Hindostan or Ganges.~% ~
+When non-nil slot-value is a [ <STRING> | <LIST-OF-STRINGS> ].~%~@
+:EXAMPLE~%
+ \"Hindostan\"~% ~
+ \(\"Hindostan\" \"Ganges\"\)~%~%")
+
+ :class-doc
+ #.(format nil
+           "Top-level from which location-entity derive~%~@
+:SEE-ALSO `base-location-entity', `location-entity', `location-entity-imagined',
+`location-entity-verified' `control-id-display-location', `control-id-location-entity',
+`control-id-location-entity-type', `control-id-location-entity-display-name',
+`control-id-location-entity-indexed-number', `location-entity-regexp'.~%▶▶▶~%"))
+
+(make-documented-class 'location-entity-verified
+:class-doc
+ #.(format nil "
+:SEE-ALSO `base-location-entity', `location-entity', `location-entity-imagined',
+`location-entity-verified', `location-entity-unverified',
+`control-id-display-location', `control-id-location-entity',
+`control-id-location-entity-type', `control-id-location-entity-display-name',
+`control-id-location-entity-indexed-number', `location-entity-regexp'.~%▶▶▶~%"))
+
+(make-documented-class 'location-entity-imagined
+:class-doc
+ #.(format nil
+ "Location entities for which \(likely\) don't exist in the current
+spacio-temporatl plane, e.g. \"Here there be dragons.\"~%
+:SEE-ALSO `base-location-entity', `location-entity', `location-entity-imagined',
+`location-entity-verified', `location-entity-unverified',
+`control-id-display-location', `control-id-location-entity',
+`control-id-location-entity-type', `control-id-location-entity-display-name',
+`control-id-location-entity-indexed-number', `location-entity-regexp'.~%▶▶▶~%"))
+
+(make-documented-class 'location-entity-unverified
+:class-doc
+ #.(format nil
+"Location entities for which can not be verified as actually existing.
+As opposed to `location-entity-verified' for which ther is a consensus agreement that the place actually exist.~%
+Likewise, as opposed to `location-entity-imagined' which \(likely\) don't exist
+in the current spacio-temporatl plane.~%
+:SEE-ALSO `base-location-entity', `location-entity', `location-entity-imagined',
+`location-entity-verified', `location-entity-unverified',
+`control-id-display-location', `control-id-location-entity',
+`control-id-location-entity-type', `control-id-location-entity-display-name',
+`control-id-location-entity-indexed-number', `location-entity-regexp'.~%▶▶▶~%"))
+
+;;; ==============================
+;; /dbc-classes/dbc-class-taxon-entity.lisp
+;;; ==============================
+
+(make-documented-class 'taxon-entity
+:class-doc
+ #.(format nil
+  "A taxonomic entity.~%
+Life
+- Domain
+-- Kingdom
+--- Phylum
+---- Class
+----- Order
+------ Family
+------- Genus
+-------- Species~%
+:SEE-ALSO `base-taxon-entity', `control-id-taxon-entity-type',
+`taxon-entity-coref', `*control-id-taxon-namespace*', `control-id-taxon-entity',
+`control-id-taxon-entity-type', `control-id-taxon-entity-display-name',
+`control-id-display-taxon'.~%%▶▶▶~%"))
+
+) ; close eval when
+
+;;; ==============================
+;; :file dbc-classes/dbc-class-location-entity.lisp
+;;; ==============================
+
+(eval-when (:compile-toplevel); :load-toplevel :execute)
+
 ;; base-regexp
 (make-documented-class 'base-regexp
 :class-doc
 #.(format nil
 "Base class for matching control names of DBC entity instances.~%~@
-:SEE-ALSO .~%▶▶▶~%"))
+:SEE-ALSO `base-regexp', `entity-regexp-subclass-allocation', `entity-regexp',
+`theme-entity-regexp', `category-entity-regexp', `media-entity-regexp',
+`location-entity-regexp', `naf-entity-type-regexp',
+`naf-entity-control-name-regexp', `naf-entity-alt-name-regexp',
+`naf-entity-artist-control-regexp', `naf-entity-artist-alt-regexp',
+`naf-entity-author-control-regexp', `naf-entity-author-alt-regexp',
+`naf-entity-person-alt-regexp', `naf-entity-person-control-regexp',
+`naf-entity-brand-control-regexp', `naf-entity-brand-alt-regexp',
+`naf-entity-publication-control-regexp', `naf-entity-publication-alt-regexp',
+`regexp-match-entity-class', `regexp-match-entity-db',
+`regexp-match-matcher-db', `regexp-match-container-type',
+`regexp-match-container-uuid', `regexp-matcher'.~%▶▶▶~%"))
 
 ;; entity-regexp-subclass-allocation
 (make-documented-class 'entity-regexp-subclass-allocation
@@ -206,41 +1402,40 @@ Subclasses should access slot-value with a method specialized on.~%~
 Don't instantiate directly from this class.~%~@
 :SEE-ALSO ~%▶▶▶~%"))
 
-
 ;; parsed-field-name-regexp
 (make-documented-class 'parsed-field-name-regexp
 :class-doc
  #.(format nil
 "An `entity-regexp' subclass for matching XML-refs parsed field-names.~%~
-:SEE-ALSO .~%▶▶▶~%"))
+:SEE-ALSO `*parsed-field-name-regexp-db*'.~%▶▶▶~%"))
 
 ;; theme-entity-regexp
 (make-documented-class 'theme-entity-regexp
 :class-doc
  #.(format nil
 "An `entity-regexp' sub-class for themes.~%~@
-:SEE-ALSO `base-theme-entity'.~%▶▶▶"))
+:SEE-ALSO `base-theme-entity'.~%▶▶▶~%"))
 
 ;; category-entity-regexp
 (make-documented-class 'category-entity-regexp
 :class-doc
  #.(format nil
 "An `entity-regexp' sub-class for DBC categories.~%~
-:SEE-ALSO `base-category-entity'.~%▶▶▶"))
+:SEE-ALSO `*category-entity-regexp-db*', `base-category-entity'.~%▶▶▶~%"))
 
 ;; media-entity-regexp
 (make-documented-class 'media-entity-regexp
 :class-doc
  #.(format nil
 "An `entity-regexp' sub-class for DBC media types.~%~
-:SEE-ALSO `base-media-entity'.~%▶▶▶"))
+:SEE-ALSO `*media-entity-regexp-db*',`base-media-entity'.~%▶▶▶~%"))
 
 ;; location-entity-regexp
 (make-documented-class 'location-entity-regexp
 :class-doc
  #.(format nil
 "An `entity-regexp' sub-class for DBC location entities.~%~
-:SEE-ALSO `base-location-entity'.~%▶▶▶"))
+:SEE-ALSO `*location-entity-regexp-db*', `base-location-entity'.~%▶▶▶~%"))
 
 ;; naf-entity-type-regexp
 (make-documented-class 'naf-entity-type-regexp
@@ -250,7 +1445,7 @@ Don't instantiate directly from this class.~%~@
 Instances subclassed from `base-naf-entity' should instantiate instances of~%~
 both `naf-entity-control-name-regexp', `naf-entity-alt-name-regexp' to enable~%~
 system wide xrefing/indexing of entity name-form occurences.~%~@
-:SEE-ALSO .~%▶▶▶"))
+:SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp', `naf-entity-alt-name-regexp'.~%▶▶▶~%"))
 
 ;; naf-entity-control-name-regexp
 (make-documented-class 'naf-entity-control-name-regexp
@@ -261,7 +1456,7 @@ NAF control-names are considered canonical and are _rarely_ mutated.~%~@
 The matchers named by instances of this class should run _before_ other regexps.~%~@
 The MATCH-ENTITY-CONTAINER-TYPE slot of this class is defaulted to 'closure with~@
 the intent that the MATCH-ENTITY-MATCHER will be implemented as a CL-PPCRE closure.~%~@
-:SEE-ALSO `base-naf-entity', `naf-entity-alt-name-regexp'.~%▶▶▶"))
+:SEE-ALSO `base-naf-entity', `naf-entity-alt-name-regexp'.~%▶▶▶~%"))
 
 ;; naf-entity-alt-name-regexp
 (make-documented-class 'naf-entity-alt-name-regexp
@@ -282,63 +1477,70 @@ always have precedence of an alternative name form.~%~@
  :class-doc
  #.(format nil
 "A `naf-entity-control-name-regexp' subclass for DBC NAF artist entities.~%~@
-:SEE-ALSO .~%▶▶▶~%"))
+:SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp', `naf-entity-alt-name-regexp'.~%▶▶▶~%"))
 
 ;; naf-entity-artist-alt-regexp
 (make-documented-class 'naf-entity-artist-alt-regexp
  :class-doc
  #.(format nil
 "A `naf-entity-alt-name-regexp' subclass for DBC NAF artist entities.~%~@
-:SEE-ALSO .~%▶▶▶~%"))
+:SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp', `naf-entity-alt-name-regexp' .~%▶▶▶~%"))
+
+(make-documented-class 'naf-entity-artist-regexp
+ :class-doc
+ #.(format nil
+"A 'naf-entity-artist-regexp DBC NAF artist entities.~%~@
+:SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp', `naf-entity-alt-name-regexp' .~%▶▶▶~%"))
 
 ;; naf-entity-person-control-regexp
 (make-documented-class 'naf-entity-person-control-regexp
 :class-doc
  #.(format nil
 "A `naf-entity-control-name-regexp' subclass for DBC NAF person entities.~%~@
-:SEE-ALSO .~%▶▶▶~%"))
+:SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp', `naf-entity-alt-name-regexp'.~%▶▶▶~%"))
 
 ;; naf-entity-person-alt-regexp
 (make-documented-class 'naf-entity-person-alt-regexp
  :class-doc
  #.(format nil
 "A `naf-entity-control-name-regexp' subclass for DBC NAF person entities.~%~@
-:SEE-ALSO .~%▶▶▶~%"))
+:SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp', `naf-entity-alt-name-regexp'.~%▶▶▶~%"))
 
 ;;naf-entity-author-control-regexp
 (make-documented-class 'naf-entity-author-control-regexp
  :class-doc
  #.(format nil
    "A `naf-entity-control-name-regexp' subclass for DBC NAF author entities.~%~@
-:SEE-ALSO .~%▶▶▶~%"))
+:SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp', `naf-entity-alt-name-regexp'.~%▶▶▶~%"))
 
 ;; naf-entity-author-alt-regexp
 (make-documented-class 'naf-entity-author-alt-regexp
  :class-doc
  #.(format nil
            "A `naf-entity-alt-name-regexp' subclass for DBC NAF author entities.~%~@
-:SEE-ALSO .~%▶▶▶~%"))
+:SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp', `naf-entity-alt-name-regexp'.~%▶▶▶~%"))
 
 ;; naf-entity-brand-control-regexp
 (make-documented-class 'naf-entity-brand-control-regexp
  :class-doc
  #.(format nil
 "A `naf-entity-control-name-regexp' subclass for DBC NAF brand entities.~%~@
-:SEE-ALSO .~%▶▶▶~%"))
+:SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp', `naf-entity-alt-name-regexp'.~%▶▶▶~%"))
 
 ;;naf-entity-brand-alt-regexp
 (make-documented-class 'naf-entity-brand-alt-regexp
  :class-doc
  #.(format nil
 "A `naf-entity-alt-name-regexp' subclass for DBC NAF brand entities.~%~@
-:SEE-ALSO .~%▶▶▶~%"))
+:SEE-ALSO `naf-entity-type-regexp', `naf-entity-control-name-regexp', `naf-entity-alt-name-regexp'.~%▶▶▶~%"))
 
 ;; naf-entity-publication-control-regexp
 (make-documented-class 'naf-entity-publication-control-regexp
  :class-doc
  #.(format nil
            "A `naf-entity-control-name-regexp' subclass for DBC NAF publication entities.~%~@
-:SEE-ALSO `naf-entity-publication'.~%▶▶▶~%"))
+:SEE-ALSO `naf-entity-publication', `naf-entity-type-regexp',
+`naf-entity-control-name-regexp', `naf-entity-alt-name-regexp'.~%▶▶▶~%"))
 
 ;; naf-entity-publication-alt-regexp
 (make-documented-class 'naf-entity-publication-alt-regexp
@@ -347,9 +1549,101 @@ always have precedence of an alternative name form.~%~@
 "A `naf-entity-alt-name-regexp' subclass for DBC NAF publication entities.~%~@
 :NOTE When instantiating objects of this class be careful to discriminate
 among like named or similiarly prefixed publication names.~%~@
-:SEE-ALSO `naf-entity-publication'.~%▶▶▶~%"))
+:SEE-ALSO `naf-entity-publication' `naf-entity-type-regexp',
+`naf-entity-control-name-regexp', `naf-entity-alt-name-regexp'.~%▶▶▶~%"))
 
+;; :FILE dbc-classes/dbc-class-users.lisp
+(make-documented-class 'base-user
+:class-doc
+ #.(format nil
+"Base class for referencing users of the dbc-system.~%~@
+Types of users might include:~%~% ~
+ user-name, user-seller-name, user-client-name, etc.~%
+:SEE-ALSO `<XREF>'.~%▶▶▶~%"))
+
+) ; close eval when 
+
+;;; ==============================
+;; :file dbc-classes/dbc-class-documentation-record.lisp
+;;; ==============================
+
+(eval-when (:compile-toplevel); :load-toplevel :execute)
+
+(make-documented-class 'base-documentation-record
+:class-doc
+ #.(format nil
+"Base class for referencing documents in the dbc-system.~%
+:NOTE The inverse corollary to the class `base-record' is the class `base-entity'.~%))
+:SEE-ALSO `documentation-record-sitedoc'.~%▶▶▶~%"))
+
+(make-documented-class 'documentation-record-sitedoc
+:class-doc
+ #.(format nil
+"Base class for referencing documents from the file sitedoc.xml~%
+:SEE-ALSO `base-documentation-record'.~%▶▶▶~%"))
+
+) ; close eval when   
+
+;;; ==============================
+;; :file dbc-classes//dbc-class-parsed.lisp
+;;; ==============================
+
+(eval-when (:compile-toplevel); :load-toplevel :execute)
+  
+(make-documented-class 'parsed-class
+:class-doc
+ #.(format nil
+"Base dbc parsed class.~%
+:NOTE variable `*parsed-class-parse-table*' holds hashes keyed to subclasses of parsed-class.~%
+:NOTE This is the base class from wich other converted dbc-classes inherit.~%
+The intent is that this class should allow auxillary :before :after :around methods
+to act on the primary-methods of `parsed-class' inheritors.~%
+IOW, this your basic mixin base class :)~%
+:SEE-ALSO `base-dbc', `parsed-naf-entity'.~%▶▶▶~%"))
+
+(make-documented-class 'parsed-naf-entity
+:class-doc
+ #.(format nil
+"Base class for parsing naf-entity records.~%~@
+:SEE-ALSO `parsed-artist-record', `parsed-author-record',~%
+`parsed-person-record', `parsed-brand-record', `parsed-publication-record'.~%▶▶▶~%"))
+
+) ; close eval-when
+
+;;; ==============================
+;; :file dbc-classes/dbc-class-parsed-field-slot-mapping
+;;; ==============================
+
+(eval-when (:compile-toplevel); :load-toplevel :execute)
+
+(make-documented-class 'parsed-class-field-slot-accessor-mapping
+:class-doc
+ #.(format nil
+"Object for holding a mappings of field-names with slot-accessors.~%~@
+slot parsed-class-mapped is symbol designating the parse-class whose slots are
+mapped by hash-tables in slots accessor-to-field-table and
+slot-accessor-field-name-table.~%~@
+Slot field-to-accessor-table is a hash-table mapping from:~%~% ~
+  field-name (a string) to slot-accessor \(a symbol)
+Its `cl:hash-table-test' is `cl:equal'.~%~@
+Slot accessor-to-field-table is a hash-table with an inverse mapping from:~%~% ~
+ symbol to field-name~%~
+Its `cl:hash-table-test' is `cl:eql'.~%~@
+:SEE-ALSO `accessor-to-field-mapping', `field-to-accessor-mapping',
+`field-to-accessor-table', `accessor-to-field-table', `parsed-class-mapped',
+`make-parsed-class-field-slot-accessor-mapping',
+`def-set-parsed-class-record-slot-value'.~%▶▶▶~%"))
+  
+(make-documented-class 'base-image :class-doc
+#.(format nil "Base class for dbc image insances.~%
+:SEE-ALSO `<XREF>'.~%▶▶▶~%"))
+
+) ; close eval-when
+
+
 ;; parsed-tgm-theme-record
+(eval-when (:compile-toplevel); :load-toplevel :execute)
+
 (make-documented-class 'parsed-tgm-theme-record
 
 :control-id-display-theme
@@ -692,3 +1986,4 @@ themes recorded to the orginal dbc SQL table!~%~@
 
 ;;; ==============================
 ;;; EOF
+

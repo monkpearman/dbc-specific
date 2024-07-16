@@ -241,22 +241,25 @@
       (map nil #'pushing-filtered-directory-paths wild-pathname-list))
     big-directory-array))
 
-;; (defparameter *dbc-item-number-string-mapping-old-image-path-table* (%make-item-number-string-hash-table))
+;; (defparameter *dbc-item-number-string-mapping-old-image-path-table* (%make-item-number-string-hash-table)) 
 (defun %make-item-number-string-hash-table (&key (max-item-number 12417))
   (declare ((unsigned-byte 29) max-item-number))
-  (loop
-    with item-max-prime = (mon:prime-or-next-greatest max-item-number)
-    ;; :WAS with hash-table = (make-hash-table :test #'equal
-    with hash-table = (make-hash-table-sync :test #'equal
-                                            ;; :size (mon:prime-or-next-greatest max-item-number))
-                                            :size item-max-prime)
-    for num from 1 below max-item-number
+  (let ((ht (make-hash-table-sync :test #'equal
+                                  :size (mon:prime-or-next-greatest max-item-number)
+                                  :size item-max-prime)))
+    (with-locked-hash-table (ht)
+     (loop
+      with item-max-prime = (mon:prime-or-next-greatest max-item-number)
+      ;; :WAS with hash-table = (make-hash-table :test #'equal
+      ;; with hash-table = (make-hash-table-sync :test #'equal ;; :size item-max-prime)
+      for num from 1 below max-item-number
     ;; :WAS for numstring = (write-to-string num) ;;
-    for numstring = (format nil "~V,'0d" 6 num)
-    for vec = (make-array 7 :fill-pointer 0) ; for `vector-push-extend'
-    ;; :WAS do (setf (gethash numstring hash-table) vec)
-    do (with-locked-hash-table hash-table (setf (gethash numstring hash-table) vec))
-    finally (return hash-table)))
+      for numstring = (format nil "~V,'0d" 6 num)
+      for vec = (make-array 7 :fill-pointer 0) ; for `vector-push-extend'
+      ;; :WAS do (setf (gethash numstring hash-table) vec)
+      do (with-locked-hash-table (ht)
+                                 (setf (gethash numstring ht) vec))
+      finally (return ht)))))
 
 ;; (%ensure-directory-item-number-exists *dbc-item-number-string-mapping-old-image-path-table*)
 ;; Ensure each item-key of BIG-ITEM-STRING-HASH-TABLE is a subdirectory of

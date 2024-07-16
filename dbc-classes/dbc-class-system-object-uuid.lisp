@@ -115,7 +115,8 @@
 (in-package #:dbc)
 
 
-;;;; The class SYSTEM-OBJECT-UUID
+;;; ==============================
+;;; The class SYSTEM-OBJECT-UUID
 ;;
 ;; system-object-uuid               <CLASS>
 ;; system-identity                  <SLOT>,<GENERIC>
@@ -192,21 +193,24 @@
              "Instances of this class hold namespace metadata for classes whose instances~%~@
               share a common UUID namespace."))) 
 
+
 ;; mon:symbol-not-null-or-string-not-empty
 ;; mon::%fast-string-all-whitespace-p
 (defun %verify-valid-string-or-symbol-for-identity (verify-identity)
   (declare #+:IS-MON(type MON:SYMBOL-NOT-NULL-OR-STRING-NOT-EMPTY verify-identity)
            #-:IS-MON(type (or string (and symbol (not null))) verify-identity))
-  #+:IS-MON(unless (MON:SYMBOL-NOT-NULL-OR-STRING-NOT-EMPTY-P verify-identity)
-           (error "arg IDENTITY did not satisfy `mon:symbol-not-null-or-string-not-empty-p'"))
-  #-:IS-MON(when (and (stringp verify-identity)
-                    (string= (make-string 0) verify-identity))
-           (error "arg IDENTITY did not satisfy `mon:symbol-not-null-or-string-not-empty-p'"))
+  #+:IS-MON (unless (MON:SYMBOL-NOT-NULL-OR-STRING-NOT-EMPTY-P verify-identity)
+              (error "arg IDENTITY did not satisfy `mon:symbol-not-null-or-string-not-empty-p'"))
+  #-:IS-MON (when (and (stringp verify-identity)
+                       (string= (make-string 0) verify-identity))
+              (error "arg IDENTITY did not satisfy `mon:symbol-not-null-or-string-not-empty-p'"))
   (if (stringp verify-identity)
-      (if #+:IS-MON(MON::%FAST-STRING-ALL-WHITESPACE-P verify-identity)
-          #-:IS-MON(loop for char across verify-identity
-                         always (member char (list #\SPACE #\NEWLINE #\TAB #\RETURN #\NO-BREAK_SPACE #\PAGE #\VT) :test 'char=))
-          ;; 
+      (if #+:IS-MON (MON::%FAST-STRING-ALL-WHITESPACE-P verify-identity)
+          #-:IS-MON (loop for char across verify-identity
+                          always (member char
+                                         (list #\SPACE #\NEWLINE #\TAB #\RETURN
+                                               #\NO-BREAK_SPACE #\PAGE #\VT)
+                                         :test 'char=))
           (error "arg IDENTITY must not be contained of all whitespace characters")
           verify-identity)
       verify-identity))
@@ -238,6 +242,7 @@
               byte-array)
         byte-array)))
 
+
 (defgeneric system-identity-uuid-bit-vector (sys-object)
   (:method ((sys-object system-object-uuid))
     (when (and (slot-exists-p sys-object 'system-identity-uuid-bit-vector)
@@ -290,6 +295,7 @@
                (slot-boundp sys-object 'system-identity-uuid-integer))
       (slot-value sys-object 'system-identity-uuid-integer))))
 
+
 (defgeneric (setf system-identity-uuid-integer) (uuid-integer-128 sys-object)
   (:method  ((uuid-integer-128 bignum) (sys-object system-object-uuid))
     (declare (UNICLY::UUID-UB128 uuid-integer-128))
@@ -352,6 +358,7 @@
                 uuid-bit-vector)
           uuid-bit-vector))))
 
+
 (defgeneric system-identity (sys-object)
   (:method ((sys-object system-object-uuid))
     (when (and (slot-exists-p sys-object 'system-identity)
@@ -440,12 +447,16 @@
                     (setf (system-identity-parent-uuid sys-object) old-base-namespace)
                     ;; We set the slot-value explicitly instead of using the
                     ;; method specialized because it would land us right back here!
-                    ;; The slot system-object-uuid-identity no longer exists or its name has changed.
+                    ;; The slot system-object-uuid-identity no longer exists or
+                    ;; its name has changed.
+
                     ;; It became either system-identity or system-identity-uuid.
-                    ;; I'm pretty sure it is `system-identity' and the following change reflects that assumption.
+                    ;; I'm pretty sure it is `system-identity', and the
+                    ;; following change reflects that assumption:
+                    
                     ;; :WAS (setf (slot-value sys-object 'system-object-uuid-identity) old-id-slot))
                     (setf (slot-value sys-object 'system-identity) old-id-slot))
-                  ;;
+                
                   ;; If either the control-identity or base-namespace slots is
                   ;; null or unbound then the other should be as well.
                   (progn 
@@ -456,6 +467,7 @@
                                (slot-boundp sys-object   'system-identity))
                       (slot-makunbound sys-object 'system-identity)))))))))))
 
+
 (defgeneric system-identity-uuid (sys-object)
   (:method  ((sys-object system-object-uuid))
     (when (slot-boundp sys-object 'system-identity-uuid)
@@ -466,8 +478,8 @@
   ;; `unicly:uuid-copy-uuid' we keep the method dispatch b/c we can check string
   ;; validity earlier.
   (:method  ((uuid-string string) (sys-object system-object-uuid))
-
-            ;; :DARWWIN REENABLE if we can get it to compile (declare (unicly::uuid-hex-string-36 uuid-string))
+            ;; :DARWWIN RE-ENABLE following if we can get it to compile:
+            ;; (declare (unicly::uuid-hex-string-36 uuid-string))
     (let ((uuid-from-string (UNICLY:MAKE-UUID-FROM-STRING uuid-string)))
       (declare (UNICLY:UNIQUE-UNIVERSAL-IDENTIFIER uuid-from-string))
       (if (slot-exists-p sys-object 'system-identity-uuid)
@@ -509,7 +521,7 @@
           (setf (slot-value sys-object 'system-identity-uuid)
                 uuid-from-int)
           uuid-from-int)))
-
+
   ;; The :after method helps us make sure all other slots get propagated whenever
   ;; a slot containing a uuid representation gets touched. 
   ;; This was an early 
@@ -577,7 +589,7 @@
       (declare (type (or UNICLY::UUID-BYTE-ARRAY-16 null)  uuid-bytes)
                (type (or UNICLY::UUID-BIT-VECTOR-128 null) uuid-bv)
                (type (or UNICLY::UUID-UB128 null)          uuid-int)
-               ;; DARWIN UNCOMMENT AFTER IT WORKS
+               ;; DARWIN -- UNCOMMENT AFTER IT WORKS:
                ;; (type (or UNICLY::UUID-HEX-STRING-36 null)  uuid-hex-36)
                )
       (when (and uuid-bv (slot-exists-p sys-object 'system-identity-uuid-bit-vector)
@@ -633,6 +645,7 @@
     (setf (system-identity-uuid sys-object) new-nmspc))
   sys-object)
 
+
 ;;; ==============================
 ;; DARWIN `make-system-object-uuid' is having trouble using quoted symobl
 ;; '*system-object-uuid-base-namespace* as value suppled for keyword :control-id
@@ -651,7 +664,6 @@
     (setf (system-identity-uuid new-obj) new-nmspc)
     new-obj))
 
-
 ;; (find-method #'system-object-uuid-description nil '(system-object-uuid))
 (defmethod system-object-uuid-description ((sys-object system-object-uuid) &key stream verbose)
   (declare (type boolean verbose))

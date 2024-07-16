@@ -46,9 +46,7 @@
 ;; `parsed-doc-record'
 (defclass base-documentation-record (base-record)
   ()
-  (:documentation
-   #.(format nil "Base class for referencing documents in the dbc-system.
-:NOTE The inverse corollary to the class `base-record' is the class `base-entity'.~%")))
+  (:documentation  #.(classdoc 'base-documentation-record :class-doc)))
 
 (defclass documentation-record-sitedoc (base-documentation-record)
   ;; ("name"              :document-name)
@@ -62,8 +60,7 @@
   ;; :NOTE Much of the documentation in sitedoc.xml corrsponds with the categories defined in:
   ;;        advert.xml, archi.xml, books.xml, geo.xml, historical.xml, natural.xml
   ()
-  (:documentation
-   #.(format nil "Base class for referencing documents from the file sitedoc.xml~%")))
+  (:documentation  #.(classdoc 'documentation-record-sitedoc :class-doc)))
 
 #|
 
@@ -83,6 +80,7 @@
    :initform nil
    :initarg :doc-xrefs
    :accessor doc-xrefs))
+
 |#
 
 ;;; ==============================

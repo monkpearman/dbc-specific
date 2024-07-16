@@ -290,7 +290,7 @@ Use it to grab LOC skos/rdf-xml data.")
 ;; "13728" -> "tgm001892"
 ;; (%parsed-theme-record-find-display-theme "Charcoal")
 (defun %parsed-theme-record-find-display-theme (control-id-display-theme)
-"\:EXAMPLE (%parsed-theme-record-find-display-theme \"Charcoal\"\)"
+  "~%:EXAMPLE (%parsed-theme-record-find-display-theme \"Charcoal\"\)~%"
   (loop 
     with ht = (parsed-class-parse-table 'parsed-theme-record)
     for hk being the hash-keys of ht

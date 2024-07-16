@@ -22,7 +22,7 @@
 
 (vardoc '*system-path*
 "The base dbc-sytsem path.~%~@
-An instance of the system-path class holds the class allocated slot system-path
+An instance of the `dbc:system-path' class holds the class allocated slot system-path.~%
 :EXAMPLE~%
  \(and \(eql \(mon:class-name-of *system-path*\)
           \(class-name \(find-class 'system-path\)\)\)
@@ -84,8 +84,6 @@ eg with the `write-parsed-<FOO>-record-parse-table-to-csv-file' functions.
 `*parsed-class-table-output-dir*',`*parsed-class-table-csv-output-dir*',
 `*parsed-class-table-output-pathname-type*',`*parsed-tgm-theme-output-dir*.'~%▶▶▶")
 
-
-
 (vardoc '*parsed-class-table-output-pathname-type*
 "Default pathname-type for use when writing the contents of DBC
 hash-tables identified in varialbe`*parsed-class-parse-table*'
@@ -144,16 +142,16 @@ keywords e.g. :wild :wild-inferiors.~%~@
 `parsed-inventory-record-image-file-pathnames-update'.~%▶▶▶")
 
 (vardoc '*parsed-inventory-record-image-pathname-regex*
-"Regular expressioin for mathing follwoing image pahtname-names:
-<RECORD-NUM>.jpg    <- :full
-<RECORD-NUM>-s.jpg  <- :small
-<RECORD-NUM>-m.jpg  <- :medium
-<RECORD-NUM>-z.jpg  <- :zoom
-<RECORD-NUM>-f.jpg  <- :flash
-<RECORD-NUM>-fc.jpg <- :flash-c
-<RECORD-NUM>-fs.jpg <- :flash-s
-<RECORD-NUM>-h.jpg  <- :header~%~@
-Regular expression has the form:  \"^\([0-9]{6}?\)\(-??\)\(\([smzh]{1}?\)??|\(f[sc]??\)??\)??$\"~%~@
+"Regular expressioin for macthing follwoing image pahtname-names:~%
+ <RECORD-NUM>.jpg    <- :full
+ <RECORD-NUM>-s.jpg  <- :small
+ <RECORD-NUM>-m.jpg  <- :medium
+ <RECORD-NUM>-z.jpg  <- :zoom
+ <RECORD-NUM>-f.jpg  <- :flash
+ <RECORD-NUM>-fc.jpg <- :flash-c
+ <RECORD-NUM>-fs.jpg <- :flash-s
+ <RECORD-NUM>-h.jpg  <- :header~%~@
+Regular expression has the form:~%  \"^\([0-9]{6}?\)\(-??\)\(\([smzh]{1}?\)??|\(f[sc]??\)??\)??$\"~%~@
 :EXAMPLE~%~@
 \(cl-ppcre:scan-to-strings *parsed-inventory-record-image-pathname-regex*  \(cl:pathname-name #P\"006305.jpg\"\)\)~%~@
 \(cl-ppcre:scan-to-strings *parsed-inventory-record-image-pathname-regex*  \(cl:pathname-name #P\"006305-m.jpg\"\)\)~%~@
@@ -173,8 +171,7 @@ Regular expression has the form:  \"^\([0-9]{6}?\)\(-??\)\(\([smzh]{1}?\)??|\(f[
 `%parsed-inventory-record-image-file-pathname-match',
 `%parsed-inventory-record-image-file-pathname-valid-p-or-error',
 `*parsed-inventory-record-image-pathname-regex*',
-`inventory-record-image-jpg-probe-all',
-`inventory-record-image-jpg-probe',
+`inventory-record-image-jpg-probe-all', `inventory-record-image-jpg-probe',
 `inventory-record-image-directory-probe'.~%▶▶▶")
 
 ;;; ==============================
@@ -216,8 +213,6 @@ Its pathname is accessible with the `dbc:sub-path' accessor.~%~@
   \(pathname-directory \(dbc:sub-path dbc::*system-tests-temp-dir*\)\)~%~@
 :SEE-ALSO `*system-path*', `*system-tests-dir*', `*system-tests-temp-dir*',
 `*xml-output-dir*', `*xml-input-dir*'.~%▶▶▶")
-
-;;; ==============================
 
 
 
@@ -261,7 +256,7 @@ Use when dumping parsed dbc XML files.~%~@
 "System relative directory pathname object for reading dbc-xml-dump files.~%~@
 Evaluated when system is loaded.~%~@
 :EXAMPLE~%
- \(sub-path *xml-input-dir*\)
+ \(sub-path *xml-input-dir*\)~%
  \(system-described *xml-input-dir* nil\)~%~@
 :SEE-ALSO `*xml-output-dir*', `*xml-output-refs-name*', `*xml-output-refs-ext*',
 `*xml-input-dir*', `*xml-input-refs-name*', `*xml-input-refs-name-temp*',
@@ -336,177 +331,200 @@ SEE-ALSO `make-hash-table-sync'.~%▶▶▶")
 
 ;;; ==============================
 ;; dbc-time/date-localtime-utils.lisp
+;;; ==============================
 
 (typedoc 'nanosecond-range
-"A range to satisfy predicate `valid-nanosecond-date-p'.~%~@
-:SEE-ALSO `valid-nanosecond-date-or-error', `nanosecond-range', `second-minute-range',~@
-`hour-range', `day-range', `month-range', `year-range', `year-range-non-zero-unsigned'.~%▶▶▶")
- 
+"The range of nanoseconds for a timestamp.~%
+Objects of this type satisfy `valid-nanosecond-date-p'.~%
+:EXAMPLE~%~@
+\(valid-nanosecond-date-p 999999999\)~%
+\(null\(valid-nanosecond-date-p 1000000000\)\)~%
+:SEE-ALSO `second-minute-range', `hour-range', `day-range',
+`month-range', `year-range', `year-range-non-zero-unsigned'.~%▶▶▶")
+
 (typedoc 'second-minute-range
-"A range to satisfy predicate `valid-second-date-p'.~%~@
-:SEE-ALSO `valid-minute-date-or-error',`valid-second-date-or-error', `nanosecond-range',
-`second-minute-range', `hour-range', `day-range', `month-range', `year-range',~@
-`year-range-non-zero-unsigned'.~%▶▶▶")
+"The range of seconds/minutes for a timestamp.~%
+Objects of this type satisfy `valid-second-date-p' and `1valid-minute-date-p'.~%
+:EXAMPLE~%
+\(valid-minute-date-p 59\)~%
+\(valid-second-date-p 59\)~%
+\(null \(valid-second-date-p 60\)\)~%
+:SEE-ALSO `nanosecond-range', `second-minute-range', `hour-range', `day-range',
+`month-range', `year-range', `year-range-non-zero-unsigned'.~%▶▶▶")
 
 (typedoc 'hour-range
-"A range to satisfy predicate `valid-hour-date-p'.~%~@
-:SEE-ALSO  `valid-hour-date-or-error', `nanosecond-range', `second-minute-range',
-`hour-range', `day-range', `month-range', `year-range', `year-range-non-zero-unsigned'.~%▶▶▶")
+"The range of hours for a timestamp.~%
+Objects of this type satisfy `valid-hour-date-p'.~%
+:EXAMPLE~%~@
+(valid-hour-date-p 23)~%
+\(null \(valid-hour-date-p 24\)\)~%
+:SEE-ALSO `nanosecond-range', `second-minute-range', `day-range',
+`month-range', `year-range', `year-range-non-zero-unsigned'.~%▶▶▶")
 
 (typedoc 'day-range
-"A range to satisfy predicate `valid-day-date-p'.~%~@
-:SEE-ALSO `valid-day-date-or-error', `nanosecond-range', `second-minute-range', `hour-range', `day-range',~@
+"The range of days for a timestamp.~%
+Objects of this type satisfy `valid-day-date-p'.~%
+:EXAMPLE~%~@
+\(valid-day-date-p 31\)~%
+\(null \(valid-day-date-p 32\)\)~%
+:SEE-ALSO `nanosecond-range', `second-minute-range', `hour-range',
 `month-range', `year-range', `year-range-non-zero-unsigned'.~%▶▶▶")
 
 (typedoc 'month-range
-"A range to satisfy predicate `valid-month-date-p'.~%~@
-:SEE-ALSO `valid-month-date-or-error',`nanosecond-range', `second-minute-range', `hour-range', `day-range',~@
-`month-range', `year-range', `year-range-non-zero-unsigned'.~%▶▶▶")
+"The range of months for a timestamp.~%
+Objects of this type satisfy `valid-month-date-p'.~%
+:EXAMPLE~%~@
+\(valid-month-date-p 12\)~%
+\(null \(valid-month-date-p 13\)\)~%
+:SEE-ALSO `nanosecond-range', `second-minute-range', `hour-range', `day-range',
+`year-range', `year-range-non-zero-unsigned'.~%▶▶▶")
 
 (typedoc 'year-range
-"A range to satisfy predicate `valid-year-date-p'.~%~@
-:SEE-ALSO `valid-year-date-or-error', `nanosecond-range', `second-minute-range', `hour-range', `day-range',~@
+"The range of years for a timestamp.~%
+Objects of this type satisfy `valid-year-date-p'.~%
+:EXAMPLE~%~@
+(valid-year-date-p  1000000)
+(valid-year-date-p  -1000000)
+\(null \(valid-year-date-p  1000001\)\)~%
+\(null \(valid-year-date-p  -1000001\)\)~%
+:SEE-ALSO `nanosecond-range', `second-minute-range', `hour-range', `day-range',
 `month-range', `year-range', `year-range-non-zero-unsigned'.~%▶▶▶")
 
 (typedoc 'year-range-non-zero-unsigned
-"A range to satisfy predicate `valid-year-date-non-zero-unsigned-p'.~%~@
-:SEE-ALSO `valid-year-date-non-zero-unsigned-or-error', `nanosecond-range', `second-minute-range', `hour-range',~@
-`day-range', `month-range', `year-range', `year-range-non-zero-unsigned'.~%▶▶▶")
-
-(fundoc 'valid-timestamp-or-error
-"Returns T if the time values refer to a valid time, otherwise signals an
-`invalid-timestamp-component' condition.~%~@
+"The range of years \(as unsigned-byte's\)for a timestamp.~%
+Objects of this type satisfy `valid-year-date-non-zero-unsigned-p'.~%
 :EXAMPLE~%~@
-\(valid-timestamp-or-error 000001 0 0 0 29 2 2012\)~%
-\(valid-timestamp-or-error 000001 0 0 0 29 2 -1000000\)~%
-\(valid-timestamp-or-error 000001 0 0 0 29 2 1000000\)~%
-Following signal an error successfully:~%~@
-\(valid-timestamp-or-error 000001 0 0 0 28 2 -1000001\)~%
-\(valid-timestamp-or-error 000001 0 0 0 28 2 1000001\)~%
-\(valid-timestamp-or-error 000001 0 0 0 28 2 most-positive-fixnum\)~%
-\(valid-timestamp-or-error 000001 0 0 0 29 2 2011\)~%~@
-:SEE-ALSO `valid-timestamp-or-error', `valid-nanosecond-date-or-error', `valid-second-date-or-error',~@
-`valid-minute-date-or-error', `valid-hour-date-or-error', `valid-day-date-or-error', `valid-month-date-or-error',~@
- `valid-year-date-or-error', `valid-year-date-non-zero-unsigned-or-error'.~%▶▶▶")
-
-(fundoc 'valid-nanosecond-date-p
-"Return T if PUTATIVE-NANOSECOND-DATE is of type `nanosecond-range'.~%~@
-:EXAMPLE~%~@
-\(valid-nanosecond-date-p 999999999\)
-\(valid-nanosecond-date-p 1000000000\) ~%~@
-:SEE-ALSO `valid-nanosecond-or-error',`valid-second-date-p',`valid-hour-date-p',
-`valid-hour-date-p',`valid-day-date-p',`valid-month-date-p',
-`valid-year-date-p',`valid-year-date-non-zero-unsigned-p'.~%▶▶▶")
+\(valid-year-date-non-zero-unsigned-p  1000000\)
+(null (valid-year-date-non-zero-unsigned-p  -1000000))
+(null (valid-year-date-non-zero-unsigned-p  1000001))~%
+(null (valid-year-date-non-zero-unsigned-p  -1000001))~%
+:SEE-ALSO `nanosecond-range', `second-minute-range', `hour-range', `day-range',
+`month-range', `year-range', `year-range-non-zero-unsigned'.~%▶▶▶")
 
 (fundoc 'valid-second-date-p
-"Return T if PUTATIVE-SECOND-DATE is of type `second-minute-range'.~%~@
+"Return t if PUTATIVE-SECOND-DATE is of type `second-minute-range'.
 :EXAMPLE~%~@
-\(valid-second-date-p 59\)~%~@
-\(valid-second-date-p 61\)~%~@
-:SEE-ALSO `valid-second-date-or-error',`valid-nanosecond-date-p',`valid-second-date-p',`valid-hour-date-p',
-`valid-hour-date-p',`valid-day-date-p',`valid-month-date-p',
-`valid-year-date-p',`valid-year-date-non-zero-unsigned-p'.~%▶▶▶")
+\(valid-second-date-p 59\)
+\(null \(valid-second-date-p60\)\)~%
+:SEE-ALSO `valid-minute-date-p', `valid-hour-date-p', `valid-day-date-p',
+`valid-month-date-p', `valid-year-date-p'.~%▶▶▶")
 
-(fundoc 'valid-minute-date-p 
-"Return T if PUTATIVE-MINUTE-DATE is of type `second-minute-range'.~%~@
+(fundoc 'valid-minute-date-p
+"Return t if PUTATIVE-MINUTE-DATE is of type `minute-range'.
 :EXAMPLE~%~@
-\(valid-minute-date-p 59\)~%~@
-\(valid-minute-date-p 61\)~%~@
-:SEE-ALSO `valid-minute-date-or-error',`valid-nanosecond-date-p',`valid-second-date-p',`valid-hour-date-p',
-`valid-hour-date-p',`valid-day-date-p',`valid-month-date-p',
-`valid-year-date-p',`valid-year-date-non-zero-unsigned-p'.~%▶▶▶")
-  
+\(valid-minute-date-p 59\)~%
+\(null \(valid-minute-date-p 60\)\)~%$
+:SEE-ALSO `valid-second-date-p', `valid-hour-date-p', `valid-day-date-p',
+`valid-month-date-p', `valid-year-date-p'.~%▶▶▶")
+
 (fundoc 'valid-hour-date-p
-"Return T if PUTATIVE-HOUR-DATE is of type `hour-range'.~%~@
+"Return t if PUTATIVE-HOUR-DATE is of type `hour-range'.
 :EXAMPLE~%~@
-\(valid-hour-date-p 59\)~%~@
-\(valid-hour-date-p 61\)~%~@
-:SEE-ALSO `valid-hour-date-or-error',`valid-nanosecond-date-p',`valid-second-date-p',`valid-hour-date-p',
-`valid-hour-date-p',`valid-day-date-p',`valid-month-date-p',
-`valid-year-date-p',`valid-year-date-non-zero-unsigned-p'.~%▶▶▶")
-  
+(valid-hour-date-p 23)~%
+\(null \(valid-hour-date-p 24\)\)~%
+:SEE-ALSO `valid-second-date-p', `valid-minute-date-p', `valid-day-date-p',
+`valid-month-date-p', `valid-year-date-p'.~%▶▶▶")
+
 (fundoc 'valid-day-date-p
-"Return T if PUTATIVE-DAY-DATE is of type `day-range'.~%~@
+"Return t if PUTATIVE-DAY-DATE is of type `day-range'.
 :EXAMPLE~%~@
-\(valid-day-date-p 3\)~%~@
-\(valid-day-date-p 32\)~%~@
-:SEE-ALSO `valid-day-date-or-error', `valid-nanosecond-date-p',`valid-second-date-p',`valid-hour-date-p',
-`valid-hour-date-p',`valid-day-date-p',`valid-month-date-p',
-`valid-year-date-p',`valid-year-date-non-zero-unsigned-p'.~%▶▶▶")
- 
+\(valid-day-date-p 31\)~%
+:SEE-ALSO `valid-second-date-p', `valid-minute-date-p', `valid-hour-date-p',
+`valid-month-date-p', `valid-year-date-p'.~%▶▶▶")
+
 (fundoc 'valid-month-date-p
-"Return T if PUTATIVE-MONTH-DATE is of type `month-range'.~%~@
+"Return t if PUTATIVE-MONTH-DATE is of type `month-range'.
 :EXAMPLE~%~@
-\(valid-month-date-p 1\)~%~@
-\(valid-month-date-p 13\)~%~@
-:SEE-ALSO `valid-month-date-or-error',`valid-nanosecond-date-p',`valid-second-date-p',`valid-hour-date-p',
-`valid-hour-date-p',`valid-day-date-p',`valid-month-date-p',
-`valid-year-date-p',`valid-year-date-non-zero-unsigned-p'.~%▶▶▶")
+\(valid-month-date-p 12\)~%
+:SEE-ALSO `valid-second-date-p', `valid-minute-date-p', `valid-hour-date-p',
+`valid-year-date-p'.~%▶▶▶")
 
 (fundoc 'valid-year-date-p
-"Return T if PUTATIVE-YEAR-DATE is of type `year-range''.~%~@
+"Return t if PUTATIVE-YEAR-DATE is of type `year-range'.
 :EXAMPLE~%~@
-\(valid-year-date-p 1\)~%~@
-\(valid-year-date-p 1000001\)~%~@
-:SEE-ALSO `valid-year-date-or-error',`valid-nanosecond-date-p',`valid-second-date-p',`valid-hour-date-p',
-`valid-hour-date-p',`valid-day-date-p',`valid-month-date-p',
-`valid-year-date-p',`valid-year-date-non-zero-unsigned-p'.~%▶▶▶")
+\(valid-year-date-p 1970\)~%
+:SEE-ALSO `valid-second-date-p', `valid-minute-date-p', `valid-hour-date-p',
+`valid-day-date-p', `valid-month-date-p'.~%▶▶▶")
 
-(fundoc 'valid-year-date-non-zero-unsigned-p
-"Return T if PUTATIVE-YEAR-DATE is of type `year-range-non-zero-unsigned'.~%~@
+(fundoc 'valid-timestamp-or-error
+"Return T if the time values refer to a valid time, otherwise signals an
+`invalid-timestamp-component' condition.~%
+
+Following forms for Function will error instead of returning nil.
+The intent here is to account for certain anomalous behaviour exhibitted by the
+current implementation of local-time::valid-timestamp-p when YEAR is outside the
+integer range [-1000000,1000000] e.g.:~%
+ \(local-time::valid-timestamp-p 000001 0 0 0 28 2 most-positive-fixnum\)~% => T~%
+ \(local-time::valid-timestamp-p 000001 0 0 0 29 2 most-positive-fixnum\)~% => NIL~%
+ \(local-time:encode-timestamp 000001 0 0 0 29 2 most-positive-fixnum\)~% => error~%
+ \(local-time:encode-timestamp 000001 0 0 0 28 2 most-positive-fixnum\)~% => error~%
+ \(valid-timestamp-or-error 000001 0 0 0 29 2 2012\)~% => T~%
+ \(valid-timestamp-or-error 000001 0 0 0 29 2 -1000000\)~% => T~%
+ \(valid-timestamp-or-error 000001 0 0 0 29 2 1000000\)~% => T~%
+Following error successfully:~%
+ \(valid-timestamp-or-error 000001 0 0 0 28 2 -1000001\)~%
+ \(valid-timestamp-or-error 000001 0 0 0 28 2 1000001\)~%
+ \(valid-timestamp-or-error 000001 0 0 0 28 2 most-positive-fixnum\)~%
+ \(valid-timestamp-or-error 000001 0 0 0 29 2 2011\)~%
 :EXAMPLE~%~@
-\(valid-year-date-p -1000000\)~%~@
-\(valid-year-date-p 1000000\)~%~@
-\(valid-year-date-p 1000001\)~%~@
-:SEE-ALSO `valid-year-date-non-zero-unsigned-or-error',`valid-nanosecond-date-p',`valid-second-date-p',`valid-hour-date-p',
-`valid-hour-date-p',`valid-day-date-p',`valid-month-date-p',
-`valid-year-date-p',`valid-year-date-non-zero-unsigned-p'.~%▶▶▶")
+:SEE-ALSO .~%▶▶▶")
 
 (fundoc 'timestamp-year-only-p
-"Return the decoded time as multiple values:%~@
- NSEC, SS, MM, HH, DAY, MONTH, YEAR, DAY-OF-WEEK~%~@
+"Return the decoded time as multiple values:~%
+ nsec, ss, mm, hh, day, month, year, day-of-week~%
 :EXAMPLE~%~@
-\(timestamp-year-only-p \(make-timestamp-year-only 2012\)\)~%~@
-\(null \(timestamp-year-only-p \(make-timestamp-year-month-day 2012 1 1\)\)\)~%~@
-:SEE-ALSO `<XREF>'.~%▶▶▶")
+\(timestamp-year-only-p \(make-timestamp-year-only 2012\)\)~%
+\(null \(timestamp-year-only-p \(make-timestamp-year-month-day 2012 1 1\)\)\)~%
+:SEE-ALSO `make-timestamp-year-only'.~%▶▶▶")
 
 (fundoc 'timestamp-year-month-only-p
-"Return T if TIMESTAMP denotes only  the year and month portion of a timestamp per
-return value of `local-time:decode-timestamp'.~%~@
+"Are year and month the only values present for TIMESTAMP.~%
 :EXAMPLE~%~@
-\(timestamp-year-month-only-p \(make-timestamp-year-month-only 2012 3\)\)~%~@
-\(timestamp-year-month-only-p \(make-timestamp-year-only 2012\)\)~%~@
-\(null \(timestamp-year-month-only-p \(make-timestamp-year-month-day 2012 1 1\)\)\)~%~@
-:SEE-ALSO `timestamp-year-month-only-p'.~%▶▶▶")
+\(timestamp-year-month-only-p \(make-timestamp-year-month-only 2012 3\)\)~%
+\(timestamp-year-month-only-p \(make-timestamp-year-only 2012\)\)~%
+\(null \(timestamp-year-month-only-p \(make-timestamp-year-month-day 2012 1 1\)\)\)~%
+:SEE-ALSO `make-timestamp-year-month-only'.~%▶▶▶")
 
 (fundoc 'timestamp-year-month-day-p
-"Return T if TIMESTAMP denotes year month and day portion of a timestamp per
-return value of `local-time:decode-timestamp'.~%~@
+"Are year month and day  values present for TIMESTAMP.~%
 :EXAMPLE~%~@
-\(timestamp-year-month-day-p \(make-timestamp-year-month-day 2012 3 1\)\)~%~@
-\(null \(timestamp-year-month-day-p \(make-timestamp-year-only 2012\)\)\)~%~@
-\(null \(timestamp-year-month-day-p \(make-timestamp-year-month-only 2012 1\)\)\)~%~@
-\(null \(timestamp-year-month-only-p \(make-timestamp-year-month-day 2012 1 1\)\)\)~%~@
-:SEE-ALSO `timestamp-year-only-p'.~%▶▶▶")
+\(timestamp-year-month-day-p \(make-timestamp-year-month-day 2012 3 1\)\)~%
+\(null \(timestamp-year-month-day-p \(make-timestamp-year-only 2012\)\)\)~%
+\(null \(timestamp-year-month-day-p \(make-timestamp-year-month-only 2012 1\)\)\)~%
+\(null \(timestamp-year-month-only-p \(make-timestamp-year-month-day 2012 1 1\)\)\)~%
+:SEE-ALSO `make-timestamp-year-month-day'.~%▶▶▶")
 
 (fundoc 'make-timestamp-year-only
- "Return a timestamp with only YEAR component present.~%~@
+"Return a timestamp with only the YEAR value set.~%
+YEAR is of type `year-range'.~%
 :EXAMPLE~%~@
-\(make-timestamp-year-only 2000\)~%~@
-:SEE-ALSO `make-timestamp-year-only',`make-timestamp-year-month-only',`make-timestamp-year-month-day'.~%▶▶▶")
+\(local-time:timestamp-century \(make-timestamp-year-only 2012\)\)~%
+\(local-time:timestamp-century \(make-timestamp-year-only 1895\)\)~%
+\(local-time:timestamp-century \(make-timestamp-year-only 1\)\)~%
+\(local-time:timestamp-decade  \(make-timestamp-year-only 1895\)\)~%
+\(local-time:timestamp-decade  \(make-timestamp-year-only 2012\)\)~%
+\(local-time:timestamp-decade  \(make-timestamp-year-only 1\)\)~%
+\(local-time:timestamp-month   \(make-timestamp-year-only 2012\)\)~%
+\(local-time:timestamp-month   \(make-timestamp-year-only 1895\)\)~%
+\(local-time:timestamp-day     \(make-timestamp-year-only 1895\)\)~%
+:SEE-ALSO `timestamp-year-only-p'.~%▶▶▶")
 
 (fundoc 'make-timestamp-year-month-only
- "Return a timestamp with only YEAR and MONTH component present.~%~@
+"Return a timestamp with only the YEAR and MONTH value set.~%
+YEAR is of type `year-range'.~%
+MONTH is of type `month-range'.~%
 :EXAMPLE~%~@
-\(make-timestamp-year-month-only 2000 12\)~%~@
-:SEE-ALSO `make-timestamp-year-only',`make-timestamp-year-month-only',`make-timestamp-year-month-day'.~%▶▶▶")
+\(make-timestamp-year-month-only 2024 07\)~%
+:SEE-ALSO `timestamp-year-month-only-p'.~%▶▶▶")
 
 (fundoc 'make-timestamp-year-month-day
- "Return a timestamp with YEAR, MONTH, and DAY component present~%~@
+"Return a timestamp with the YEAR, MONTH, and DAY value set.~%
+YEAR is of type `year-range'.~%
+MONTH is of type `month-range'.~%
+DAY is of type `day-range'.~%
 :EXAMPLE~%~@
-(make-timestamp-year-month-day 2000 12 31)~%~@
-:SEE-ALSO `make-timestamp-year-only',`make-timestamp-year-month-only',`make-timestamp-year-month-day'.~%▶▶▶")
-
+\(make-timestamp-year-month-day 2024 07 31\)~%
+:SEE-ALSO `timestamp-year-month-day-p'.~%▶▶▶")
 
 
 ;;; ==============================
@@ -617,6 +635,200 @@ When W-VAR is already an instance of class SYSTEM-SUBDIR signal an error.~%~@
 `find-system-path', `system-subdir-init-w-var', `system-path-if',
 `*dbc-xml-dump-dir-name*'.~%▶▶▶")
 
+
+;;; ==============================
+;; /dbc-classes/dbc-class-regexps.lisp
+;;; ==============================
+
+(fundoc 'make-entity-regexp-subclass-allocation-if
+ "Verify the keyword arguments for `make-entity-regexp-subclass-allocation'.~%~@
+If any of the following constraints are not met signal an error.~%~@
+Args MATCH-ENTITY-CLASS, MATCH-ENTITY-DB, and MATCH-MATCHER-DB must each be
+non-nil.~%~@
+Arg MATCH-ENTITY-CLASS must a class which returns non-nil when given as the
+argument to `cl:find-class'.~%~@
+Args MATCH-ENTITY-DB and MATCH-MATCHER-DB must each satisfy `cl:hash-table-p'.~%~@
+:EXAMPLE~%~@
+ { ... <EXAMPLE> ... } ~%~@
+:SEE-ALSO `<XREF>'.~%▶▶▶")
+
+(fundoc 'make-entity-regexp-subclass-allocation
+"Instantiate an instance of the ENTITY-REGEXP-SUBCLASS-ALLOCATION class.~%
+Keyword MATCH-ENTITY-CLASS is the class-name of an isntance that matchers of a
+subclass of the ENTITY-REGEXP class will match.~%
+Keyword MATCH-ENTITY-DB is a symbol naming a special variable the value of
+which is a table mapping key/value pairs of the form:~%
+ match-container-uuid entity-instance-uuid~%~@
+Keyword MATCH-MATCHER-DB is a symbol naming a special variable the value of
+which is a table mapping  key/value pairs of the form:~%
+ match-container-uuid match-entity-matcher~%~@
+:EXAMPLE~%~@
+ { ... <EXAMPLE> ... } ~%~@
+:SEE-ALSO `<XREF>'.~%▶▶▶")
+
+(generic-doc #'regexp-match-entity-class
+ "Get the entity-class for OBJ.~%~
+:SEE-ALSO `entity-regexp-subclass-allocation', `entity-regexp',
+`regexp-match-entity-class', `regexp-match-entity-db',
+`regexp-match-matcher-db', `regexp-match-container-type',
+`regexp-match-container-uuid', `regexp-matcher'.~%▶▶▶~%")
+
+(generic-doc #'regexp-match-entity-db
+   "Get the entity-db lookup table for OBJ.~%~
+:SEE-ALSO `entity-regexp-subclass-allocation', `entity-regexp',
+`regexp-match-entity-class', `regexp-match-entity-db',
+`regexp-match-matcher-db', `regexp-match-container-type',
+`regexp-match-container-uuid', `regexp-matcher'.~%▶▶▶~%")
+
+(generic-doc #'regexp-match-matcher-db
+             "Return the matcher-db lookup table for OBJ.~%~
+:SEE-ALSO `entity-regexp-subclass-allocation', `entity-regexp',
+`regexp-match-entity-class', `regexp-match-entity-db',
+`regexp-match-matcher-db', `regexp-match-container-type',
+`regexp-match-container-uuid', `regexp-matcher'.~%▶▶▶~%")
+
+(generic-doc  #'regexp-match-container-type
+ "Get the container type for OBJ's matcher.~%~
+:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
+`regexp-match-entity-db', `regexp-match-matcher-db',
+`regexp-match-container-type', `regexp-match-container-uuid',
+`regexp-matcher'.~%▶▶▶~%")
+
+(generic-doc #'(setf regexp-match-container-type)
+ "Set the CONTAINER-TYPE for OBJ matcher.^~%~@
+:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
+`regexp-match-entity-db', `regexp-match-matcher-db',
+`regexp-match-container-type', `regexp-match-container-uuid',
+`regexp-matcher'.~%▶▶▶~%")
+
+(generic-doc #'regexp-match-container-uuid
+"Return the UUID of the container holding a matcher for OBJ.~%~
+:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
+`regexp-match-entity-db', `regexp-match-matcher-db',
+`regexp-match-container-type', `regexp-match-container-uuid',
+`regexp-matcher'.~%▶▶▶~%")
+
+(generic-doc #'(setf regexp-match-container-uuid)
+"Set the match-container-uuid for the container holding OBJ's matcher.~%~
+Specializers should take special care to ensure that they don't overwrite an existing UUID.~%~
+An OBJ's UUID should be treated as an immutable constant in almost all circumstances.~%~
+Therefor, the intent of this function is to mediate generation of UUID's run~%~
+:after initialize-instance and/or when an instance is obsoleted with~%~
+`cl:make-instances-obsolete'.~%~
+:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
+`regexp-match-entity-db', `regexp-match-matcher-db',
+`regexp-match-container-type', `regexp-match-container-uuid',
+`regexp-matcher'.~%▶▶▶~%")
+
+(generic-doc #'regexp-matcher
+"Get OBJ's matcher.~%~
+:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
+`regexp-match-entity-db', `regexp-match-matcher-db',
+`regexp-match-container-type', `regexp-match-container-uuid',
+`regexp-matcher'.~%▶▶▶~%")
+
+(generic-doc #'(setf regexp-matcher)
+"Set OBJ's matcher.~%~
+Speacializers should take care to verify that matcher can be contained of its~%~
+specified container type.~%
+:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
+`regexp-match-entity-db', `regexp-match-matcher-db',
+`regexp-match-container-type', `regexp-match-container-uuid',
+`regexp-matcher'.~%▶▶▶~%")
+
+(vardoc '*naf-entity-artist-regexp-db*
+"Lookup table containing regexps for nameforms identifying naf-entities of type `naf-entity-artist'.~%
+:SEE-ALSO 
+`naf-entity-artist-control-regexp', `naf-entity-artist-alt-regexp',
+`naf-entity-artist-regexp', `*category-entity-regexp-db*',
+`*theme-entity-regexp-db*', `*media-entity-regexp-db*',
+`*location-entity-regexp-db*', `*parsed-field-name-regexp-db*',
+`*naf-entity-artist-regexp-db*', `*naf-entity-person-regexp-db*',
+`*naf-entity-author-regexp-db*', `*naf-entity-brand-regexp-db*',
+`*naf-entity-publication-regexp-db*'.~%▶▶▶")
+
+(vardoc '*naf-entity-person-regexp-db*
+"Lookup table containing regexps for nameforms identifying naf-entities of type `naf-entity-person'.~%
+:SEE-ALSO `naf-entity-person-control-regexp', `naf-entity-person-alt-regexp',
+`*category-entity-regexp-db*', `*theme-entity-regexp-db*',
+`*media-entity-regexp-db*', `*location-entity-regexp-db*',
+`*parsed-field-name-regexp-db*', `*naf-entity-artist-regexp-db*',
+`*naf-entity-person-regexp-db*', `*naf-entity-author-regexp-db*',
+`*naf-entity-brand-regexp-db*', `*naf-entity-publication-regexp-db*'.~%▶▶▶")
+
+(vardoc '*naf-entity-author-regexp-db*
+"Lookup table containing regexps for nameforms identifying naf-entities of type `naf-entity-author'.~%
+:SEE-ALSO `naf-entity-author-control-regexp', `naf-entity-author-alt-regexp',
+`*category-entity-regexp-db*', `*theme-entity-regexp-db*',
+`*media-entity-regexp-db*', `*location-entity-regexp-db*',
+`*parsed-field-name-regexp-db*', `*naf-entity-artist-regexp-db*',
+`*naf-entity-person-regexp-db*', `*naf-entity-author-regexp-db*',
+`*naf-entity-brand-regexp-db*', `*naf-entity-publication-regexp-db*'.~%▶▶▶")
+
+(vardoc '*naf-entity-brand-regexp-db*
+"Lookup table containing regexps for nameforms identifying naf-entities of type `naf-entity-brand'.~%
+:SEE-ALSO`naf-entity-brand-control-regexp', `naf-entity-brand-alt-regexp',
+`*category-entity-regexp-db*', `*theme-entity-regexp-db*',
+`*media-entity-regexp-db*', `*location-entity-regexp-db*',
+`*parsed-field-name-regexp-db*', `*naf-entity-artist-regexp-db*',
+`*naf-entity-person-regexp-db*', `*naf-entity-author-regexp-db*',
+`*naf-entity-brand-regexp-db*', `*naf-entity-publication-regexp-db*'.~%▶▶▶")
+
+(vardoc '*naf-entity-publication-regexp-db*
+"Lookup table containing regexps for nameforms identifying naf-entities of type `naf-entity-publication'.~%
+:SEE-ALSO `naf-entity-publication-control-regexp', `naf-entity-publication-alt-regexp',
+`*category-entity-regexp-db*', `*theme-entity-regexp-db*',
+`*media-entity-regexp-db*', `*location-entity-regexp-db*',
+`*parsed-field-name-regexp-db*', `*naf-entity-artist-regexp-db*',
+`*naf-entity-person-regexp-db*', `*naf-entity-author-regexp-db*',
+`*naf-entity-brand-regexp-db*', `*naf-entity-publication-regexp-db*'.~%▶▶▶")
+
+(vardoc '*category-entity-regexp-db*
+"Lookup table containing regexps for nameforms identifying category entities.~%
+:SEE-ALSO `category-entity-regexp', `*category-entity-regexp-db*',
+`*theme-entity-regexp-db*', `*media-entity-regexp-db*',
+`*location-entity-regexp-db*', `*parsed-field-name-regexp-db*',
+`*naf-entity-artist-regexp-db*', `*naf-entity-person-regexp-db*',
+`*naf-entity-author-regexp-db*', `*naf-entity-brand-regexp-db*',
+`*naf-entity-publication-regexp-db*'.~%▶▶▶")
+
+(vardoc '*theme-entity-regexp-db*
+"Lookup table containing regexps for nameforms identifying naf-entities of type theme.~%
+:SEE-ALSO `theme-entity-regexp', `*category-entity-regexp-db*',
+`*theme-entity-regexp-db*', `*media-entity-regexp-db*',
+`*location-entity-regexp-db*', `*parsed-field-name-regexp-db*',
+`*naf-entity-artist-regexp-db*', `*naf-entity-person-regexp-db*',
+`*naf-entity-author-regexp-db*', `*naf-entity-brand-regexp-db*',
+`*naf-entity-publication-regexp-db*'.~%▶▶▶")
+
+(vardoc '*media-entity-regexp-db*
+"Lookup table containing regexps for nameforms identifying entities of type media.~%
+:SEE-ALSO `media-entity-regexp', `*category-entity-regexp-db*',
+`*theme-entity-regexp-db*', `*media-entity-regexp-db*',
+`*location-entity-regexp-db*', `*parsed-field-name-regexp-db*',
+`*naf-entity-artist-regexp-db*', `*naf-entity-person-regexp-db*',
+`*naf-entity-author-regexp-db*', `*naf-entity-brand-regexp-db*',
+`*naf-entity-publication-regexp-db*'.~%▶▶▶")
+
+(vardoc '*location-entity-regexp-db*
+"Lookup table containing regexps for nameforms identifying naf-entities of type `naf-entity-location'.~%
+:SEE-ALSO `location-entity-regexp', `*category-entity-regexp-db*',
+`*theme-entity-regexp-db*', `*media-entity-regexp-db*',
+`*location-entity-regexp-db*', `*parsed-field-name-regexp-db*',
+`*naf-entity-artist-regexp-db*', `*naf-entity-person-regexp-db*',
+`*naf-entity-author-regexp-db*', `*naf-entity-brand-regexp-db*',
+`*naf-entity-publication-regexp-db*'.~%▶▶▶")
+
+;; unused/deprecated
+(vardoc '*parsed-field-name-regexp-db*
+"DEPRECATED intent was to use a lookup of regexps for matching when parsing fiedl names.~%
+:SEE-ALSO `parsed-field-name-regexp', `*category-entity-regexp-db*',
+`*theme-entity-regexp-db*', `*media-entity-regexp-db*',
+`*location-entity-regexp-db*', `*parsed-field-name-regexp-db*',
+`*naf-entity-artist-regexp-db*', `*naf-entity-person-regexp-db*',
+`*naf-entity-author-regexp-db*', `*naf-entity-brand-regexp-db*',
+`*naf-entity-publication-regexp-db*'.~%▶▶▶")
+
 
 
 ;;; ==============================
@@ -645,7 +857,6 @@ For use with the macro `def-set-parsed-class-record-slot-value' which is used to
 define functions which map setf slot-value forms for use with `string-case:string-case'.~%~@
 :SEE-ALSO `make-parsed-class-field-slot-accessor-mapping', `*parsed-class-parse-table*'.~%▶▶▶")
 
-
 
 ;;; ==============================
 ;; dbc-specific/dbc-classes/dbc-class-parsed-slot-value-cleaning.lisp
@@ -653,7 +864,7 @@ define functions which map setf slot-value forms for use with `string-case:strin
 
 (fundoc 'parsed-class-slot-value-sort-unique-numeric-string-sequence
         "Return a copy of STRING-SEQUENCE  sorted according to TEST.~%
-STRING-SEQUENCE is a list or simple-vector.
+STRING-SEQUENCE is a list or simple-vector.~%
 When STRING-SEQUENCE has length zerop return it, else each element of
 string-sequence must be a non-empty string with 0 every character satsifying
 cl:digit-char-p such that the parse-integer representation of string is a unique
@@ -697,9 +908,9 @@ Following error succesfully:~%
 `parsed-class-slot-value-set-when-string/=', `parsed-class-set-slot-value-from-consed-pairs'.~%▶▶▶")
 
 (fundoc 'parsed-class-set-slot-value-from-consed-pairs
-"HASH-KEY-AND-NEW-VALUE is a list of conses of the form:
- (<HASH-KEY> . <NEW-VALUE>)
- BE CAREFUL! This function does not check `slot-exists-p' `slot-boundp' and
+"HASH-KEY-AND-NEW-VALUE is a list of conses of the form:~%
+ \(<HASH-KEY> . <NEW-VALUE>\)~%
+:NOTE !BE CAREFUL! This function does not check `slot-exists-p' `slot-boundp' and
 does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
@@ -716,10 +927,10 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-collect-string/=
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-collect-string/= 'parsed-inventory-record 'category-entity-0-coref \"Natural History\"\) ~%~@
 `parsed-class-slot-value-sort-unique-numeric-string-sequence',
@@ -740,10 +951,10 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-thereis-equalp
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-thereis-equalp 'parsed-inventory-record 'publication-date  '\(:YEAR 1932 :MONTH 12 :DAY NIL\)\) ~%~@
 `parsed-class-slot-value-sort-unique-numeric-string-sequence',
@@ -764,15 +975,12 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-thereis-equal
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-thereis-equal 'parsed-inventory-record 'publication-date  '\(:YEAR 1932 :MONTH 12 :DAY NIL\)\) ~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -788,15 +996,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-thereis-eql
 " <DOCSTR> ~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-thereis-eql 'parsed-inventory-record 'price-ask 140\) ~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -812,15 +1020,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-thereis-string=
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-thereis-string= 'parsed-inventory-record 'record-status-active \"0\"\) ~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -836,15 +1044,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-thereis-null
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
  \(parsed-class-slot-value-thereis-null 'parsed-inventory-record 'record-status-active\)~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -860,15 +1068,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-never-equalp
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
  \(parsed-class-slot-value-never-equalp 'parsed-inventory-record 'unit-weight  \"\"\)~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -884,15 +1092,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-never-eql
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-never-eql 'parsed-inventory-record 'unit-width  99\) ~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -908,15 +1116,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-never-string=
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-never-string= 'parsed-inventory-record 'inventory-number \"FOO\"\) ~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -932,15 +1140,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp'
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-never-null
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-never-null 'parsed-inventory-record 'inventory-number\) ~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -956,16 +1164,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
-
+`parsed-class-slot-value-thereis-equalp'
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-always-equalp
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-always-equalp 'parsed-inventory-record 'inventory-seller  :LAPP\) ~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -981,16 +1188,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
-
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-always-equal
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-always-equal 'parsed-inventory-record 'inventory-seller  :LAPP\) ~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1006,15 +1212,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-always-eql
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
  \(parsed-class-slot-value-always-eql 'parsed-inventory-record 'inventory-seller  :LAPP\)~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1030,24 +1236,24 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-always-null
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
-\(parsed-class-slot-value-always-null 'parsed-inventory-record 'job-complete\)
-\(parsed-class-slot-value-always-null  'parsed-inventory-record 'job-locked\)
-\(parsed-class-slot-value-always-null  'parsed-inventory-record 'job-id\)
-\(parsed-class-slot-value-always-null  'parsed-inventory-record 'job-complete\)
-\(parsed-class-slot-value-always-null  'parsed-inventory-record 'ignorable-keywords-type\)
-\(parsed-class-slot-value-always-null  'parsed-inventory-record 'ignorable-number\)
-\(parsed-class-slot-value-always-null  'parsed-inventory-record 'description-inventory-quote\)
-\(parsed-class-slot-value-always-null  'parsed-inventory-record 'inventory-can-repro\)
-\(parsed-class-slot-value-always-null  'parsed-inventory-record 'documentation-related\)
+\(parsed-class-slot-value-always-null 'parsed-inventory-record 'job-complete\)~%
+\(parsed-class-slot-value-always-null  'parsed-inventory-record 'job-locked\)~%
+\(parsed-class-slot-value-always-null  'parsed-inventory-record 'job-id\)~%
+\(parsed-class-slot-value-always-null  'parsed-inventory-record 'job-complete\)~%
+\(parsed-class-slot-value-always-null  'parsed-inventory-record 'ignorable-keywords-type\)~%
+\(parsed-class-slot-value-always-null  'parsed-inventory-record 'ignorable-number\)~%
+\(parsed-class-slot-value-always-null  'parsed-inventory-record 'description-inventory-quote\)~%
+\(parsed-class-slot-value-always-null  'parsed-inventory-record 'inventory-can-repro\)~%
+\(parsed-class-slot-value-always-null  'parsed-inventory-record 'documentation-related\)~%
 \(parsed-class-slot-value-always-null  'parsed-inventory-record 'price-ask-ebay\) ~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1063,15 +1269,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-always-string=
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-always-string= 'parsed-inventory-record 'price-sold-ebay \"0\"\) ~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1087,17 +1293,17 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-count-not-equalp
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-count-not-equalp 'parsed-inventory-record
                                           'description-inventory-condition
                                           '\(:RATING 9 :DESCRIPTION NIL\)\)~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1113,16 +1319,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
-
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
         
 (fundoc 'parsed-class-slot-value-count-not-equal
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-count-not-equal 'parsed-inventory-record 'category-entity-0-coref  \"Advertising and Graphics\"\) ~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1138,15 +1343,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-count-not-eql
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-count-not-eql 'parsed-inventory-record 'inventory-seller :LAPP\)~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1162,15 +1367,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-count-not-eql
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-count-not-eql 'parsed-inventory-record 'price-ask 150\) ~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1186,15 +1391,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-count-equal
-        "Count number of CLASS instances with SLOT value `cl:equal' to MATCH-VALUE~%
+        "Count number of CLASS instances with SLOT value `cl:equal' to MATCH-VALUE.~%
 :EXAMPLE~%~@
 \(parsed-class-slot-value-count-equal 'parsed-inventory-record 'category-entity-3-coref  \"Birds of New Guinea\"\) ~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1210,15 +1415,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-count-equalp
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-count-equalp 'parsed-inventory-record 'category-entity-3-coref  \"Birds of New Guinea\"\)~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1234,15 +1439,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-count-string/=
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-count-string/= 'parsed-inventory-record 'price-sold-ebay \"0\"\)o ~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1258,15 +1463,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-count-not-eql
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-count-not-eql 'parsed-inventory-record 'inventory-seller :LAPP \) ~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1282,15 +1487,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-count-eql
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-count-eql 'parsed-inventory-record 'unit-height 12\)~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1306,15 +1511,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-compare-count
 "<DOCSTR> ~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-compare-count 'parsed-inventory-record 'title-ebay\) ~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1330,15 +1535,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-compare-count
-" <DOCSTR> ~%~@
+"<DOCSTR> ~%~@
 :EXAMPLE~%~@
  \(parsed-class-slot-value-compare-count 'parsed-inventory-record 'title-ebay\) ~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1354,15 +1559,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-count-string= 
 "count numer of string= instances of CLASS with SLOT matching MATCH-STRING.~%~@
 :EXAMPLE~%~@
  \(parsed-class-slot-value-count-string= 'parsed-inventory-record 'record-status-active \"2\"\) ~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1378,15 +1583,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'~%▶▶▶.")
  
 (fundoc 'parsed-class-slot-value-count-null
         "Count numer of non-null instances of CLASS with SLOT.~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-count-null 'parsed-inventory-record 'title-ebay\) ~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1402,15 +1607,15 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-count-non-null
 "Count numer of non-null instances of CLASS with SLOT.~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-count-non-null 'parsed-inventory-record 'title-ebay\) ~%~@
-`parsed-class-slot-value-sort-unique-numeric-string-sequence',
-`parsed-class-slot-value-collect-slot-values-using-slot-list',
-`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp',
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1426,7 +1631,10 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-never-equal', `parsed-class-slot-value-never-equalp',
 `parsed-class-slot-value-thereis-null',`parsed-class-slot-value-thereis-string=',
 `parsed-class-slot-value-thereis-eql',`parsed-class-slot-value-thereis-equal',
-`parsed-class-slot-value-thereis-equalp'.~%▶▶▶.")
+`parsed-class-slot-value-thereis-equalp',
+`parsed-class-slot-value-sort-unique-numeric-string-sequence',
+`parsed-class-slot-value-collect-slot-values-using-slot-list',
+`parsed-class-slot-value-collect-all', `parsed-class-slot-value-collect-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-never-equal 
 "CLASS SLOT MATCH-VALUE~%~@
@@ -1450,9 +1658,9 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-thereis-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-collect-null
- "CLASS SLOT KEYWORD (SORT-OBJECT-IDS NIL)) ~%~@
+"CLASS SLOT KEYWORD \(SORT-OBJECT-IDS NIL\)\)~%~@
 :EXAMPLE~%~@
- \(parsed-class-slot-value-collect-null 'parsed-inventory-record 'title-ebay\) ~%~@
+\(parsed-class-slot-value-collect-null 'parsed-inventory-record 'title-ebay\) ~%~@
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1471,9 +1679,9 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-thereis-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-collect-non-null 
-"CLASS SLOT keyword (SORT-OBJECT-IDS NIL)~%~@
+"CLASS SLOT keyword \(SORT-OBJECT-IDS NIL\)~%~@
 :EXAMPLE~%~@
- \(parsed-class-slot-value-collect-non-null 'parsed-inventory-record 'category-entity-5-coref\)~%~@
+\(parsed-class-slot-value-collect-non-null 'parsed-inventory-record 'category-entity-5-coref\)~%~@
 \(parsed-class-slot-value-collect-non-null 'parsed-inventory-record 'inventory-bar-code\)~%~@
 \(parsed-class-slot-value-collect-non-null  'parsed-inventory-record 'taxon-entity-coref\)~%~@
 \(parsed-class-slot-value-collect-non-null  'parsed-inventory-record 'ignorable-notes\)~%~@
@@ -1500,7 +1708,7 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-thereis-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-collect-eql 
-" (CLASS SLOT MATCH-VALUE keyword (SORT-OBJECT-IDS NIL) ~%~@
+"\(CLASS SLOT MATCH-VALUE keyword \(SORT-OBJECT-IDS NIL\)~%~@
 :EXAMPLE~%~@
 \(parsed-class-slot-value-collect-eql 'parsed-inventory-record  'inventory-seller ::LAPP\)~%~@
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
@@ -1521,10 +1729,9 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-thereis-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-collect-equal
-"CLASS SLOT MATCH-VALUE KEYWORD (SORT-OBJECT-IDS NIL)~%~@
+"CLASS SLOT MATCH-VALUE KEYWORD \(SORT-OBJECT-IDS NIL\)~%~@
 :EXAMPLE~%~@
-\(parsed-class-slot-value-collect-equal 'parsed-inventory-record 'theme-entity-1-coref \"Scientific illustrations\"\)
- ~%~@
+\(parsed-class-slot-value-collect-equal 'parsed-inventory-record 'theme-entity-1-coref \"Scientific illustrations\"\)~%~@
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1543,9 +1750,9 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-thereis-equalp'.~%▶▶▶")
  
 (fundoc 'parsed-class-slot-value-collect-not-eql 
-"CLASS SLOT MATCH-VALUE ~%~@
+"CLASS SLOT MATCH-VALUE~%~@
 :EXAMPLE~%~@
-\(parsed-class-slot-value-collect-not-eql 'parsed-inventory-record 'unit-width  15\) ~%~@
+\(parsed-class-slot-value-collect-not-eql 'parsed-inventory-record 'unit-width  15\)~%~@
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1606,9 +1813,9 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-thereis-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-set-when-null 
-"CLASS SLOT REPLACEMENT-VALUE ~%~@
+"CLASS SLOT REPLACEMENT-VALUE~%~@
 :EXAMPLE~%~@
-(parsed-class-slot-value-set-when-null 'parsed-class-slot-value-set-when-equalp 'parsed-inventory-record ~%~@
+\(parsed-class-slot-value-set-when-null 'parsed-class-slot-value-set-when-equalp 'parsed-inventory-record\)~%~@
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1627,9 +1834,9 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 `parsed-class-slot-value-thereis-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-set-when-eql 
-"CLASS SLOT MATCH-VALUE REPLACEMENT-VALUE ~%~@
+"CLASS SLOT MATCH-VALUE REPLACEMENT-VALUE~%~@
 :EXAMPLE~%~@
-(parsed-class-slot-value-set-when-equalp 'parsed-inventory-record ~%~@
+\(parsed-class-slot-value-set-when-equalp 'parsed-inventory-record\)~%~@
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1650,7 +1857,7 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 (fundoc 'parsed-class-slot-value-set-when-equal
 "CLASS SLOT MATCH-VALUE REPLACEMENT-VALUE KEYWORD (RETURN-OBJECT-ID T) ~%~@
 :EXAMPLE~%~@
-(parsed-class-slot-value-set-when-equal 'parsed-inventory-record ~%~@
+(parsed-class-slot-value-set-when-equal 'parsed-inventory-record)~%~@
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1671,7 +1878,7 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 (fundoc 'parsed-class-slot-value-set-when-equalp
 "CLASS SLOT MATCH-VALUE REPLACEMENT-VALUE ~%~@
 :EXAMPLE~%~@
-(parsed-class-slot-value-set-when-equalp 'parsed-inventory-record ~%~@
+\(parsed-class-slot-value-set-when-equalp 'parsed-inventory-record\)~%~@
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1692,7 +1899,7 @@ does not discriminate wrt whether <NEW-VALUE> is appropriate for SLOT-NAME.
 (fundoc 'parsed-class-slot-value-set-when-string/=
 "CLASS SLOT MATCH-STRING REPLACEMENT-VALUE <DOCSTR> ~%~@
 :EXAMPLE~%~@
-(parsed-class-slot-value-set-when-string/= 'parsed-inventory-record ~%~@
+\(parsed-class-slot-value-set-when-string/= 'parsed-inventory-record\)~%~@
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
 `parsed-class-slot-value-collect-string/=',`parsed-class-set-slot-value-from-consed-pairs',
 `parsed-class-slot-value-compare-count',`parsed-class-slot-value-count-string/=',
@@ -1780,7 +1987,7 @@ Keyword :SORT-OBJECT-IDS when non-nil sorts the returned value.~%~@
 `parsed-class-slot-value-thereis-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-slot-value-collect-all
-"Collect all instances of CLASS matching slot SLOT. ~%~@
+"Collect all instances of CLASS matching slot SLOT.~%~@
 :EXAMPLE~%~@
  \(parsed-class-slot-value-collect-all 'parsed-inventory-record 'inventory-number\)~%~@
 :SEE-ALSO `parsed-class-slot-value-collect-string=',`parsed-class-slot-value-set-when-string=',
@@ -1842,8 +2049,8 @@ For each instance of CLASS return a list with the format:~%
 `parsed-class-slot-value-thereis-equalp'.~%▶▶▶")
 
 (fundoc 'parsed-class-set-slot-value-from-consed-pairs
-"HASH-KEY-AND-NEW-VALUE is a list of conses of the form:
- (<HASH-KEY> . <NEW-VALUE>)
+"HASH-KEY-AND-NEW-VALUE is a list of conses of the form:~%
+ \(<HASH-KEY> . <NEW-VALUE>\)~%
 :EXAMPLE~%~@
   { ... <EXAMPLE> ... } ~%~@
 :NOTE BE CAREFUL! This function does not check `slot-exists-p' `slot-boundp' and
@@ -1877,7 +2084,8 @@ CHAR-OR-CHAR-BAG is a character or a list of characters.~%
  \(parsed-class-slot-value-collect-split-bag 'parsed-artist-record
                                            'naf-entity-artist-display-name-coref
                                            `\(#\\| ,@\(remove #\\ \(symbol-value 'mon::*whitespace-chars*\)\)\)\)~%~@
-:SEE-ALSO `parsed-class-set-slot-value-from-consed-pairs', `parsed-class-set-slot-value-from-proper-list'.~%▶▶▶")
+:SEE-ALSO `parsed-class-set-slot-value-from-consed-pairs',
+`parsed-class-set-slot-value-from-proper-list'.~%▶▶▶")
 
 
 ;;; ==============================
@@ -2809,7 +3017,6 @@ variable `*parsed-data-current-row*'.~%~@
 `%ensure-dated-parsed-directory', `*parsed-data-current-state*', `*xml-input-dir*',
 `*xml-output-dir*'.~%▶▶▶")
 
-
 
 ;;; ==============================
 ;; dbc-specific/dbc-classes/dbc-class-parsed-convert.lisp
@@ -2938,7 +3145,6 @@ Following fail successfully:~%
 Following errors successfully:~%
  \(control-id-indexed-number-zero-padded-string
   \(make-instance 'parsed-inventory-record\)\)~%")
-
 
 (fundoc 'load-sax-parsed-xml-file-to-parsed-class-hash
 "Arg PARSED-CLASS a symbol designating the class we are parsing.~%~@
@@ -3080,14 +3286,13 @@ for the output file to be written. BASE-OUTPUT-DIRECTORY must satisfy
 PATHNAME-TYPE is a string designating a cl:pathname-type. Default is \"pctd\".~%~@
 :EXAMPLE~%
  { ... <EXAMPLE> ... } ~%~@
-:NOTE The intendended functionality is different from
-`write-sax-parsed-slots-to-file' in that where that function transforms an SQL
-xml file to a lispy file for immediate loading to a hash-table this function is
-intented to dump the contents of that hash-table subesequent to any editing of
-the slot-values of the parsed-class such that we can persist the changes to a
-lispy format and are not required to contintually parse the XML file and
-therefor do not need to synchornize any changes made to the hash-table back to
-the parsed-class' sql XML file.~%~@
+:NOTE The intendended functionality is different from `write-sax-parsed-slots-to-file'
+ in that where that function transforms an SQL xml file to a lispy file for
+immediate loading to a hash-table this function is intented to dump the contents
+of that hash-table subesequent to any editing of the slot-values of the
+parsed-class such that we can persist the changes to a lispy format and are not
+required to contintually parse the XML file and therefor do not need to
+synchornize any changes made to the hash-table back to the parsed-class' sql XML file.~%~@
 :SEE-ALSO `write-sax-parsed-class-hash-to-files', `write-sax-parsed-slots-to-file',
 `write-sax-parsed-xml-file', `parsed-inventory-record-xml-dump-file-and-hash',
 `load-sax-parsed-xml-file-to-parsed-class-hash'.~%▶▶▶")
@@ -3157,6 +3362,9 @@ returned function is `write-parsed-inventory-record-parse-table-to-file'.~%~@
 (fundoc 'load-parsed-class-default-file-to-hash-table
 "Load the contents of INPUT-FILE to HASH-TABLE populating its hash-values with
 instances of PARSED-CLASS using KEY-ACCESSOR as the hash-key.~%~@
+:NOTE !!! Currently this can corrupt an existing hash-table when loading a
+poorly formed \"pctd\" file e.g. if the is a missing paren or unclosed string.
+ to unwind to a cached value of :hash-table <TABLE> in the event of a bad file read.~%
 :EXAMPLE~%~@
  { ... <EXAMPLE> ... } ~%~@
 :SEE-ALSO `def-parsed-class-load-default-parsed-file-to-hash'.~%▶▶▶")
@@ -3306,7 +3514,6 @@ Keyword PREFIX is a character to format the pricing by.~%~@
 \(parsed-class-slot-value-format-delimited-string-list \(%get-inventory-record \"4729\"\) 'category-entity-precedence-list\)~%~@
 \(parsed-class-slot-value-format-delimited-string-list \(%get-inventory-record \"4729\"\) 'category-entity-precedence-list :delimiter #\\^\)~%~@
 :SEE-ALSO `<XREF>'.~%▶▶▶")
-
 
 
 ;;; ==============================
@@ -3474,6 +3681,66 @@ parsed-class-slot-value-equal the return value is never true:~%
 
 
 ;;; ==============================
+;;   dbc-classes/dbc-class-parsed.lisp
+;;; ==============================
+
+(generic-doc #'parsed-class-parse-table
+"Return the parsed-class-parse-table associated with OBJECT.~%
+:EXAMPLE~%~@
+ \(parsed-class-parse-table 'parsed-inventory-record\)~%~@
+:SEE-ALSO `parsed-class', `parsed-naf-entity', `initargs-of-parsed-class',
+`parsed-class-slot-dispatch-function', `parsed-class-parse-table',
+`field-to-accessor-table', `accessor-to-field-table', `parsed-class-mapped',
+`accessor-to-field-mapping', `field-to-accessor-mapping',
+`fields-of-parsed-class', `accessors-of-parsed-class',
+`parsed-class-parse-table-lookup', `parsed-class-parse-table-lookup-slot-value',
+`%parsed-class-subtype-check', `%parsed-class-slot-exists-for-parsed-class-check',
+`parsed-artist-record', `parsed-author-record', `parsed-person-record',
+`parsed-brand-record', `parsed-publication-record'.~%")
+
+(generic-doc #'parsed-class-slot-dispatch-function
+"Return the parsed-class-slot-dispatch-function associated with OBJECT.~%~@
+:EXAMPLE~%~@
+ \(parsed-class-slot-dispatch-function 'parsed-inventory-record\)~%~@
+ \(parsed-class-slot-dispatch-function \(make-instance 'parsed-inventory-record\)\)~%
+:SEE-ALSO `parsed-class', `parsed-naf-entity', `initargs-of-parsed-class',
+`parsed-class-slot-dispatch-function', `parsed-class-parse-table',
+`field-to-accessor-table', `accessor-to-field-table', `parsed-class-mapped',
+`accessor-to-field-mapping', `field-to-accessor-mapping',
+`fields-of-parsed-class', `accessors-of-parsed-class',
+`parsed-class-parse-table-lookup', `parsed-class-parse-table-lookup-slot-value',
+`%parsed-class-subtype-check', `%parsed-class-slot-exists-for-parsed-class-check',
+`parsed-artist-record', `parsed-author-record', `parsed-person-record',
+`parsed-brand-record', `parsed-publication-record'.~%")
+
+(generic-doc #'initargs-of-parsed-class
+"Return the initargs-of-parsed-class associated with OBJECT.~%~@
+:EXAMPLE~%~@
+ \(initargs-of-parsed-class 'parsed-inventory-record\)~%~@
+:SEE-ALSO `parsed-class', `parsed-naf-entity', `initargs-of-parsed-class',
+`parsed-class-slot-dispatch-function', `parsed-class-parse-table',
+`field-to-accessor-table', `accessor-to-field-table', `parsed-class-mapped',
+`accessor-to-field-mapping', `field-to-accessor-mapping',
+`fields-of-parsed-class', `accessors-of-parsed-class',
+`parsed-class-parse-table-lookup', `parsed-class-parse-table-lookup-slot-value',
+`%parsed-class-subtype-check', `%parsed-class-slot-exists-for-parsed-class-check',
+`parsed-artist-record', `parsed-author-record', `parsed-person-record',
+`parsed-brand-record', `parsed-publication-record'.~%")
+
+(fundoc '%parsed-class-record-setf-slot-value-forms
+"Return the setf'able slot value forms for PARSED-CLASS-LOOKUP.~%~@
+:EXAMPLE~%~@
+ \(%parsed-class-record-setf-slot-value-forms 'parsed-inventory-record\)~%~@
+:SEE-ALSO `initargs-of-parsed-class', `parsed-class-slot-dispatch-function',
+`parsed-class-parse-table', `field-to-accessor-table',
+`accessor-to-field-table', `parsed-class-mapped', `accessor-to-field-mapping',
+`field-to-accessor-mapping', `fields-of-parsed-class',
+`accessors-of-parsed-class', `parsed-class-parse-table-lookup',
+`parsed-class-parse-table-lookup-slot-value', `%parsed-class-subtype-check',
+`%parsed-class-slot-exists-for-parsed-class-check'.~%▶▶▶")
+
+
+;;; ==============================
 ;; dbc-specific/dbc-classes/dbc-class-parsed-field-slot-mapping.lisp
 ;;; ==============================
 
@@ -3489,7 +3756,7 @@ Signal an error if PARSED-CLASS-SYMBOL is not present in hash-table.~%
 :SEE-ALSO `accessor-to-field-mapping', `field-to-accessor-mapping',
 `field-to-accessor-table', `accessor-to-field-table', `parsed-class-mapped',
 `make-parsed-class-field-slot-accessor-mapping',
-`def-set-parsed-class-record-slot-value'.~%")
+`def-set-parsed-class-record-slot-value'.~%▶▶▶")
 
 (generic-doc #'%parsed-class-subtype-check
 "Ensure arg PARSED-CLASS-OBJECT dereferences to a subclass of class `parsed-class'.~%~@
@@ -3743,7 +4010,6 @@ Following error succesfully:~%
                                              \"99m\"
                                              :with-string-integer-coercion t\)~%")
 
-
 (generic-doc #'field-to-accessor-table
 "Return a hash-table mapping original SQL field strings to accessors of OBJECT's class.~%~@
 :SEE-ALSO `accessor-to-field-mapping', `field-to-accessor-mapping',
@@ -3950,12 +4216,10 @@ FIELD VALUE is the corresponding cdr of the consed key/value pair.~%~@
 `field-to-accessor-table', `accessor-to-field-table', `parsed-class-mapped',
 `make-parsed-class-field-slot-accessor-mapping'.~%▶▶▶")
 
-
 
 ;;; ==============================
 ;;; dbc-specific/dbc-classes/dbc-class-uuid-vars.lisp
 ;;; ==============================
-
 
 (vardoc '*system-object-uuid-base-namespace*
 "The base UUID namespace for all other uuid namespaces in the dbc system.~%~@
@@ -3974,7 +4238,6 @@ FIELD VALUE is the corresponding cdr of the consed key/value pair.~%~@
 `*control-id-author-namespace*', `*control-id-person-namespace*',
 `*control-id-publication-namespace*'.~%▶▶▶")
 
-
 (let ((vardoc "The UUID namespace for objects of type ~A in the dbc system.~%
 :EXAMPLE  \(system-identity-uuid ~(~S~)\)~%
 :SEE-ALSO `*system-object-uuid-base-namespace*', `*control-id-inventory-namespace*',
@@ -3991,8 +4254,8 @@ FIELD VALUE is the corresponding cdr of the consed key/value pair.~%~@
 `*control-id-author-namespace*', `*control-id-person-namespace*',
 `*control-id-publication-namespace*'.~%▶▶▶")
       (var-names (list '*control-id-inventory-namespace*
-                      '*control-id-inventory-publication-namespace*
-                      '*control-id-inventory-sales-order-namespace*
+                       '*control-id-inventory-publication-namespace*
+                       '*control-id-inventory-sales-order-namespace*
                        '*control-id-inventory-sales-sold-namespace*
                        '*control-id-inventory-sales-sold-in-store-namespace*
                        '*control-id-documentation-namespace*
@@ -4042,7 +4305,7 @@ respective uuid-hash-tables.~%
 ;;; ==============================
 
 (generic-doc #'system-identity-uuid-bit-vector
-"Get SYSTEM-OBJECTs uuid namespace representation as an object of type `unicly::uuid-bit-vector-128'.")
+"Get SYSTEM-OBJECTs uuid namespace representation as an object of type `unicly::uuid-bit-vector-128'.~%")
 
 (generic-doc #'(setf system-identity-uuid-bit-vector)
  "Set SYS-OBJECT's UUID namespace bit-vector representation with BV.~%~@
@@ -4052,11 +4315,11 @@ Do not call methods directly use the interface functions:~%~@
 :SEE-ALSO `system-identity', `system-identity-parent-uuid',
 `system-identity-uuid', `system-identity-uuid-byte-array',
 `system-identity-uuid-bit-vector', `system-identity-uuid-integer',
-`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶")
+`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶~%")
 
 (generic-doc #'system-identity-uuid-integer
  "Get SYS-OBJECT's system-identity-uuid-integer slot-value.~%~@
-When `cl:slot-boundp' return value is an object of type `unicly::uuid-integer-128', else nil.")
+When `cl:slot-boundp' return value is an object of type `unicly::uuid-integer-128', else nil.~%")
 
 (generic-doc #'(setf system-identity-uuid-integer)
 "Set SYS-OBJECT's 128bit integer representation with UUID-INTEGER-128.~%~@
@@ -4065,11 +4328,11 @@ Do not call methods directly use the interface functions:~%~@
 :SEE-ALSO `system-identity', `system-identity-parent-uuid',
 `system-identity-uuid', `system-identity-uuid-byte-array',
 `system-identity-uuid-bit-vector', `system-identity-uuid-integer',
-`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶")
+`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶~%")
 
 (generic-doc #'system-identity-uuid-string-36
 "Get SYS-OBJECT's system-identity-uuid-string-36 slot-value.
-When `cl:slot-boundp' return value is an object of type `unicly::uuid-hex-string-36', else nil.")
+When `cl:slot-boundp' return value is an object of type `unicly::uuid-hex-string-36', else nil.~%")
 
 (generic-doc #'(setf system-identity-uuid-string-36)
  "Set SYS-OBJECT's `unicly::uuid-hex-string-36' representation with UUID-HEX-STRING-36.~%~@
@@ -4078,14 +4341,14 @@ Do not call methods directly use the interface functions:~%
 :SEE-ALSO `system-identity', `system-identity-parent-uuid',
 `system-identity-uuid', `system-identity-uuid-byte-array',
 `system-identity-uuid-bit-vector', `system-identity-uuid-integer',
-`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶")
+`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶~%")
 
 (generic-doc #'system-identity-uuid-version
  "Get SYS-OBJECT's system-identity-uuid-version slot-value.~%~@
-When `cl:slot-boundp' return value is an object of type `unicly::uuid-version-int', else nil.")
+When `cl:slot-boundp' return value is an object of type `unicly::uuid-version-int', else nil.~%")
 
 (generic-doc #'system-identity-parent-uuid
- "Return the base-namespace UUID for SYS-OBJECT'S system-identity-parent-uuid slot-value.")
+ "Return the base-namespace UUID for SYS-OBJECT'S system-identity-parent-uuid slot-value.~%")
 
 (generic-doc #'(setf system-identity-parent-uuid)
  "Set UUID as SYS-OBJECT's system-identity-parent-uuid slot-value.
@@ -4094,10 +4357,10 @@ Do not call methods directly use the interface functions:~%
 :SEE-ALSO `system-identity', `system-identity-parent-uuid',
 `system-identity-uuid', `system-identity-uuid-byte-array',
 `system-identity-uuid-bit-vector', `system-identity-uuid-integer',
-`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶")
+`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶~%")
 
 (generic-doc #'system-identity-uuid-byte-array
- "Set SYS-OBJECT's system-identity-uuid-byte-array slot-value.")
+ "Set SYS-OBJECT's system-identity-uuid-byte-array slot-value.~%")
 
 (generic-doc #'(setf system-identity-uuid-byte-array)
  "Set SYS-OBJECT's UUID namespace byte-array representation with BYTE-ARRAY.~%~@
@@ -4107,7 +4370,7 @@ Do not call methods directly use the interface functions:~%
 :SEE-ALSO `system-identity', `system-identity-parent-uuid',
 `system-identity-uuid', `system-identity-uuid-byte-array',
 `system-identity-uuid-bit-vector', `system-identity-uuid-integer',
-`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶")
+`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶~%")
 
 (generic-doc #'(setf system-identity-uuid-version)
 "Set SYS-OBJECT's uuid version with BV-OR-STRING.~%~@
@@ -4118,10 +4381,10 @@ Do not call methods directly use the interface functions:~%
 :SEE-ALSO `system-identity', `system-identity-parent-uuid',
 `system-identity-uuid', `system-identity-uuid-byte-array',
 `system-identity-uuid-bit-vector', `system-identity-uuid-integer',
-`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶")
+`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶~%")
 
 (generic-doc #'system-identity
- "Get SYS-OBJECT's system-identity slot-value.")
+ "Get SYS-OBJECT's system-identity slot-value.~%")
 
 (generic-doc #'(setf system-identity)
  "Set SYS-OBJECT's system-identity slot-value to IDENTITY.~%~@
@@ -4130,10 +4393,10 @@ Do not call methods directly use the interface functions:~%
 :SEE-ALSO `system-identity', `system-identity-parent-uuid',
 `system-identity-uuid', `system-identity-uuid-byte-array',
 `system-identity-uuid-bit-vector', `system-identity-uuid-integer',
-`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶")
+`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶~%")
 
 (generic-doc #'system-identity-uuid
- "Get SYS-OBJECT's system-identity-uuid slot-value.")
+ "Get SYS-OBJECT's system-identity-uuid slot-value.~%")
 
 (generic-doc #'(setf system-identity-uuid)
  "Set UUID namespace for SYS-OBJECT with COERCABLE-UUID.~%~@
@@ -4144,7 +4407,7 @@ Do not call methods directly use the interface functions:~%
 :SEE-ALSO `system-identity', `system-identity-parent-uuid',
 `system-identity-uuid', `system-identity-uuid-byte-array',
 `system-identity-uuid-bit-vector', `system-identity-uuid-integer',
-`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶")
+`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶~%")
 
 (generic-doc #'system-object-uuid-description
  "Print slot-values of SYS-OBJECT to STREAM.~%~@
@@ -4167,29 +4430,52 @@ The :VERBOSE t form is used with `cl:describe' method, the nil form is used with
 `system-identity', `system-identity-parent-uuid',
 `system-identity-uuid', `system-identity-uuid-byte-array',
 `system-identity-uuid-bit-vector', `system-identity-uuid-integer',
-`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶")
+`system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶~%")
 
+
+;;; ==============================
+;;; dbc-specific/dbc-classes/dbc-class-control-id.lisp
+;;; ==============================
+
+(fundoc 'dbc-class-with-slot-value-null-error
+"Generalized procedure for signaling dbc-class related errors when cl:slot-value is null.~%~@
+Arg OBJECT is an instance of class-object CLASS.~%~@
+Arg slot is a symbol designating the unbound slot of OBJECT.~%~@
+:EXAMPLE~%
+ \(let \(\(obj \(make-instance 'control-id-type\)\)\)
+   \(dbc-class-with-slot-value-null-error  obj 'control-id-of-class-type\)\)~%
+:SEE-ALSO `dbc-class-with-slot-unbound-error'.~%▶▶▶")
+
+(fundoc 'dbc-class-with-slot-unbound-error
+"Generalized procedure for signaling dbc-related `cl:slot-unbound' errors.~%~@
+Arg CLASS is a class-object as per return return value of either `cl:find-class'/`cl:class-of'.~%~@
+Arg OBJECT is an instance of class-object CLASS.~%~@
+Arg slot is a symbol designating the unbound slot of OBJECT.~%~@
+:EXAMPLE~%
+ \(let* \(\(obj \(make-instance 'control-id-type\)\)
+        \(obj-class \(class-of obj\)\)\)
+   \(dbc-class-with-slot-unbound-error obj-class obj 'control-id-of-class-type\)\)~%~@
+:SEE-ALSO `dbc-class-with-slot-value-null-error'.~%▶▶▶")
 
 
 ;;; ==============================
 ;;; dbc-specific/dbc-classes/dbc-class-image-path-convert.lisp
 ;;; ==============================
 
-
 (vardoc '*dbc-item-number-path-source-destination-vector*
         "Vector mapping item-numbers to to their original source paths and their
   directory under pathname named by `*dbc-base-item-number-image-pathname*'.
 When CL:BOUNDP the vector is 1 indexed such that the object it indexes
-corresponds to an item number e.g.:
- (aref *dbc-item-number-path-source-destination-vector* 8999) maps to item-number \"8999\".
+corresponds to an item number e.g. following maps to item-number \"8999\":~%
+ \(aref *dbc-item-number-path-source-destination-vector* 8999\)~%
 :SEE-ALSO ``*dbc-wild-httpd-synced-item-number-image-pathname-list*',
-`*dbc-base-httpd-synced-item-number-image-pathname*', `parsed-class-slot-value-format-image-pathnames',
+`*dbc-base-httpd-synced-item-number-image-pathname*',
+`parsed-class-slot-value-format-image-pathnames',
 `parsed-inventory-record-image-file-pathname-get',
 `%parsed-inventory-record-image-file-pathname-match',
 `%parsed-inventory-record-image-file-pathname-valid-p-or-error',
 `*parsed-inventory-record-image-pathname-regex*',
-`inventory-record-image-jpg-probe-all',
-`inventory-record-image-jpg-probe',
+`inventory-record-image-jpg-probe-all', `inventory-record-image-jpg-probe',
 `inventory-record-image-directory-probe',
 `parsed-inventory-record-image-file-pathnames-update'.~%▶▶▶")
 
@@ -4198,7 +4484,7 @@ corresponds to an item number e.g.:
 An error is signaled if not.~%~@
 :EXAMPLE~%
  (%ensure-dbc-base-http-synced-item-number-image-pathname-exists
-  *dbc-base-httpd-synced-item-number-image-pathname*)
+  *dbc-base-httpd-synced-item-number-image-pathname*)~%
 :SEE-ALSO `%make-httpd-synced-item-number-image-wild-pathname-list',
 `parsed-inventory-record-image-file-pathname-get',
 `%parsed-inventory-record-image-file-pathname-match',
@@ -4239,7 +4525,7 @@ OBJECT is an instance of class parsed-inventory-record, a positive-integer, or
 the string equivalent of one.~%
 BASE-IMAGE-DIRECTORY-PATHNAME is a pathname identifying a directory to search
 for images beneath. Specializing methods default to `*dbc-base-item-number-image-pathname*'.~%~@
-:SEE-ALSO `inventory-record-image-jpg-probe'.~%▶▶▶")
+:SEE-ALSO `inventory-record-image-jpg-probe'.~%▶▶▶~%")
 
 (method-doc #'inventory-record-image-directory-probe nil '(integer)
             "~%:EXAMPLE~%
@@ -4275,7 +4561,7 @@ PATHNAME-RETURN-STYLE indicates how pathnames should be returned if a match is f
  #P\"<PARENT-DIR>/<FILENAME>.jpg\"~%~@
 :file-pathname returns a pathanme with the format:
  #P\"<FILENAME>.jpg\"~%~@
-:SEE-ALSO `inventory-record-image-directory-probe'.~%▶▶▶")
+:SEE-ALSO `inventory-record-image-directory-probe'.~%▶▶▶~%")
 
 (method-doc #'inventory-record-image-jpg-probe nil '(string)
 "~%:EXAMPLE~%
@@ -4514,7 +4800,7 @@ HASH-KEY is a string for `parsed-class-parse-table' possibly mapping to an insta
    collect \(find-method #'parsed-inventory-record-parse-table-lookup-slot-value nil `\(\(eql ,fun\) string\)\)\)~%~@
 :SEE-ALSO `parsed-inventory-record-parse-table-lookup',
 `parsed-class-parse-table', `parsed-class-parse-table-lookup',
-`parsed-class-parse-table-lookup-slot-value'.~%▶▶▶")
+`parsed-class-parse-table-lookup-slot-value'.~%▶▶▶~%")
 
 (fundoc 'parsed-inventory-record-parse-table-lookup
 "Find HASH-KEY in the `parsed-class-parse-table' for class `parsed-inventory-record'.~%~@
@@ -4615,7 +4901,7 @@ BASE-IMAGE-DIRECTORY-PATHNAME defaults to value of *dbc-base-item-number-image-p
 `inventory-record-image-directory-probe'.~%▶▶▶")
 
 (fundoc '%parsed-inventory-record-image-file-pathname-match
-"Return consed pair If PATHNAME is a valid format for instances of class `parsed-inventory-record'.
+"Return consed pair If PATHNAME is a valid format for instances of class `parsed-inventory-record'.~%
 PATHNAME should name an pathname element as per the IMAGE-FILE-PATHNAMES
 slot-value and should satisfy `cl:pathnamep', an error is signaled if not.
 Return a consed pair withe one of the following forms:~%
@@ -4647,35 +4933,36 @@ Return a consed pair withe one of the following forms:~%
 
 (fundoc 'parsed-inventory-record-image-file-pathname-get
           "Return keyword prefixed PATHNAME(s) for slot-value instances of class
-`parsed-inventory-record' with HASH-KEY. Return values are as per
-`%parsed-inventory-record-image-file-pathname-match' such that keyword IMAGE-TYPE argument
-is on of the following:~%
+`parsed-inventory-record' with HASH-KEY.~%
+Return values are as per `%parsed-inventory-record-image-file-pathname-match'
+such that keyword IMAGE-TYPE argument is on of the following:~%
  :ALL :FULL :SMALL  :HEADER :MEDIUM :ZOOM   :FLASH  :FLASH-C :FLASH-S T~%
-When IMAGE-TYPE is either T or :ALL return as an alist of keywords and values for all images:
-for a class matching the follwing:~%
- (:full    <RECORD-NUM>.jpg
+When IMAGE-TYPE is either T or :ALL return as an alist of keywords and values
+for all images: for a class matching the follwing:~%
+ \(:full    <RECORD-NUM>.jpg
   :small   <RECORD-NUM>-s.jpg
   :medium  <RECORD-NUM>-m.jpg  
   :zoom    <RECORD-NUM>-z.jpg
   :flash   <RECORD-NUM>-f.jpg
   :flash-c <RECORD-NUM>-fc.jpg
   :flash-s <RECORD-NUM>-fs.jpg
-  :header  <RECORD-NUM>-h.jpg)~%
+  :header  <RECORD-NUM>-h.jpg\)~%
 When argument for keyword IMAGE-TYPE one of the other valid arguments return an
 alist comprised of a single key/value pair.~%
-In each case, in addition to the first alist value returned 3 more values are returned as by `cl:values':~%
- - 1st value is an alist of KEY/VALUE pairs
- - 2nd value is a list of all pathnames for instances of the class found.
- - 3rd value is the hash-key used to locate the insace
+In each case, in addition to the first alist value returned 3 more values are
+returned as by `cl:values':~%
+ - 1st value is an alist of KEY/VALUE pairs.~%
+ - 2nd value is a list of all pathnames for instances of the class found.~%
+ - 3rd value is the hash-key used to locate the insace.~%
  - 4th value is the object identifed by HASH-KEY.~%
-\(parsed-inventory-record-image-file-pathname-get \"9205\"\)
-\(parsed-inventory-record-image-file-pathname-get \"9205\"\ :image-type :all\)
-\(parsed-inventory-record-image-file-pathname-get \"9205\" :image-type :full\)
-\(parsed-inventory-record-image-file-pathname-get \"9205\" :image-type :small\)
-\(parsed-inventory-record-image-file-pathname-get \"9205\" :image-type :medium\)
-\(parsed-inventory-record-image-file-pathname-get \"9205\" :image-type :zoom\)
-\(parsed-inventory-record-image-file-pathname-get \"9205\" :image-type :flash\)
-\(parsed-inventory-record-image-file-pathname-get \"9205\" :image-type :flash-c\)
+\(parsed-inventory-record-image-file-pathname-get \"9205\"\)~%
+\(parsed-inventory-record-image-file-pathname-get \"9205\"\ :image-type :all\)~%
+\(parsed-inventory-record-image-file-pathname-get \"9205\" :image-type :full\)~%
+\(parsed-inventory-record-image-file-pathname-get \"9205\" :image-type :small\)~%
+\(parsed-inventory-record-image-file-pathname-get \"9205\" :image-type :medium\)~%
+\(parsed-inventory-record-image-file-pathname-get \"9205\" :image-type :zoom\)~%
+\(parsed-inventory-record-image-file-pathname-get \"9205\" :image-type :flash\)~%
+\(parsed-inventory-record-image-file-pathname-get \"9205\" :image-type :flash-c\)~%
 \(parsed-inventory-record-image-file-pathname-get \"9205\" :image-type :flash-s\)~%
 :SEE-ALSO `parsed-class-slot-value-format-image-pathnames',
 `parsed-inventory-record-image-file-pathname-get',
@@ -4685,7 +4972,6 @@ In each case, in addition to the first alist value returned 3 more values are re
 `inventory-record-image-jpg-probe-all',
 `inventory-record-image-jpg-probe',
 `inventory-record-image-directory-probe'.~%▶▶▶")
-
 
 (fundoc 'parsed-inventory-record-null-prototype
  "Return an instance of parsed-inventory-record with all slot-values null.~%
@@ -4706,7 +4992,7 @@ PRINT-UNBOUND are as per `dbc::write-sax-parsed-slots-to-file'.~%~@
 (fundoc 'parsed-inventory-record-publication-date-lookup-get-year 
 "Get value of :YEAR for PUBLICATION-DATE slot for an instance of class
 `parsed-inventory-record' with HASH-KEY.~%~@
-Return as by VALUES.~%~@
+Return as by `cl:values'.~%~@
 :EXAMPLE~%~@
  \(parsed-inventory-record-publication-date-lookup-get-year 10491 :with-string-integer-coercion t\)
  \(parsed-inventory-record-publication-date-lookup-get-year \"10491\"\)~%~@
@@ -4720,7 +5006,7 @@ Return as by VALUES.~%~@
 (fundoc 'parsed-inventory-record-publication-date-lookup-get-month
 "Get value of :MONTH for PUBLICATION-DATE slot for an instance of class
 `parsed-inventory-record' with HASH-KEY.~%~@
-Return as by VALUES.~%~@
+Return as by `cl:values'.~%~@
 :EXAMPLE~%~@
  \(parsed-inventory-record-publication-date-lookup-get-month 10491 :with-string-integer-coercion t\)
  \(parsed-inventory-record-publication-date-lookup-get-month \"10491\"\) ~%~@
@@ -4734,7 +5020,7 @@ Return as by VALUES.~%~@
 (fundoc 'parsed-inventory-record-publication-date-lookup-get-day
 "Get value of :DAY for PUBLICATION-DATE slot for an instance of class
 `parsed-inventory-record' with HASH-KEY.~%~@
-Return as by VALUES.~%~@
+Return as by `cl:values'.~%~@
 :EXAMPLE~%~@
  \(parsed-inventory-record-publication-date-lookup-get-day 10491 :with-string-integer-coercion t\)
  \(parsed-inventory-record-publication-date-lookup-get-day \"10491\"\)~%~@
@@ -4748,7 +5034,7 @@ Return as by VALUES.~%~@
 (fundoc 'parsed-inventory-record-description-inventory-condition-lookup-get-rating 
 "Get value of :RATING for DESCRIPTION-INVENTORY-CONDITION slot for an instance
 of class `parsed-inventory-record' with HASH-KEY.~%~@
-Return as by VALUES.~%~@
+Return as by `cl:values'.~%~@
 :EXAMPLE~%~@
  \(parsed-inventory-record-description-inventory-condition-lookup-get-rating  \"6291\"\)~%~@
 :SEE-ALSO `parsed-class-slot-value-format-date-plist',
@@ -4760,7 +5046,7 @@ Return as by VALUES.~%~@
 (fundoc 'parsed-inventory-record-description-inventory-condition-lookup-get-description
 "Get value of :DESCRIPTION for DESCRIPTION-INVENTORY-CONDITION slot for an
 instance of class `parsed-inventory-record' with HASH-KEY.~%~@
-Return as by VALUES.~%~@
+Return as by `cl:values'.~%~@
 :EXAMPLE~%~@
 \(parsed-inventory-record-description-inventory-condition-lookup-get-description  \"6291\"\) ~%~@
 :SEE-ALSO `parsed-inventory-record-description-inventory-condition-lookup-get-rating',
@@ -4912,7 +5198,7 @@ Return value is a list of the `cl:file-namestring's of each file written.~%~@
 `print-sax-parsed-slots', `write-sax-parsed-slots-to-file',
 `write-sax-parsed-class-hash-to-files',
 `write-parsed-class-parse-table-to-file',
-`write-sax-parsed-inventory-record-hash-to-zero-padded-directory',.~%▶▶▶")
+`write-sax-parsed-inventory-record-hash-to-zero-padded-directory'.~%▶▶▶")
 
 
 ;;; ==============================
@@ -4983,9 +5269,9 @@ Used when parsing TGM concepts. It's value is set with `tgm-parse-concepts-make-
   "List mappiing TGM xml element names to slot-accessor names.
 Elemnts of list have the form:~%
  \(<XML-ELEMENT-NAME> <PARSED-TGM-THEME-RECORD-SLOT-INITARG>\)~%
-cl:car of list identifies XML element names as per KLACKS:PEEK.
-cl:cadr names slot initargs for instances of class `parsed-tgm-theme-record'
-associated with the XML element being parsed.
+The `cl:car' of list identifies XML element names as per KLACKS:PEEK.~%
+The `cl:cadr' names slot initargs for instances of class `parsed-tgm-theme-record'
+associated with the XML element being parsed.~%
 :SEE-ALSO `*parsed-tgm-theme-record-hash-table*',
 `*parsed-class-field-slot-accessor-mapping-table*',
 `*parsed-tgm-theme-xml-source-pathname*'.~%▶▶▶")
@@ -4994,7 +5280,7 @@ associated with the XML element being parsed.
               "A hash-table for holding parsed TGM themes.
 It's `hash-table-test'
 It's `hash-table-size' is defaulted to 13203 which corresponds roughly to the
-number of concepts defined by the TGM1 and TGM2 as of 05-01-2024.
+number of concepts defined by the TGM1 and TGM2 as of 05-01-2024.~%
 On SBCL it satisfies `sb-ext:hash-table-synchronized-p'.~%
 :EXAMPLE
  \(hash-table-test *parsed-tgm-theme-record-hash-table*\)~%
@@ -5018,10 +5304,10 @@ value of `*parsed-tgm-theme-xml-source*' to return value of `cxml:make-source'.~
           "Make an object of type 'cxml::cxml-source' as if by `cxml:make-source' and set
 it to value of `*parsed-tgm-theme-xml-source*' using pathname stored in  parameter
 `*parsed-tgm-theme-xml-source-pathname*', and return the an instance of `cxml::cxml-source'.~%
-When value of `*parsed-tgm-theme-xml-source*' satisfies the following form:
- (typep *parsed-tgm-theme-xml-source* 'cxml::cxml-source)
+When value of `*parsed-tgm-theme-xml-source*' satisfies the following form:~%
+ \(typep *parsed-tgm-theme-xml-source* 'cxml::cxml-source\)~%
 Closes the existing source as if by `klacks:close-source' first before setting
-value of `*parsed-tgm-theme-xml-source*'.t
+value of `*parsed-tgm-theme-xml-source*'.~%
 Signal an error if value of `*parsed-tgm-theme-xml-source-pathname*' is null or
 does not satisfy `cl:pathnamep'.~%
 :EXAMPLE
@@ -5034,11 +5320,11 @@ does not satisfy `cl:pathnamep'.~%
 ELT should satisfy either `cl:stringp' or `cl:null', signal an error if not.~%
 MAPPING designates an alist identifying xml :start-element qname/lames as per
 `klacks:peek'. MAPPING is a list of the form:~%
- (<STRING> :<KEYWORD>)
-<STRING> denotes an xml element name
-:<KEYWORD> names an associated keyword to use as an initarg for a
+ \(<STRING> :<KEYWORD>\)~%
+- <STRING> denotes an xml element name.
+- :<KEYWORD> names an associated keyword to use as an initarg for a
 parsed-tgm-theme-record slot accessor.
-Mapping when not supplied defaults to value of `*parsed-tgm-theme-field-to-accessor-table*'.~%
+MAPPING when not supplied, defaults to value of `*parsed-tgm-theme-field-to-accessor-table*'.~%
 :EXAMPLE~%~@
  \(tgm-assoc-elt \"UF\"\)~%~@
  \(tgm-assoc-elt \"BT\"\)~%~@
@@ -5070,8 +5356,8 @@ Mapping when not supplied defaults to value of `*parsed-tgm-theme-field-to-acces
 `*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶")
   
 (fundoc 'tgm-consume
-        "An mvb'd wrapper for `klacks:consume'. STREAM names a Klacks source as
-per `cxml:make-source'.~%
+        "An mvb'd wrapper for `klacks:consume'.~%
+STREAM names a Klacks source as per `cxml:make-source'.~%
 :EXAMPLE~%\(tgm-consume :stream *parsed-tgm-theme-xml-source*\)~%
 :SEE-ALSO`tgm-assoc-elt',`tgm-peeking', `tgm-peeking-get-val',
 `tgm-consume', `tgm-characters-every-whitespace-p',
@@ -5080,8 +5366,8 @@ per `cxml:make-source'.~%
 `*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶")
 
 (fundoc 'tgm-characters-every-whitespace-p
-"Return T when length of current nth 1 elt of `tgm-peeking' return value is a
-with length <= 2 and every character satisfies `mon:whitespace-char-p'.
+"Return T when length of current nth 1 elt of `tgm-peeking'.~%
+Return value is a with length <= 2 and every character satisfies `mon:whitespace-char-p'.~%
 :EXAMPLE~%\(tgm-characters-every-whitespace-p :stream *parsed-tgm-theme-xml-source*\)~%
 :SEE-ALSO `mon:*whitespace-chars*', `tgm-assoc-elt',`tgm-peeking',
 `tgm-peeking-get-val', `tgm-consume', `tgm-characters-every-whitespace-p',
@@ -5089,13 +5375,13 @@ with length <= 2 and every character satisfies `mon:whitespace-char-p'.
 `parsed-tgm-theme-record',`*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶")
 
 (fundoc 'tgm-start-element-consume
-  "Parse and consume the current XML element being read from STREAM.
-OBJECT is an instance of class `parsed-tgm-theme-record' 
+  "Parse and consume the current XML element being read from STREAM.~%
+OBJECT is an instance of class `parsed-tgm-theme-record'.~%
 ACCESSOR names a slot-value accessor for OBJECT. Used to update OBJECT according
-to XML element values encountered during parse.
+to XML element values encountered during parse.~%
 NTH-VALUE is an positive integer for referencing a list of parse-values as per `tgm-peeking' 
 when passed by calling functions. Default is 1, other indexes into and the list
-PEEK-VAL is an mvb'd list as per return value of `tgm-peeking'. 
+PEEK-VAL is an mvb'd list as per return value of `tgm-peeking'.~%
 :SEE-ALSO `tgm-assoc-elt',`tgm-peeking', `tgm-peeking-get-val',
 `tgm-consume', `tgm-characters-every-whitespace-p',
 `tgm-peek-start-element-and-maybe-add-to-slot',
@@ -5109,14 +5395,15 @@ PEEK-VAL is an mvb'd list as per return value of `tgm-peeking'.
 :SEE-ALSO `tgm-peek-start-element-and-maybe-add-to-slot.'~%▶▶▶")
 
 (fundoc 'tgm-peek-start-element-and-maybe-add-to-slot
-  "A dispatching function for tgm XML parses. Pivot on start-element values
-according to the key/value pairs mapped by variable `*parsed-tgm-theme-field-to-accessor-table*'.~%
+  "A dispatching function for tgm XML parses.~%
+Pivot on start-element values according to the key/value pairs mapped by
+variable `*parsed-tgm-theme-field-to-accessor-table*'.~%
 :SEE-ALSO `tgm-assoc-elt',`tgm-peeking', `tgm-peeking-get-val',
 `tgm-consume', `tgm-characters-every-whitespace-p', `tgm-peek-start-element-and-maybe-add-to-slot',
 `tgm-parse-concept', `parsed-tgm-theme-record'.~%▶▶▶")
 
 (fundoc 'tgm-parse-concept
-          "Parse a single TGM XML concept event from the current STREAM.
+          "Parse a single TGM XML concept event from the current STREAM.~%
 Keyword STREAM names a source as per `CXML:MAKE-SOURCE'.~%
 Return an instance of `parsed-tgm-theme-record' with slot-values populated by
 parsed XML values.~%
@@ -5126,8 +5413,8 @@ parsed XML values.~%
 `tgm-parse-concept',`parsed-tgm-theme-record',`*parsed-tgm-theme-field-to-accessor-table*'.~%▶▶▶")
 
 (fundoc 'tgm-parse-concepts-in-stream
-   "Parse all TGM XML concepts in STREAM and close it as if by `KLACKS:CLOSE-SOURCE'.
-Return as if by values HASH-TABLE and the number of concpets parsed and the
+   "Parse all TGM XML concepts in STREAM and close it as if by `KLACKS:CLOSE-SOURCE'.~%
+Return as if by `cl:values' HASH-TABLE and the number of concpets parsed and the
 number of objects with unbound slots that were updated as if by
 `tgm-parse-concepts-update-unbound-slots'.~%
 STREAM is a source per return value of `CXML:MAKE-SOURCE'. Default is return
@@ -5146,9 +5433,9 @@ successfully parsing all concepts in STREAM.~%
 :EXAMPLE~% \(tgm-parse-concepts-in-stream  :stream  \(tgm-parse-concepts-make-source\)\)~%
 :NOTE Following elements if present in STREAM signal an error when parsing and
 need to be removed before calling either `tgm-parse-concept' or `tgm-parse-concepts-in-stream':
-  <!-- unknown line type [@@@] -->~%
-  <CONCEPT><DESCRIPTOR>Artists materials</DESCRIPTOR><NT>Crayons</NT></CONCEPT>~%
-  <BT>Artists materials</BT> ; <-- tgm013301 \"Crayons\"~%
+-  <!-- unknown line type [@@@] -->~%
+-  <CONCEPT><DESCRIPTOR>Artists materials</DESCRIPTOR><NT>Crayons</NT></CONCEPT>~%
+-  <BT>Artists materials</BT> ; <-- tgm013301 \"Crayons\"~%
 :SEE-ALSO `write-parsed-tgm-theme-record-parse-table-to-file', `tgm-assoc-elt',
 `tgm-peeking', `tgm-peeking-get-val', `tgm-consume', `tgm-characters-every-whitespace-p',
 `tgm-peek-start-element-and-maybe-add-to-slot',`tgm-parse-concept',`parsed-tgm-theme-record',
@@ -5157,9 +5444,9 @@ need to be removed before calling either `tgm-parse-concept' or `tgm-parse-conce
 (fundoc 'write-parsed-tgm-theme-record-parse-table-to-file
           "Write contents of HASH-TABLE to file.~%
 On success, return as if by `cl:values' the following:~%~@
- <FULL-PATH>                                <- the full pathname written to.~@
- <PATHNAME-NAME><TIMESTAMP>.<PATHNAME-TYPE> <- the filename written to with timestamp.~@
- <HASH-TABLE>                               <- table with contents written to <FULL-PATH>~%
+- <FULL-PATH>                                <- the full pathname written to.~@
+- <PATHNAME-NAME><TIMESTAMP>.<PATHNAME-TYPE> <- the filename written to with timestamp.~@
+- <HASH-TABLE>                               <- table with contents written to <FULL-PATH>~%
 HASH-TABLE contains key/value pairs that dereference instances of class
 `parsed-tgm-theme-record' as per `*parsed-tgm-theme-record-hash-table*'.
 An error is signalled if HASH-TABLE does not satisfy `cl:hash-table-p' or it's
@@ -5241,8 +5528,8 @@ contents erased as if by `cl:clrhash' before loading file.~%
 
 (fundoc 'tgm-parse-concepts-update-unbound-slots
   "Set all unbound `slot-value's to nil for instances of class
-`parsed-tgm-theme-record' in HASH-TABLE.
-Return the number of objects with unbound slots that were frobbed.
+`parsed-tgm-theme-record' in HASH-TABLE.~%
+Return the number of objects with unbound slots that were frobbed.~%
 Evaluated after succesful calls to `write-parsed-tgm-theme-record-parse-table-to-file'.~%
 :SEE-ALSO `%print-parsed-tgm-theme-record-helper'.~%▶▶▶")
 
@@ -5259,18 +5546,26 @@ Evaluated after succesful calls to `write-parsed-tgm-theme-record-parse-table-to
 object-instances of HASH-TABLE that are `cl:>' length 1.~%
 return value is a list of the form:~%
  \(<LENGTH> <OBJECT-ID> <SLOT-VALUE-CONTENTS>\)~%
-<LENTH> is the length of <SLOT-VALUE-CONTENTS>
-<OBJECT-ID> the `control-id-display-theme' slot-value for object-instances of hash-table.
-<SLOT-VALUE-CONTENTS> is a list of strings.
+- <LENTH> is the length of <SLOT-VALUE-CONTENTS>~% 
+- <OBJECT-ID> the `control-id-display-theme' slot-value for object-instances of hash-table.~% 
+- <SLOT-VALUE-CONTENTS> is a list of strings.~% 
 :EXAMPLE~%~@
  \(tgm-parse-concept-count-slot-value-list-length 'broader-theme :hash-table *parsed-tgm-theme-record-hash-table*\)
 :SEE-ALSO `tgm-parse-concept-count-parsed-theme-record-diff'.~%▶▶▶")
 
+(fundoc 'tgm-parse-concept-count-slot-value-null
+"Return list of object ids and count of all `parsed-tgm-theme-record' instances
+for SLOT with null value.~%
+:EXAMPLE~%~@
+ \(tgm-parse-concept-count-slot-value-null 'control-id-theme-entity-loc-num\)~%~@
+:SEE-ALSO `tgm-parse-concept-count-slot-value-list-length',
+`tgm-parse-concepts-update-unbound-slots'.~%▶▶▶")
+
 (fundoc 'tgm-parse-concept-count-parsed-theme-record-diff
   "Identify all parsed-theme-record's with slot-value of `control-id-display-theme'
 id's that aren't currently present in  TGM-HASH-TABLE.~%
-TGM-HASH-TABLE when not supplied defaults to value of `*parsed-tgm-theme-record-hash-table*'.
-MATCH0TABLE is a hash-table to store identified results to.
+TGM-HASH-TABLE when not supplied defaults to value of `*parsed-tgm-theme-record-hash-table*'.~% 
+MATCH-TABLE is a hash-table to store identified results to.~% 
 It's `cl:hash-table-test' should satisfy `cl:equal'.~%
 :EXAMPLE~% \(tgm-parse-concept-count-parsed-theme-record-diff\)~%
 :SEE-ALSO `tgm-parse-concept-count-slot-value-list-length'.~%▶▶▶")

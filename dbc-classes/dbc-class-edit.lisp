@@ -7,13 +7,7 @@
 
 (defclass base-edit (base-dbc)
   ()
-  (:documentation
-   #.(format nil
-             "The intended use for subclassed instances of the base-edit class is to record~@
-              information re the alteration of a class instance or slot value of an instance.~%~@
-              Not all instances and slots should record edit information. However, when it is~@
-              important to record when/how the data of a slot/instance was made it should be~@
-              done using the edit-class interface.")))
+  (:documentation  #.(classdoc 'base-edit :class-doc)))
 
 #|
 

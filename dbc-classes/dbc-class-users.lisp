@@ -9,10 +9,7 @@
 
 (defclass base-user (base-dbc)
   ()
-  (:documentation
-   #.(format nil "Base class for referencing users of the dbc-system.~%~@
-                  Types of users might include:~%~% ~
-                   user-name, user-seller-name, user-client-name, etc.")))
+  (:documentation  #.(classdoc 'base-user :class-doc)))
 
 
 ;;; ==============================

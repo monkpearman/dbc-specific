@@ -38,13 +38,13 @@
    :input-file  (merge-pathnames (make-pathname :name "dump-refs-DUMPING")
                                  (sub-path *xml-input-dir*))
    :output-file parsed-sax-file)
-  (with-locked-hash-table *tt--parse-table*
+  (with-locked-hash-table (*tt--parse-table*)
     (load-sax-parsed-xml-file-to-parsed-class-hash
-   :parsed-class 'parsed-inventory-record  
-   :input-file parsed-sax-file
-   :hash-table  *tt--parse-table*
-   :key-accessor  #'inventory-number
-   :slot-dispatch-function #'set-parsed-inventory-record-slot-value)))
+     :parsed-class 'parsed-inventory-record  
+     :input-file parsed-sax-file
+     :hash-table  *tt--parse-table*
+     :key-accessor  #'inventory-number
+     :slot-dispatch-function #'set-parsed-inventory-record-slot-value)))
 
 ;; (gethash *tt--parse-table*
 ;; (10019

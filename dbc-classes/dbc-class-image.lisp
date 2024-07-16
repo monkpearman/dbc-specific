@@ -31,7 +31,9 @@
 
 (defclass base-image (base-dbc)
   ()
-  (:documentation #.(format nil "Base class for dbc image insances.~%")))
+  (:documentation  #.(classdoc 'base-image :class-doc))
+  )
+
 
 #|
 ;;; ==============================

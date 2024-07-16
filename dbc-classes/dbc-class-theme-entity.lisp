@@ -161,7 +161,7 @@
 ;;
 (defclass theme-entity (base-theme-entity)
   ()
-  )
+  (:documentation  #.(classdoc 'theme-entity :class-doc)))
 
 
 ;; :NOTE as of drakma 1.2.6 there appears to be a bug in drakma when URL

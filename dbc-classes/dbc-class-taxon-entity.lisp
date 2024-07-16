@@ -17,6 +17,7 @@
 ;;
 ;; The big challenge is to figure out how much of the taxonomy we want to
 ;; reproduce and of that how much we want to model as with class-precedence:
+;;
 ;; life
 ;; - domain
 ;; -- kingdom
@@ -38,12 +39,9 @@
 
 (in-package #:dbc)
 
-
 (defclass taxon-entity (base-taxon-entity)
   ()
-  )
-
-;; *package*
+  (:documentation  #.(classdoc 'taxon-entity :class-doc)))
 
 ;; taxon-display-name
 ;; taxon-historic-appellation

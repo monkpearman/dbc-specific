@@ -78,69 +78,33 @@
     ;;                :display-name-for-entity-type '<location-entity-???>)
     ;;
     ;; :initform  ;; (or (and (mon:string-not-empty <FORM>) <FORM>) (error "String
-    ;; :documentation "The default display-name for an entity. Its")
-    )
+    :documentation #.(classdoc 'location-entity :display-name))
    (appellations-modern
     :initarg :appellations-modern
     :initform nil
-    :documentation
-    #.(format nil
-              "Enumeration of appellations used in _modern_ parlance \(i.e. contemporary usage\).~%~@
-Used to disambiguate identification of a geographic entity.~%~@
-For example, \"India\" as opposed to \"Hindostan\" or \"Ganges\".~% ~
-When non-nil slot-value is a [ <STRING> | <LIST-OF-STRINGS> ].~%~@
-:EXAMPLE~%
- \"Republic of India\"~% ~
- \(\"India\" \"Republic of India\"\)~%"))
+    :documentation #.(classdoc 'location-entity :appellations-modern))
    (appellations-historic
     :initarg :appellations-historic
     :initform nil
-    :documentation
-    #.(format nil
-              "Enumeration of historic appellations used in _non-modern_ parlance \(i.e. non-contemporary\).~%~@
-Used to disambiguate identification of a geographic entity.~%~@
-For example, \"Hindostan\" as opposed to \"Republic of India\".~%~@
-Enumeration of appellations used in _modern_ parlance \(i.e. contempory usage\).~%~@
-Used to disambiguate identification of a geographic entity.~%~@
-For example, India as opposed to Hindostan or Ganges.~% ~
-When non-nil slot-value is a [ <STRING> | <LIST-OF-STRINGS> ].~%~@
-:EXAMPLE~%
- \"Hindostan\"~% ~
- \(\"Hindostan\" \"Ganges\"\)~%"))
-   )
+   :documentation #.(classdoc 'location-entity :appellations-historic)))
   (:default-initargs :display-name nil
                      :appellations-modern nil
                      :appellations-historic nil)
-  (:documentation
-  #.(format nil
-            "Top-level from which location-entity~%~@
-:SEE-ALSO `<XREF>'.~%▶▶▶")))
-
+  (:documentation  #.(classdoc 'location-entity :class-doc)))
 
 ;; (mon:class-subclasses (find-class 'location-entity-verified))
 
 (defclass location-entity-verified (location-entity)
   ()
-  (:documentation
-   #.(format nil
-             "
-:SEE-ALSO `<XREF>'.~%▶▶▶")))
+  (:documentation  #.(classdoc 'location-entity-verified :class-doc)))
 
 (defclass location-entity-imagined (location-entity)
   ()
-  (:documentation
-   #.(format nil
-             "
-e.g. \"Here there be dragons.\"
-:SEE-ALSO `<XREF>'.~%▶▶▶"
-             )))
+  (:documentation  #.(classdoc 'location-entity-imagined :class-doc)))
 
 (defclass location-entity-unverified (location-entity)
   ()
-  (:documentation
-   #.(format nil
-             "
-:SEE-ALSO `<XREF>'.~%▶▶▶")))
+  (:documentation  #.(classdoc 'location-entity-unverified :class-doc)))
 
 
 ;;; ==============================

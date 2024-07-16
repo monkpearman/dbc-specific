@@ -2,22 +2,21 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-uuid.lisp
 ;;; ==============================
 
-;;; ==============================
-;;; :NOTE
-;;;
-;;; ==============================
-
 ;; (uuid:make-v4-uuid) => 9CEA357D-470C-42D2-9CC8-298F6A27C04F
 ;; (uuid:make-uuid-from-string "9CEA357D-470C-42D2-9CC8-298F6A27C04F")
 ;; 
 
-;; (uuid:make-v5-uuid (uuid:make-uuid-from-string "9CEA357D-470C-42D2-9CC8-298F6A27C04F") "Cappiello (Leonetto)")
-;; 5B12B7DA-FF63-5FA2-98A3-D2483E627B7D
+;; (uuid:make-v5-uuid
+;;  (uuid:make-uuid-from-string "9CEA357D-470C-42D2-9CC8-298F6A27C04F")
+;;  "Cappiello (Leonetto)")
+;; => 5B12B7DA-FF63-5FA2-98A3-D2483E627B7D
 
 ;; :NOTE `uuid-print-bytes' returns a string with the #\- chars stripped. 
 ;; This value is basically the same thing couchDB/chillax return!
 ;; (print-bytes nil (make-uuid-from-string "6ba7b814-9dad-11d1-80b4-00c04fd430c8"))
 
+;;; ==============================
+;;
 ;; (base-dbc)
 ;; - base-uuid (base-dbc)
 ;; -- system-object-uuid (base-uuid)
@@ -28,15 +27,11 @@
 ;;     base-entity
 ;;     base-control-id
 ;;     system-object-uuid
-
-
+;;
+;;; ==============================
 
 
 (in-package #:dbc)
-
-;; *package*
-
-;; (class-name (find-class 'base-uuid))
 
 (defclass base-uuid (base-dbc)
   ()
@@ -70,11 +65,8 @@
                 system initialization.~%~@
                 :SEE `uuid:make-v5-uuid'."))
 
- (uuid:make-v5-uuid 
-
 |#
 
-;;
 
 ;;; ==============================
 

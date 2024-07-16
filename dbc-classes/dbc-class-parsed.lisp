@@ -114,8 +114,6 @@
 ;;                (find-method #'parsed-class-parse-table-lookup-slot-value nil '(parsed-class-field-slot-accessor-mapping symbol t)))
 
 
-
-
 ;; These are common to class `parsed-class' and its subclasses
 (defgeneric naf-entity-author-coref (object))
 (defgeneric (setf naf-entity-author-coref) (coref-value object))
@@ -184,14 +182,11 @@
 (defclass parsed-class (base-dbc)
   ;; :NOTE Which other slots accessors and generics should this class establish?
   ()
-  (:documentation "Base dbc parsed class.
-:NOTE variable `*parsed-class-parse-table*' holds hashes keyed to subclasses of parsed-class."))
+  (:documentation  #.(classdoc 'parsed-class :class-doc)))
 
 (defclass parsed-naf-entity (parsed-class)
   ()
-  (:documentation #.(format nil "Base class for parsing naf-entity records.~%~@
-:SEE-ALSO `parsed-artist-record', `parsed-author-record',~%~
-`parsed-person-record', `parsed-brand-record', `parsed-publication-record'.~%▶▶▶")))
+  (:documentation  #.(classdoc 'parsed-naf-entity :class-doc)))
 
 ;; (defun %parsed-class-mapped-with-known-key-helper (parsed-class-symbol)
 ;;   ;; (declare (symbol parsed-class-symbol))
@@ -213,11 +208,11 @@
 ;;                  hash-table-key: ~S~%"
 ;;                '*parsed-class-field-slot-accessor-mapping-table*
 ;;                parsed-class-symbol))))
-
+;; docd
 (defmethod %parsed-class-subtype-check ((parsed-class-object (eql 'parsed-class)))
   (error "Arg PARSED-CLASS-OBJECT is cl:eql the symbol PARSED-CLASS.~% ~
           Arg must be a symbol designating a subclass of `parsed-class'~%"))
-
+;; docd
 (defmethod %parsed-class-subtype-check ((parsed-class-object symbol))
   (let* (;;(the-class-parsed-class (find-class 'parsed-class))
          (the-class-of-parsed-class-object
@@ -267,6 +262,7 @@
 (defmethod parsed-class-mapped ((object symbol))
   (%parsed-class-mapped-with-known-key-helper (%parsed-class-subtype-check object)))
 
+;; (parsed-class-slot-dispatch-function (make-instance 'parsed-inventory-record))
 (defmethod parsed-class-slot-dispatch-function ((object parsed-class))
   (parsed-class-slot-dispatch-function (parsed-class-mapped object)))
 
@@ -463,20 +459,20 @@
                                              (size 16)
                                              (rehash-size 1.5)
                                              (rehash-threshold 1.0)
-                                             weakness
-                                             (synchronized t))
+                                             weakness);; (synchronized t)
+                                             
   ;; (make-hash-table-sync :text #'equal :size size :rehash-size 1.5 :rehash-threshold 1 :weakness weakness :synchronized synchronized))
-  (make-hash-table :test #'equal
-                    :size size
-                    :rehash-size rehash-size
-                    :rehash-threshold rehash-threshold
-                    :weakness weakness
-                    :synchronized synchronized))
+  (make-hash-table-sync
+   :test #'equal
+   :size size
+   :rehash-size rehash-size
+   :rehash-threshold rehash-threshold
+   :weakness weakness))
 
 ;; (setf (parsed-class-parse-table (make-instance 'parsed-artist-record))
 ;;       (%parsed-class-parse-table-make-table))
 (defmethod (setf parsed-class-parse-table) (hash-table (object parsed-class))
-  (setf (parsed-class-parse-table (parsed-class-mapped object)) hash-table))
+           (setf (parsed-class-parse-table (parsed-class-mapped object)) hash-table))
 
 
 ;; (setf (parsed-class-parse-table 'parsed-artist-record) nil)

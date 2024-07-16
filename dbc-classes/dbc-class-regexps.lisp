@@ -60,7 +60,7 @@
 
 (defclass base-regexp (base-dbc)
   ()
-  (:documentation #.(classdoc 'base-regexp :class-doc)))
+  (:documentation  #.(classdoc 'base-regexp :class-doc)))
 
 ;;; ==============================
 ;; :NOTE
@@ -95,23 +95,23 @@
 (defclass entity-regexp-subclass-allocation (base-regexp)
   (( ;; entity-regexp slot match-entity-class
     subclass-match-entity-class
+    ;; :initform nil
     :initarg :subclass-match-entity-class
-    ;; :initform nil ;;
     :documentation #.(classdoc 'entity-regexp-subclass-allocation :subclass-match-entity-class))
    ( ;; entity-regexp slot match-entity-db
     subclass-match-entity-db
-    :initarg :subclass-match-entity-db
     ;; :initform nil
+    :initarg :subclass-match-entity-db
     :documentation #.(classdoc 'entity-regexp-subclass-allocation :subclass-match-entity-db))
    ( ;; entity-regexp slot match-matcher-db
     subclass-match-matcher-db
-    :initarg :subclass-match-matcher-db
     ;; :initform nil
+    :initarg :subclass-match-matcher-db
     :documentation #.(classdoc 'entity-regexp-subclass-allocation :subclass-match-matcher-db)))
   (:default-initargs :subclass-match-entity-class nil
                      :subclass-match-entity-db nil
                      :subclass-match-matcher-db nil)
-  (:documentation #.(classdoc 'entity-regexp-subclass-allocation :class-doc)))
+  (:documentation  #.(classdoc 'entity-regexp-subclass-allocation :class-doc)))
 
 (defclass entity-regexp (base-regexp)
   ((;; global-per-subclass access with regexp-match-entity-class
@@ -131,23 +131,23 @@
     :documentation #.(classdoc 'entity-regexp :match-matcher-db))
    ( ;; local-per-instance, access with regexp-match-container-type
     match-container-type
-    :initarg :match-container-type
     ;; :initform nil
+    :initarg :match-container-type
     :documentation #.(classdoc 'entity-regexp :match-container-type))
    ( ;; local-per-instance, access with regexp-match-container-id
     match-container-uuid
-    :initarg :match-container-id
     ;; :initform nil
+    :initarg :match-container-id
     :documentation #.(classdoc 'entity-regexp :match-container-uuid))
    ( ;; local-per-instance, access with regexp-matcher
     match-entity-matcher
+    ;; :initform nil
     :initarg :match-entity-matcher
-    ;;:initform nil
-    :documentation  #.(classdoc 'entity-regexp :match-entity-matcher)))
+    :documentation #.(classdoc 'entity-regexp :match-entity-matcher)))
   (:default-initargs :match-container-type nil
-                     :match-container-id nil
+                     :match-container-id   nil
                      :match-entity-matcher nil)
-  (:documentation  #.(classdoc 'entity-regexp :class-doc)))
+   (:documentation  #.(classdoc 'entity-regexp :class-doc)))
 
 ;; (make-instance 'entity-regexp
 ;;                :match-entity-class 'liza-terry
@@ -161,11 +161,13 @@
 ;;; ==============================
 ;; #:*parsed-field-name-regexp-matcher-db*
 ;; #:parsed-field-name-regexp
+;; unused/deprecated
 (defvar *parsed-field-name-regexp-db* nil)
 
+;; unused/deprecated
 (defclass parsed-field-name-regexp (entity-regexp)
   ()
-  (:documentation #.(classdoc 'parsed-field-name-regexp :class-doc)))
+  (:documentation  #.(classdoc 'parsed-field-name-regexp :class-doc)))
 
 
 ;;; ==============================
@@ -180,7 +182,7 @@
   ;; match-entity-db
   ;; match-matcher-db
   ()
-  (:documentation #.(classdoc 'theme-entity-regexp :class-doc)))
+  (:documentation  #.(classdoc 'theme-entity-regexp :class-doc)))
 
 
 ;;; ==============================
@@ -195,7 +197,7 @@
   ;; match-entity-db
   ;; match-matcher-db
   ()
-  (:documentation #.(classdoc 'category-entity-regexp :class-doc)))
+  (:documentation  #.(classdoc 'category-entity-regexp :class-doc)))
 
 
 ;;; ==============================
@@ -210,7 +212,8 @@
   ;; match-entity-db
   ;; match-matcher-db
   ()
-  (:documentation #.(classdoc 'media-entity-regexp :class-doc)))
+  (:documentation  #.(classdoc 'media-entity-regexp :class-doc)))
+
 
 ;;; ==============================
 ;;; :LOCATION-ENTITY
@@ -225,8 +228,7 @@
   ;; match-entity-db
   ;; match-matcher-db
   ()
-  (:documentation #.(classdoc 'location-entity-regexp :class-doc)))
-
+  (:documentation  #.(classdoc 'location-entity-regexp :class-doc)))
 
 
 ;;; ==============================
@@ -241,18 +243,18 @@
   ;; match-matcher-db
   ;; match-entity-class-type
   ()
-  (:documentation #.(classdoc 'naf-entity-type-regexp :class-doc)))
+  (:documentation  #.(classdoc 'naf-entity-type-regexp :class-doc)))
 
 (defclass naf-entity-control-name-regexp (naf-entity-type-regexp)
   ;; (match-entity-container-type :initform 'closure)
   ;; (match-entity-matcher
   ()
-  (:documentation #.(classdoc 'naf-entity-control-name-regexp :class-doc)))
+  (:documentation  #.(classdoc 'naf-entity-control-name-regexp :class-doc)))
 
 (defclass naf-entity-alt-name-regexp (naf-entity-type-regexp)
   ;;(match-entity-container-type :initform 'list)
   ()
-  (:documentation #.(classdoc 'naf-entity-alt-name-regexp :class-doc)))
+  (:documentation  #.(classdoc 'naf-entity-alt-name-regexp :class-doc)))
 
 ;; (make-instance 'entity-regexp
 ;;                :match-entity-class 'liza-terry
@@ -270,7 +272,6 @@
 ;;     |-> naf-entity-artist-regexp
 
 
-
 
 ;;; ==============================
 ;;; :NAF-ARTIST
@@ -280,15 +281,16 @@
 ;; :match-entity-class
 (defclass naf-entity-artist-control-regexp (naf-entity-control-name-regexp)
   ()
-  (:documentation #.(classdoc 'naf-entity-artist-control-regexp :class-doc)))
+  (:documentation  #.(classdoc 'naf-entity-artist-control-regexp :class-doc)))
 
 (defclass naf-entity-artist-alt-regexp (naf-entity-alt-name-regexp)
   ()
-  (:documentation #.(classdoc 'naf-entity-artist-alt-regexp :class-doc)))
+  (:documentation  #.(classdoc 'naf-entity-artist-alt-regexp :class-doc)))
 
 (defclass naf-entity-artist-regexp (naf-entity-type-regexp)
   ()
-  )
+  (:documentation  #.(classdoc 'naf-entity-artist-regexp :class-doc)))
+
 
 ;; (let ((base-naf-entity-regexp
 ;;        (make-entity-regexp-subclass-allocation
@@ -311,11 +313,11 @@
 
 (defclass naf-entity-person-control-regexp (naf-entity-control-name-regexp)
   ()
-  (:documentation #.(classdoc 'naf-entity-person-control-regexp :class-doc)))
+  (:documentation  #.(classdoc 'naf-entity-person-control-regexp :class-doc)))
 
 (defclass naf-entity-person-alt-regexp (naf-entity-alt-name-regexp)
   ()
-  (:documentation #.(classdoc 'naf-entity-person-alt-regexp :class-doc)))
+  (:documentation  #.(classdoc 'naf-entity-person-alt-regexp :class-doc)))
 
 
 ;;; ==============================
@@ -325,11 +327,11 @@
 
 (defclass naf-entity-author-control-regexp (naf-entity-control-name-regexp)
   ()
-  (:documentation #.(classdoc 'naf-entity-author-control-regexp :class-doc)))
+  (:documentation  #.(classdoc 'naf-entity-author-control-regexp :class-doc)))
 
 (defclass naf-entity-author-alt-regexp (naf-entity-alt-name-regexp)
   ()
-  (:documentation #.(classdoc 'naf-entity-author-alt-regexp :class-doc)))
+  (:documentation  #.(classdoc 'naf-entity-author-alt-regexp :class-doc)))
 
 ;;; ==============================
 ;;; :NAF-BRAND
@@ -338,30 +340,28 @@
 
 (defclass naf-entity-brand-control-regexp (naf-entity-control-name-regexp)
   ()
-  (:documentation #.(classdoc 'naf-entity-brand-control-regexp :class-doc)))
+  (:documentation  #.(classdoc 'naf-entity-brand-control-regexp :class-doc)))
 
 (defclass naf-entity-brand-alt-regexp (naf-entity-alt-name-regexp)
   ()
-  (:documentation #.(classdoc 'naf-entity-brand-alt-regexp :class-doc)))
+  (:documentation  #.(classdoc 'naf-entity-brand-alt-regexp :class-doc)))
 
 ;;; ==============================
 (defvar *naf-entity-publication-regexp-db* nil)
 
 (defclass naf-entity-publication-control-regexp (naf-entity-control-name-regexp)
   ()
-  (:documentation #.(classdoc 'naf-entity-publication-control-regexp :class-doc)))
+  (:documentation  #.(classdoc 'naf-entity-publication-control-regexp :class-doc)))
 
 (defclass naf-entity-publication-alt-regexp (naf-entity-control-name-regexp)
   ()
-  (:documentation #.(classdoc 'naf-entity-publication-alt-regexp :class-doc)))
-
+  (:documentation  #.(classdoc 'naf-entity-publication-alt-regexp :class-doc)))
 
 ;; naf-entity-location
 ;; base-location-entity
 ;;
 ;; base-media-entity
 ;; media-technique-entity
-
 
 
 ;;; ==============================
@@ -518,124 +518,6 @@
 ;; match-entity-db       :allocation :class -- variable holding match-container-uuid/entity-instance-uuid pairs
 ;; match-matcher-db      :allocation :class -- variable holding lookup table of match-container-uuid/matcher pairs
 ;; match-entity-class-type
-
-
-
-;;; ==============================
-;;; :CLASS-REGEXPS-GENERICS-DOCUMENTATION
-;;; ==============================
-
-
-;;; ==============================
-;;; :CLASS-REGEXPS-CLASS-DOCUMENTATION
-;;; ==============================
-
-
-;;; ==============================
-;;; :CLASS-REGEXPS-VARIABLES-DOCUMENTATION
-;;; ==============================
-
-
-;;; ==============================
-;;; :CLASS-REGEXPS-FUNCTION-DOCUMENTATION
-;;; ==============================
-
-(fundoc 'make-entity-regexp-subclass-allocation-if
- "Verify the keyword arguments for `make-entity-regexp-subclass-allocation'.~%~@
-If any of the following constraints are not met signal an error.~%~@
-Args MATCH-ENTITY-CLASS, MATCH-ENTITY-DB, and MATCH-MATCHER-DB must each be
-non-nil.~%~@
-Arg MATCH-ENTITY-CLASS must a class which returns non-nil when given as the
-argument to `cl:find-class'.~%~@
-Args MATCH-ENTITY-DB and MATCH-MATCHER-DB must each satisfy `cl:hash-table-p'.~%~@
-:EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%▶▶▶")
-
-(fundoc 'make-entity-regexp-subclass-allocation
-"Instantiate an instance of the ENTITY-REGEXP-SUBCLASS-ALLOCATION class.~%
-Keyword MATCH-ENTITY-CLASS is the class-name of an isntance that matchers of a
-subclass of the ENTITY-REGEXP class will match.~%
-Keyword MATCH-ENTITY-DB is a symbol naming a special variable the value of
-which is a table mapping key/value pairs of the form:~%
- match-container-uuid entity-instance-uuid~%~@
-Keyword MATCH-MATCHER-DB is a symbol naming a special variable the value of
-which is a table mapping  key/value pairs of the form:~%
- match-container-uuid match-entity-matcher~%~@
-:EXAMPLE~%~@
- { ... <EXAMPLE> ... } ~%~@
-:SEE-ALSO `<XREF>'.~%▶▶▶")
-
-(generic-doc #'regexp-match-entity-class
- "Get the entity-class for OBJ.~%~
-:SEE-ALSO `entity-regexp-subclass-allocation', `entity-regexp',
-`regexp-match-entity-class', `regexp-match-entity-db',
-`regexp-match-matcher-db', `regexp-match-container-type',
-`regexp-match-container-uuid', `regexp-matcher'.~%▶▶▶~%")
-
-(generic-doc #'regexp-match-entity-db
-   "Get the entity-db lookup table for OBJ.~%~
-:SEE-ALSO `entity-regexp-subclass-allocation', `entity-regexp',
-`regexp-match-entity-class', `regexp-match-entity-db',
-`regexp-match-matcher-db', `regexp-match-container-type',
-`regexp-match-container-uuid', `regexp-matcher'.~%▶▶▶~%")
-
-(generic-doc #'regexp-match-matcher-db
-             "Return the matcher-db lookup table for OBJ.~%~
-:SEE-ALSO `entity-regexp-subclass-allocation', `entity-regexp',
-`regexp-match-entity-class', `regexp-match-entity-db',
-`regexp-match-matcher-db', `regexp-match-container-type',
-`regexp-match-container-uuid', `regexp-matcher'.~%▶▶▶~%")
-
-(generic-doc  #'regexp-match-container-type
- "Get the container type for OBJ's matcher.~%~
-:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
-`regexp-match-entity-db', `regexp-match-matcher-db',
-`regexp-match-container-type', `regexp-match-container-uuid',
-`regexp-matcher'.~%▶▶▶~%")
-
-(generic-doc #'(setf regexp-match-container-type)
- "Set the CONTAINER-TYPE for OBJ matcher.^~%~@
-:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
-`regexp-match-entity-db', `regexp-match-matcher-db',
-`regexp-match-container-type', `regexp-match-container-uuid',
-`regexp-matcher'.~%▶▶▶~%")
-
-(generic-doc #'regexp-match-container-uuid
-"Return the UUID of the container holding a matcher for OBJ.~%~
-:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
-`regexp-match-entity-db', `regexp-match-matcher-db',
-`regexp-match-container-type', `regexp-match-container-uuid',
-`regexp-matcher'.~%▶▶▶~%")
-
-(generic-doc #'(setf regexp-match-container-uuid)
-"Set the match-container-uuid for the container holding OBJ's matcher.~%~
-Specializers should take special care to ensure that they don't overwrite an existing UUID.~%~
-An OBJ's UUID should be treated as an immutable constant in almost all circumstances.~%~
-Therefor, the intent of this function is to mediate generation of UUID's run~%~
-:after initialize-instance and/or when an instance is obsoleted with~%~
-`cl:make-instances-obsolete'.~%~
-:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
-`regexp-match-entity-db', `regexp-match-matcher-db',
-`regexp-match-container-type', `regexp-match-container-uuid',
-`regexp-matcher'.~%▶▶▶~%")
-
-(generic-doc #'regexp-matcher
-"Get OBJ's matcher.~%~
-:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
-`regexp-match-entity-db', `regexp-match-matcher-db',
-`regexp-match-container-type', `regexp-match-container-uuid',
-`regexp-matcher'.~%▶▶▶~%")
-
-(generic-doc #'(setf regexp-matcher)
-"Set OBJ's matcher.~%~
-Speacializers should take care to verify that matcher can be contained of its~%~
-specified container type.~%
-:SEE-ALSO `entity-regexp', `regexp-match-entity-class',
-`regexp-match-entity-db', `regexp-match-matcher-db',
-`regexp-match-container-type', `regexp-match-container-uuid',
-`regexp-matcher'.~%▶▶▶~%")
-
 
 
 ;;; ==============================

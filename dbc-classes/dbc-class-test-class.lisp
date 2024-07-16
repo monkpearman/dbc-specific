@@ -7,9 +7,9 @@
 
 (in-package #:dbc)
 
-(defvar *test-entity-regexp-matcher-db* (make-hash-table))
+(defvar *test-entity-regexp-matcher-db* (make-hash-table-sync))
 
-(defvar *test-entity-regexp-entity-db*  (make-hash-table))
+(defvar *test-entity-regexp-entity-db*  (make-hash-table-sync))
 
 (defclass base-testing-entity (base-entity)
   ()

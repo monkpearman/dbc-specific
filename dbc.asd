@@ -8,6 +8,7 @@
 ;;; ==============================
 ;;;
 ;;; (logical-pathname-translations "MON")
+;;;
 ;;; (translate-logical-pathname  "MON:dbc-specific;")
 ;;;
 ;;; (push (translate-logical-pathname  "MON:dbc-specific;") asdf:*central-registry*)
@@ -19,18 +20,20 @@
 ;;; ==============================
 ;;;
 ;;; :NOTE While debugging per file:
-;;; (declaim (optimize (debug 3)))
-;;; Or, (sb-ext:restrict-compiler-policy 'debug 3)
+;;;  (declaim (optimize (debug 3)))
+;;; Or, alternativley:
+;;;  (sb-ext:restrict-compiler-policy 'debug 3)
 ;;;
 ;;; To set it back to default (debug 1):
-;;; (sb-ext:restrict-compiler-policy 'debug 1)
+;;;  (sb-ext:restrict-compiler-policy 'debug 1)
 ;;;
 ;;; (setf *break-on-signals* t)
 ;;;
 ;;; sb-debug:
+;;;
 ;;; ==============================
 ;;;
-;;; To remove the compile fasls do:
+;;; To remove the compiled dbc fasls do:
 ;;;
 ;;; (asdf:clear-system :dbc)
 ;;;
@@ -40,13 +43,16 @@
 ;;;
 ;;; ==============================
 ;;;
-;;; (let (des) (do-external-symbols (i :dbc des) (push i des)))
+;;; (let (des) (do-external-symbols (i :dbc des) (push i des)) des)
 ;;;
 ;;; ==============================
 
 
-(defpackage #:dbc-build-system (:use #:common-lisp #:asdf )
-            (:export #:*dbc-build-system-reloading-system*))
+(defpackage #:dbc-build-system
+            (:use #:common-lisp
+                  #:asdf )
+            (:export
+             #:*dbc-build-system-reloading-system*))
 
 (in-package #:dbc-build-system)
 
@@ -56,7 +62,6 @@
                                             (map 'string 'code-char
                                                  #(109 111 110 107 112 101 97 114 109 97 110
                                                        64 105 99 108 111 117 100 46 99 111 109))))
-
 (asdf:defsystem #:dbc
   ;; :name ""
   :author  "MON KEY"
@@ -100,61 +105,79 @@
   :serial t
   :components
   ((:file "package")
+
    (:file "specials")
-   ;;
+
    ;; (:module "dbc-uuid"
    ;;          :components
    ;;          ((:file "dbc-uuid-types")
    ;;           (:file "dbc-uuid-class" :depends-on ("dbc-uuid-types"))
    ;;           (:file "dbc-uuid"       :depends-on ("dbc-uuid-types" "dbc-uuid-class"))))
-   ;;
+
    (:file "conditions")
+
    (:file "dbc-utils")
+
    (:module "dbc-time"
             :components
             ((:file "date-localtime-utils")))
+   
    (:module "dbc-classes"
             :components
             ;; dbc-docstrings-for-class.lisp interns docstrings for many of
             ;; classes below to a hashtable holding docstrings. Load it first
+
             ((:file "dbc-docstrings-for-class")
+
              ;; ==============================
              ;; Following file "dbc-class.lisp"
              ;; defines class `base-dbc'
              (:file "dbc-class")       
+
              ;; ==============================
              ;; Following file "dbc-class-paths.lisp"
              ;; defines class `system-base', `system-path'
              (:file "dbc-class-paths") 
+
              ;; ==============================
              ;; Following file "dbc-class-uuid.lisp"
              ;; defines class `base-uuid'
              (:file "dbc-class-uuid")  
+
              ;; ==============================
              ;; Following file "dbc-class-system-object-uuid.lisp"
              ;; defines class `system-object-uuid'
              (:file "dbc-class-system-object-uuid") 
+
              ;; ==============================
              ;; Following file "dbc-class-uuid-vars.lisp"
              ;; class namespace variables cached to var `*control-id-namespace-table*'
+
              (:file "dbc-class-uuid-vars") 
              ;; ==============================
              ;; Following file "dbc-class-record.lisp"
              ;; defines class `base-record' subclass of `base-dbc'
-             (:file "dbc-class-record") 
+
+             (:file "dbc-class-record")
              ;; ==============================
              ;; Following file "dbc-class-inventory-record.lisp"
              ;; defines class `base-inventory-record' subclass of `base-record'
+
              (:file "dbc-class-inventory-record")
+
              (:file "dbc-class-inventory-publication-record")
+
              (:file "dbc-class-inventory-sales-record")
+
              (:file "dbc-class-authority-record")
+
              ;; ==============================
              ;; Following file "dbc-class-entity.lips"
              ;; defines following class/subclass definitions:
              ;; defines class `base-entity' subclass of `base-dbc',
              ;; defines classes `base-<FOO>-entity' subclasses of `base-entity'
              (:file "dbc-class-entity")
+
              ;; ==============================
              ;; Following file "dbc-class-control-id.lisp"
              ;; defines class definition scaffolding as follows:
@@ -174,66 +197,102 @@
              (:file "dbc-class-control-id")
              
              (:file "dbc-class-edit")
+
              (:file "dbc-class-naf-entity")
+
              (:module "dbc-class-category-entities"
                       :components
                       ((:file "dbc-class-category-entity")))
+
              (:file "dbc-class-theme-entity")
+
              (:file "dbc-class-media-entity")
+
              (:file "dbc-class-location-entity")
+
              (:file "dbc-class-taxon-entity")
+
              (:file "dbc-class-regexps")
+
              (:file "dbc-class-users")
+
              (:file "dbc-class-description")
+
              (:file "dbc-class-documentation-record")
+
              ;; ==============================
              ;; Following file "dbc-class-parsed.lisp"
              ;; defines class `parsed-class' sublasses `base-dbc'
              (:file "dbc-class-parsed")
+
              (:file "dbc-class-parsed-slot-value-equal")
+
              (:file "dbc-class-parsed-field-slot-mapping")
+
              (:file "dbc-class-parsed-convert")
+
              (:file "dbc-class-parsed-slot-value-format")
+
              (:file "dbc-class-parsed-inventory-record")
+
              (:file "dbc-class-parsed-artist-record")
+
              (:file "dbc-class-parsed-author-record")
+
              (:file "dbc-class-parsed-person-record")
+
              (:file "dbc-class-parsed-brand-record")
+
              (:file "dbc-class-parsed-technique-record")
+
              (:file "dbc-class-parsed-publication-record")
+
              (:file "dbc-class-parsed-theme-record")
+
              (:file "dbc-class-parsed-documentation-record")
+
              (:file "dbc-class-parsed-translation-for-inventory-record")
+
              (:file "dbc-class-parsed-inventory-sales-order-record")
+
              (:file "dbc-class-parsed-inventory-sales-sold-record")
+
              (:file "dbc-class-parsed-inventory-sales-sold-in-store-record")
+
              ;; (:file "dbc-tgm")))
-             ;;
+
              ;; (:file "dbc-class-symbol-construct-deprecated")
-             ;;
+             
              (:file "dbc-class-image")
+
              (:file "dbc-class-image-path-convert")
+
              (:file "dbc-class-image-path-inventory-record")
+
              (:file "dbc-class-parsed-csv-writer")
+
              (:file "dbc-class-parsed-slot-value-cleaning")
-             (:file "dbc-class-parsed-tgm-theme-record")
-             ))
+
+             (:file "dbc-class-parsed-tgm-theme-record")))
+   
    (:module "dbc-parse"
 	    :components
 	    ((:file "dbc-cln-parse")
              (:file "dbc-xml-sql-parse")
              (:file "dbc-xml-refs-parse")
              (:file "dbc-xml-parse-sax")
-	     ;; (:file "psa-parse-table.lisp")
-	    ))
+             ;; (:file "psa-parse-table.lisp")
+	     ))
+	     
    (:module "dbc-translate"
             :components
             ((:file "dbc-french-numbers")
              (:file "dbc-french-dates")))
+   
    (:file "dbc-docs"))
+
   :in-order-to ((test-op (test-op "dbc/dbc-test")))
 )
-
 
 ;; dbc-test::make-v5-uuid-test
 ;; dbc-test::system-test-temp-dir-exists-p
@@ -242,7 +301,7 @@
 ;; (sb-rt:do-test 'split-field-on-char-if-TEST.2)
 
 
-;;; (defpackage #:dbc-test-system (:use :common-lisp :asdf))
+;; (defpackage #:dbc-test-system (:use :common-lisp :asdf))
 ;; (in-package #:dbc-test-system)
 
 (asdf:defsystem :dbc/dbc-test
@@ -268,13 +327,12 @@
 		                                 (find-package '#:dbc/test))))
   )
 
-;; is this needed anymore with ASDF3?
+;; :NOTE is this needed anymore with ASDF3? Doesn't seem so.
 ;; (defmethod asdf:perform :after ((op asdf:load-op) (system (eql (asdf:find-system :dbc-test))))
 ;;            (pushnew :dbc-test cl:*features*))
 
 
 (defmethod asdf:perform :after ((op asdf:load-op) (system (eql (asdf:find-system :dbc))))
-  ;; (pushnew :dbc cl:*features*)
   (let* (;; #-:IS-MON(chk-if(uiop:file-exists-p ;; :WAS cl-fad:file-exists-p
          ;;                  (merge-pathnames (make-pathname :name "loadtime-bind" :type "lisp")
          ;;                                   ;; :WAS (mon:pathname-directory-system :dbc)
@@ -284,14 +342,12 @@
          (dbc-build-system::*dbc-build-system-reloading-system*
           (or (and chk-existing-feature t) dbc-build-system::*dbc-build-system-reloading-system*)))
     (and chk-if
-      (load  chk-if)))
-  ;; Not sure if this is needany any longer with ASDF3
+         (load  chk-if)))
+  
   (pushnew :dbc cl:*features*)
-  ;;  Don't think this is needed any longer with ASDF3
+  ;; Don't think this is needed any longer with ASDF3
   ;; (asdf:operate 'asdf:load-op 'dbc-test)
   )
-
-;; (member :DBC cl:*features*)
 
 ;;; ==============================
 

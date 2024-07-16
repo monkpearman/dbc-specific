@@ -5,7 +5,7 @@
 
 (in-package #:dbc)
 
-(defparameter *parsed-inventory-record-field-name-slot-transform* (make-hash-table :test 'equal))
+(defparameter *parsed-inventory-record-field-name-slot-transform* (make-hash-table-sync :test 'equal))
 
 (defparameter *xml-refs-match-table* nil)
 
@@ -217,7 +217,7 @@
 ;; :UNUSED
 (defun make-ref-lookup-table (ref-list)
   ;; (make-ref-lookup-table (list "ref" "price" "year" "artist" "condition"))
-  (let ((ref-hash (make-hash-table :test 'equal)))
+  (let ((ref-hash (make-hash-table-sync :test 'equal)))
     (loop
        :for ref :in ref-list
        :collecting (cons ref (make-ref-maker-symbol ref)) :into tbl
