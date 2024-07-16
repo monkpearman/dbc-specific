@@ -361,7 +361,7 @@ and the following methods specialized on the classes:
 ;; |    #<HASH-TABLE :TEST UUID-EQL :COUNT 0 {B541471}>
 ;;
 ;; (multiple-value-bind (namespace-uuid namespace-hash) (%control-id-namespace-prefetch-uuid-table 'control-id-indexed-theme)
-;;   (let* ((indexed-id "88")
+;;   (let* ((indexed-id "666")
 ;;          (indexing-uuid (make-v5-uuid namespace-uuid indexed-id))
 ;;          (maybe-already-indexed (gethash indexing-uuid namespace-hash)))
 ;;     (if maybe-already-indexed
@@ -1075,13 +1075,13 @@ and the following methods specialized on the classes:
 ;;     :accessor entity-num
 ;;     :initform (error "must provided a entity-num"))))
 ;;
-;; (defparameter *tt--indexed-theme* (make-instance 'tt--indexed-theme :entity-num "88") )
+;; (defparameter *tt--indexed-theme* (make-instance 'tt--indexed-theme :entity-num "666") )
 ;;
 ;; (control-id-namespace *tt--indexed-theme*)     -> 386c2fdb-a3b3-5513-be98-f530639a0380
 ;; (control-id-of-class-type *tt--indexed-theme*) -> #<STANDARD-CLASS DBC:THEME-ENTITY>
 ;; (control-id-identifies    *tt--indexed-theme*) ->  #<unbound>
 ;; (control-id-uuid          *tt--indexed-theme*) ->  #<unbound>
-;; (entity-num *tt--indexed-theme*)               -> "88"
+;; (entity-num *tt--indexed-theme*)               -> "666"
 
 
 ;;; ==============================

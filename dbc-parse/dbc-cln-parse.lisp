@@ -40,6 +40,7 @@
 ;;                    (split-sequence:split-sequence-if #'(lambda (y) (member y char-or-char-bag))
 ;;                                                      string-or-null
 ;;                                                      :remove-empty-subseqs t))))
+; mon:split-bag
 (defun split-bag (string-or-null char-or-char-bag)
   (declare (or (string null) string-or-null)
            (or (character list) char-or-char-bag))

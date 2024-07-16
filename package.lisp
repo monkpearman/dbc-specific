@@ -760,6 +760,7 @@
              #:field-name-convert-field-name
 	     ;; mon:string-split-on-chars
 	     #:split-used-fors
+              #:split-bag
 	     ;;
 	     ;; mon:string-split-on-chars, mon:string-trim-whitespace
 	     #:split-appeared-in
