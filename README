@@ -3,7 +3,6 @@ Common Lisp functions and classes for transitioning an SQLdb to an ORM
 The bulk of the ORM defined herein revolves around the class `parsed-inventory-record' in 
 :FILE ./dbc-classes/dbc-class-inventory-record.lisp
 
-
 Directory ./dbc-classes contains functions/classes for our new ORM
 
 Directory ./dbc-parse contains functions for SAX parsing an XML db schema
