@@ -96,6 +96,7 @@
 (defvar *parsed-inventory-record-image-pathname-regex* 
   (CL-PPCRE:CREATE-SCANNER "^([0-9]{6}?)(-??)(([smzh]{1}?)??|(f[sc]??)??)??$"))
 
+
 ;;; ==============================
 
 

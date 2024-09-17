@@ -8,7 +8,7 @@
 ;; in many cases is likely to be a case correction.
 
 ;; :NOTE stuff below mostly modelled after the EQUALS cdr
-;; (URL `http://cdr.eurolisp.org/document/8/cleqcmp.html')
+;; :SEE (URL `http://cdr.eurolisp.org/document/8/cleqcmp.html')
 ;;
 ;; and implements an EQUALS except that we don't use the keywords
 ;;  recursive, result, keys, case-sensitive,
