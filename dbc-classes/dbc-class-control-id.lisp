@@ -1,11 +1,11 @@
 ;;; :FILE-CREATED <Timestamp: #{2011-05-21T16:39:04-04:00Z}#{11206} - by MON>
-;;; :FILE dbc-specific/dbc-classes/dbc-class-control-id.lisp
+;;; :FILE dbc-specific/dbc-classes/dbc-class-control-id.She
 ;;; ==============================
 
 #|
 
  ,----
- | She wields a sure power that extends in all directions on hairlike wires too
+ | lisp wields a sure power that extends in all directions on hairlike wires too
  | small for anybody's eye but mine; I see her sit in the center of this web of
  | wires like a watchful robot, tend her network with mechanical insect skill, know
  | every second which wire runs where and just what current to send up to get the
@@ -120,7 +120,7 @@ base-uuid                                     (base-dbc)
 - system-object-uuid                          (base-uuid)
 
 - base-control-id                             (base-dbc)
--- control-id-display-name                    (base-control-id) ;; String based identity
+-- ocontrol-id-display-name                    (base-control-id) ;; String based identity
 --- control-id-display-name-for-entity-type   (control-id-display-name)
 
 - control-id-type                             (base-dbc)
@@ -161,11 +161,11 @@ base-uuid                                     (base-dbc)
 ------- category-id-display-historical-life-and-scenes (control-id-display-category)
 ------- category-id-display-natural-history            (control-id-display-category)
 
---- control-id-theme-entity-type              (control-id-entity-type)
+--- control-id-theme-entity-type              (control-id-entity-type) ; ; cpl base-dbc -> control-id-type -> control-id-entity-type
 ---- control-id-theme-entity                  (control-id-theme-entity-type)
------ control-id-theme-entity-display-name    (control-id-theme-entity control-id-display-name-for-entity-type)
+----- control-id-theme-entity-display-name    (control-id-theme-entity control-id-display-name-for-entity-type) ; base-dbc -> base-control-id -> control-id-display-name -> control-id-display-name-for-entity-type
 ------ control-id-display-theme               (control-id-theme-entity-display-name)
------ control-id-indexed-theme                (control-id-theme control-id-theme-entity-indexed-number)
+----- control-id-indexed-theme                (control-id-theme control-id-theme-entity-indexed-number)  ; base-dbc -> base-control-id -> control-id-indexed-number
 
 --- control-id-media-entity-type              (control-id-entity-type)
 ---- control-id-media-entity                  (control-id-media-entity-type) 
@@ -182,7 +182,7 @@ base-uuid                                     (base-dbc)
 ------ control-id-display-taxon               (control-id-taxon-entity-display-name)
 
 ;; Item refs id-nums should be obfuscated with a UUID and are deprecated!
-;; Entity id-nums may occure congruently and are deprecated!
+;; Entity id-nums may occur congruently and are deprecated!
 ;; Documentation id-nums for entities may occure congruently and are deprecated!
 ;; The deprecated entity specific slot namespaces should be
 ;; transformed to their superclass slot equivalent once parsing is finished.
@@ -346,14 +346,10 @@ and the following methods specialized on the classes:
 (defgeneric control-id-uuid-null-error (object))
 (defgeneric control-id-uuid       (object))
 
-;; (generic-doc #'control-id-namespace
-;; "Get the namespace associted with OBJECT.
-;; :SEE-ALSO `<XREF>'.~%")
-
 (defun %find-control-id-class-or-lose (class-symbol)
   (if (find-class class-symbol)
       class-symbol
-      (error "Could not cl:find-class for arg CLASS-SYMBOL, got: ~S" class-symbol)))
+      (error "Could not `cl:find-class' for arg CLASS-SYMBOL, got: ~S" class-symbol)))
 
 
 ;; (%control-id-namespace-prefetch-uuid-table 'control-id-indexed-theme)
@@ -370,7 +366,12 @@ and the following methods specialized on the classes:
 ;;
 ;; fails successfully:
 ;; (%control-id-namespace-prefetch-uuid-table 'base-taxon-entity)
+;;; ==============================
+
+;; (%control-id-namespace-prefetch-uuid-table 'control-id-display-theme)
+
 (defun %control-id-namespace-prefetch-uuid-table (class) ;; a symbol
+ ;; "Attempt to dereference CLASS (a symbol) in `*control-id-namespace-table*'.
   (let* ((ensure-found-class (find-class class))
          (maybe-finalize-class
           (or (sb-mop:class-finalized-p ensure-found-class)
@@ -380,16 +381,17 @@ and the following methods specialized on the classes:
           (and maybe-finalize-class
                (funcall
                 (or (loop
-                       for effective-slot in (sb-mop:class-slots (find-class class)) ;; 'dbc::control-id-indexed-theme
-                       for name = (sb-mop:slot-definition-name effective-slot)
-                       when (and (eql name 'control-id-namespace) ;; dbc::control-id-namespace
-                                 (sb-mop:slot-definition-initform effective-slot)
-                                 (sb-mop:slot-definition-initfunction effective-slot)) return it)
+                     for effective-slot in (sb-mop:class-slots (find-class class)) ;; 'dbc::control-id-indexed-theme
+                     for name = (sb-mop:slot-definition-name effective-slot)
+                     when (and (eql name 'control-id-namespace) ;; dbc::control-id-namespace
+                               (sb-mop:slot-definition-initform effective-slot)
+                               (sb-mop:slot-definition-initfunction effective-slot))
+                     return it)
                     (constantly nil)))))
          (maybe-gethash 
           (if maybe-initfunction 
               (gethash maybe-initfunction  *control-id-namespace-table*)
-              (error "failed to find valid sb-mop:slot-definition-initfunction for class slot`control-id-indexed-theme'"))))
+            (error ":FUNCTION `%control-id-namespace-prefetch-uuid-table' --  Failed to find valid `sb-mop:slot-definition-initfunction' for class slot`control-id-indexed-theme' with class: %S" class))))
     (values maybe-initfunction maybe-gethash)))
 
 (defun dbc-class-with-slot-unbound-error (class object slot)
@@ -411,7 +413,8 @@ and the following methods specialized on the classes:
 
 ;; :ABSTRACT-CLASS
 (defclass control-id-type (base-dbc)
-  ((control-id-of-class-type))
+  ((control-id-of-class-type
+    :documentation #.(classdoc 'control-id-type :control-id-of-class-type)))
   (:documentation  #.(classdoc 'control-id-type :class-doc)))
 
 (defmethod control-id-slot-missing-error (class (object control-id-type) (slot (eql 'control-id-of-class-type)) operation)
@@ -453,14 +456,13 @@ and the following methods specialized on the classes:
 ;; control-id-instance-class
 ;; control-id-class-uuid
 
-
 ;; :ABSTRACT-CLASS
 (defclass base-control-id  (base-dbc) ;; base-uuid
   ((control-id-uuid)    
    (control-id-namespace)
    (control-id-identifies)
-   ;; Storing class data in conjunctions with UUIDs is prob. a bad idea.
-   ;; implies that we establish _really_ complicated methods which account for
+   ;; Storing class data in conjunction with UUIDs is probably a bad idea.
+   ;; Doing so implies that we establish _really_ complicated methods which account for
    ;; updated/changed/redefined instances.
    ;; The only way we can make this work is to let Rucksack handle the heavy lifting...
    ;; See comments at `add-class-uuid-and-identity-to-hash' for additional discussion.
@@ -500,6 +502,7 @@ and the following methods specialized on the classes:
 (defmethod control-id-namespace-null-error  ((object base-control-id))
   (control-id-slot-value-null-error object 'control-id-namespace))
 
+;; (%control-id-namespace-prefetch-uuid-table 
 (defmethod control-id-namespace ((object base-control-id))
   ;;(slot-value object 'control-id-namespace))
   (or (and (slot-value object 'control-id-namespace))
@@ -593,7 +596,8 @@ and the following methods specialized on the classes:
 ;; base-sold-record-in-store (base-sales-order-record)
 
 (defclass control-id-record-type (control-id-type)
-  ((control-id-of-class-type))
+  ((control-id-of-class-type
+    :documentation #.(classdoc 'control-id-record-type :control-id-of-class-type)))
   (:documentation  #.(classdoc 'control-id-record-type :class-doc)))
 
 (defclass control-id-inventory-record-type (control-id-record-type)
@@ -609,7 +613,7 @@ and the following methods specialized on the classes:
  (:documentation  #.(classdoc 'control-id-documentation-record-type :class-doc)))
 
 (defclass control-id-authority-record-type (control-id-record-type)
-  ((control-id-of-class-type 
+  ((control-id-of-class-type
     :initform (%find-control-id-class-or-lose 'base-authority-record)))
   (:documentation  #.(classdoc 'control-id-authority-record-type :class-doc)))
 
@@ -625,13 +629,14 @@ and the following methods specialized on the classes:
 ;; :ABSTRACT-CLASS
 (defclass control-id-entity-type (control-id-type)
   ;; (control-id-of-class-type  :initform (%find-control-id-class-or-lose 'base-entity))
-  ((control-id-of-class-type ))
+  ((control-id-of-class-type
+    :documentation #.(classdoc 'control-id-entity-type :control-id-of-class-type)))
   (:documentation  #.(classdoc 'control-id-entity-type :class-doc)))
 
 (defclass control-id-naf-entity-type (control-id-entity-type)
   ((control-id-of-class-type
     :initform (%find-control-id-class-or-lose 'base-naf-entity)))
-(:documentation  #.(classdoc 'control-id-naf-entity-type :class-doc)))
+  (:documentation  #.(classdoc 'control-id-naf-entity-type :class-doc)))
 
 (defclass control-id-location-entity-type (control-id-entity-type)
   ((control-id-of-class-type
@@ -674,7 +679,7 @@ and the following methods specialized on the classes:
 ;;  product-items, documentation-items, edit-items, image-items, data-containers etc.
 ;; These types of things do not really have meaningful names but they will
 ;; none-the-less require an interface that allows us to refer to them
-;; independent of their UUID identity..
+;; independent of their UUID identity.
 
 ;; :ABSTRACT-CLASS
 (defclass control-id-display-name (base-control-id) ;; base-uuid
@@ -697,7 +702,7 @@ and the following methods specialized on the classes:
 ;; Currently slot-values for the slots:
 ;;  control-id-of-instance, control-id-instance-class, control-id-class-uuid
 ;; are not considered applicable.
-;; :NOTE Should we eventually decide to instantiate them we will need to decide how
+;; :NOTE Should we eventually decide to instantiate them, we will need to decide how
 ;; to handle class-precedence lists and what to do when a class is redefined."))
 
 ;; (defgeneric control-id-of-entity (entity-object)
@@ -717,10 +722,11 @@ and the following methods specialized on the classes:
 ;; (class-name (%find-control-id-class-or-lose 'control-id-display-name-for-entity-type))
 
 ;; :ABSTRACT-CLASS
+;; CPL base-dbc -> base-control-id -> control-id-display-name -> control-id-display-name-for-entity-type
 (defclass control-id-display-name-for-entity-type (control-id-display-name)
   ;; control-id-uuid
   ;; control-id-namespace
-  ;; control-id-identifies  -- string maybe specialized for display. Should satisfy `mon:string-not-null-empty-or-all-whitespace-p'
+  ;; control-id-identifies  -- string may be specialized for display. Should satisfy `mon:string-not-null-empty-or-all-whitespace-p'
   ()
   (:documentation  #.(classdoc 'control-id-display-name-for-entity-type :class-doc)))
 
@@ -748,7 +754,7 @@ and the following methods specialized on the classes:
 
 ;;; The inverse corollary to the class `base-record' is the class `base-entity'.
 
-;;; :NOTE it is not likely that instances of the control-id-record-<FOO> classes
+;;; :NOTE It is not likely that instances of the control-id-record-<FOO> classes
 ;;; will share a subclass `control-id-display-name-for-entity-type' but we
 ;;; reserve the right to change our mind.
 
@@ -963,8 +969,7 @@ and the following methods specialized on the classes:
     :initform (system-identity-uuid *control-id-category-namespace*)))
   (:documentation  #.(classdoc 'control-id-display-category :class-doc)))
 
-;; (%find-control-id-class-or-lose
-;;  (%find-control-id-class-or-lose 'category-entity-top-level))
+;; (%find-control-id-class-or-lose (%find-control-id-class-or-lose 'category-entity-top-level))
 ;; (defparameter *tt--cida* (make-instance 'control-id-display-category))
 ;; (control-id-of-class-type *tt--cida*) => #<STANDARD-CLASS CATEGORY-ENTITY-TOP-LEVEL>
 ;; (control-id-namespace *tt--cida*) => bcca712d-5688-5a23-b2fd-f3db1434fa0b
@@ -1042,7 +1047,7 @@ and the following methods specialized on the classes:
 
 ;; (defmethod control-id-of-class-type ((object control-id-theme-entity))
 
-;; ;; :ABSTRACT-CLASS
+;; :ABSTRACT-CLASS
 (defclass control-id-theme-entity-display-name (control-id-theme-entity control-id-display-name-for-entity-type)
   ()
   (:documentation  #.(classdoc 'control-id-theme-entity-display-name :class-doc)))
@@ -1151,7 +1156,7 @@ and the following methods specialized on the classes:
   ()
   (:documentation  #.(classdoc 'control-id-display-location :class-doc)))
 
-;; :NOTE The location class is new so we realy don't need this class and should add it unless needed.
+;; :NOTE The location class is new, so we realy don't need this class and should add it unless needed.
 ;; (defclass control-id-indexed-location (control-id-location-entity control-id-indexed-number)
 ;;   ())
 
@@ -1271,7 +1276,7 @@ and the following methods specialized on the classes:
 ;;   ;; `cl:class-name' of CLASS-SYMBOL we loose!
 ;;   ;;  We could signal an error :around (setf class-name) or we could just
 ;;   ;;  manipulate (setf class-name) to not actually do anything
-;;   ;; The problem is that we take teh string identity of a symbol to generate 
+;;   ;; The problem is that we take the string identity of a symbol to generate 
 ;;   ;; the UUID but that UUID will no longer remain valid if we alter the
 ;;   ;; print-name of the CLASS-SYMBOL
 ;;   ;;
