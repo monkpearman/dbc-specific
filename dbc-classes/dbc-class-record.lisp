@@ -31,7 +31,9 @@ commonly recognized identity.~%~@
 The inverse corollary to the class `base-record' is the class `base-entity'.~%~@
 :EXAMPLE~%~% ~
  \(mon:class-subclasses \(find-class 'base-entity\)\)~%~@
-:SEE-ALSO `<XREF>'.~%▶▶▶")))
+:SEE-ALSO `base-entity', `base-regexp', `base-image', `base-description',
+`base-edit', `base-uuid', `base-control-id', `system-object-uuid',
+`control-id-type', `base-control-id'.~%▶▶▶")))
 
 
 ;;; ==============================

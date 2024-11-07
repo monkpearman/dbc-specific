@@ -34,8 +34,8 @@ https://www.loc.gov/rr/print/tgm1/ic.html
 
 ;;; ==============================
 
-:TODO once the parser is finalized, need to walk through lists for each of the
-theme naming slots ofclass `parsed-tgm-theme-record' and make a key/val pairs
+:TODO Once the parser is finalized, need to walk through lists for each of the
+theme naming slots of class `parsed-tgm-theme-record' and make a key/val pairs
 plist/alist/hash of the form:
 
  <CONTROL-ID-DISPLAY-THEME> . <UUID>
@@ -48,13 +48,13 @@ applicable than simply adding key/val pairs to a standard CL sequence, but that
 needs additional thought and is currently TBD.
 
 Likewise, need to figure out the scheme for storing UUID's for each instance of
-`parsed-tgm-theme-record'. we can store this in a separate lookup hashtable
+`parsed-tgm-theme-record'. We can store this in a separate lookup hashtable
 where each theme has the same form as above, eg:
 
  <CONTROL-ID-DISPLAY-THEME> . <UUID>
 
 Or, we can store the UUID in the object itself and walk the hash-table storing
-our `parsed-tgm-theme-record' instances.l
+our `parsed-tgm-theme-record' instances.
 
 
 ;;; ==============================
@@ -226,6 +226,7 @@ The interface for functions defined herein is as follows:
 ;;
 (defclass parsed-tgm-theme-record () ;; (parsed-class)
   ((control-id-display-theme ; Congruent with slot in class `parsed-theme-record'.
+    ;; base-dbc -> base-control-id -> control-id-display-name -> (control-id-display-name-for-entity-type control-id-theme-entity) ->  control-id-theme-entity-display-name -> control-id-display-theme
     :initarg :control-id-display-theme
     :accessor control-id-display-theme
     :documentation #.(classdoc 'parsed-tgm-theme-record :control-id-display-theme))
@@ -859,7 +860,7 @@ Only slot-value of following slots will be lists of length larger than 1 contain
      66 "Mental states", 63 "Photographs" ...
 
 ; narrower-theme
-(tgm-parse-concept-count-slot-value-list-length 'related-themew :hash-table *parsed-tgm-theme-record-hash-table*)
+(tgm-parse-concept-count-slot-value-list-length 'related-theme :hash-table *parsed-tgm-theme-record-hash-table*)
   ->  3236,  43 "Religion", 40 "Sports", 38 "War", 35 "Human body" ... 
 
 |#

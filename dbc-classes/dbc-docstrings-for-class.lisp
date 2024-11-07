@@ -182,8 +182,10 @@ theme. A theme is knowable outside the context of the dbc system an inventory
 item not so much so.~%
 :EXAMPLE~%
  \(mon:class-subclasses \(find-class 'base-entity\)\)~%~@
-:SEE-ALSO `base-entity', `base-theme-entity', `base-category-entity', `base-taxon-entity',
-`base-naf-entity', `base-media-entity', `base-location-entity'.~%▶▶▶~%"))
+:SEE-ALSO `base-theme-entity', `base-category-entity', `base-taxon-entity',
+`base-naf-entity', `base-media-entity', `base-location-entity',
+`base-record', `base-regexp', `base-image', `base-description', `base-edit',
+`base-uuid', `base-control-id', `system-object-uuid', `control-id-type'.~%▶▶▶~%"))
 
 ) ; close eval-when
 
@@ -194,10 +196,6 @@ item not so much so.~%
 
 (eval-when (:compile-toplevel)  ; :load-toplevel :execute)
 
-(make-documented-class 'control-id-type
-:class-doc
-#.(format nil 
-"The type of class represented by subclasses of `base-control-id'.~%~%"))
 
 (make-documented-class 'base-control-id
 :class-doc
@@ -211,16 +209,42 @@ The slot CONTROL-ID-UUID is a UUID generated as if by:~%
 The slot CONTROL-ID-NAMESPACE is a UUID namespace appropriate to the gerneration
 of a control-id-uuid slot-value applicable to a particlar object and it is used
 as the NAMESPACE arg used when generating the v5 UUIDs.~%~@
-The SLOT CONTROL-ID-IDENTIFIES is a string or symbol.~%~
+The slot CONTROL-ID-IDENTIFIES is a string or symbol.~%~
 It is used as the NAME arg used when generating the the v5 UUID the slot-value~%~
 for control-id-uuid.~%~@
-:EXAMPLE~% ~
+:EXAMPLE~%~% ~
  \(mon:class-subclasses \(%find-control-id-class-or-lose 'base-control-id\)\)~%~@
 :NOTE subclasses of `base-control-id' are distinct from those of the class
 `base-uuid' which defines _canonical_ identities for dbc system objects
 \(as distinct from the values they are contained of\).~%~@
-:SEE-ALSO .~%▶▶▶"))
-  
+:SEE-ALSO `base-record', `base-entity', `base-regexp', `base-image',
+`base-description', `base-edit', `base-uuid', `base-control-id',
+`system-object-uuid', `control-id-type'.~%▶▶▶~%"))
+;;
+(make-documented-class 'control-id-type
+ :control-id-of-class-type
+ #.(format nil 
+"The slot `control-id-of-class-type' is informally class-allocated e.g. it
+should be treated as if the following were specified:~%~% ~
+ \(control-id-of-class-type :allocation :class\) ~%~%~
+Instanaces of class `control-id-type' \(and it's subclasses\) should not directly set this
+slot-value, and it should not be instantiated via an initarg, nor should it be
+specialized by a setf accessor form.~%
+The slot-value `control-id-of-class-type' should only be set when a class is
+defined as follows:~%~%~@
+ \(defclass control-id-<FOO>-entity-type \(control-id-entity-type\)
+  \(\(control-id-of-class-type
+    :initform \(%find-control-id-class-or-lose 'base-<FOO>-entity\)\)\)\)~%
+Doing so allows for the following:~%
+ \(control-id-of-class-type \(make-instance 'control-id-<FOO>-entity-type\)\)
+ ; => #<STANDARD-CLASS DBC:BASE-<FOO>-ENTITY>~%~%")
+
+:class-doc
+#.(format nil "The class `control-id-type' is an abstract-class.~%~@
+Its subclasses distinguish different types of classes with control ids.~%~
+:SEE-ALSO `system-object-uuid', `base-uuid', `base-control-id', `base-record',
+`base-entity', `base-regexp', `base-image', `base-description', `base-edit'.~%▶▶▶~%"))
+
 (make-documented-class 'control-id-indexed-number
 :class-doc
 #.(format nil
@@ -252,10 +276,10 @@ Usage of this class is roughly correllative with usage of
  :control-id-of-class-type
  #.(format nil 
 "A class object identified by the subclasses of class `base-control-id'.~%~@
-:NOTE This slot is informally class-allocated e.g. it should be treated as if~%~
+:NOTE This slot is informally class-allocated e.g. it should be treated as if
 the following were specified:~%~% ~
  \(control-id-of-class-type :allocation :class\) ~%~%~
-Its slot-value should not be instantiated via an initarg, nor should it be~%~
+It's slot-value should not be instantiated via an initarg, nor should it be~%~
 specialized by a setf accessor form.~%
 :SEE-ALSO `control-id-record-type', `control-id-inventory-record-type',
 `control-id-documentation-record-type', `control-id-authority-record-type',
@@ -348,7 +372,7 @@ instances which subclass `category-entity-top-level'.~%
 (make-documented-class 'control-id-theme-entity-type
 :class-doc
   #.(format nil "control-id for class instances which subclass `base-theme-entity'.~%
-control-id's of this type provide an interface for uniquely referencing 
+control-id's of this type provide an interface for uniquely referencing theme-entities.~%
 :SEE-ALSO `control-id-entity-type', `control-id-naf-entity-type',
 `control-id-location-entity-type', `control-id-category-entity-type',
 `control-id-theme-entity-type', `control-id-taxon-entity-type'.~%~%▶▶▶~%"))
@@ -356,7 +380,8 @@ control-id's of this type provide an interface for uniquely referencing
 (make-documented-class 'control-id-media-entity-type
 :class-doc
 #.(format nil "control-id for class instances which subclass `base-media-entity'.~%
-control-id's of this type provide an interface for uniquely referencing entities which comprise a type of media.~%
+control-id's of this type provide an interface for uniquely referencing entities
+which comprise a type of media.~%
 :SEE-ALSO `media-entity-technique', `media-entity-material',
 `media-entity-paper', `media-entity-mount', `media-entity-color',
 `control-id-entity-type', `control-id-naf-entity-type',
@@ -366,7 +391,7 @@ control-id's of this type provide an interface for uniquely referencing entities
 (make-documented-class 'control-id-taxon-entity-type
 :class-doc
   #.(format nil "control-id for class instances which subclass `base-taxon-entity'.~%
-control-id's of this type provide an interface for uniquely referencing  Linnean names.~%
+control-id's of this type provide an interface for uniquely referencing Linnean names.~%
 :SEE-ALSO `taxon-entity-coref', `control-id-taxon-entity-display-name',
 `*control-id-taxon-namespace*', `control-id-taxon-entity',
 `control-id-taxon-entity-display-name', `control-id-display-taxon'
@@ -377,8 +402,9 @@ control-id's of this type provide an interface for uniquely referencing  Linnean
 (make-documented-class 'control-id-display-name
 :class-doc
    #.(format nil
-             "The class `control-id-display-name' records information for classes with slots
-which record displayable control-ids which identify a nameable thing.~%~@
+             "The class `control-id-display-name' records information for
+classes with slots which record displayable control-ids which identify a
+nameable thing.~%~@
 :NOTE A nameable thing is not necessarily an entity.~%~@
 :EXAMPLE~%
  \(mon:class-subclasses \(%find-control-id-class-or-lose 'control-id-display-name\)\)~%~@
@@ -393,12 +419,13 @@ which record displayable control-ids which identify a nameable thing.~%~@
              "Instances of this class hold information about an entities displayable name.~%~@
 The slot CONTROL-ID-INSTANCE-CLASS is a symbol indicating the class of the
 entity identified by the slot-value CONTROL-ID-IDENTIFIES.~%~@
-rThis slot should be instantiated to a class-object suitable for use as an
-argument to `cl:%find-control-id-class-or-lose' and which returns a class or subclass which is a
-member in the set of class-names returned by the following forms \(or their expansions\):~%~% ~
+This slot should be instantiated to a class-object suitable for use as an
+argument to `%find-control-id-class-or-lose' and which returns a class or
+subclass which is a member in the set of class-names returned by the following
+forms \(or their expansions\):~%~% ~
  \(mon:class-subclasses \(%find-control-id-class-or-lose 'base-entity\)\)~%~% ~
- \(member \(class-name \(%find-control-id-class-or-lose 'base-naf-entity\)\))~%~% ~
- \(mon:class-subclasses \(%find-control-id-class-or-lose 'base-entity\)\)\)~%~% ~
+ \(member \(%find-control-id-class-or-lose 'base-naf-entity\)
+        \(mon:class-subclasses \(%find-control-id-class-or-lose 'base-entity\)\)\)~%
 :NOTE There may be multiple different entities with a `control-id-identifies'
 slot-value which are `cl:string='.~%~@
 Likewise, such co-references may occur in both the same class and/or an entirely different class.)~%
@@ -648,7 +675,6 @@ Likewise, such co-references may occur in both the same class and/or an entirely
 `category-id-display-historical-life-and-scenes',
 `category-id-display-natural-history'.~%▶▶▶~%"))
 
-
 (make-documented-class 'category-id-display-architecture-and-design
 :class-doc
  #.(format nil "
@@ -658,7 +684,6 @@ Likewise, such co-references may occur in both the same class and/or an entirely
 `category-id-display-books-and-publications', `category-id-display-geography',
 `category-id-display-historical-life-and-scenes',
 `category-id-display-natural-history'.~%▶▶▶~%"))
-
 
 (make-documented-class 'category-id-display-books-and-publications
 :class-doc
@@ -729,6 +754,8 @@ Likewise, such co-references may occur in both the same class and/or an entirely
 (make-documented-class 'control-id-display-theme
 :class-doc
  #.(format nil "
+:NOTE `control-id-indexed-theme' also names a slot for instances of class 
+`parsed-theme-record' and `parsed-tgm-theme-record'.~%
 :SEE-ALSO `control-id-display-technique', `control-id-display-material',
 `control-id-display-mount', `control-id-display-paper',
 `control-id-display-theme', `control-id-display-taxon',
@@ -1013,8 +1040,10 @@ information re the alteration of a class instance or slot value of an instance.~
 Not all instances and slots should record edit information. However, when it is
 important to record when/how the data of a slot/instance was made it should be
 done using the edit-class interface.~%
-:SEE-ALSO `base-entity', `base-theme-entity', `base-category-entity', `base-taxon-entity',
-`base-naf-entity', `base-media-entity', `base-location-entity'.~%▶▶▶~%"))
+:SEE-ALSO `base-theme-entity', `base-category-entity', `base-taxon-entity',
+`base-naf-entity', `base-media-entity', `base-location-entity', `base-entity',
+`base-record', `base-regexp', `base-image', `base-description', `base-edit',
+`base-uuid', `base-control-id', `system-object-uuid', `control-id-type'.~%▶▶▶~%"))
 
 ) ;; close eval when
 
@@ -1239,7 +1268,7 @@ Life
 :class-doc
 #.(format nil
 "Base class for matching control names of DBC entity instances.~%~@
-:SEE-ALSO `base-regexp', `entity-regexp-subclass-allocation', `entity-regexp',
+:SEE-ALSO `entity-regexp-subclass-allocation', `entity-regexp',
 `theme-entity-regexp', `category-entity-regexp', `media-entity-regexp',
 `location-entity-regexp', `naf-entity-type-regexp',
 `naf-entity-control-name-regexp', `naf-entity-alt-name-regexp',
@@ -1250,7 +1279,9 @@ Life
 `naf-entity-publication-control-regexp', `naf-entity-publication-alt-regexp',
 `regexp-match-entity-class', `regexp-match-entity-db',
 `regexp-match-matcher-db', `regexp-match-container-type',
-`regexp-match-container-uuid', `regexp-matcher'.~%▶▶▶~%"))
+`regexp-match-container-uuid', `regexp-matcher', `base-record', `base-entity',
+`base-image', `base-description', `base-edit', `base-uuid',
+`system-object-uuid', `control-id-type', `base-control-id'.~%▶▶▶~%"))
 
 ;; entity-regexp-subclass-allocation
 (make-documented-class 'entity-regexp-subclass-allocation
@@ -1636,7 +1667,9 @@ Its `cl:hash-table-test' is `cl:eql'.~%~@
   
 (make-documented-class 'base-image :class-doc
 #.(format nil "Base class for dbc image insances.~%
-:SEE-ALSO `<XREF>'.~%▶▶▶~%"))
+:SEE-ALSO `base-record', `base-entity', `base-regexp', `base-image',
+`base-description', `base-edit', `base-uuid', `base-control-id',
+`system-object-uuid', `control-id-type'.~%▶▶▶~%"))
 
 ) ; close eval-when
 

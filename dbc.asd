@@ -121,7 +121,7 @@
    (:module "dbc-time"
             :components
             ((:file "date-localtime-utils")))
-   
+
    (:module "dbc-classes"
             :components
             ;; dbc-docstrings-for-class.lisp interns docstrings for many of
@@ -132,28 +132,28 @@
              ;; ==============================
              ;; Following file "dbc-class.lisp"
              ;; defines class `base-dbc'
-             (:file "dbc-class")       
+             (:file "dbc-class")
 
              ;; ==============================
              ;; Following file "dbc-class-paths.lisp"
              ;; defines class `system-base', `system-path'
-             (:file "dbc-class-paths") 
+             (:file "dbc-class-paths")
 
              ;; ==============================
              ;; Following file "dbc-class-uuid.lisp"
              ;; defines class `base-uuid'
-             (:file "dbc-class-uuid")  
+             (:file "dbc-class-uuid")
 
              ;; ==============================
              ;; Following file "dbc-class-system-object-uuid.lisp"
              ;; defines class `system-object-uuid'
-             (:file "dbc-class-system-object-uuid") 
+             (:file "dbc-class-system-object-uuid")
 
              ;; ==============================
              ;; Following file "dbc-class-uuid-vars.lisp"
              ;; class namespace variables cached to var `*control-id-namespace-table*'
 
-             (:file "dbc-class-uuid-vars") 
+             (:file "dbc-class-uuid-vars")
              ;; ==============================
              ;; Following file "dbc-class-record.lisp"
              ;; defines class `base-record' subclass of `base-dbc'
@@ -195,7 +195,7 @@
              ;; defines class `control-id-indexed-<FOO>-record' subclasses `control-id-<FOO>-record' `control-id-record-indexed-number'
              ;; ... a bunch of other abstract classes ...
              (:file "dbc-class-control-id")
-             
+
              (:file "dbc-class-edit")
 
              (:file "dbc-class-naf-entity")
@@ -262,7 +262,7 @@
              ;; (:file "dbc-tgm")))
 
              ;; (:file "dbc-class-symbol-construct-deprecated")
-             
+
              (:file "dbc-class-image")
 
              (:file "dbc-class-image-path-convert")
@@ -274,7 +274,7 @@
              (:file "dbc-class-parsed-slot-value-cleaning")
 
              (:file "dbc-class-parsed-tgm-theme-record")))
-   
+
    (:module "dbc-parse"
 	    :components
 	    ((:file "dbc-cln-parse")
@@ -283,12 +283,12 @@
              (:file "dbc-xml-parse-sax")
              ;; (:file "psa-parse-table.lisp")
 	     ))
-	     
+
    (:module "dbc-translate"
             :components
             ((:file "dbc-french-numbers")
              (:file "dbc-french-dates")))
-   
+
    (:file "dbc-docs"))
 
   :in-order-to ((test-op (test-op "dbc/dbc-test")))

@@ -3,12 +3,12 @@
 ;;; ==============================
 
 ;;; ==============================
-;;; :NOTE This file was fenamed from  dbc-class-uuid-namespace-for-control-id.lisp -> dbc-class-system-object-uuid.lisp
+;;; :NOTE This file was renamed :FROM  dbc-class-uuid-namespace-for-control-id.lisp :TO dbc-class-system-object-uuid.lisp
 ;;; @ git commit 0d7a67ea3dbf8a9a433cfb3656dfb09bc351a2e2
 ;;; ==============================
 
 ;;; ==============================
-;;; :NOTE danlentz's templeton provides an example of using the class
+;;; :NOTE Dan Lentz's Templeton provides an example of using the class
 ;;; SYSTEM-OBJECT-UUID but with the old name CONTEXTUAL-OBJECT-UUID
 ;;; :SEE :FILE templeton/contrib/index/namespace.lisp
 ;;; :SEE (URL `http://github.com/danlentz/templeton/blob/master/contribindex/namespace.lisp')
@@ -139,59 +139,76 @@
 ;; for the sub-classes in the dbc-system (e.g. those inheritng from `base-dbc')
 ;; For example the class and sub-classes of `control-id-display-name' need a
 ;; control-id namespaces from which their instances will derive UUIDs.
-;; 
-(defclass system-object-uuid (base-uuid)
+;;
+;;
+;; CPL base-dbc -> base-uuid -> system-object-uuid
+(defclass system-object-uuid (base-uuid) 
   ((system-identity
-    :documentation  
+    :documentation
     #.(format nil
               "An object identified by the `unicly:unique-universal-identifier'~%~
-               per slot-value of system-identity-uuid."))
+               per slot-value of system-identity-uuid.~%"))
    (system-identity-parent-uuid
-    :documentation  
+    :documentation
     #.(format nil
               "An object of type `unicly:unique-universal-identifier' which acts~%~
               as the NAMESPACE arg to `unicly:make-v5-uuid' in conjunction with~%~
-              slot-value of system-identity as the NAME arg."))
+              `slot-value' of `system-identity' as the NAME arg.~%"))
    (system-identity-uuid
-    :documentation  
+    :documentation
     #.(format nil
               "An object of type `unicly:unique-universal-identifier'.~%~@
                It dereferences the symbol stored in the system-identity slot designating a UUID namespace.~%~@
-               Value of this slot is suitable for use as a namespace argument to~%~@
-               `unicly:make-v*-uuid'."))   
+               Value of this slot is suitable for use as a namespace argument to~@
+               `unicly:make-v*-uuid'.~%"))   
    (system-identity-uuid-byte-array
-    :documentation  
+    :documentation
     #.(format nil
               "An object of type `unicly:uuid-byte-array-16'.~%~@
-               Value of this slot is the byte-array representation of the object in slot~%~@
-               system-identity-uuid."))
+               Value of this slot is the byte-array representation of the object in slot~@
+               `system-identity-uuid'.~%"))
    (system-identity-uuid-bit-vector
-    :documentation  
+    :documentation
     #.(format nil
               "An object of type `unicly::bit-vector-128'.~%~@
-               Value of this slot is the bit-vector representation of the object in slot~%~@
-               system-identity-uuid."))
+               Value of this slot is the bit-vector representation of the object in slot~@
+               `system-identity-uuid'.~%"))
    (system-identity-uuid-integer
-    :documentation  
+    :documentation
     #.(format nil
               "An object of type `unicly::uuid-integer-128'.~%~@
-               Value of this slot is the 128bit integer representation of the object in slot~%~@
-               system-identity-uuid."))
+               Value of this slot is the 128bit integer representation of the object in slot~@
+               `system-identity-uuid'.~%"))
    (system-identity-uuid-string-36
-    :documentation  
+    :documentation
     #.(format nil
               "An object of type `unicly::uuid-hex-string-36'.~%~@
-               Value of this slot is the hecadecimal integer representation of the object in slot~%~@
-               system-identity-uuid."))
+               Value of this slot is the hecadecimal integer representation of~@
+               the object in slot `system-identity-uuid'.~%"))
    (system-identity-uuid-version
-    :documentation 
-    #.(format nil 
-              "The UUID version of the uuid namespace object in slot~%~@
-               system-identity-uuid.")))
-  (:documentation 
-   #.(format nil
-             "Instances of this class hold namespace metadata for classes whose instances~%~@
-              share a common UUID namespace."))) 
+    :documentation
+    #.(format nil
+              "The UUID version of the uuid namespace object in slot system-identity-uuid.~%")))
+  (:documentation
+   #.(format
+      nil
+      "Instances of this class hold namespace metadata for classes whose instances~%~@
+       share a common UUID namespace.~%
+Instances of this class are used as the base namespaces
+for the sub-classes in the dbc-system (e.g. those inheritng from `base-dbc')
+For example the class and sub-classes of `control-id-display-name' need a
+control-id namespaces from which their instances will derive UUIDs.
+:EXAMPLE~%
+ \(type-of *control-id-inventory-namespace*\)
+ \(type-of *system-object-uuid-base-namespace*\)
+ \(system-identity *control-id-inventory-namespace*\)
+ \(system-identity-uuid *control-id-inventory-namespace*\)
+ \(gethash \(system-identity-uuid *control-id-inventory-namespace*\)
+          *control-id-namespace-table*\)
+:SEE-ALSO `make-system-object-uuid', `update-system-object-uuid',
+`*control-id-namespace-table*' `base-uuid', `base-control-id',
+`system-object-uuid', `control-id-type', `base-control-id', `base-record',
+`base-entity', `base-regexp', `base-image', `base-description', `base-edit'.~%▶▶▶~%")))
 
 
 ;; mon:symbol-not-null-or-string-not-empty
@@ -360,10 +377,11 @@
 
 
 (defgeneric system-identity (sys-object)
+ ;;
   (:method ((sys-object system-object-uuid))
-    (when (and (slot-exists-p sys-object 'system-identity)
-               (slot-boundp sys-object 'system-identity))
-      (slot-value sys-object 'system-identity))))
+             (when (and (slot-exists-p sys-object 'system-identity)
+                        (slot-boundp   sys-object 'system-identity))
+               (slot-value sys-object 'system-identity))))
 
 ;; (find-method #'(setf system-identity) '(:around) '(t system-object-uuid))
 ;; (remove-method #'(setf system-identity) (find-method #'(setf system-identity) '(:around) '(t system-object-uuid)))
@@ -376,9 +394,9 @@
         (cadr namespace-and-identity)))
   
   ;; :NOTE The NAMESPACE-AND-IDENTITY arg to the interface function
-  ;; `make-system-object-uuid's contains the NAME arg for unicly:make-v5-uuid and
+  ;; `make-system-object-uuid's contains the NAME arg for `unicly:make-v5-uuid' and
   ;; we want to store this as the slot-value of system-identity in order that we
-  ;; may chase upwardly the class uuid's their namespaces and the parent
+  ;; may chase upwardly the class uuid's to their namespaces and the parent
   ;; namespaces they descend from. To get the NAME into the slot-value of
   ;; system-identity we run an :around method which attempts to rollback in the
   ;; event of a failure (e.g. when the UUID representation for an arg is poorly
@@ -386,52 +404,53 @@
   (:method :around
     ((namespace-and-identity t) (sys-object system-object-uuid))
     (declare (type list namespace-and-identity))
-    (destructuring-bind (namespace identity) namespace-and-identity ;; (list (make-v4-uuid)  "<IDENTITY>")
-      (declare ((and (or string symbol) (not null)) identity)
-               (UNICLY:UNIQUE-UNIVERSAL-IDENTIFIER namespace))
-      (%verify-valid-string-or-symbol-for-identity identity)
-      (let ((new-namespace       (UNICLY:MAKE-V5-UUID namespace (if (symbolp identity) 
-                                                                    (string identity)
-                                                                    identity)))
-            (old-id-slot         (and (slot-exists-p sys-object 'system-identity)
-                                      (slot-boundp  sys-object  'system-identity)
-                                      (system-identity sys-object)))
-            (old-base-namespace  (and (slot-exists-p sys-object 'system-identity-parent-uuid)
-                                      (slot-boundp  sys-object  'system-identity-parent-uuid)
-                                      (system-identity-parent-uuid sys-object)))
+    (destructuring-bind (sys-id-uuid sys-identity) namespace-and-identity ;; (list (make-v4-uuid)  "<IDENTITY>")
+      (declare ((and (or string symbol) (not null)) sys-identity)
+               (UNICLY:UNIQUE-UNIVERSAL-IDENTIFIER sys-id-uuid))
+      (%verify-valid-string-or-symbol-for-identity sys-identity)
+      (let ((new-sys-identity-uuid    (UNICLY:MAKE-V5-UUID sys-id-uuid (if (symbolp sys-identity) 
+                                                                           (string sys-identity)
+                                                                         sys-identity)))
+            (old-system-identity      (and (slot-exists-p sys-object 'system-identity)
+                                           (slot-boundp  sys-object  'system-identity)
+                                           (system-identity sys-object)))
+            (old-system-parent-uuid   (and (slot-exists-p sys-object 'system-identity-parent-uuid)
+                                           (slot-boundp  sys-object  'system-identity-parent-uuid)
+                                           (system-identity-parent-uuid sys-object)))
             ;; We might not have any slots set or only some, so get all of them.
-            (old-namespace-slot  (and (slot-exists-p sys-object 'system-identity-uuid)
-                                      (slot-boundp  sys-object  'system-identity-uuid)
-                                      (system-identity-uuid sys-object)))
-            (old-byte-array-slot (and (slot-exists-p sys-object 'system-identity-uuid-byte-array)
-                                      (slot-boundp  sys-object  'system-identity-uuid-byte-array)
-                                      (system-identity-uuid-byte-array sys-object)))
-            (old-bit-vector-slot (and (slot-exists-p sys-object 'system-identity-uuid-bit-vector)
-                                      (slot-boundp  sys-object  'system-identity-uuid-bit-vector)
-                                      (system-identity-uuid-bit-vector sys-object)))
-            (old-integer-slot   (and (slot-exists-p sys-object  'system-identity-uuid-integer)
-                                     (slot-boundp  sys-object   'system-identity-uuid-integer)
-                                     (system-identity-uuid-integer sys-object)))
-            (old-hex-string-slot (and (slot-exists-p sys-object 'system-identity-uuid-string-36)
-                                      (slot-boundp  sys-object  'system-identity-uuid-string-36)
-                                      (system-identity-uuid-string-36 sys-object)))
+            (old-system-identity-uuid (and (slot-exists-p sys-object 'system-identity-uuid)
+                                           (slot-boundp  sys-object  'system-identity-uuid)
+                                           (system-identity-uuid sys-object)))
+            (old-byte-array-slot      (and (slot-exists-p sys-object 'system-identity-uuid-byte-array)
+                                           (slot-boundp  sys-object  'system-identity-uuid-byte-array)
+                                           (system-identity-uuid-byte-array sys-object)))
+            (old-bit-vector-slot      (and (slot-exists-p sys-object 'system-identity-uuid-bit-vector)
+                                           (slot-boundp  sys-object  'system-identity-uuid-bit-vector)
+                                           (system-identity-uuid-bit-vector sys-object)))
+            (old-integer-slot         (and (slot-exists-p sys-object  'system-identity-uuid-integer)
+                                           (slot-boundp  sys-object   'system-identity-uuid-integer)
+                                           (system-identity-uuid-integer sys-object)))
+            (old-hex-string-slot      (and (slot-exists-p sys-object 'system-identity-uuid-string-36)
+                                           (slot-boundp  sys-object  'system-identity-uuid-string-36)
+                                           (system-identity-uuid-string-36 sys-object)))
             ;; (old-version-slot    (system-identity-uuid-version     sys-object))
-            (new-namespace-slot  '()))
+            (new-system-identity-uuid  '())) ; new-namespace-slot
         (unwind-protect 
              (progn 
-               (setf new-namespace-slot 
+               (setf new-system-identity-uuid 
                      (ignore-errors 
                        (setf (system-identity-uuid sys-object)
-                             new-namespace)))
-               ;; If we didn't error we can safeley set the base-namespace slot
+                             new-sys-identity-uuid)))
+               ;; If we didn't error, we can safeley set the
+               ;; system-identity-parent-uuid slot to value of sys-id-uuid
                ;; else unset what we just set...
-               (when new-namespace-slot 
+               (when new-system-identity-uuid 
                  (setf (system-identity-parent-uuid sys-object)
-                       namespace)
+                       sys-id-uuid)
                  (call-next-method)))
-          (unless new-namespace-slot
+          (unless new-system-identity-uuid
             (let ((slot-val-for-rollback (or old-bit-vector-slot
-                                             old-namespace-slot
+                                             old-system-identity-uuid
                                              old-byte-array-slot
                                              old-integer-slot
                                              old-hex-string-slot)))
@@ -442,9 +461,10 @@
                          (slot-exists-p sys-object 'system-identity-parent-uuid))
                 (setf (system-identity-parent-uuid sys-object)
                       slot-val-for-rollback))
-              (if (and old-base-namespace old-id-slot)
+              (if (and old-system-parent-uuid
+                       old-system-identity)
                   (progn
-                    (setf (system-identity-parent-uuid sys-object) old-base-namespace)
+                    (setf (system-identity-parent-uuid sys-object) old-system-parent-uuid)
                     ;; We set the slot-value explicitly instead of using the
                     ;; method specialized because it would land us right back here!
                     ;; The slot system-object-uuid-identity no longer exists or
@@ -454,11 +474,11 @@
                     ;; I'm pretty sure it is `system-identity', and the
                     ;; following change reflects that assumption:
                     
-                    ;; :WAS (setf (slot-value sys-object 'system-object-uuid-identity) old-id-slot))
-                    (setf (slot-value sys-object 'system-identity) old-id-slot))
+                    ;; :WAS (setf (slot-value sys-object 'system-object-uuid-identity) old-system-identity))
+                    (setf (slot-value sys-object 'system-identity) old-system-identity))
                 
-                  ;; If either the control-identity or base-namespace slots is
-                  ;; null or unbound then the other should be as well.
+                  ;; If either the control-identity or sys-id-uuid slots is
+                  ;; null or unbound, then the other should be as well.
                   (progn 
                     (when (and (slot-exists-p sys-object 'system-identity-parent-uuid) 
                                (slot-boundp sys-object   'system-identity-parent-uuid))
@@ -600,12 +620,16 @@
         (setf (system-identity-uuid-string-36  sys-object) uuid-hex-36))
       (when (and uuid-int (slot-exists-p sys-object 'system-identity-uuid-integer))
         (setf (system-identity-uuid-integer sys-object) uuid-int))
-      (if (and (slot-exists-p sys-object 'system-identity)
-               (system-identity sys-object))
-          (if (and (slot-exists-p sys-object 'system-identity-parent-uuid)
-                   (system-identity-parent-uuid sys-object))
-              ;; Make sure that the namespace and identity evaluate to the
-              ;; namespace we just set, and if not remove them.
+      ;; Continue checking to make sure are critical slots (system-identity &
+      ;; system-identity-parent-uuid) have a value and are correct, if not fix that
+      (if (and ; make sure system-identity exists and is bound
+           (slot-exists-p sys-object 'system-identity)
+           (system-identity sys-object))
+          (if (and ; make sure system-identity-parent-uuid exists and is bound.
+               (slot-exists-p sys-object 'system-identity-parent-uuid)
+               (system-identity-parent-uuid sys-object))
+              ;; If so, make sure that the namespace (system-identity-parent-uuid) and identity (system-identity)
+              ;; evaluate to the namespace we just set, and if not remove them.
               (unless (and (slot-exists-p sys-object 'system-identity-uuid-bit-vector)
                            (slot-boundp sys-object   'system-identity-uuid-bit-vector)
                            (slot-exists-p sys-object 'system-identity-parent-uuid)
@@ -620,12 +644,12 @@
                   (slot-makunbound sys-object   'system-identity))
                 (when (slot-exists-p sys-object 'system-identity-parent-uuid)
                   (slot-makunbound sys-object   'system-identity-parent-uuid)))
+            ;;  The slot system-identity exists, but system-identity-parent-uuid is corrupt, so we unbind system-identity
+            (when (slot-exists-p sys-object 'system-identity)
+              (slot-makunbound sys-object   'system-identity)))
 
-              (when (slot-exists-p sys-object 'system-identity)
-                (slot-makunbound sys-object   'system-identity)))
-
-          ;; The control-identity isn't present, so if the base-namespace is as
-          ;; well it shouldn't be
+        ;; The control-identity (system-identity) isn't present.
+        ;; So, if the base-namespace (system-identity-parent-uuid) is as well, it shouldn't be, so unset it now.
           (when (system-identity-parent-uuid sys-object)
             (slot-makunbound sys-object 'system-identity-parent-uuid)))
       uuid-arg)))
@@ -640,14 +664,14 @@
   (let ((new-nmspc (UNICLY:MAKE-V5-UUID base-namespace 
                                         (if (symbolp control-id) 
                                             (string control-id)
-                                            control-id))))
+                                          control-id))))
     (setf (system-identity sys-object) (list base-namespace control-id))
     (setf (system-identity-uuid sys-object) new-nmspc))
   sys-object)
 
 
 ;;; ==============================
-;; DARWIN `make-system-object-uuid' is having trouble using quoted symobl
+;; DARWIN `make-system-object-uuid' is having trouble using quoted symbol.
 ;; '*system-object-uuid-base-namespace* as value suppled for keyword :control-id
 ;; do we need to loosen the declarations?
 (defun make-system-object-uuid (&key base-namespace control-id)

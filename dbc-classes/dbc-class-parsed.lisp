@@ -175,7 +175,7 @@
 (defgeneric control-id-authority-1 (object))
 (defgeneric (setf control-id-authority-1) (db-id-value object))
 
-;; :NOTE This is the base class from wich other converted dbc-classes inherit.
+;; :NOTE This is the base class from which other converted dbc-classes inherit.
 ;;       The intent is that this class should allow auxillary :before :after :around
 ;;       methods to act on the primary-methods of `parsed-class' inheritors.
 ;;       IOW, this your basic mixin base class :)

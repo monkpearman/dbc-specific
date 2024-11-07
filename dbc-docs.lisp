@@ -4223,7 +4223,8 @@ FIELD VALUE is the corresponding cdr of the consed key/value pair.~%~@
 
 (vardoc '*system-object-uuid-base-namespace*
 "The base UUID namespace for all other uuid namespaces in the dbc system.~%~@
-:EXAMPLE  (SYSTEM-IDENTITY-UUID *system-object-uuid-base-namespace*)
+:EXAMPLE~%
+ \(system-identity-uuid *system-object-uuid-base-namespace*\)~%
 :SEE-ALSO `*system-object-uuid-base-namespace*', `*control-id-inventory-namespace*',
 `*control-id-inventory-publication-namespace*',
 `*control-id-inventory-sales-order-namespace*',
@@ -4239,7 +4240,10 @@ FIELD VALUE is the corresponding cdr of the consed key/value pair.~%~@
 `*control-id-publication-namespace*'.~%▶▶▶")
 
 (let ((vardoc "The UUID namespace for objects of type ~A in the dbc system.~%
-:EXAMPLE  \(system-identity-uuid ~(~S~)\)~%
+can be dereferenced by lookup into `*control-id-namespace-table*'.~%
+:EXAMPLE~%  \(system-identity-uuid ~(~S~)\)~%
+ \(gethash \(system-identity-uuid ~S\)
+           *control-id-namespace-table*\)~%
 :SEE-ALSO `*system-object-uuid-base-namespace*', `*control-id-inventory-namespace*',
 `*control-id-inventory-publication-namespace*',
 `*control-id-inventory-sales-order-namespace*',
@@ -4278,14 +4282,18 @@ FIELD VALUE is the corresponding cdr of the consed key/value pair.~%~@
         for match = (cl-ppcre:register-groups-bind (a b c)
                                                    (regex (string var))
                                                    b)
-   do (vardoc var (format nil vardoc match var))))
+   do (vardoc var (format nil vardoc match var var))))
 
 (vardoc '*control-id-namespace-table*
-  "Maps the the system-identity-uuid's of *control-id-<FOO>namespaces* to their
+  "Maps the the `system-identity-uuid''s of *control-id-<FOO>namespaces* to their
 respective uuid-hash-tables.~%
+:NOTE All *control-id-<FOO>-namespace* objects have `*system-object-uuid-base-namespace*'
+as their base-namespace slot-value.~%
 :EXAMPLE~%
  \(gethash \(system-identity-uuid *control-id-inventory-namespace*\) *control-id-namespace-table*\)~%
-:SEE-ALSO `*system-object-uuid-base-namespace*', `*control-id-inventory-namespace*',
+ \(%control-id-namespace-prefetch-uuid-table 'control-id-display-theme\)~%
+:SEE-ALSO `%control-id-namespace-prefetch-uuid-table',
+`*system-object-uuid-base-namespace*', `*control-id-inventory-namespace*',
 `*control-id-inventory-publication-namespace*',
 `*control-id-inventory-sales-order-namespace*',
 `*control-id-inventory-sales-sold-namespace*',
@@ -4297,7 +4305,7 @@ respective uuid-hash-tables.~%
 `*control-id-material-namespace*', `*control-id-paper-namespace*',
 `*control-id-artist-namespace*', `*control-id-brand-namespace*',
 `*control-id-author-namespace*', `*control-id-person-namespace*',
-`*control-id-publication-namespace*'.▶▶▶")
+`*control-id-publication-namespace*'.~%▶▶▶")
 
 
 ;;; ==============================
@@ -4432,22 +4440,89 @@ The :VERBOSE t form is used with `cl:describe' method, the nil form is used with
 `system-identity-uuid-bit-vector', `system-identity-uuid-integer',
 `system-identity-uuid-string-36', `system-identity-uuid-version'.~%▶▶▶~%")
 
+(fundoc 'make-system-object-uuid
+        "Construct and return an instance of class `system-object-uuid.'~%~@
+BASE-NAMESPACE is a UUID that dereferenes to a base namespace in the dbc system.~%
+CONTROL-ID is a string or symbol for which a UUID will be generated in NAMESPACE.~%
+:EXAMPLE~%~@
+ \(setf *tt--bubba*
+       \(make-system-object-uuid :base-namespace unicly:*uuid-namespace-dns*
+                                :control-id \"bubba\"\)\)~%~@
+ \(system-identity-uuid *tt--bubba*\)~%~@
+ \(system-identity *tt--bubba*\)~%~@
+ \(system-identity-parent-uuid *tt--bubba*\)~%~@
+ \(progn \(makunbound '*tt--bubba*\) \(unintern '*tt--bubba*\)\)~%
+:SEE-ALSO `update-system-object-uuid'.~%▶▶▶")
+
+(fundoc 'update-system-object-uuid
+        "Update an instance of class `system-object-uuid.'~%~@
+SYS-OBJ is an object of type `system-object-uuid'.~%
+BASE-NAMESPACE is a UUID that dereferenes to a base namespace in the dbc system.~%
+CONTROL-ID is a string or symbol for which a UUID will be generated in NAMESPACE.~%
+:EXAMPLE~%
+ \(progn
+  \(defvar *tt--bubba* \(make-system-object-uuid 
+                       :base-namespace unicly:*uuid-namespace-dns*
+                       :control-id \"original-bubba\"\)\)
+  \(let* \(\(system-obj         *tt--bubba*\)
+         \(orig-identity      \(system-identity system-obj\)\)
+         \(orig-system-uuid   \(system-identity-uuid system-obj\)\)
+         \(orig-parent-uuid   \(system-identity-parent-uuid system-obj\)\)
+         \(new-sys-obj        \(update-system-object-uuid  *tt--bubba*
+                              :base-namespace unicly:*uuid-namespace-oid*
+                              :control-id \"new bubba\"\)\)
+         \(new-identity       \(system-identity new-sys-obj\)\)
+         \(new-system-uuid    \(system-identity-uuid new-sys-obj\)\)
+         \(new-parent-uuid    \(system-identity-uuid new-sys-obj\)\)
+         \(compare-identity 
+           `\(\(:IDENTITY-UUID :ORIGINAL ,orig-identity :NEW ,new-identity\)
+             \(:SYSTEM-UUID :ORIGINAL ,orig-system-uuid :NEW ,new-system-uuid\)
+             \(:PARENT-UUID :ORIGINAL ,orig-parent-uuid :NEW ,new-parent-uuid\)\)\)\)
+    \(prog1 
+        compare-identity
+      \(unintern '*tt--bubba*\)
+      \(makunbound '*tt--bubba*\)\)\)\)~%
+:SEE-ALSO `make-system-object-uuid'.~%▶▶▶")
 
 ;;; ==============================
 ;;; dbc-specific/dbc-classes/dbc-class-control-id.lisp
 ;;; ==============================
 
+(fundoc '%control-id-namespace-prefetch-uuid-table
+"Attempt to dereference CLASS (a symbol) in `*control-id-namespace-table*'.~%~%~
+:EXAMPLE~%~%~@
+ \(%control-id-namespace-prefetch-uuid-table 'control-id-display-theme\) ~%~@
+ \(multiple-value-bind \(namespace-uuid namespace-hash\)
+     \(%control-id-namespace-prefetch-uuid-table 'control-id-indexed-theme\)
+   \(let* \(\(indexed-id \\\"666\\\"\)
+          \(indexing-uuid \(make-v5-uuid namespace-uuid indexed-id\)\)
+          \(maybe-already-indexed \(gethash indexing-uuid namespace-hash\)\)\)
+     \(if maybe-already-indexed
+         \(values maybe-already-indexed T\)
+         \(values \(setf \(gethash indexing-uuid namespace-hash\) indexed-id\) nil\)\)\)\)~%~%
+Following fails successfully:~%~@
+ \(%control-id-namespace-prefetch-uuid-table 'base-taxon-entity\)~%~%
+:SEE-ALSO `%find-control-id-class-or-lose', `control-id-namespace', `control-id-uuid'.~%▶▶▶")
+
+(fundoc '%find-control-id-class-or-lose
+  "Find CLASS-SYMBOL as if by `cl:find-class', when CLASS-SYMBOL is found return
+it, otherwise an error is signaled.~%
+:EXAMPLE~%~@
+ \(%find-control-id-class-or-lose 'parsed-inventory-record\)
+ \(%find-control-id-class-or-lose 'dbc::does-not-exist\)~%~@
+:SEE-ALSO `%control-id-namespace-prefetch-uuid-table'.~%▶▶▶")
+
 (fundoc 'dbc-class-with-slot-value-null-error
-"Generalized procedure for signaling dbc-class related errors when cl:slot-value is null.~%~@
+"Generalized procedure for signaling dbc-class related errors when `slot-value' is null.~%~@
 Arg OBJECT is an instance of class-object CLASS.~%~@
 Arg slot is a symbol designating the unbound slot of OBJECT.~%~@
 :EXAMPLE~%
  \(let \(\(obj \(make-instance 'control-id-type\)\)\)
    \(dbc-class-with-slot-value-null-error  obj 'control-id-of-class-type\)\)~%
-:SEE-ALSO `dbc-class-with-slot-unbound-error'.~%▶▶▶")
+:SEE-ALSO `dbc-class-with-slot-unbound-error', `dbc-class-with-slot-missing-error'.~%▶▶▶")
 
 (fundoc 'dbc-class-with-slot-unbound-error
-"Generalized procedure for signaling dbc-related `cl:slot-unbound' errors.~%~@
+"Generalized procedure for signaling dbc-related `slot-unbound' errors.~%~@
 Arg CLASS is a class-object as per return return value of either `cl:find-class'/`cl:class-of'.~%~@
 Arg OBJECT is an instance of class-object CLASS.~%~@
 Arg slot is a symbol designating the unbound slot of OBJECT.~%~@
@@ -4455,7 +4530,108 @@ Arg slot is a symbol designating the unbound slot of OBJECT.~%~@
  \(let* \(\(obj \(make-instance 'control-id-type\)\)
         \(obj-class \(class-of obj\)\)\)
    \(dbc-class-with-slot-unbound-error obj-class obj 'control-id-of-class-type\)\)~%~@
-:SEE-ALSO `dbc-class-with-slot-value-null-error'.~%▶▶▶")
+:SEE-ALSO `dbc-class-with-slot-value-null-error', `dbc-class-with-slot-missing-error'.~%▶▶▶")
+
+(fundoc 'dbc-class-with-slot-missing-error
+ "Generalized procedure for signaling dbc-related slot missing errors.~%~@
+CLASS a dbc-class.~%
+OBJECT a dbc-class object instance.~%
+SLOT a slot missing in the CLASS's OBJECT instance.~%
+OPERATION a symbol designating a function operating on SLOT.~%
+:EXAMPLE~%~@
+  \(let* \(\(obj \(make-instance 'control-id-type\)\)
+       \(obj-class \(class-of obj\)\)\)
+  \(dbc-class-with-slot-missing-error obj-class obj 'control-id-display-name 'apply\)\)~%~@
+:SEE-ALSO `dbc-class-with-slot-value-null-error', `dbc-class-with-slot-value-null-error',
+`control-id-slot-missing-error'.~%▶▶▶")
+
+(generic-doc #'control-id-slot-missing-error
+ "Specialized procedure for signaling when `control-id-type' instances have a
+a missing slot as per `slot-missing' method.~%
+CLASS is a dbc-class which subclasses `control-id-type'.~%
+OBJECT is an instance of CLASS.~%
+SLOT is a symbol naming the missing slot for CLASS.~%
+:SEE-ALSO `control-id-namespace', `control-id-slot-unbound-error',
+`control-id-slot-value-null-error', `control-id-of-class-type-null-error',
+`control-id-namespace-null-error', `control-id-identifies-null-error',
+`control-id-uuid-null-error'.~%")
+
+(generic-doc #'control-id-slot-unbound-error
+ "Specialized procedure for signaling when `control-id-type' instances have SLOT
+that is `slot-unbound'.~%
+CLASS is a dbc-class which subclasses `control-id-type'.~%
+OBJECT is an instance of CLASS.~% 
+SLOT is a symbol naming the missing slot for CLASS.~%
+:SEE-ALSO `control-id-slot-missing-error', `control-id-slot-value-null-error',
+`control-id-of-class-type-null-error', `control-id-namespace-null-error',
+`control-id-identifies-null-error', `control-id-uuid-null-error'.~%")
+
+(generic-doc #'control-id-slot-value-null-error
+ "Specialized procedure for signaling when `control-id-type' instances have
+`slot-value' that is null.~%
+CLASS is a dbc-class which subclasses `control-id-type'.~%
+OBJECT is an instance of CLASS.~%
+:SEE-ALSO `control-id-slot-missing-error', `control-id-slot-unbound-error',
+`control-id-of-class-type-null-error', `control-id-namespace-null-error',
+`control-id-identifies-null-error', `control-id-uuid-null-error'.~%")
+
+(generic-doc #'control-id-of-class-type-null-error
+ "Specialized procedure for signaling when `control-id-type' instances have a class
+type that has a null value.~%
+OBJECT is an instance of of a class which subclasses `control-id-type'.~%
+:SEE-ALSO `control-id-of-class-type', `control-id-slot-missing-error',
+`control-id-slot-unbound-error', `control-id-slot-value-null-error',
+`control-id-namespace-null-error', `control-id-identifies-null-error',
+`control-id-uuid-null-error'.~%")
+
+(generic-doc #'control-id-of-class-type
+ "Return the class type associated with OBJECT, an instance of `control-id-type'.~%
+:SEE-ALSO `control-id-of-class-type-null-error', `control-id-of-class-type',
+`control-id-namespace', `control-id-identifies', `control-id-uuid'.~%")
+
+(generic-doc #'control-id-namespace-null-error
+ "Specialized procedure for signaling when `control-id-type' instances dereferenc to a null value.~%
+:SEE-ALSO `control-id-namespace', `control-id-slot-missing-error',
+`control-id-slot-unbound-error', `control-id-slot-value-null-error',
+`control-id-of-class-type-null-error', `control-id-identifies-null-error',
+`control-id-uuid-null-error'.~%")
+
+(generic-doc #'control-id-namespace
+ "Return the namespace associated with OBJECT, an instance of `control-id-type'.~%
+Return as per `control-id-namespace' method.~%
+:SEE-ALSO `%control-id-namespace-prefetch-uuid-table',
+`control-id-namespace-null-error', `control-id-of-class-type',
+`control-id-namespace', `control-id-identifies', `control-id-uuid'.~%")
+
+(generic-doc #'control-id-identifies-null-error
+ "Specialized procedure for signaling when `control-id-type' instances derefernce
+via `control-id-identifies' method to an identification value which is null.~%
+:SEE-ALSO `control-id-identifies', `control-id-slot-missing-error',
+`control-id-slot-unbound-error', `control-id-slot-value-null-error',
+`control-id-of-class-type-null-error', `control-id-namespace-null-error',
+`control-id-uuid-null-error'.~%")
+
+(generic-doc #'control-id-identifies
+ "Return dereferenced identification associated with OBJECT, an instance of `control-id-type'~%
+Return as per  `control-id-identifies' method.~%
+:SEE-ALSO `control-id-identifies-null-error', `control-id-of-class-type',
+`control-id-namespace', `control-id-identifies', `control-id-uuid'.~%")
+
+(generic-doc #'control-id-uuid-null-error
+ "Specialized procedure for signaling when `control-id-type' instances have uuid
+which has a null value.~%
+OBJECT is an instance of of a class which subclasses `control-id-type'.~%
+:SEE-ALSO `control-id-uuid', `control-id-slot-missing-error',
+`control-id-slot-unbound-error', `control-id-slot-value-null-error',
+`control-id-of-class-type-null-error', `control-id-namespace-null-error',
+`control-id-identifies-null-error'.~%")
+
+(generic-doc #'control-id-uuid
+ "Return the UUID associated with OBJECT, an instance of `control-id-type'.~%
+Return as per `control-id-uuid' method.~%
+:SEE-ALSO `control-id-uuid-null-error', `control-id-of-class-type',
+`control-id-namespace', `control-id-identifies', `control-id-uuid'.~%")
+
 
 
 ;;; ==============================

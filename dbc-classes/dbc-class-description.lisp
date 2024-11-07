@@ -82,7 +82,10 @@
              Examples of of descriptions include the item-ref slots:~%~% ~
                description-item-title        description-item-english~% ~
                description-item-french       description-item-quote~% ~
-               description-item-translation  description-item-condition~%")))
+               description-item-translation  description-item-condition~%
+:SEE-ALSO `base-record', `base-entity', `base-regexp', `base-image',
+`base-edit', `base-uuid', `base-control-id', `system-object-uuid',
+`control-id-type', `base-control-id'.~%▶▶▶~%")))
 
 ;; ABSTRACT-CLASS
 (defclass base-description-external (base-description)

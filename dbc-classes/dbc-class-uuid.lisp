@@ -36,8 +36,20 @@
 (defclass base-uuid (base-dbc)
   ()
   (:documentation 
-   #.(format nil "Base class for referencing dbc system objects by UUID.")))
-
+   #.(format nil "Base class for referencing dbc system objects by UUID.~%
+:NOTE The class `base-uuid' (and it's primary subclass `system-object-uuid')
+define _canonical_ identities for dbc system objects (as distinct from the class
+objects they dereference). Instances which subclass `base-uuid' dereference
+through the `*control-id-namespace-table*'. Whereas, subclasses of
+`base-control-id' are distinct from those of this class `base-uuid' and it's
+primary subclass `system-object-uuid' in that the class `base-control-id' (and
+it's subclasses) are implemented to distinguish different types of controlled
+identities in classes with `slot-value's used for identification puroposes, ie
+`control-id-display-name'.~%
+:SEE-ALSO `system-object-uuid', `make-system-object-uuid',
+`update-system-object-uuid', `base-control-id', `base-record', `base-entity',
+`base-regexp', `base-image', `base-description', `base-edit',
+`control-id-type'.~%▶▶▶")))
 
 ;;; ==============================
 ;;

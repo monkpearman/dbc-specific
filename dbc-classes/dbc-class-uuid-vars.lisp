@@ -2,6 +2,11 @@
 ;;; :FILE dbc-specific/dbc-classes/dbc-class-uuid-vars.lisp
 ;;; ==============================
 
+;;; ==============================
+;; :NOTE this :FILE dbc-class-uuid-vars.lisp loads :AFTER  dbc-class-system-object-uuid.lisp
+;;; ==============================
+
+;;; ==============================
 ;; *control-id-namespace-table*
 ;; *system-object-uuid-base-namespace*
 ;;
@@ -35,6 +40,26 @@
 
 ;;; ==============================
 
+;;; ==============================
+
+;; `%control-id-namespace-prefetch-uuid-table'
+;; (%control-id-namespace-prefetch-uuid-table 'control-id-display-theme)
+;;    
+;; (multiple-value-bind (namespace-uuid namespace-hash)
+;;     (%control-id-namespace-prefetch-uuid-table 'control-id-indexed-theme)
+;;   (let* ((indexed-id \"666\")
+;;          (indexing-uuid (make-v5-uuid namespace-uuid indexed-id))
+;;          (maybe-already-indexed (gethash indexing-uuid namespace-hash)))
+;;     (if maybe-already-indexed
+;;         (values maybe-already-indexed T)
+;;       (values (setf (gethash indexing-uuid namespace-hash) indexed-id) nil))))
+;;
+;; (control-id-namespace 
+
+;;
+;; (type-of (%control-id-namespace-prefetch-uuid-table 'control-id-display-theme))
+
+;;; ==============================
 
 (in-package #:dbc)
 
@@ -199,13 +224,20 @@
 (defvar *control-id-namespace-table* (make-hash-table-uuid :synchronized t))
 
 (dolist (namspace (list *control-id-inventory-namespace*
-                        *control-id-documentation-namespace* *control-id-authority-namespace*
-                        *control-id-category-namespace* *control-id-theme-namespace*
-                        *control-id-location-namespace* *control-id-taxon-namespace*
-                        *control-id-technique-namespace* *control-id-mount-namespace*
-                        *control-id-material-namespace* *control-id-paper-namespace*
-                        *control-id-artist-namespace* *control-id-brand-namespace*
-                        *control-id-author-namespace* *control-id-person-namespace*
+                        *control-id-documentation-namespace*
+                        *control-id-authority-namespace*
+                        *control-id-category-namespace*
+                        *control-id-theme-namespace*
+                        *control-id-location-namespace*
+                        *control-id-taxon-namespace*
+                        *control-id-technique-namespace*
+                        *control-id-mount-namespace*
+                        *control-id-material-namespace*
+                        *control-id-paper-namespace*
+                        *control-id-artist-namespace*
+                        *control-id-brand-namespace*
+                        *control-id-author-namespace*
+                        *control-id-person-namespace*
                         *control-id-publication-namespace*
                         *control-id-image-namespace*
                         ;; *system-object-uuid-base-namespace*

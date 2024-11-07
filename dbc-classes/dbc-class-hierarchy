@@ -2,6 +2,9 @@
 ;;; :FILE dbc-classes/dbc-class-hierarchy
 ;;; ==============================
 
+(in-package :dbc)
+
+#|
 
 Given enough indirections a UUID can resolve _any_ ojbect (and the values contained therein).
 
@@ -56,7 +59,7 @@ Following provides an example of the basic idioms we imagine.
  *dbc-global-hash-table*
    key        value
   --------------------
-  UUID-J ---> OBJECT-L   
+  UUID-J ---> OBJECT-L
   UUID-K ---> OBJECT-M
   UUUD-Q ---> OBJECT-N
   UUUD-Y ---> OBJECT-O
@@ -80,6 +83,8 @@ So, imagine we want to find the pseudonyms for the entity OBJECT-L
 
 To do this we need to get from OBJECT-L to OBJECT-O.
 Because we don't refer to instances directly we refer OBJECT-L to it through UUID-J:
+
+|#
 
  (gethash UUID-J *dbc-global-hash-table*)
  => OBJECT-L
